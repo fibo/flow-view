@@ -1,0 +1,37 @@
+{
+  "name": "flow-view",
+  "version": "0.0.0",
+  "description": "Visual editor for dataflow programming, powered by svg.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "browserify": "browserify -s flowView -e index.js -o dist/flowView.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fibo/flow-view.git"
+  },
+  "keywords": [
+    "dataflow",
+    "visual",
+    "svg",
+    "editor"
+  ],
+  "author": "fibo",
+  "license": [
+    {
+      "type": "MIT",
+      "url": "http://g14n.info/mit-license"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/fibo/flow-view/issues"
+  },
+  "homepage": "https://github.com/fibo/flow-view",
+  "dependencies": {
+    "svg.js": "~1.0.0"
+  },
+  "devDependencies": {
+    "browserify": "~8.0.1"
+  }
+}

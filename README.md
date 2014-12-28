@@ -110,32 +110,42 @@ The *view* object contains two objects:
 
 ## Box
 
-The *Box* constructor should not be used directly, use [addBox()](#addBox) instead.
+The *Box* constructor should not be used directly, use [addBox()](#addbox) instead.
 
 ### x
 
+The *x* coord of the top left vertex of the box.
+
 ### y
+
+The *y* coord of the top left vertex of the box.
 
 ### text
 
+The *text* label displayed in the box.
+
 ### ins
+
+An optional array of [Input](#input) objects.
 
 ### outs
 
+An optional array of [Ouput](#output) objects.
+
 ## Link
 
-The *Link* constructor should not be used directly, use [addLink()](#addLink) instead.
+The *Link* constructor should not be used directly, use [addLink()](#addlink) instead.
 
 ### from
 
-Array with two entries:
+An array with two entries:
 
   0. The key of the source box.
   1. The position of the output.
 
 ### to
 
-Array with two entries:
+An array with two entries:
 
   0. The key of the target box.
   1. The position of the input.

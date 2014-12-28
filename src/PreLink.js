@@ -43,6 +43,7 @@ function PreLink (canvas, output) {
   }
 
   rect.beforedrag = beforedrag
+
   function dragmove () {
     line.plot(self.x1, self.y1, self.x2, self.y2)
   }

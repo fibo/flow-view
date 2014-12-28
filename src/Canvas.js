@@ -23,7 +23,7 @@ function Canvas (id, view) {
 
   this.view = view
 
-  var box = this.box = {}
+  var box  = this.box  = {}
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)

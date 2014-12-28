@@ -1,0 +1,34 @@
+<!DOCTYPE>
+<html>
+<body>
+  <div id="drawing"></div>
+  <script type="text/javascript" src="//g14n.info/flow-view/dist/flow-view.js"></script>
+  <script type="text/javascript">
+    var Canvas = flowView.Canvas,
+        view = {
+          box: {
+            a: {
+              x: 80,
+              y: 100,
+              text: "Drag me",
+              outs: [{}]
+            },
+            b: {
+              x: 180,
+              y: 100,
+              text: "Hello",
+              ins: [{}, {}]
+            }
+         },
+         link: {
+           1: {
+             from: ['a', 0],
+             to: ['b', 1]
+         }
+       }
+
+    canvas = new Canvas('drawing', view)
+</script>
+</body>
+<html>
+

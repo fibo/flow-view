@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "main": "index.js",
+  "main": "dist/flowView.js",
   "version": "0.0.0",
   "homepage": "http://g14n.info/flow-view",
   "authors": [

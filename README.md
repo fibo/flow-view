@@ -24,6 +24,7 @@ $ echo _config.yml >> .gitignore
 Add subtree repo
 
 ```bash
-$ git subtree add --prefix=_includes _includes master
 $ git remote add _includes https://github.com/fibo/_includes
+$ git subtree add --prefix=_includes _includes master
 ```
+

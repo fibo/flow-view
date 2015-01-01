@@ -1,0 +1,58 @@
+
+url: http://g14n.info
+encoding: utf-8
+
+author: Gianluca Casati
+description: My digital copybook
+
+permalink: ./:year/:month/:title
+
+exclude: 
+  - Gemfile
+  - README.md
+  - _projects/_repos
+  - _projects/README.md
+  - _projects/**/*.yaml
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+collections:
+  projects:
+    output: true
+    permalink: ./:path.html
+
+# Defaults
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      author: Gianluca Casati
+      layout: post
+
+# Custom vars
+
+bootstrap:
+  base_url: https://maxcdn.bootstrapcdn.com/bootstrap
+  version: 3.2.0
+
+jquery:
+  base_url: https://ajax.googleapis.com/ajax/libs/jquery
+  version: 1.11.1
+
+mathjax:
+  base_url: https://cdn.mathjax.org/mathjax
+  version: latest
+
+google-analytics:
+  id: UA-12635045-12
+
+repo: https://github.com/fibo/fibo.github.io/
+
+disqus:
+  shortname: g14n
+

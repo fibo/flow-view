@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include header.html %}
+</head>
+
+<body>
+{% include edit_post.html %}
+
+  <div class="container">
+    <article>
+      <header class="page-header">
+        <h1> {{ page.title }}  </h1>
+               
+        <p class="lead">{{ page.description }}</p>
+                  
+        <time datetime="{{ page.date }}" class="badge">{{ page.date | date: "%F" }}</time>
+      </header>
+             
+{{ content }}
+    </article>
+
+{% include disqus.html %}
+  </div>
+{% include footer.html %}
+
+{% include analytics.html %}
+</body>
+</html>

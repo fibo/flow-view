@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include header.html %}
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <h1> {{ page.title }}</h1>
+    </header>
+
+      <p>Copyright © 2014 <a href="{{ site.url }}">{{ site.author }}, {{ site.url }}</a></p>
+
+{{ content }}
+
+  </div>
+
+{% include analytics.html %}
+</body>
+</html>

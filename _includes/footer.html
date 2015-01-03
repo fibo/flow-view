@@ -1,0 +1,21 @@
+    
+<footer id="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3 text-center">
+        <p>Copyright © <a href="{{ site.url }}/about-me" rel="author">{{ site.author }}</a> 2014</p>
+    </div>
+  </div>
+</footer>
+
+{% if page.latex %}
+<!-- MathJax -->
+<script type="text/javascript" src="{{ site.mathjax.base_url }}/{{ site.mathjax.version }}/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endif %}
+
+<!-- JQuery -->
+<script type="text/javascript" src="{{ site.jquery.base_url }}/{{ site.jquery.version }}/jquery.min.js"></script>
+
+<!-- Bootstrap compiled plugins -->
+<script type="text/javascript" src="{{ site.bootstrap.base_url }}/{{ site.bootstrap.version }}/js/bootstrap.min.js"></script>
+

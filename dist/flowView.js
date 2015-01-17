@@ -4010,7 +4010,7 @@ function Canvas (id, view) {
 
   this.view = view
 
-  var box = this.box = {}
+  var box  = this.box  = {}
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)
@@ -4192,8 +4192,8 @@ function Output (box) {
 
   var theme = canvas.theme
 
-  var fillPin = theme.fillPin
-    , halfPinSize = theme.halfPinSize
+  var fillPin     = theme.fillPin,
+      halfPinSize = theme.halfPinSize
 
   var size = halfPinSize * 2
 
@@ -4298,6 +4298,7 @@ function PreLink (canvas, output) {
   }
 
   rect.beforedrag = beforedrag
+
   function dragmove () {
     line.plot(self.x1, self.y1, self.x2, self.y2)
   }

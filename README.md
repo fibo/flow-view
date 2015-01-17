@@ -42,13 +42,13 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis/) to see
             x: 80,
             y: 100,
             text: "Drag me",
-            outs: [{}]
+            outs: [{name: "out0", data:1}]
           },
           b: {
             x: 180,
             y: 100,
             text: "Hello",
-            ins: [{}, {}]
+            ins: [{name: "in0", data:2}, {name: "in1", data:1}]
           }
        },
        link: {
@@ -58,7 +58,7 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis/) to see
        }
      }
 
-  canvas = new Canvas('drawing', view)
+  var canvas = new Canvas('drawing', view)
 </script>
 ```
 
@@ -72,15 +72,29 @@ A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In you
 
 In order to start with a not empty *Canvas*, create an optional [view object](#view)
 
-```js
-view = {
-  box: {
-    foo: {
-      x: 10,
-      y: 10,
-      text: "Drag mew"
-    }
- }
+
+```
+var view = {
+      box: {
+        a: {
+          x: 80,
+          y: 100,
+          text: "Drag me",
+          outs: [{name: "out0", data:1}]
+        },
+        b: {
+          x: 180,
+          y: 100,
+          text: "Hello",
+          ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+        }
+     },
+     link: {
+        1: {
+         from: ['a', 0],
+         to: ['b', 1]
+     }
+   }
 ```
 
 and pass it to the *Canvas* constructor
@@ -149,6 +163,37 @@ An array with two entries:
 
   0. The key of the target box.
   1. The position of the input.
+
+## Put
+
+The *Put* object is an abstract class, furthermore it is not coded.
+
+It has the following attributes
+
+### name
+
+It is a String with the name of the object.
+
+### data
+
+Can have any type that fits in a JSON attribute.
+
+## Input
+
+Is a [Put](#put) Object. Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
+
+```
+ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+```
+
+## Output
+
+Is a [Put](#put) Object. Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
+
+```
+outs: [{name: "out0", data:1}]
+```
+
 
   [1]: http://svgjs.com/ "SVG.js"
 

@@ -59,6 +59,7 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis/) to see
          1: {
            from: ['a', 0],
            to: ['b', 1]
+         }
        }
      }
 

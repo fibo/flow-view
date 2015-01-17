@@ -41,16 +41,16 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis/) to see
           a: {
             x: 80,
             y: 100,
-            w: 100,
-            h: 20,
+            w: 10,
+            h: 2,
             text: "Drag me",
             outs: [{name: "out0", data:1}]
           },
           b: {
             x: 180,
             y: 100,
-            w: 100,
-            h: 20,
+            w: 10,
+            h: 2,
             text: "Hello",
             ins: [{name: "in0", data:2}, {name: "in1", data:1}]
           }
@@ -84,12 +84,16 @@ var view = {
         a: {
           x: 80,
           y: 100,
+          w: 10,
+          h: 2,
           text: "Drag me",
           outs: [{name: "out0", data:1}]
         },
         b: {
           x: 180,
           y: 100,
+          w: 10,
+          h: 2,
           text: "Hello",
           ins: [{name: "in0", data:2}, {name: "in1", data:1}]
         }
@@ -141,11 +145,11 @@ The *y* coord of the top left vertex of the box.
 
 ### w
 
-The *width* of the rect containing the box.
+The *width* of the rect containing the box. It is expressed in width units.
 
 ### h
 
-The *height* of the rect containing the box.
+The *height* of the rect containing the box. It is expressed in height units.
 
 ### text
 

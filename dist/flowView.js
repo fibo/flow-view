@@ -3991,7 +3991,8 @@ function Box (canvas, view) {
       x: this.x,
       y: this.y,
       w: this.w,
-      h: this.h
+      h: this.h,
+      text: this.text
     }
     
     return view
@@ -4025,8 +4026,13 @@ function Canvas (id, view, theme) {
 
   var draw = this.draw = SVG(id).size(1000, 1000)
                                 .fixSubPixelOffset()
+  function createBox (key) {
+    var view = this.view.box[key]
 
-  Object.keys(view.box).forEach(this.addBox.bind(this))
+    this.addBox(view, key)
+  }
+
+  Object.keys(view.box).forEach(createBox.bind(this))
 
   Object.keys(view.link).forEach(this.addLink.bind(this))
 
@@ -4048,8 +4054,10 @@ function Canvas (id, view, theme) {
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 }
 
-function addBox (key) {
-  this.box[key] = new Box(this, this.view.box[key], key)
+function addBox (view, key) {
+  key |= this.nextKey
+
+  this.box[key] = new Box(this, view, key)
 }
 
 Canvas.prototype.addBox = addBox
@@ -4140,7 +4148,8 @@ function Link (canvas, view, key) {
 
   var theme = canvas.theme
 
-  var strokeLine = theme.strokeLine
+  var strokeDasharray = theme.strokeDasharray,
+      strokeLine      = theme.strokeLine
 
   var from = canvas.box[view.from[0]],
       to   = canvas.box[view.to[0]]
@@ -4155,6 +4164,7 @@ function Link (canvas, view, key) {
 
   var line = this.line = draw.line(this.x1, this.y1, this.x2, this.y2)
                              .stroke(strokeLine)
+                             .attr('stroke-dasharray', strokeDasharray)
 
   end.link = this
   start.link[key] = this
@@ -4167,13 +4177,13 @@ function Link (canvas, view, key) {
   }
 
   function deselectLine () {
-    line.stroke(strokeLine)
     line.off('click')
+        .attr('stroke-dasharray', strokeDasharray)
   }
 
   function selectLine () {
-    line.stroke({ width: 4 })
     line.on('click', remove)
+        .attr('stroke-dasharray', null)
   }
 
   line.on('mouseover', selectLine)

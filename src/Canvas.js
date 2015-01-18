@@ -19,8 +19,13 @@ function Canvas (id, view, theme) {
 
   var draw = this.draw = SVG(id).size(1000, 1000)
                                 .fixSubPixelOffset()
+  function createBox (key) {
+    var view = this.view.box[key]
 
-  Object.keys(view.box).forEach(this.addBox.bind(this))
+    this.addBox(view, key)
+  }
+
+  Object.keys(view.box).forEach(createBox.bind(this))
 
   Object.keys(view.link).forEach(this.addLink.bind(this))
 
@@ -42,8 +47,10 @@ function Canvas (id, view, theme) {
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 }
 
-function addBox (key) {
-  this.box[key] = new Box(this, this.view.box[key], key)
+function addBox (view, key) {
+  key |= this.nextKey
+
+  this.box[key] = new Box(this, view, key)
 }
 
 Canvas.prototype.addBox = addBox

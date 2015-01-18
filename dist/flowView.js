@@ -3941,13 +3941,20 @@ function Box (canvas, view) {
   Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
   Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
 
-  var numIns = view.ins.length
+  var numIns  = 0
+    , numOuts = 0
 
-  for (var position = 0; position < numIns; position++) {
+  if (view.ins)
+    numIns = view.ins.length
+
+  if (view.outs)
+    numOuts = view.outs.length
+
+  for (var position = 0; position < numIns; position++)
     this.ins[position] = new Input(this, position, numIns)
-  }
 
-  this.outs[0] = new Output(this)
+  for (var position = 0; position < numOuts; position++)
+    this.outs[position] = new Output(this, position, numOuts)
 
   function dragmove () {
     var output = this.outs[0]

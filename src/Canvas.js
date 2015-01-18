@@ -14,9 +14,9 @@ function Canvas (id, view) {
       anchor: 'start'
     },
     halfPinSize: 5,
-    fillLabel: '#ccc',
-    fillRect: '#f09',
-    fillPin: '#ccc',
+    fillLabel: '#333',
+    fillRect: '#ccc',
+    fillPin: '#fff',
     strokeDasharray: '5, 5',
     strokeLine: { width: 2 }
   }

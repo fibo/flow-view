@@ -4065,11 +4065,11 @@ module.exports = Canvas
 
 },{"./Box":3,"./Link":6,"./Theme":9,"./svg":12}],5:[function(require,module,exports){
 
-function Input (box, position) {
-  this.box = box
+function Input (box, position, numIns) {
+  this.box      = box
+  this.position = position
 
   this.link = null
-  this.position = position
 
   var canvas = box.canvas
 
@@ -4081,9 +4081,6 @@ function Input (box, position) {
   var size = halfPinSize * 2
 
   var draw = canvas.draw
-    , numIns = box.numIns
-
-  var w = box.w
 
   function getVertex () {
     var vertex = {
@@ -4093,7 +4090,7 @@ function Input (box, position) {
 
 
     if (numIns > 1)
-      vertex.relative.x = position * ((w - size) / (numIns - 1))
+      vertex.relative.x = position * ((box.w - size) / (numIns - 1))
     else
       vertex.relative.x = 0
 
@@ -4111,7 +4108,7 @@ function Input (box, position) {
           absolute: {},
           relative: {}
         }
- 
+
     var vertex = this.vertex
 
     center.relative.x = vertex.relative.x + halfPinSize
@@ -4190,8 +4187,9 @@ module.exports = Link
 
 var PreLink = require('./PreLink')
 
-function Output (box) {
-  this.box = box
+function Output (box, position, numOuts) {
+  this.box      = box
+  this.position = position
 
   this.link = {}
 
@@ -4212,7 +4210,11 @@ function Output (box) {
           relative: {}
         }
 
-    vertex.relative.x = 0
+    if (numOuts > 1)
+      vertex.relative.x = position * ((box.w - size) / (numOuts - 1))
+    else
+      vertex.relative.x = 0
+
     vertex.relative.y = box.h - size
     vertex.absolute.x = vertex.relative.x + box.x
     vertex.absolute.y = vertex.relative.y + box.y
@@ -4227,7 +4229,7 @@ function Output (box) {
           absolute: {},
           relative: {}
         }
- 
+
     var vertex = this.vertex
 
     center.relative.x = vertex.relative.x + halfPinSize
@@ -4264,12 +4266,7 @@ module.exports = Output
 
 var Link = require('./Link')
 
-/**
- */
-
 function PreLink (canvas, output) {
-  var self = this
-
   var draw = canvas.draw
 
   var theme = canvas.theme
@@ -4310,10 +4307,10 @@ function PreLink (canvas, output) {
   rect.beforedrag = beforedrag
 
   function dragmove () {
-    line.plot(self.x1, self.y1, self.x2, self.y2)
+    line.plot(this.x1, this.y1, this.x2, this.y2)
   }
 
-  rect.dragmove = dragmove
+  rect.dragmove = dragmove.bind(this)
 
   function dragend () {
     // After dragging, the preLink is no longer necessary.
@@ -4324,22 +4321,23 @@ function PreLink (canvas, output) {
     center.x = rect.x() + halfPinSize
     center.y = rect.y() + halfPinSize
 
+    // Given a box, loop over its ins. If center is inside input, create a Link.
     function dropOn (box) {
-      box.inputs.forEach(function (input) {
+      box.ins.forEach(function (input) {
         if (input.link !== null)
           return
 
-        var bbox = input.rect.bbox()
-          , x = input.box.group.x()
-          , y = input.box.group.y()
+        var bbox = input.rect.bbox(),
+            x    = input.box.group.x(),
+            y    = input.box.group.y()
 
-        bbox.x += x
+        bbox.x  += x
         bbox.x2 += x
-        bbox.y += y
+        bbox.y  += y
         bbox.y2 += y
 
-        var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2))
-          , centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
+        var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
+            centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
 
         var centerIsInsideInput = centerIsInsideX && centerIsInsideY
 
@@ -4357,13 +4355,14 @@ function PreLink (canvas, output) {
       })
     }
 
+    // Loop over all boxes. If center is inside box, drop on it.
     Object.keys(canvas.box).forEach(function (key) {
       var box = canvas.box[key]
 
       var bbox = box.group.bbox()
 
-      var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2))
-        , centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
+      var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
+          centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
 
       var centerIsInsideBox = centerIsInsideX && centerIsInsideY
 

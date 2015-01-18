@@ -11,7 +11,7 @@ function PreLink (canvas, output) {
 
   var theme = canvas.theme
 
-  var fillPinHighlighted = theme.fillPinHighLighted,
+  var fillPinHighlighted = theme.fillPinHighlighted,
       halfPinSize        = theme.halfPinSize,
       strokeLine         = theme.strokeLine,
       strokeDasharray    = theme.strokeDasharray

@@ -42,15 +42,15 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis/) to see
             x: 80,
             y: 100,
             w: 10,
-            h: 2,
+            h: 1,
             text: "Drag me",
             outs: [{name: "out0", data:1}]
           },
           b: {
             x: 180,
-            y: 100,
+            y: 200,
             w: 10,
-            h: 2,
+            h: 1,
             text: "Hello",
             ins: [{name: "in0", data:2}, {name: "in1", data:1}]
           }

@@ -4145,12 +4145,11 @@ function Link (canvas, view, key) {
 
   var strokeLine = theme.strokeLine
 
-  var position = view.position
-  var from = canvas.box[view.from]
-  var to = canvas.box[view.to]
+  var from = canvas.box[view.from[0]],
+      to   = canvas.box[view.to[0]]
 
-  var end = to.inputs[position]
-    , start = from.output
+  var start = from.outs[view.from[1]],
+      end   = to.ins[view.to[1]]
 
   Object.defineProperty(this, 'x1', { get: function () { return start.center.absolute.x } })
   Object.defineProperty(this, 'y1', { get: function () { return start.center.absolute.y } })

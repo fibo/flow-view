@@ -4276,13 +4276,15 @@ function PreLink (canvas, output) {
 
   var theme = canvas.theme
 
-  var halfPinSize = theme.halfPinSize
-    , strokeLine = theme.strokeLine
-    , strokeDasharray = theme.strokeDasharray
+  var fillPinHighlighted = theme.fillPinHighLighted,
+      halfPinSize        = theme.halfPinSize,
+      strokeLine         = theme.strokeLine,
+      strokeDasharray    = theme.strokeDasharray
 
   var pinSize = halfPinSize * 2
 
   var rect = draw.rect(pinSize, pinSize)
+                 .fill(fillPinHighlighted)
                  .move(output.vertex.absolute.x, output.vertex.absolute.y)
                  .draggable()
 
@@ -4393,6 +4395,7 @@ var theme = {
   fillLabel: '#333',
   fillRect: '#ccc',
   fillPin: '#333',
+  fillPinHighlighted: '#d63518',
   strokeDasharray: '5, 5',
   strokeLine: { width: 2 }
 }

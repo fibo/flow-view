@@ -11,6 +11,7 @@ var theme = {
   fillLabel: '#333',
   fillRect: '#ccc',
   fillPin: '#333',
+  fillPinHighlighted: '#d63518',
   strokeDasharray: '5, 5',
   strokeLine: { width: 2 }
 }

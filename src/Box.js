@@ -2,9 +2,8 @@
 var Input  = require('./Input'),
     Output = require('./Output')
 
-function Box (canvas, view, key) {
+function Box (canvas, view) {
   this.canvas = canvas
-  this.key = key
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -13,20 +12,20 @@ function Box (canvas, view, key) {
       fillRect  = theme.fillRect,
       labelFont = theme.labeFont
 
-  var h = theme.boxHeight,
-      w = view.task.length * theme.labelFontWidth
+  var h = view.h * theme.unitHeight,
+      w = view.w * theme.unitWidth
 
   var group = this.group = draw.group()
 
-  this.inputs = []
-  this.output
+  this.ins = []
+  this.outs = []
 
   this.draw = draw
 
   var rect = this.rect = draw.rect(w, h)
                              .fill(fillRect)
 
-  var text = this.text = draw.text(view.task)
+  var text = this.text = draw.text(view.text)
                              .fill(fillLabel)
                              .back()
                              .move(10, 10)
@@ -42,16 +41,16 @@ function Box (canvas, view, key) {
   Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
   Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
 
-  var numIns = this.numIns = view.numIns
+  var numIns = view.ins.length
 
   for (var position = 0; position < numIns; position++) {
-    this.inputs[position] = new Input(this, position, this.numIns)
+    this.ins[position] = new Input(this, position, numIns)
   }
 
-  this.output = new Output(this)
+  this.outs[0] = new Output(this)
 
   function dragmove () {
-    var output = this.output
+    var output = this.outs[0]
 
     Object.keys(output.link).forEach(function (key) {
       var link = output.link[key]
@@ -79,6 +78,19 @@ function Box (canvas, view, key) {
   }
 
   group.dragmove = dragmove.bind(this)
+
+  function getView () {
+    var view = {
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h
+    }
+    
+    return view
+  }
+
+  Object.defineProperty(this, 'view', { get: getView.bind(this) })
 }
 
 module.exports = Box

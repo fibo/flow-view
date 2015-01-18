@@ -6,8 +6,8 @@ var Box = require('./Box')
 
 function Canvas (id, view) {
   this.theme = {
-    boxHeight: 40,
-    labelFontWidth: 10, // heuristic
+    unitHeight: 40,
+    unitWidth: 10,
     labelFont: {
       family: 'Source Sans Pro',
       size: 17,

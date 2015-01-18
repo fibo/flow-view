@@ -6,7 +6,7 @@ function Output (box) {
 
   this.box = box
 
-  this.link = {}
+  this.link = []
 
   var canvas = box.canvas
 

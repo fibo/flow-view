@@ -3957,20 +3957,20 @@ function Box (canvas, view) {
     this.outs[position] = new Output(this, position, numOuts)
 
   function dragmove () {
-    var output = this.outs[0]
+    this.outs.forEach(function (output) {
+      Object.keys(output.link).forEach(function (key) {
+        var link = output.link[key]
 
-    Object.keys(output.link).forEach(function (key) {
-      var link = output.link[key]
+        var x1 = link.x1,
+            y1 = link.y1,
+            x2 = link.x2,
+            y2 = link.y2
 
-      var x1 = link.x1
-        , y1 = link.y1
-        , x2 = link.x2
-        , y2 = link.y2
-
-      link.line.plot(x1, y1, x2, y2)
+        link.line.plot(x1, y1, x2, y2)
+      })
     })
 
-    this.inputs.forEach(function (input) {
+    this.ins.forEach(function (input) {
       var link = input.link
 
       if (!link) return
@@ -4191,11 +4191,9 @@ module.exports = Link
 var PreLink = require('./PreLink')
 
 function Output (box) {
-  var self = this
-
   this.box = box
 
-  this.link = []
+  this.link = {}
 
   var canvas = box.canvas
 
@@ -4252,11 +4250,12 @@ function Output (box) {
 
   var preLink = null
 
-  rect.on('mouseover', function () {
-    preLink = new PreLink(canvas, self)
-  })
-}
+  function mouseover () {
+    preLink = new PreLink(canvas, this)
+  }
 
+  rect.on('mouseover', mouseover.bind(this))
+}
 
 module.exports = Output
 

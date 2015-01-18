@@ -2,11 +2,9 @@
 var PreLink = require('./PreLink')
 
 function Output (box) {
-  var self = this
-
   this.box = box
 
-  this.link = []
+  this.link = {}
 
   var canvas = box.canvas
 
@@ -63,11 +61,12 @@ function Output (box) {
 
   var preLink = null
 
-  rect.on('mouseover', function () {
-    preLink = new PreLink(canvas, self)
-  })
-}
+  function mouseover () {
+    preLink = new PreLink(canvas, this)
+  }
 
+  rect.on('mouseover', mouseover.bind(this))
+}
 
 module.exports = Output
 

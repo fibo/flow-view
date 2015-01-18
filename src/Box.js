@@ -91,7 +91,8 @@ function Box (canvas, view) {
       x: this.x,
       y: this.y,
       w: this.w,
-      h: this.h
+      h: this.h,
+      text: this.text
     }
     
     return view

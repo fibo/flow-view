@@ -77,15 +77,12 @@ function PreLink (canvas, output) {
         var centerIsInsideInput = centerIsInsideX && centerIsInsideY
 
         if (centerIsInsideInput) {
-          var key = canvas.nextKey
-
           var view = {
-            from: output.box.key,
-            to: box.key,
-            position: input.position
+            from: [output.box.key, output.position],
+            to: [box.key, input.position]
           }
 
-          canvas.link[key] = new Link(canvas, view, key)
+          canvas.addLink(view)
         }
       })
     }

@@ -4,8 +4,8 @@ function Link (canvas, view, key) {
 
   var theme = canvas.theme
 
-  var strokeDasharray = theme.strokeDasharray,
-      strokeLine      = theme.strokeLine
+  var strokeLine            = theme.strokeLine,
+      strokeLineHighlighted = theme.strokeLineHighlighted
 
   var from = canvas.box[view.from[0]],
       to   = canvas.box[view.to[0]]
@@ -20,7 +20,6 @@ function Link (canvas, view, key) {
 
   var line = this.line = draw.line(this.x1, this.y1, this.x2, this.y2)
                              .stroke(strokeLine)
-                             .attr('stroke-dasharray', strokeDasharray)
 
   end.link = this
   start.link[key] = this
@@ -34,12 +33,12 @@ function Link (canvas, view, key) {
 
   function deselectLine () {
     line.off('click')
-        .attr('stroke-dasharray', strokeDasharray)
+        .stroke(strokeLine)
   }
 
   function selectLine () {
     line.on('click', remove)
-        .attr('stroke-dasharray', null)
+        .stroke(strokeLineHighlighted)
   }
 
   line.on('mouseover', selectLine)

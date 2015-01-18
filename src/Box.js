@@ -2,8 +2,9 @@
 var Input  = require('./Input'),
     Output = require('./Output')
 
-function Box (canvas, view) {
+function Box (canvas, view, key) {
   this.canvas = canvas
+  this.key = key
 
   var draw  = canvas.draw,
       theme = canvas.theme

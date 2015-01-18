@@ -144,13 +144,14 @@ var theme = {
     size: 17,
     anchor: 'start'
   },
-  halfPinSize: 5,
   fillLabel: '#333',
-  fillRect: '#ccc',
   fillPin: '#333',
   fillPinHighlighted: '#d63518',
+  fillRect: '#ccc',
+  halfPinSize: 5,
   strokeDasharray: '5, 5',
-  strokeLine: { width: 2 }
+  strokeLine: { color: '#333', width: 3 },
+  strokeLineHighlighted: { color: '#d63518', width: 3 }
 }
 ```
 

@@ -54,7 +54,8 @@ function Canvas (id, view, theme) {
 }
 
 function addBox (view, key) {
-  key |= this.nextKey
+  if (typeof key === 'undefined')
+     key = this.nextKey
 
   this.box[key] = new Box(this, view, key)
 }
@@ -62,6 +63,9 @@ function addBox (view, key) {
 Canvas.prototype.addBox = addBox
 
 function addLink (view, key) {
+  if (typeof key === 'undefined')
+     key = this.nextKey
+
   this.link[key] = new Link(this, view, key)
 }
 

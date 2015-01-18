@@ -4,24 +4,15 @@ var SVG = require('./svg')
 var Box = require('./Box')
   , Link = require('./Link')
 
-function Canvas (id, view) {
-  this.theme = {
-    unitHeight: 40,
-    unitWidth: 10,
-    labelFont: {
-      family: 'Source Sans Pro',
-      size: 17,
-      anchor: 'start'
-    },
-    halfPinSize: 5,
-    fillLabel: '#333',
-    fillRect: '#ccc',
-    fillPin: '#fff',
-    strokeDasharray: '5, 5',
-    strokeLine: { width: 2 }
-  }
+var defaultTheme = require('./Theme')
+var defaultView = {
+  box: {},
+  link: {}
+}
 
-  this.view = view
+function Canvas (id, view, theme) {
+  this.view  = view  || defaultView
+  this.theme = theme || defaultTheme
 
   var box  = this.box  = {}
   var link = this.link = {}

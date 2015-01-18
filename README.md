@@ -131,6 +131,29 @@ The *view* object contains two objects:
   * box
   * link
 
+## Theme
+
+The *Theme* is a plain object which defaults to
+
+```js
+var theme = {
+  unitHeight: 40,
+  unitWidth: 10,
+  labelFont: {
+    family: 'Source Sans Pro',
+    size: 17,
+    anchor: 'start'
+  },
+  halfPinSize: 5,
+  fillLabel: '#333',
+  fillRect: '#ccc',
+  fillPin: '#333',
+  fillPinHighlighted: '#d63518',
+  strokeDasharray: '5, 5',
+  strokeLine: { width: 2 }
+}
+```
+
 ## Box
 
 The *Box* constructor should not be used directly, use [addBox()](#addbox) instead.
@@ -181,9 +204,9 @@ An array with two entries:
   0. The key of the target box.
   1. The position of the input.
 
-## Put
+## Pin
 
-The *Put* object is an abstract class, furthermore it is not coded.
+The *Pin* object is an abstract class, furthermore it is not coded.
 
 It has the following attributes
 
@@ -197,7 +220,7 @@ Can have any type that fits in a JSON attribute.
 
 ## Input
 
-Is a [Put](#put) Object. Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
+Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
 
 ```
 ins: [{name: "in0", data:2}, {name: "in1", data:1}]
@@ -205,7 +228,7 @@ ins: [{name: "in0", data:2}, {name: "in1", data:1}]
 
 ## Output
 
-Is a [Put](#put) Object. Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
+Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
 
 ```
 outs: [{name: "out0", data:1}]

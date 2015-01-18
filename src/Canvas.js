@@ -27,7 +27,13 @@ function Canvas (id, view, theme) {
 
   Object.keys(view.box).forEach(createBox.bind(this))
 
-  Object.keys(view.link).forEach(this.addLink.bind(this))
+  function createLink (key) {
+    var view = this.view.link[key]
+
+    this.addLink(view, key)
+  }
+
+  Object.keys(view.link).forEach(createLink.bind(this))
 
   var nextKey = 0
 
@@ -55,8 +61,8 @@ function addBox (view, key) {
 
 Canvas.prototype.addBox = addBox
 
-function addLink (key) {
-  this.link[key] = new Link(this, this.view.link[key], key)
+function addLink (view, key) {
+  this.link[key] = new Link(this, view, key)
 }
 
 Canvas.prototype.addLink = addLink

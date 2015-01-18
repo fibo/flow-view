@@ -3,7 +3,7 @@
 module.exports = require('./src')
 
 
-},{"./src":9}],2:[function(require,module,exports){
+},{"./src":10}],2:[function(require,module,exports){
 /* svg.js 1.0.1 - svg selector inventor polyfill regex default color array pointarray patharray number viewbox bbox rbox element parent container fx relative event defs group arrange mask clip gradient pattern doc shape symbol use rect ellipse line poly path image text textpath nested hyperlink marker sugar set data memory loader helpers - svgjs.com/license */
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -4010,24 +4010,15 @@ var SVG = require('./svg')
 var Box = require('./Box')
   , Link = require('./Link')
 
-function Canvas (id, view) {
-  this.theme = {
-    unitHeight: 40,
-    unitWidth: 10,
-    labelFont: {
-      family: 'Source Sans Pro',
-      size: 17,
-      anchor: 'start'
-    },
-    halfPinSize: 5,
-    fillLabel: '#333',
-    fillRect: '#ccc',
-    fillPin: '#fff',
-    strokeDasharray: '5, 5',
-    strokeLine: { width: 2 }
-  }
+var defaultTheme = require('./Theme')
+var defaultView = {
+  box: {},
+  link: {}
+}
 
-  this.view = view
+function Canvas (id, view, theme) {
+  this.view  = view  || defaultView
+  this.theme = theme || defaultTheme
 
   var box  = this.box  = {}
   var link = this.link = {}
@@ -4072,7 +4063,7 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Box":3,"./Link":6,"./svg":11}],5:[function(require,module,exports){
+},{"./Box":3,"./Link":6,"./Theme":9,"./svg":12}],5:[function(require,module,exports){
 
 function Input (box, position) {
   this.box = box
@@ -4390,10 +4381,31 @@ module.exports = PreLink
 
 },{"./Link":6}],9:[function(require,module,exports){
 
+var theme = {
+  unitHeight: 40,
+  unitWidth: 10,
+  labelFont: {
+    family: 'Source Sans Pro',
+    size: 17,
+    anchor: 'start'
+  },
+  halfPinSize: 5,
+  fillLabel: '#333',
+  fillRect: '#ccc',
+  fillPin: '#333',
+  strokeDasharray: '5, 5',
+  strokeLine: { width: 2 }
+}
+
+module.exports = theme
+
+
+},{}],10:[function(require,module,exports){
+
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":4}],10:[function(require,module,exports){
+},{"./Canvas":4}],11:[function(require,module,exports){
 
 /// Patched to achieve require('./svg.draggable.js'), see triple slash comments.
 
@@ -4569,7 +4581,7 @@ module.exports = { ///
 
 ///}).call(this);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 var svg = require('svg.js')
 
@@ -4578,5 +4590,5 @@ svg.extend(svg.Element, require('./svg.draggable.js'))
 module.exports = svg
 
 
-},{"./svg.draggable.js":10,"svg.js":2}]},{},[1])(1)
+},{"./svg.draggable.js":11,"svg.js":2}]},{},[1])(1)
 });

@@ -1,12 +1,7 @@
 
 var Link = require('./Link')
 
-/**
- */
-
 function PreLink (canvas, output) {
-  var self = this
-
   var draw = canvas.draw
 
   var theme = canvas.theme
@@ -47,10 +42,10 @@ function PreLink (canvas, output) {
   rect.beforedrag = beforedrag
 
   function dragmove () {
-    line.plot(self.x1, self.y1, self.x2, self.y2)
+    line.plot(this.x1, this.y1, this.x2, this.y2)
   }
 
-  rect.dragmove = dragmove
+  rect.dragmove = dragmove.bind(this)
 
   function dragend () {
     // After dragging, the preLink is no longer necessary.
@@ -61,22 +56,23 @@ function PreLink (canvas, output) {
     center.x = rect.x() + halfPinSize
     center.y = rect.y() + halfPinSize
 
+    // Given a box, loop over its ins. If center is inside input, create a Link.
     function dropOn (box) {
-      box.inputs.forEach(function (input) {
+      box.ins.forEach(function (input) {
         if (input.link !== null)
           return
 
-        var bbox = input.rect.bbox()
-          , x = input.box.group.x()
-          , y = input.box.group.y()
+        var bbox = input.rect.bbox(),
+            x    = input.box.group.x(),
+            y    = input.box.group.y()
 
-        bbox.x += x
+        bbox.x  += x
         bbox.x2 += x
-        bbox.y += y
+        bbox.y  += y
         bbox.y2 += y
 
-        var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2))
-          , centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
+        var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
+            centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
 
         var centerIsInsideInput = centerIsInsideX && centerIsInsideY
 
@@ -94,13 +90,14 @@ function PreLink (canvas, output) {
       })
     }
 
+    // Loop over all boxes. If center is inside box, drop on it.
     Object.keys(canvas.box).forEach(function (key) {
       var box = canvas.box[key]
 
       var bbox = box.group.bbox()
 
-      var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2))
-        , centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
+      var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
+          centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
 
       var centerIsInsideBox = centerIsInsideX && centerIsInsideY
 

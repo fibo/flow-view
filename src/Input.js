@@ -1,9 +1,9 @@
 
-function Input (box, position) {
-  this.box = box
+function Input (box, position, numIns) {
+  this.box      = box
+  this.position = position
 
   this.link = null
-  this.position = position
 
   var canvas = box.canvas
 
@@ -15,9 +15,6 @@ function Input (box, position) {
   var size = halfPinSize * 2
 
   var draw = canvas.draw
-    , numIns = box.numIns
-
-  var w = box.w
 
   function getVertex () {
     var vertex = {
@@ -27,7 +24,7 @@ function Input (box, position) {
 
 
     if (numIns > 1)
-      vertex.relative.x = position * ((w - size) / (numIns - 1))
+      vertex.relative.x = position * ((box.w - size) / (numIns - 1))
     else
       vertex.relative.x = 0
 
@@ -45,7 +42,7 @@ function Input (box, position) {
           absolute: {},
           relative: {}
         }
- 
+
     var vertex = this.vertex
 
     center.relative.x = vertex.relative.x + halfPinSize

@@ -1,8 +1,9 @@
 
 var PreLink = require('./PreLink')
 
-function Output (box) {
-  this.box = box
+function Output (box, position, numOuts) {
+  this.box      = box
+  this.position = position
 
   this.link = {}
 
@@ -23,7 +24,11 @@ function Output (box) {
           relative: {}
         }
 
-    vertex.relative.x = 0
+    if (numOuts > 1)
+      vertex.relative.x = position * ((box.w - size) / (numOuts - 1))
+    else
+      vertex.relative.x = 0
+
     vertex.relative.y = box.h - size
     vertex.absolute.x = vertex.relative.x + box.x
     vertex.absolute.y = vertex.relative.y + box.y
@@ -38,7 +43,7 @@ function Output (box) {
           absolute: {},
           relative: {}
         }
- 
+
     var vertex = this.vertex
 
     center.relative.x = vertex.relative.x + halfPinSize

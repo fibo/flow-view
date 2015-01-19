@@ -140,7 +140,7 @@ var theme = {
   unitHeight: 40,
   unitWidth: 10,
   labelFont: {
-    family: 'Source Sans Pro',
+    family: 'Consolas',
     size: 17,
     anchor: 'start'
   },

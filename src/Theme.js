@@ -11,6 +11,7 @@ var theme = {
   fillPin: '#333',
   fillPinHighlighted: '#d63518',
   fillRect: '#ccc',
+  fillCircle: '#fff',
   halfPinSize: 5,
   strokeDasharray: '5, 5',
   strokeLine: { color: '#333', width: 3 },

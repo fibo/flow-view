@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "browserify": "browserify -s flowView -e index.js -o dist/flowView.js"
+    "build": "browserify -s flowView -e index.js -o dist/flowView.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,6 @@
     "svg.js": "~1.0.0"
   },
   "devDependencies": {
-    "browserify": "~8.0.1"
+    "browserify": "~8.1.3"
   }
 }

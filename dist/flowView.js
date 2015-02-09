@@ -3,7 +3,7 @@
 module.exports = require('./src')
 
 
-},{"./src":10}],2:[function(require,module,exports){
+},{"./src":11}],2:[function(require,module,exports){
 /* svg.js 1.0.1 - svg selector inventor polyfill regex default color array pointarray patharray number viewbox bbox rbox element parent container fx relative event defs group arrange mask clip gradient pattern doc shape symbol use rect ellipse line poly path image text textpath nested hyperlink marker sugar set data memory loader helpers - svgjs.com/license */
 ;(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -3899,8 +3899,9 @@ module.exports = require('./src')
 
 },{}],3:[function(require,module,exports){
 
-var Input  = require('./Input'),
-    Output = require('./Output')
+var Circle  = require('./Circle'),
+    Input   = require('./Input'),
+    Output  = require('./Output')
 
 function Box (canvas, view, key) {
   this.canvas = canvas
@@ -3957,6 +3958,8 @@ function Box (canvas, view, key) {
   for (var position = 0; position < numOuts; position++)
     this.outs[position] = new Output(this, position, numOuts)
 
+  this.circle = new Circle(this, position)
+
   function dragmove () {
     this.outs.forEach(function (output) {
       Object.keys(output.link).forEach(function (key) {
@@ -4005,7 +4008,7 @@ function Box (canvas, view, key) {
 module.exports = Box
 
 
-},{"./Input":5,"./Output":7}],4:[function(require,module,exports){
+},{"./Circle":5,"./Input":6,"./Output":8}],4:[function(require,module,exports){
 
 var SVG = require('./svg')
 
@@ -4082,7 +4085,75 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Box":3,"./Link":6,"./Theme":9,"./svg":12}],5:[function(require,module,exports){
+},{"./Box":3,"./Link":7,"./Theme":10,"./svg":13}],5:[function(require,module,exports){
+
+function Circle (box, position, numIns) {
+  this.box      = box
+  this.position = position
+
+  this.link = null
+
+  var canvas = box.canvas
+
+  var theme = canvas.theme
+
+  var fillCircle  = theme.fillCircle,
+      fillLabel = theme.fillLabel,
+      halfPinSize = theme.halfPinSize,
+      labelFont = theme.labeFont
+
+  var size = halfPinSize * 2
+
+  var draw = canvas.draw
+
+  function getVertex () {
+    var vertex = {
+          absolute: {},
+          relative: {}
+        }
+
+    vertex.relative.x = box.w - size
+    vertex.relative.y = (box.h / 2) - halfPinSize
+    vertex.absolute.x = vertex.relative.x + box.x
+    vertex.absolute.y = vertex.relative.y + box.y
+
+    return vertex
+  }
+
+  Object.defineProperty(this, 'vertex', { get: getVertex })
+
+  function getCenter () {
+    var center = {
+          absolute: {},
+          relative: {}
+        }
+
+    var vertex = this.vertex
+
+    center.relative.x = vertex.relative.x + halfPinSize
+    center.relative.y = vertex.relative.y + halfPinSize
+    center.absolute.x = center.relative.x + box.x
+    center.absolute.y = center.relative.y + box.y
+
+    return center
+  }
+
+  Object.defineProperty(this, 'center', { get: getCenter })
+
+  var vertex = this.vertex.relative
+
+  var circle = this.circle = draw.circle(size)
+                                 .move(vertex.x , vertex.y)
+                                 .fill(fillCircle)
+
+  box.group.add(circle)
+
+}
+
+module.exports = Circle
+
+
+},{}],6:[function(require,module,exports){
 
 function Input (box, position, numIns) {
   this.box      = box
@@ -4152,7 +4223,7 @@ function Input (box, position, numIns) {
 module.exports = Input
 
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -4203,7 +4274,7 @@ function Link (canvas, view, key) {
 module.exports = Link
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 var PreLink = require('./PreLink')
 
@@ -4282,7 +4353,7 @@ function Output (box, position, numOuts) {
 module.exports = Output
 
 
-},{"./PreLink":8}],8:[function(require,module,exports){
+},{"./PreLink":9}],9:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -4395,7 +4466,7 @@ module.exports = PreLink
 
 
 
-},{"./Link":6}],9:[function(require,module,exports){
+},{"./Link":7}],10:[function(require,module,exports){
 
 var theme = {
   unitHeight: 40,
@@ -4409,6 +4480,7 @@ var theme = {
   fillPin: '#333',
   fillPinHighlighted: '#d63518',
   fillRect: '#ccc',
+  fillCircle: '#fff',
   halfPinSize: 5,
   strokeDasharray: '5, 5',
   strokeLine: { color: '#333', width: 3 },
@@ -4418,12 +4490,12 @@ var theme = {
 module.exports = theme
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":4}],11:[function(require,module,exports){
+},{"./Canvas":4}],12:[function(require,module,exports){
 
 /// Patched to achieve require('./svg.draggable.js'), see triple slash comments.
 
@@ -4599,7 +4671,7 @@ module.exports = { ///
 
 ///}).call(this);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 var svg = require('svg.js')
 
@@ -4608,5 +4680,5 @@ svg.extend(svg.Element, require('./svg.draggable.js'))
 module.exports = svg
 
 
-},{"./svg.draggable.js":11,"svg.js":2}]},{},[1])(1)
+},{"./svg.draggable.js":12,"svg.js":2}]},{},[1])(1)
 });

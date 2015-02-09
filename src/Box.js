@@ -1,6 +1,7 @@
 
-var Input  = require('./Input'),
-    Output = require('./Output')
+var Circle  = require('./Circle'),
+    Input   = require('./Input'),
+    Output  = require('./Output')
 
 function Box (canvas, view, key) {
   this.canvas = canvas
@@ -56,6 +57,8 @@ function Box (canvas, view, key) {
 
   for (var position = 0; position < numOuts; position++)
     this.outs[position] = new Output(this, position, numOuts)
+
+  this.circle = new Circle(this, position)
 
   function dragmove () {
     this.outs.forEach(function (output) {

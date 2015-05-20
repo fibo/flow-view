@@ -19,9 +19,14 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
+    "examples",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "gh-pages",
+    "npm-debug.log",
+    "test",
+    "src",
+    "index.js"
   ]
 }

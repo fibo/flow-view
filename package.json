@@ -1,11 +1,13 @@
 {
   "name": "flow-view",
-  "version": "0.01.0",
+  "version": "0.2.0",
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify -s flowView -e index.js -o dist/flowView.js"
+    "build": "npm run browserify",
+    "browserify": "browserify -s flowView -e index.js -o dist/flowView.js",
+    "jshint": "jshint -c .jshintrc src/**.js dist/**.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -29,9 +31,10 @@
   },
   "homepage": "https://github.com/fibo/flow-view",
   "dependencies": {
-    "svg.js": "~1.0.0"
+    "svg.js.extend": "^0.1.0",
+    "svg.js.plugin.draggable": "^0.1.0"
   },
   "devDependencies": {
-    "browserify": "~8.1.3"
+    "browserify": "^10.2.4"
   }
 }

@@ -1,7 +1,5 @@
 
-var svg = require('svg.js')
-
-svg.extend(svg.Element, require('./svg.draggable.js'))
+var svg = require('svg.js.extend').with(['draggable'])
 
 module.exports = svg
 

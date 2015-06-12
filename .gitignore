@@ -1,4 +1,5 @@
-*.log
-.codio
+*~
 node_modules
-.swp
+npm-debug.log
+Gemfile*
+gh-pages/_site

@@ -5,7 +5,7 @@ var Circle  = require('./Circle'),
 
 function Box (canvas, view, key) {
   this.canvas = canvas
-  this.key = key
+  this.key    = key
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -52,11 +52,11 @@ function Box (canvas, view, key) {
   if (view.outs)
     numOuts = view.outs.length
 
-  for (var position = 0; position < numIns; position++)
-    this.ins[position] = new Input(this, position, numIns)
+  for (var i = 0; position < numIns; position++)
+    this.ins[i] = new Input(this, i, numIns)
 
   for (var position = 0; position < numOuts; position++)
-    this.outs[position] = new Output(this, position, numOuts)
+    this.outs[o] = new Output(this, o, numOuts)
 
   this.circle = new Circle(this, position)
 
@@ -98,7 +98,7 @@ function Box (canvas, view, key) {
       h: this.h,
       text: this.text
     }
-    
+
     return view
   }
 

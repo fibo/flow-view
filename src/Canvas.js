@@ -1,10 +1,11 @@
 
 var SVG = require('./svg')
 
-var Box = require('./Box')
-  , Link = require('./Link')
+var Box  = require('./Box'),
+    Link = require('./Link')
 
 var defaultTheme = require('./Theme')
+
 var defaultView = {
   box: {},
   link: {}

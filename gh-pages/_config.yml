@@ -1,0 +1,25 @@
+
+domain: g14n.info
+
+gems:
+  - jekyll-sitemap
+
+markdown: redcarpet
+redcarpet:
+  extensions: ["smart", "tables", "no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript", "with_toc_data"]
+
+# Defaults
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: page
+
+# Custom vars
+
+google-analytics:
+  id: UA-12635045-12
+

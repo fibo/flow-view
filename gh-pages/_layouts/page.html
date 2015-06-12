@@ -1,0 +1,38 @@
+{% assign package = site.data.package %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include header.html %}
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="//{{ site.domain }}/{{ package.name }}">{{ package.name }}</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="https://github.com/fibo/{{ package.name }}">GitHub</a></li>
+          <li><a href="https://www.npmjs.com/package/{{ package.name }}">npm</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    {{ content }}
+
+  </div>
+
+{% include footer.html %}
+
+{% include analytics.html %}
+</body>
+</html>

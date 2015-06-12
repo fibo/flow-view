@@ -18,7 +18,8 @@ function Canvas (id, view, theme) {
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)
-                                .fixSubPixelOffset()
+                                .spof()
+
   function createBox (key) {
     var view = this.view.box[key]
 

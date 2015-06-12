@@ -4,7 +4,7 @@
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "main": "index.js",
   "scripts": {
-    "build": "npm run browserify",
+    "build": "npm run browserify && npm run jekyll",
     "browserify": "browserify -s flowView -e index.js -o dist/flowView.js",
     "cp": "npm run cp:dist; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",

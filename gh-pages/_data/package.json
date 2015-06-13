@@ -4,8 +4,10 @@
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "main": "index.js",
   "scripts": {
-    "build": "npm run browserify && npm run jekyll",
-    "browserify": "browserify -r ./index.js:flow-view -o dist/flow-view.js",
+    "_build": "npm run browserify && npm run jekyll; git status",
+    "_push": "git push origin master && npm run gh-pages:push",
+    "_pull": "git pull origin master && npm run gh-pages:pull",
+    "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
     "cp": "npm run cp:dist; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",
     "cp:package.json": "cp package.json gh-pages/_data/",

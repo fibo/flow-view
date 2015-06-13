@@ -15,7 +15,7 @@ var theme = {
   halfPinSize: 5,
   strokeDasharray: '5, 5',
   strokeLine: { color: '#333', width: 3 },
-  strokeLineHighlighted: { color: '#d63518', width: 3 }
+  strokeLineHighlighted: { color: '#d63518', width: 5 }
 }
 
 module.exports = theme

@@ -39,13 +39,13 @@ function PreLink (canvas, output) {
     rect.off('mouseout')
   }
 
-  rect.beforedrag = beforedrag
+  rect.on('beforedrag', beforedrag)
 
   function dragmove () {
     line.plot(this.x1, this.y1, this.x2, this.y2)
   }
 
-  rect.dragmove = dragmove.bind(this)
+  rect.on('dragmove', dragmove.bind(this))
 
   function dragend () {
     // After dragging, the preLink is no longer necessary.
@@ -53,10 +53,29 @@ function PreLink (canvas, output) {
 
     var center = {}
 
-    center.x = rect.x() + halfPinSize
-    center.y = rect.y() + halfPinSize
+    //center.x = rect.x() + halfPinSize
+    center.x = this.x2
+    //center.y = rect.y() + halfPinSize
+    center.y = this.y2
 
-    // Given a box, loop over its ins. If center is inside input, create a Link.
+    function isInside (center) {
+      function centerIsInside (bbox, x, y) {
+        var centerIsInsideX = ((center.x >= bbox.x + x) && (center.x <= bbox.x2 + x)),
+            centerIsInsideY = ((center.y >= bbox.y + y) && (center.y <= bbox.y2 + y))
+
+        return centerIsInsideX && centerIsInsideY
+      }
+
+      return centerIsInside
+    }
+
+    var centerIsInside = isInside(center)
+
+    /**
+     * Given a box, loop over its ins.
+     * If center is inside input, create a Link.
+     */
+
     function dropOn (box) {
       box.ins.forEach(function (input) {
         if (input.link !== null)
@@ -66,15 +85,13 @@ function PreLink (canvas, output) {
             x    = input.box.group.x(),
             y    = input.box.group.y()
 
-        bbox.x  += x
-        bbox.x2 += x
-        bbox.y  += y
-        bbox.y2 += y
+        /*
+        var centerIsInsideX = ((center.x >= bbox.x + x) && (center.x <= bbox.x2 + x)),
+            centerIsInsideY = ((center.y >= bbox.y + y) && (center.y <= bbox.y2 + y))
 
-        var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
-            centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
-
-        var centerIsInsideInput = centerIsInsideX && centerIsInsideY
+            */
+        //var centerIsInsideInput = centerIsInsideX && centerIsInsideY
+        var centerIsInsideInput = centerIsInside(bbox, x, y)
 
         if (centerIsInsideInput) {
           var view = {
@@ -91,19 +108,29 @@ function PreLink (canvas, output) {
     Object.keys(canvas.box).forEach(function (key) {
       var box = canvas.box[key]
 
-      var bbox = box.group.bbox()
+      var bbox = box.group.bbox(),
+            x  = box.x,
+            y  = box.y
+
+      /*
+        bbox.x  += x
+        bbox.x2 += x
+        bbox.y  += y
+        bbox.y2 += y
 
       var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
           centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
 
       var centerIsInsideBox = centerIsInsideX && centerIsInsideY
+      */
+        var centerIsInsideBox = centerIsInside(bbox, x, y)
 
       if (centerIsInsideBox)
         dropOn(box)
     })
   }
 
-  rect.dragend = dragend
+  rect.on('dragend', dragend.bind(this))
 }
 
 module.exports = PreLink

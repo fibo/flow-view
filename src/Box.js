@@ -18,7 +18,7 @@ function Box (canvas, view, key) {
 
   var group = this.group = draw.group()
 
-  this.ins = []
+  this.ins  = []
   this.outs = []
 
   this.draw = draw
@@ -85,7 +85,7 @@ function Box (canvas, view, key) {
     })
   }
 
-  group.dragmove = dragmove.bind(this)
+  group.on('dragmove', dragmove.bind(this))
 
   function getView () {
     var view = {

@@ -3,202 +3,199 @@
 module.exports = require('./src')
 
 
-},{"./src":13}],2:[function(require,module,exports){
+},{"./src":12}],2:[function(require,module,exports){
+/*! svg.draggable.js - v1.0.0 - 2015-06-12
+* https://github.com/wout/svg.draggable.js
+* Copyright (c) 2015 Wout Fierens; Licensed MIT */
+;(function() {
 
-/**
- * @param {Array} plugins
- * @returs {Object} svg extended
- */
-
-function extendWith (plugins) {
-  var svg = require('svg.js')
-
-  for (var i = 0; i < plugins.length; i++)
-    svg.extend(svg.Element, plugins[i])
-
-  return svg
-}
-
-module.exports = { with: extendWith }
-
-
-},{"svg.js":4}],3:[function(require,module,exports){
-
-/// Patched to achieve require('./svg.draggable.js'), see triple slash comments.
-
-// svg.draggable.js 0.1.0 - Copyright (c) 2014 Wout Fierens - Licensed under the MIT license
-// extended by Florian Loch
-///;(function() {
-
-///  SVG.extend(SVG.Element, {
-module.exports = { ///
-
+  SVG.extend(SVG.Element, {
     // Make element draggable
     // Constraint might be a object (as described in readme.md) or a function in the form "function (x, y)" that gets called before every move.
     // The function can return a boolean or a object of the form {x, y}, to which the element will be moved. "False" skips moving, true moves to raw x, y.
-    draggable: function(constraint) {
-      var start, drag, end
-        , element = this
-        , parent  = this.parent(SVG.Nested) || this._parent(SVG.Doc)
-      
-      /* remove draggable if already present */
-      if (typeof this.fixed === 'function')
-        this.fixed()
-      
-      /* ensure constraint object */
+    draggable: function(value, constraint, undefined) {
+      var start, drag, end, element = this,
+        parent = this.parent(SVG.Nested) || this.parent(SVG.Doc),
+        parameter = {}
+
+      /* Check the parameters and reassign if needed */
+      if (typeof value == 'function' || typeof value == 'object') {
+        constraint = value
+        value = true
+      }
+
+      /* When no parameter is given, our value is true */
+      value = value === undefined ? true : value
       constraint = constraint || {}
+
+      if(element.remember('_draggable')){
+        element.remember('_draggable', constraint)
+        return;
+      }
       
+      /* Remember the constraints on the element because they would be overwritten by the next draggable-call otherwise */
+      element.remember('_draggable', constraint)
+
       /* start dragging */
       start = function(event) {
-        event = event || window.event
-        
+
         /* invoke any callbacks */
-        if (element.beforedrag)
-          element.beforedrag(event)
-        
+        element.fire('beforedrag', {
+          event: event
+        })
+
         /* get element bounding box */
         var box = element.bbox()
-        
+
         if (element instanceof SVG.G) {
           box.x = element.x()
           box.y = element.y()
-          
+
         } else if (element instanceof SVG.Nested) {
-          box = {
-            x:      element.x()
-          , y:      element.y()
-          , width:  element.width()
-          , height: element.height()
+            box = element.rbox()
+          /*box = {
+            x: element.x(),
+            y: element.y(),
+            width: element.width(),
+            height: element.height()
+          }*/
+          
+        }
+
+        /* store event and start position */
+        parameter = {
+          event: event,
+          position: {
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            zoom: parent.viewbox().zoom,
+            rotation: element.transform().rotation * Math.PI / 180
           }
         }
-        
-        /* store event */
-        element.startEvent = event
-        
-        /* store start position */
-        element.startPosition = {
-          x:        box.x
-        , y:        box.y
-        , width:    box.width
-        , height:   box.height
-        , zoom:     parent.viewbox().zoom
-        , rotation: element.transform('rotation') * Math.PI / 180
-        }
-        
+
         /* add while and end events to window */
-        SVG.on(window, 'mousemove', drag)
-        SVG.on(window, 'mouseup',   end)
-        
+        SVG.on(window, 'mousemove.drag', drag)
+        SVG.on(window, 'mouseup.drag', end)
+
         /* invoke any callbacks */
-        if (element.dragstart)
-          element.dragstart({ x: 0, y: 0, zoom: element.startPosition.zoom }, event)
-        
+        element.fire('dragstart', parameter)
+
         /* prevent selection dragging */
-        event.preventDefault ? event.preventDefault() : event.returnValue = false
+        event.preventDefault()
       }
-      
+
       /* while dragging */
       drag = function(event) {
-        event = event || window.event
-        
-        if (element.startEvent) {
-          /* calculate move position */
-          var x, y
-            , rotation  = element.startPosition.rotation
-            , width     = element.startPosition.width
-            , height    = element.startPosition.height
-            , delta     = {
-                x:    event.pageX - element.startEvent.pageX,
-                y:    event.pageY - element.startEvent.pageY,
-                zoom: element.startPosition.zoom
-              }
-          
-          /* caculate new position [with rotation correction] */
-          x = element.startPosition.x + (delta.x * Math.cos(rotation) + delta.y * Math.sin(rotation))  / element.startPosition.zoom
-          y = element.startPosition.y + (delta.y * Math.cos(rotation) + delta.x * Math.sin(-rotation)) / element.startPosition.zoom
-          
-          /* move the element to its new position, if possible by constraint */
-          if (typeof constraint === 'function') {
-            var coord = constraint(x, y)
 
-            if (typeof coord === 'object') {
-              if (typeof coord.x != 'boolean' || coord.x)
-                element.x(typeof coord.x === 'number' ? coord.x : x)
-              if (typeof coord.y != 'boolean' || coord.y)
-                element.y(typeof coord.y === 'number' ? coord.y : y)
+        var x, y, constraint = element.remember('_draggable'),
+          rotation = parameter.position.rotation,
+          width = parameter.position.width,
+          height = parameter.position.height,
+          delta = {
+            x: event.pageX - parameter.event.pageX,
+            y: event.pageY - parameter.event.pageY,
+            zoom: parameter.position.zoom
+          }
+          
+          
+        element.fire('dragmove', {
+          delta: delta,
+          event: event
+        })
 
-            } else if (typeof coord === 'boolean' && coord) {
-              element.move(x, y)
+        /* caculate new position [with rotation correction] */
+        x = parameter.position.x + (delta.x * Math.cos(rotation) + delta.y * Math.sin(rotation)) / parameter.position.zoom
+        y = parameter.position.y + (delta.y * Math.cos(rotation) + delta.x * Math.sin(-rotation)) / parameter.position.zoom
+
+        /* move the element to its new position, if possible by constraint */
+        if (typeof constraint == 'function') {
+
+          var coord = constraint.call(element, x, y)
+
+          /* bool just show us if movement is allowed or not */
+          if (typeof coord == 'boolean') {
+            coord = {
+              x: coord,
+              y: coord
             }
-
-          } else if (typeof constraint === 'object') {
-            /* keep element within constrained box */
-            if (constraint.minX !== null && x < constraint.minX)
-              x = constraint.minX
-            else if (constraint.maxX !== null && x > constraint.maxX - width)
-              x = constraint.maxX - width
-            
-            if (constraint.minY !== null && y < constraint.minY)
-              y = constraint.minY
-            else if (constraint.maxY !== null && y > constraint.maxY - height)
-              y = constraint.maxY - height
-
-            element.move(x, y)          
           }
 
-          /* invoke any callbacks */
-          if (element.dragmove)
-            element.dragmove(delta, event)
+          /* if true, we just move. If !false its a number and we move it there */
+          if (coord.x === true) {
+            element.x(x)
+          } else if (coord.x !== false) {
+            element.x(coords.x)
+          }
+
+          if (coord.y === true) {
+            element.y(y)
+          } else if (coord.y !== false) {
+            element.y(coords.y)
+          }
+
+        } else if (typeof constraint == 'object') {
+
+          /* keep element within constrained box */
+          if (constraint.minX != null && x < constraint.minX)
+            x = constraint.minX
+          else if (constraint.maxX != null && x > constraint.maxX - width)
+            x = constraint.maxX - width
+
+          if (constraint.minY != null && y < constraint.minY)
+            y = constraint.minY
+          else if (constraint.maxY != null && y > constraint.maxY - height)
+            y = constraint.maxY - height
+
+          element.move(x, y)
         }
+
+
+
       }
-      
+
       /* when dragging ends */
       end = function(event) {
-        event = event || window.event
-        
+
         /* calculate move position */
         var delta = {
-          x:    event.pageX - element.startEvent.pageX
-        , y:    event.pageY - element.startEvent.pageY
-        , zoom: element.startPosition.zoom
+          x: event.pageX - parameter.event.pageX,
+          y: event.pageY - parameter.event.pageY,
+          zoom: parameter.position.zoom
         }
-        
-        /* reset store */
-        element.startEvent    = null
-        element.startPosition = null
 
         /* remove while and end events to window */
-        SVG.off(window, 'mousemove', drag)
-        SVG.off(window, 'mouseup',   end)
+        SVG.off(window, 'mousemove.drag', drag)
+        SVG.off(window, 'mouseup.drag', end)
 
         /* invoke any callbacks */
-        if (element.dragend)
-          element.dragend(delta, event)
+        element.fire('dragend', {
+          delta: delta,
+          event: event
+        })
       }
-      
-      /* bind mousedown event */
-      element.on('mousedown', start)
-      
-      /* disable draggable */
-      element.fixed = function() {
-        element.off('mousedown', start)
-        
-        SVG.off(window, 'mousemove', drag)
-        SVG.off(window, 'mouseup',   end)
-        
+
+      if (!value) {
+        element.off('mousedown.drag')
+        SVG.off(window, 'mousemove.drag')
+        SVG.off(window, 'mouseup.drag')
+
         start = drag = end = null
-        
-        return element
+        element.forget('_draggable')
+        return this
       }
-      
+
+      /* bind mousedown event */
+      element.on('mousedown.drag', start)
+
       return this
     }
-    
-  }///)
 
-///}).call(this);
+  })
 
-},{}],4:[function(require,module,exports){
+}).call(this);
+},{}],3:[function(require,module,exports){
 /*!
 * SVG.js - A lightweight library for manipulating and animating SVG.
 * @version 2.0.0-rc.2
@@ -4504,15 +4501,14 @@ return SVG;
 
 }));
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
-var Circle  = require('./Circle'),
-    Input   = require('./Input'),
+var Input   = require('./Input'),
     Output  = require('./Output')
 
 function Box (canvas, view, key) {
   this.canvas = canvas
-  this.key = key
+  this.key    = key
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -4550,8 +4546,8 @@ function Box (canvas, view, key) {
   Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
   Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
 
-  var numIns  = 0
-    , numOuts = 0
+  var numIns  = 0,
+      numOuts = 0
 
   if (view.ins)
     numIns = view.ins.length
@@ -4559,13 +4555,11 @@ function Box (canvas, view, key) {
   if (view.outs)
     numOuts = view.outs.length
 
-  for (var position = 0; position < numIns; position++)
-    this.ins[position] = new Input(this, position, numIns)
+  for (var i = 0; i < numIns; i++)
+    this.ins[i] = new Input(this, i, numIns)
 
-  for (var position = 0; position < numOuts; position++)
-    this.outs[position] = new Output(this, position, numOuts)
-
-  this.circle = new Circle(this, position)
+  for (var o = 0; o < numOuts; o++)
+    this.outs[o] = new Output(this, o, numOuts)
 
   function dragmove () {
     this.outs.forEach(function (output) {
@@ -4605,7 +4599,7 @@ function Box (canvas, view, key) {
       h: this.h,
       text: this.text
     }
-    
+
     return view
   }
 
@@ -4615,14 +4609,15 @@ function Box (canvas, view, key) {
 module.exports = Box
 
 
-},{"./Circle":7,"./Input":8,"./Output":10}],6:[function(require,module,exports){
+},{"./Input":6,"./Output":8}],5:[function(require,module,exports){
 
-var SVG = require('./svg')
+var SVG = require('./SVG')
 
-var Box = require('./Box')
-  , Link = require('./Link')
+var Box  = require('./Box'),
+    Link = require('./Link')
 
 var defaultTheme = require('./Theme')
+
 var defaultView = {
   box: {},
   link: {}
@@ -4693,75 +4688,7 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Box":5,"./Link":9,"./Theme":12,"./svg":14}],7:[function(require,module,exports){
-
-function Circle (box, position, numIns) {
-  this.box      = box
-  this.position = position
-
-  this.link = null
-
-  var canvas = box.canvas
-
-  var theme = canvas.theme
-
-  var fillCircle  = theme.fillCircle,
-      fillLabel = theme.fillLabel,
-      halfPinSize = theme.halfPinSize,
-      labelFont = theme.labeFont
-
-  var size = halfPinSize * 2
-
-  var draw = canvas.draw
-
-  function getVertex () {
-    var vertex = {
-          absolute: {},
-          relative: {}
-        }
-
-    vertex.relative.x = box.w - size
-    vertex.relative.y = (box.h / 2) - halfPinSize
-    vertex.absolute.x = vertex.relative.x + box.x
-    vertex.absolute.y = vertex.relative.y + box.y
-
-    return vertex
-  }
-
-  Object.defineProperty(this, 'vertex', { get: getVertex })
-
-  function getCenter () {
-    var center = {
-          absolute: {},
-          relative: {}
-        }
-
-    var vertex = this.vertex
-
-    center.relative.x = vertex.relative.x + halfPinSize
-    center.relative.y = vertex.relative.y + halfPinSize
-    center.absolute.x = center.relative.x + box.x
-    center.absolute.y = center.relative.y + box.y
-
-    return center
-  }
-
-  Object.defineProperty(this, 'center', { get: getCenter })
-
-  var vertex = this.vertex.relative
-
-  var circle = this.circle = draw.circle(size)
-                                 .move(vertex.x , vertex.y)
-                                 .fill(fillCircle)
-
-  box.group.add(circle)
-
-}
-
-module.exports = Circle
-
-
-},{}],8:[function(require,module,exports){
+},{"./Box":4,"./Link":7,"./SVG":10,"./Theme":11}],6:[function(require,module,exports){
 
 function Input (box, position, numIns) {
   this.box      = box
@@ -4831,7 +4758,7 @@ function Input (box, position, numIns) {
 module.exports = Input
 
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -4882,7 +4809,7 @@ function Link (canvas, view, key) {
 module.exports = Link
 
 
-},{}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 var PreLink = require('./PreLink')
 
@@ -4961,7 +4888,7 @@ function Output (box, position, numOuts) {
 module.exports = Output
 
 
-},{"./PreLink":11}],11:[function(require,module,exports){
+},{"./PreLink":9}],9:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5074,7 +5001,16 @@ module.exports = PreLink
 
 
 
-},{"./Link":9}],12:[function(require,module,exports){
+},{"./Link":7}],10:[function(require,module,exports){
+
+var SVG = require('svg.js')
+
+require('svg.draggable.js')
+
+module.exports = SVG
+
+
+},{"svg.draggable.js":2,"svg.js":3}],11:[function(require,module,exports){
 
 var theme = {
   unitHeight: 40,
@@ -5098,23 +5034,10 @@ var theme = {
 module.exports = theme
 
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":6}],14:[function(require,module,exports){
-
-var draggable = require('svg.js.plugin.draggable')
-
-var svg = require('svg.js.extend').with([draggable])
-
-//var svg = require('svg.js')
-
-//svg.extend(svg.Element, draggable)
-
-module.exports = svg
-
-
-},{"svg.js.extend":2,"svg.js.plugin.draggable":3}]},{},[1])(1)
+},{"./Canvas":5}]},{},[1])(1)
 });

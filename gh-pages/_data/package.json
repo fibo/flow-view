@@ -38,8 +38,8 @@
   },
   "homepage": "https://github.com/fibo/flow-view",
   "dependencies": {
-    "svg.js.extend": "^0.1.0",
-    "svg.js.plugin.draggable": "^0.1.0"
+    "svg.draggable.js": "git://github.com/fibo/svg.draggable.js.git",
+    "svg.js": "^2.0.0"
   },
   "devDependencies": {
     "browserify": "^10.2.4"

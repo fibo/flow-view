@@ -1,6 +1,5 @@
 
-var Circle  = require('./Circle'),
-    Input   = require('./Input'),
+var Input   = require('./Input'),
     Output  = require('./Output')
 
 function Box (canvas, view, key) {
@@ -43,8 +42,8 @@ function Box (canvas, view, key) {
   Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
   Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
 
-  var numIns  = 0
-    , numOuts = 0
+  var numIns  = 0,
+      numOuts = 0
 
   if (view.ins)
     numIns = view.ins.length
@@ -52,13 +51,11 @@ function Box (canvas, view, key) {
   if (view.outs)
     numOuts = view.outs.length
 
-  for (var i = 0; position < numIns; position++)
+  for (var i = 0; i < numIns; i++)
     this.ins[i] = new Input(this, i, numIns)
 
-  for (var position = 0; position < numOuts; position++)
+  for (var o = 0; o < numOuts; o++)
     this.outs[o] = new Output(this, o, numOuts)
-
-  this.circle = new Circle(this, position)
 
   function dragmove () {
     this.outs.forEach(function (output) {

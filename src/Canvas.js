@@ -1,5 +1,5 @@
 
-var SVG = require('./svg')
+var SVG = require('./SVG')
 
 var Box  = require('./Box'),
     Link = require('./Link')

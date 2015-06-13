@@ -9,7 +9,7 @@
 
   <script type="text/javascript">
     function runAndView (graph) {
-      require('flow-view').render('flow', graph)
+      require('flow-view').render('flow')(graph)
       require('dflow').fun(graph)()
     }
 

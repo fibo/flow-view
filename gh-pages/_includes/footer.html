@@ -8,12 +8,12 @@
   <script type="text/javascript" src="//g14n.info/dflow/dist/dflow.js"></script>
 
   <script type="text/javascript">
-    function run (graph) {
-      console.log(graph)
+    function runAndView (graph) {
+      require('flow-view').render('flow', graph)
       require('dflow').fun(graph)()
     }
 
-    $.getJSON( "{{ page.flow }}", require('flow-view').render('flow', run))
+    $.getJSON( "{{ page.flow }}", runAndView)
   </script>
 
 <!-- _includes/footer.html end -->

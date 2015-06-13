@@ -13,7 +13,7 @@
     "cp:package.json": "cp package.json gh-pages/_data/",
     "gh-pages:push": "git subtree --prefix gh-pages push origin gh-pages",
     "gh-pages:pull": "git subtree --prefix gh-pages pull origin gh-pages",
-    "homepage": "echo \"---\ntitle: $npm_package_name\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
+    "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jshint": "jshint -c .jshintrc src/**.js",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,5 +1,6 @@
 ---
 title: flow-view
+flow: /empty.json
 ---
 # flow-view
 

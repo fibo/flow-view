@@ -5063,7 +5063,16 @@ module.exports = theme
 
 },{}],11:[function(require,module,exports){
 
-exports.Canvas = require('./Canvas')
+var Canvas = require('./Canvas')
+exports.Canvas = Canvas
+
+function render (element) {
+  return function loading (graph) {
+    return new Canvas(element, graph.view)
+  }
+}
+
+exports.render = render
 
 
 },{"./Canvas":4}],"flow-view":[function(require,module,exports){

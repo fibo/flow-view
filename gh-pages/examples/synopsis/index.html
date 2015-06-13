@@ -2,8 +2,10 @@
 <html>
 <body>
   <div id="drawing"></div>
-  <script type="text/javascript" src="../../dist/flowView.js"></script>
+  <script type="text/javascript" src="../../dist/flow-view.js"></script>
   <script type="text/javascript">
+    var flowView = require('flow-view')
+
     var Canvas = flowView.Canvas,
         view = {
           box: {

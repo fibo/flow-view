@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run browserify && npm run jekyll",
-    "browserify": "browserify -s flowView -e index.js -o dist/flowView.js",
+    "browserify": "browserify -r ./index.js:flow-view -o dist/flow-view.js",
     "cp": "npm run cp:dist; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",
     "cp:package.json": "cp package.json gh-pages/_data/",

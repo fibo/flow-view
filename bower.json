@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "main": "dist/flowView.js",
+  "main": "dist/flow-view.js",
   "version": "0.01.0",
   "homepage": "http://g14n.info/flow-view",
   "authors": [
@@ -8,7 +8,7 @@
   ],
   "description": "Visual editor for dataflow programming",
   "moduleType": [
-    "globals"
+    "node"
   ],
   "keywords": [
     "dataflow",
@@ -19,7 +19,6 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
-    "examples",
     "node_modules",
     "bower_components",
     "test",

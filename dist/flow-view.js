@@ -1,9 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.flowView = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-module.exports = require('./src')
-
-
-},{"./src":12}],2:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*! svg.draggable.js - v1.0.0 - 2015-06-12
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -195,7 +190,7 @@ module.exports = require('./src')
   })
 
 }).call(this);
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /*!
 * SVG.js - A lightweight library for manipulating and animating SVG.
 * @version 2.0.0-rc.2
@@ -4501,7 +4496,7 @@ return SVG;
 
 }));
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -4609,7 +4604,7 @@ function Box (canvas, view, key) {
 module.exports = Box
 
 
-},{"./Input":6,"./Output":8}],5:[function(require,module,exports){
+},{"./Input":5,"./Output":7}],4:[function(require,module,exports){
 
 var SVG = require('./SVG')
 
@@ -4688,7 +4683,7 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Box":4,"./Link":7,"./SVG":10,"./Theme":11}],6:[function(require,module,exports){
+},{"./Box":3,"./Link":6,"./SVG":9,"./Theme":10}],5:[function(require,module,exports){
 
 function Input (box, position, numIns) {
   this.box      = box
@@ -4758,7 +4753,7 @@ function Input (box, position, numIns) {
 module.exports = Input
 
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -4809,7 +4804,7 @@ function Link (canvas, view, key) {
 module.exports = Link
 
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 var PreLink = require('./PreLink')
 
@@ -4888,7 +4883,7 @@ function Output (box, position, numOuts) {
 module.exports = Output
 
 
-},{"./PreLink":9}],9:[function(require,module,exports){
+},{"./PreLink":8}],8:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5001,16 +4996,21 @@ module.exports = PreLink
 
 
 
-},{"./Link":7}],10:[function(require,module,exports){
+},{"./Link":6}],9:[function(require,module,exports){
 
+// Consider this module will be browserified.
+//
+// Load svg.js first ...
 var SVG = require('svg.js')
 
+// ... then load plugins: since plugins do not use *module.exports*, they are
+// loaded as plain text, and when browserified they will be included in the bundle.
 require('svg.draggable.js')
 
 module.exports = SVG
 
 
-},{"svg.draggable.js":2,"svg.js":3}],11:[function(require,module,exports){
+},{"svg.draggable.js":1,"svg.js":2}],10:[function(require,module,exports){
 
 var theme = {
   unitHeight: 40,
@@ -5034,10 +5034,14 @@ var theme = {
 module.exports = theme
 
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":5}]},{},[1])(1)
-});
+},{"./Canvas":4}],"flow-view":[function(require,module,exports){
+
+module.exports = require('./src')
+
+
+},{"./src":11}]},{},[]);

@@ -4512,6 +4512,15 @@ function Box (canvas, view, key) {
       fillRect  = theme.fillRect,
       labelFont = theme.labeFont
 
+  if (typeof view.text === 'undefined')
+    view.text = 'callmename'
+
+  if (typeof view.h === 'undefined')
+    view.h = 1
+
+  if (typeof view.w === 'undefined')
+    view.w = view.text.length
+
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
 

@@ -20,7 +20,7 @@ function Box (canvas, view, key) {
     view.h = 1
 
   if (typeof view.w === 'undefined')
-    view.w = view.text.length
+    view.w = view.text.length + 2
 
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
@@ -102,7 +102,9 @@ function Box (canvas, view, key) {
       y: this.y,
       w: this.w,
       h: this.h,
-      text: this.text
+      text: this.text,
+      ins: this.ins,
+      outs: this.outs
     }
 
     return view

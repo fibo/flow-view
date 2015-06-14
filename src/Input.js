@@ -3,6 +3,10 @@ function Input (box, position, numIns) {
   this.box      = box
   this.position = position
 
+  function getData { return box.ins[position] }
+
+  Object.defineProperty(this, 'data', { get: getData })
+
   this.link = null
 
   var canvas = box.canvas

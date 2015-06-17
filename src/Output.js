@@ -5,7 +5,7 @@ function Output (box, position, numOuts) {
   this.box      = box
   this.position = position
 
-  function getData { return box.outs[position] }
+  function getData () { return box.outs[position] }
 
   Object.defineProperty(this, 'data', { get: getData })
 

@@ -18,7 +18,7 @@ function Canvas (id, view, theme) {
   var box  = this.box  = {}
   var link = this.link = {}
 
-  var boxSelector = new BoxSelector(canvas)
+  var boxSelector = new BoxSelector(this)
   this.boxSelector = boxSelector
 
   var element = document.getElementById(id)

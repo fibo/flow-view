@@ -40,6 +40,8 @@
   },
   "homepage": "https://github.com/fibo/flow-view",
   "dependencies": {
+    "events": "^1.0.2",
+    "inherits": "^2.0.1",
     "svg.draggable.js": "git://github.com/fibo/svg.draggable.js.git",
     "svg.js": "^2.0.0"
   },

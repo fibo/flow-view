@@ -1,5 +1,7 @@
 
-var SVG = require('./SVG')
+var EventEmitter = require('events').EventEmitter,
+    inherits     = require('inherits'),
+    SVG          = require('./SVG')
 
 var Box  = require('./Box'),
     Link = require('./Link')
@@ -27,7 +29,8 @@ function Canvas (id, view, theme) {
     this.addBox(view, key)
   }
 
-  Object.keys(view.box).forEach(createBox.bind(this))
+  Object.keys(view.box)
+        .forEach(createBox.bind(this))
 
   function createLink (key) {
     var view = this.view.link[key]
@@ -54,6 +57,8 @@ function Canvas (id, view, theme) {
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 }
+
+inherits(Canvas, EventEmitter)
 
 function addBox (view, key) {
   if (typeof key === 'undefined')

@@ -3,15 +3,13 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var Box  = require('./Box'),
-    Link = require('./Link')
+var Box         = require('./Box'),
+    BoxSelector = require('./BoxSelector'),
+    Link        = require('./Link')
 
 var defaultTheme = require('./Theme')
 
-var defaultView = {
-  box: {},
-  link: {}
-}
+var defaultView = { box: {}, link: {} }
 
 function Canvas (id, view, theme) {
   this.view  = view  || defaultView
@@ -19,6 +17,13 @@ function Canvas (id, view, theme) {
 
   var box  = this.box  = {}
   var link = this.link = {}
+
+  var boxSelector = new BoxSelector(canvas)
+  this.boxSelector = boxSelector
+
+  var element = document.getElementById(id)
+
+  SVG.on(element, 'click', boxSelector.show.bind(boxSelector))
 
   var draw = this.draw = SVG(id).size(1000, 1000)
                                 .spof()

@@ -71,26 +71,16 @@ function Box (canvas, view, key) {
       Object.keys(output.link).forEach(function (key) {
         var link = output.link[key]
 
-        var x1 = link.x1,
-            y1 = link.y1,
-            x2 = link.x2,
-            y2 = link.y2
-
-        link.line.plot(x1, y1, x2, y2)
+        if (link)
+          link.linePlot()
       })
     })
 
     this.ins.forEach(function (input) {
       var link = input.link
 
-      if (!link) return
-
-      var x1 = link.x1
-        , y1 = link.y1
-        , x2 = link.x2
-        , y2 = link.y2
-
-      link.line.plot(x1, y1, x2, y2)
+      if (link)
+        link.linePlot()
     })
   }
 

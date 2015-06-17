@@ -45,5 +45,17 @@ function Link (canvas, view, key) {
   line.on('mouseout', deselectLine)
 }
 
+function linePlot () {
+var line = this.line,
+    x1   = this.x1,
+    y1   = this.y1,
+    x2   = this.x2,
+    y2   = this.y2
+
+  line.plot(x1, y1, x2, y2)
+}
+
+Link.prototype.linePlot
+
 module.exports = Link
 

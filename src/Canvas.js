@@ -60,8 +60,7 @@ function Canvas (id, view, theme) {
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'click', boxSelector.show.bind(boxSelector))
-
+  SVG.on(element, 'dblclick', boxSelector.show.bind(boxSelector))
 }
 
 inherits(Canvas, EventEmitter)

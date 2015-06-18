@@ -519,6 +519,39 @@ if (typeof Object.create === 'function') {
 
 }).call(this);
 },{}],4:[function(require,module,exports){
+/*! svg.foreignobject.js - v1.0.0 - 2015-06-14
+* https://github.com/fibo/svg.foreignobject.js
+* Copyright (c) 2015 Wout Fierens; Licensed MIT */
+SVG.ForiegnObject = function() {
+  this.constructor.call(this, SVG.create('foreignObject'))
+
+  /* store type */
+  this.type = 'foreignObject'
+}
+
+SVG.ForiegnObject.prototype = new SVG.Shape()
+
+SVG.extend(SVG.ForiegnObject, {
+  appendChild: function (child, attrs) {
+    var newChild = typeof(child)=='string' ? document.createElement(child) : child
+    if (typeof(attrs)=='object'){
+      for(var a in attrs) newChild[a] = attrs[a]
+    }
+    this.node.appendChild(newChild)
+    return this
+  },
+  getChild: function (index) {
+    return this.node.childNodes[index]
+  }
+})
+
+SVG.extend(SVG.Container, {
+  foreignObject: function(width, height) {
+    return this.put(new SVG.ForiegnObject()).size(width === null ? 100 : width, height === null ? 100 : height)
+  }
+})
+
+},{}],5:[function(require,module,exports){
 /*!
 * SVG.js - A lightweight library for manipulating and animating SVG.
 * @version 2.0.0-rc.2
@@ -4824,7 +4857,7 @@ return SVG;
 
 }));
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -4933,7 +4966,7 @@ function Box (canvas, view, key) {
 module.exports = Box
 
 
-},{"./Input":8,"./Output":10}],6:[function(require,module,exports){
+},{"./Input":9,"./Output":11}],7:[function(require,module,exports){
 
 function BoxSelector (canvas) {
   var draw  = canvas.draw
@@ -4961,7 +4994,7 @@ BoxSelector.prototype.show = showBoxSelector
 module.exports = BoxSelector
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
@@ -5051,7 +5084,7 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Box":5,"./BoxSelector":6,"./Link":9,"./SVG":12,"./Theme":13,"events":1,"inherits":2}],8:[function(require,module,exports){
+},{"./Box":6,"./BoxSelector":7,"./Link":10,"./SVG":13,"./Theme":14,"events":1,"inherits":2}],9:[function(require,module,exports){
 
 function Input (box, position, numIns) {
   this.box      = box
@@ -5125,7 +5158,7 @@ function Input (box, position, numIns) {
 module.exports = Input
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -5188,7 +5221,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 var PreLink = require('./PreLink')
 
@@ -5271,7 +5304,7 @@ function Output (box, position, numOuts) {
 module.exports = Output
 
 
-},{"./PreLink":11}],11:[function(require,module,exports){
+},{"./PreLink":12}],12:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5411,21 +5444,28 @@ module.exports = PreLink
 
 
 
-},{"./Link":9}],12:[function(require,module,exports){
+},{"./Link":10}],13:[function(require,module,exports){
 
 // Consider this module will be browserified.
-//
+
 // Load svg.js first ...
 var SVG = require('svg.js')
 
 // ... then load plugins: since plugins do not use *module.exports*, they are
 // loaded as plain text, and when browserified they will be included in the bundle.
 require('svg.draggable.js')
+require('svg.foreignobject.js')
+
+// Note that, in order to be included as expected by browserify, dynamic imports
+// do not work: for instance a code like the following won't work client-side
+//
+//    ['svg.draggable.js', 'svg.foreignobject.js'].forEach(require)
+//
 
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.js":4}],13:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],14:[function(require,module,exports){
 
 var theme = {
   unitHeight: 40,
@@ -5449,7 +5489,7 @@ var theme = {
 module.exports = theme
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 var Canvas = require('./Canvas')
 exports.Canvas = Canvas
@@ -5471,9 +5511,9 @@ function render (element, callback) {
 exports.render = render
 
 
-},{"./Canvas":7}],"flow-view":[function(require,module,exports){
+},{"./Canvas":8}],"flow-view":[function(require,module,exports){
 
 module.exports = require('./src')
 
 
-},{"./src":14}]},{},[]);
+},{"./src":15}]},{},[]);

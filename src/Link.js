@@ -55,7 +55,7 @@ var line = this.line,
   line.plot(x1, y1, x2, y2)
 }
 
-Link.prototype.linePlot
+Link.prototype.linePlot = linePlot
 
 module.exports = Link
 

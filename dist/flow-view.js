@@ -4982,13 +4982,6 @@ function Canvas (id, view, theme) {
   var box  = this.box  = {}
   var link = this.link = {}
 
-  var boxSelector = new BoxSelector(this)
-  this.boxSelector = boxSelector
-
-  var element = document.getElementById(id)
-
-  SVG.on(element, 'click', boxSelector.show.bind(boxSelector))
-
   var draw = this.draw = SVG(id).size(1000, 1000)
                                 .spof()
 
@@ -5025,6 +5018,14 @@ function Canvas (id, view, theme) {
   }
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
+
+  var boxSelector = new BoxSelector(this)
+  this.boxSelector = boxSelector
+
+  var element = document.getElementById(id)
+
+  SVG.on(element, 'click', boxSelector.show.bind(boxSelector))
+
 }
 
 inherits(Canvas, EventEmitter)
@@ -5182,7 +5183,7 @@ var line = this.line,
   line.plot(x1, y1, x2, y2)
 }
 
-Link.prototype.linePlot
+Link.prototype.linePlot = linePlot
 
 module.exports = Link
 

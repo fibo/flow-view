@@ -1,7 +1,7 @@
 {
   "fillCircle": "#fff",
-  "fillLabel: "#333",
-  "fillPin": "#333",
+  "fillLabel": "#333",
+    "fillPin": "#333",
   "fillPinHighlighted": "#d63518",
   "fillRect": "#ccc",
   "halfPinSize": 5,

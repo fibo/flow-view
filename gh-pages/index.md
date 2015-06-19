@@ -34,7 +34,7 @@ $ bower install flow-view
 
 ## Synopsis
 
-Go to [test/synopsis/](http://g14n.info/flow-view/test/synopsis/) to see results.
+Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis.html) to see results.
 
 ```html
 <div id="drawing"></div>
@@ -42,7 +42,7 @@ Go to [test/synopsis/](http://g14n.info/flow-view/test/synopsis/) to see results
 <script type="text/javascript">
   var Canvas = flowView.Canvas,
       view = {
-        box: {
+        node: {
           a: {
             x: 80,
             y: 100,
@@ -85,7 +85,7 @@ In order to start with a not empty *Canvas*, create an optional [view object](#v
 
 ```
 var view = {
-      box: {
+      node: {
         a: {
           x: 80,
           y: 100,
@@ -117,10 +117,10 @@ and pass it to the *Canvas* constructor
 var canvas = new flowView.Canvas('drawing', view)
 ```
 
-### addBox()
+### addNode()
 
 ```js
-canvas.addBox()
+canvas.addNode()
 ```
 
 ### addLink()
@@ -136,53 +136,30 @@ The *view* object contains two objects:
   * box
   * link
 
-## Theme
 
-The *Theme* is a plain object which defaults to
+##Node 
 
-```js
-var theme = {
-  unitHeight: 40,
-  unitWidth: 10,
-  labelFont: {
-    family: 'Consolas',
-    size: 17,
-    anchor: 'start'
-  },
-  fillLabel: '#333',
-  fillPin: '#333',
-  fillPinHighlighted: '#d63518',
-  fillRect: '#ccc',
-  halfPinSize: 5,
-  strokeDasharray: '5, 5',
-  strokeLine: { color: '#333', width: 3 },
-  strokeLineHighlighted: { color: '#d63518', width: 3 }
-}
-```
-
-## Box
-
-The *Box* constructor should not be used directly, use [addBox()](#addbox) instead.
+The *Node* constructor should not be used directly, use [addNode()](#addnode) instead.
 
 ### x
 
-The *x* coord of the top left vertex of the box.
+The *x* coord of the top left vertex of the node.
 
 ### y
 
-The *y* coord of the top left vertex of the box.
+The *y* coord of the top left vertex of the node.
 
 ### w
 
-The *width* of the rect containing the box. It is expressed in width units.
+The *width* of the rect containing the node. It is expressed in width units.
 
 ### h
 
-The *height* of the rect containing the box. It is expressed in height units.
+The *height* of the rect containing the node. It is expressed in height units.
 
 ### text
 
-The *text* label displayed in the box.
+The *text* label displayed in the node.
 
 ### ins
 
@@ -200,14 +177,14 @@ The *Link* constructor should not be used directly, use [addLink()](#addlink) in
 
 An array with two entries:
 
-  0. The key of the source box.
+  0. The key of the source node.
   1. The position of the output.
 
 ### to
 
 An array with two entries:
 
-  0. The key of the target box.
+  0. The key of the target node.
   1. The position of the input.
 
 ## Pin

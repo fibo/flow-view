@@ -1,11 +1,11 @@
 
 var PreLink = require('./PreLink')
 
-function Output (box, position, numOuts) {
-  this.box      = box
+function Output (node, position, numOuts) {
+  this.node     = node
   this.position = position
 
-  function getData () { return box.outs[position] }
+  function getData () { return box.node[position] }
 
   Object.defineProperty(this, 'data', { get: getData })
 
@@ -29,13 +29,13 @@ function Output (box, position, numOuts) {
         }
 
     if (numOuts > 1)
-      vertex.relative.x = position * ((box.w - size) / (numOuts - 1))
+      vertex.relative.x = position * ((node.w - size) / (numOuts - 1))
     else
       vertex.relative.x = 0
 
-    vertex.relative.y = box.h - size
-    vertex.absolute.x = vertex.relative.x + box.x
-    vertex.absolute.y = vertex.relative.y + box.y
+    vertex.relative.y = node.h - size
+    vertex.absolute.x = vertex.relative.x + node.x
+    vertex.absolute.y = vertex.relative.y + node.y
 
     return vertex
   }
@@ -52,8 +52,8 @@ function Output (box, position, numOuts) {
 
     center.relative.x = vertex.relative.x + halfPinSize
     center.relative.y = vertex.relative.y + halfPinSize
-    center.absolute.x = center.relative.x + box.x
-    center.absolute.y = center.relative.y + box.y
+    center.absolute.x = center.relative.x + node.x
+    center.absolute.y = center.relative.y + node.y
 
     return center
   }

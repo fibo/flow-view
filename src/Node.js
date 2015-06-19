@@ -2,7 +2,7 @@
 var Input   = require('./Input'),
     Output  = require('./Output')
 
-function Box (canvas, view, key) {
+function Node (canvas, view, key) {
   this.canvas = canvas
   this.key    = key
 
@@ -103,5 +103,5 @@ function Box (canvas, view, key) {
   Object.defineProperty(this, 'view', { get: getView.bind(this) })
 }
 
-module.exports = Box
+module.exports = Node
 

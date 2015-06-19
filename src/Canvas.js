@@ -3,32 +3,32 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var Box         = require('./Box'),
-    BoxSelector = require('./BoxSelector'),
-    Link        = require('./Link')
+var Node          = require('./Node'),
+    NodeInspector = require('./NodeInspector'),
+    NodeSelector  = require('./NodeSelector'),
+    Link          = require('./Link')
 
-var defaultTheme = require('./Theme')
-
-var defaultView = { box: {}, link: {} }
+var defaultTheme = require('./default/theme.json'),
+    defaultView  = require('./default/view.json')
 
 function Canvas (id, view, theme) {
   this.view  = view  || defaultView
   this.theme = theme || defaultTheme
 
-  var box  = this.box  = {}
+  var node = this.node  = {}
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)
                                 .spof()
 
-  function createBox (key) {
-    var view = this.view.box[key]
+  function createNode (key) {
+    var view = this.view.node[key]
 
-    this.addBox(view, key)
+    this.addNode(view, key)
   }
 
-  Object.keys(view.box)
-        .forEach(createBox.bind(this))
+  Object.keys(view.node)
+        .forEach(createNode.bind(this))
 
   function createLink (key) {
     var view = this.view.link[key]
@@ -55,24 +55,24 @@ function Canvas (id, view, theme) {
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 
-  var boxSelector = new BoxSelector(this)
-  this.boxSelector = boxSelector
+  var nodeSelector = new NodeSelector(this)
+  this.nodeSelector = nodeSelector
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'dblclick', boxSelector.show.bind(boxSelector))
+  SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
 }
 
 inherits(Canvas, EventEmitter)
 
-function addBox (view, key) {
+function addNode (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  this.box[key] = new Box(this, view, key)
+  this.node[key] = new Node(this, view, key)
 }
 
-Canvas.prototype.addBox = addBox
+Canvas.prototype.addNode = addNode
 
 function addLink (view, key) {
   if (typeof key === 'undefined')

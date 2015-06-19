@@ -1,9 +1,9 @@
 
-function Input (box, position, numIns) {
-  this.box      = box
+function Input (node, position, numIns) {
+  this.node     = node
   this.position = position
 
-  function getData () { return box.ins[position] }
+  function getData () { return node.ins[position] }
 
   Object.defineProperty(this, 'data', { get: getData })
 
@@ -13,8 +13,8 @@ function Input (box, position, numIns) {
 
   var theme = canvas.theme
 
-  var fillPin = theme.fillPin
-    , halfPinSize = theme.halfPinSize
+  var fillPin     = theme.fillPin,
+      halfPinSize = theme.halfPinSize
 
   var size = halfPinSize * 2
 
@@ -28,13 +28,13 @@ function Input (box, position, numIns) {
 
 
     if (numIns > 1)
-      vertex.relative.x = position * ((box.w - size) / (numIns - 1))
+      vertex.relative.x = position * ((node.w - size) / (numIns - 1))
     else
       vertex.relative.x = 0
 
     vertex.relative.y = 0
-    vertex.absolute.x = vertex.relative.x + box.x
-    vertex.absolute.y = vertex.relative.y + box.y
+    vertex.absolute.x = vertex.relative.x + node.x
+    vertex.absolute.y = vertex.relative.y + node.y
 
     return vertex
   }

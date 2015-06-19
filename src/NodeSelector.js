@@ -2,7 +2,7 @@
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
-function BoxSelector (canvas) {
+function NodeSelector (canvas) {
   var draw  = canvas.draw
   this.draw = draw
 
@@ -13,36 +13,36 @@ function BoxSelector (canvas) {
   this.y = y
 
   var foreignObject = draw.foreignObject(100,100)
-                          .attr({id: 'flow-view-box-selector'})
+                          .attr({id: 'flow-view-selector'})
 
-  foreignObject.appendChild('form', {id: 'flow-view-box-selector-form'})
+  foreignObject.appendChild('form', {id: 'flow-view-selector-form'})
 
   var form = foreignObject.getChild(0)
-  form.innerHTML = '<input id="box-selector-input" name="box" type="text" autofocus />'
+  form.innerHTML = '<input id="flow-view-selector-input" name="node" type="text" autofocus />'
 
-  function createBox () {
+  function createNode () {
     foreignObject.hide()
 
-    var inputText = document.getElementById('box-selector-input')
+    var inputText = document.getElementById('flow-view-selector-input')
 
-    var boxName = inputText.value
+    var nodeName = inputText.value
 
-    var boxView = {
-      text: boxName,
+    var nodeView = {
+      text: nodeName,
       x: this.x,
       y: this.y
     }
 
-    canvas.addBox(boxView)
+    canvas.addNode(nodeView)
 
-    // Remove input text, so next time box selector is shown empty again.
+    // Remove input text, so next time node selector is shown empty again.
     inputText.value = ''
 
     // It is required to return false to have a form with no action.
     return false;
   }
 
-  form.onsubmit = createBox.bind(this)
+  form.onsubmit = createNode.bind(this)
 
   // Start hidden.
   foreignObject.attr({width: 200, height: 100})
@@ -52,7 +52,7 @@ function BoxSelector (canvas) {
   this.foreignObject = foreignObject
 }
 
-function showBoxSelector (ev) {
+function showNodeSelector (ev) {
   var x = ev.clientX,
       y = ev.clientY
 
@@ -63,7 +63,7 @@ function showBoxSelector (ev) {
                     .show()
 }
 
-BoxSelector.prototype.show = showBoxSelector
+NodeSelector.prototype.show = showNodeSelector
 
-module.exports = BoxSelector
+module.exports = NodeSelector
 

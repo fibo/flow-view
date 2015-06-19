@@ -16,7 +16,7 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jshint": "jshint -c .jshintrc src/**.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --bail --require should --reporter min --recursive"
   },
   "repository": {
     "type": "git",
@@ -42,11 +42,14 @@
   "dependencies": {
     "events": "^1.0.2",
     "inherits": "^2.0.1",
-    "svg.draggable.js": "git://github.com/fibo/svg.draggable.js.git",
+    "svg.draggable.js": "fibo/svg.draggable.js",
     "svg.foreignobject.js": "fibo/svg.foreignobject.js",
     "svg.js": "^2.0.0"
   },
   "devDependencies": {
-    "browserify": "^10.2.4"
+    "browserify": "^10.2.4",
+    "jsdom": "^3.1.2",
+    "mocha": "^2.2.5",
+    "should": "^7.0.1"
   }
 }

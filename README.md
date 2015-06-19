@@ -30,7 +30,7 @@ $ bower install flow-view
 
 ## Synopsis
 
-Go to [test/synopsis/](http://g14n.info/flow-view/test/synopsis/) to see results.
+Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis.html) to see results.
 
 ```html
 <div id="drawing"></div>

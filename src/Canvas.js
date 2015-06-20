@@ -44,7 +44,7 @@ function Canvas (id, view, theme) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (box[currentKey])
+    if (node[currentKey])
       return getNextKey()
 
     if (link[currentKey])

@@ -4,12 +4,9 @@ var Canvas = flowView.Canvas,
     view = {
       node: {
         a: {
-          x: 80,
-          y: 100,
-          w: 10,
-          h: 1,
+          x: 80, y: 100,
           text: "Drag me",
-          outs: [{name: "out0", data:1}]
+          outs: [{name: "out0"}]
         },
         b: {
           x: 180,
@@ -17,7 +14,7 @@ var Canvas = flowView.Canvas,
           w: 10,
           h: 1,
           text: "Hello",
-          ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+          ins: [{name: "in0"}, {name: "in1"}]
         }
      },
      link: {

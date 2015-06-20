@@ -5,13 +5,13 @@ function Output (node, position, numOuts) {
   this.node     = node
   this.position = position
 
-  function getData () { return box.node[position] }
+  function getData () { return node.outs[position] }
 
   Object.defineProperty(this, 'data', { get: getData })
 
   this.link = {}
 
-  var canvas = box.canvas
+  var canvas = node.canvas
 
   var theme = canvas.theme
 
@@ -66,7 +66,7 @@ function Output (node, position, numOuts) {
                              .move(vertex.x, vertex.y)
                              .fill(fillPin)
 
-  box.group.add(rect)
+  node.group.add(rect)
 
   var preLink = null
 

@@ -9,7 +9,7 @@ function Input (node, position, numIns) {
 
   this.link = null
 
-  var canvas = box.canvas
+  var canvas = node.canvas
 
   var theme = canvas.theme
 
@@ -51,8 +51,8 @@ function Input (node, position, numIns) {
 
     center.relative.x = vertex.relative.x + halfPinSize
     center.relative.y = vertex.relative.y + halfPinSize
-    center.absolute.x = center.relative.x + box.x
-    center.absolute.y = center.relative.y + box.y
+    center.absolute.x = center.relative.x + node.x
+    center.absolute.y = center.relative.y + node.y
 
     return center
   }
@@ -65,7 +65,7 @@ function Input (node, position, numIns) {
                              .move(vertex.x , vertex.y)
                              .fill(fillPin)
 
-  box.group.add(rect)
+  node.group.add(rect)
 }
 
 module.exports = Input

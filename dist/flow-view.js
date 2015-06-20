@@ -4904,7 +4904,7 @@ function Canvas (id, view, theme) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (box[currentKey])
+    if (node[currentKey])
       return getNextKey()
 
     if (link[currentKey])
@@ -4958,7 +4958,7 @@ function Input (node, position, numIns) {
 
   this.link = null
 
-  var canvas = box.canvas
+  var canvas = node.canvas
 
   var theme = canvas.theme
 
@@ -5000,8 +5000,8 @@ function Input (node, position, numIns) {
 
     center.relative.x = vertex.relative.x + halfPinSize
     center.relative.y = vertex.relative.y + halfPinSize
-    center.absolute.x = center.relative.x + box.x
-    center.absolute.y = center.relative.y + box.y
+    center.absolute.x = center.relative.x + node.x
+    center.absolute.y = center.relative.y + node.y
 
     return center
   }
@@ -5014,7 +5014,7 @@ function Input (node, position, numIns) {
                              .move(vertex.x , vertex.y)
                              .fill(fillPin)
 
-  box.group.add(rect)
+  node.group.add(rect)
 }
 
 module.exports = Input
@@ -5030,16 +5030,18 @@ function Link (canvas, view, key) {
   var strokeLine            = theme.strokeLine,
       strokeLineHighlighted = theme.strokeLineHighlighted
 
-  var from = canvas.box[view.from[0]],
-      to   = canvas.box[view.to[0]]
+  var from = canvas.node[view.from[0]],
+      to   = canvas.node[view.to[0]]
 
   var start = from.outs[view.from[1]],
       end   = to.ins[view.to[1]]
 
-  Object.defineProperty(this, 'x1', { get: function () { return start.center.absolute.x } })
-  Object.defineProperty(this, 'y1', { get: function () { return start.center.absolute.y } })
-  Object.defineProperty(this, 'x2', { get: function () { return end.center.absolute.x } })
-  Object.defineProperty(this, 'y2', { get: function () { return end.center.absolute.y } })
+  Object.defineProperties(this, {
+    'x1': { get: function () { return start.center.absolute.x } },
+    'y1': { get: function () { return start.center.absolute.y } },
+    'x2': { get: function () { return end.center.absolute.x   } },
+    'y2': { get: function () { return end.center.absolute.y   } }
+  })
 
   var line = this.line = draw.line(this.x1, this.y1, this.x2, this.y2)
                              .stroke(strokeLine)
@@ -5280,13 +5282,13 @@ function Output (node, position, numOuts) {
   this.node     = node
   this.position = position
 
-  function getData () { return box.node[position] }
+  function getData () { return node.outs[position] }
 
   Object.defineProperty(this, 'data', { get: getData })
 
   this.link = {}
 
-  var canvas = box.canvas
+  var canvas = node.canvas
 
   var theme = canvas.theme
 
@@ -5341,7 +5343,7 @@ function Output (node, position, numOuts) {
                              .move(vertex.x, vertex.y)
                              .fill(fillPin)
 
-  box.group.add(rect)
+  node.group.add(rect)
 
   var preLink = null
 
@@ -5430,31 +5432,25 @@ function PreLink (canvas, output) {
     var centerIsInside = isInside(center)
 
     /**
-     * Given a box, loop over its ins.
+     * Given a node, loop over its ins.
      * If center is inside input, create a Link.
      */
 
-    function dropOn (box) {
-      box.ins.forEach(function (input) {
+    function dropOn (node) {
+      node.ins.forEach(function (input) {
         if (input.link !== null)
           return
 
         var bbox = input.rect.bbox(),
-            x    = input.box.group.x(),
-            y    = input.box.group.y()
+            x    = input.node.group.x(),
+            y    = input.node.group.y()
 
-        /*
-        var centerIsInsideX = ((center.x >= bbox.x + x) && (center.x <= bbox.x2 + x)),
-            centerIsInsideY = ((center.y >= bbox.y + y) && (center.y <= bbox.y2 + y))
-
-            */
-        //var centerIsInsideInput = centerIsInsideX && centerIsInsideY
         var centerIsInsideInput = centerIsInside(bbox, x, y)
 
         if (centerIsInsideInput) {
           var view = {
-            from: [output.box.key, output.position],
-            to: [box.key, input.position]
+            from: [output.node.key, output.position],
+            to: [node.key, input.position]
           }
 
           canvas.addLink(view)
@@ -5462,29 +5458,18 @@ function PreLink (canvas, output) {
       })
     }
 
-    // Loop over all boxes. If center is inside box, drop on it.
-    Object.keys(canvas.box).forEach(function (key) {
-      var box = canvas.box[key]
+    // Loop over all nodes. If center is inside node, drop on it.
+    Object.keys(canvas.node).forEach(function (key) {
+      var node = canvas.node[key]
 
-      var bbox = box.group.bbox(),
-            x  = box.x,
-            y  = box.y
+      var bbox = node.group.bbox(),
+            x  = node.x,
+            y  = node.y
 
-      /*
-        bbox.x  += x
-        bbox.x2 += x
-        bbox.y  += y
-        bbox.y2 += y
-
-      var centerIsInsideX = ((center.x >= bbox.x) && (center.x <= bbox.x2)),
-          centerIsInsideY = ((center.y >= bbox.y) && (center.y <= bbox.y2))
-
-      var centerIsInsideBox = centerIsInsideX && centerIsInsideY
-      */
         var centerIsInsideBox = centerIsInside(bbox, x, y)
 
       if (centerIsInsideBox)
-        dropOn(box)
+        dropOn(node)
     })
   }
 
@@ -5492,7 +5477,6 @@ function PreLink (canvas, output) {
 }
 
 module.exports = PreLink
-
 
 
 },{"./Link":8}],14:[function(require,module,exports){

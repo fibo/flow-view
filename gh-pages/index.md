@@ -44,20 +44,14 @@ Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis.html) to
       view = {
         node: {
           a: {
-            x: 80,
-            y: 100,
-            w: 10,
-            h: 1,
+            x: 80, y: 100,
             text: "Drag me",
-            outs: [{name: "out0", data:1}]
+            outs: [{name: "out0"}]
           },
           b: {
-            x: 180,
-            y: 200,
-            w: 10,
-            h: 1,
+            x: 180, y: 200,
             text: "Hello",
-            ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+            ins: [{name: "in0"}, {name: "in1"}]
           }
        },
        link: {
@@ -87,20 +81,14 @@ In order to start with a not empty *Canvas*, create an optional [view object](#v
 var view = {
       node: {
         a: {
-          x: 80,
-          y: 100,
-          w: 10,
-          h: 2,
+          x: 80, y: 100,
           text: "Drag me",
-          outs: [{name: "out0", data:1}]
+          outs: [{name: "out0"}]
         },
         b: {
-          x: 180,
-          y: 100,
-          w: 10,
-          h: 2,
+          x: 180, y: 100,
           text: "Hello",
-          ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+          ins: [{name: "in0"}, {name: "in1"}]
         }
      },
      link: {
@@ -206,7 +194,7 @@ Can have any type that fits in a JSON attribute.
 Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
 
 ```
-ins: [{name: "in0", data:2}, {name: "in1", data:1}]
+ins: [{name: "in0"}, {name: "in1"}]
 ```
 
 ## Output
@@ -214,9 +202,8 @@ ins: [{name: "in0", data:2}, {name: "in1", data:1}]
 Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
 
 ```
-outs: [{name: "out0", data:1}]
+outs: [{name: "out0"}]
 ```
-
 
   [1]: http://svgjs.com/ "SVG.js"
 

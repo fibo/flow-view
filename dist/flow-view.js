@@ -4946,15 +4946,13 @@ Canvas.prototype.addLink = addLink
 module.exports = Canvas
 
 
-},{"./Link":8,"./Node":9,"./NodeInspector":10,"./NodeSelector":11,"./SVG":14,"./default/theme.json":15,"./default/view.json":16,"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"./Link":8,"./Node":9,"./NodeInspector":10,"./NodeSelector":11,"./SVG":15,"./default/theme.json":16,"./default/view.json":17,"events":1,"inherits":2}],7:[function(require,module,exports){
+
+var inherits = require('inherits'),
+    Pin      = require('./Pin')
 
 function Input (node, position, numIns) {
-  this.node     = node
-  this.position = position
-
-  function getData () { return node.ins[position] }
-
-  Object.defineProperty(this, 'data', { get: getData })
+  Pin.call(this, 'ins', node, position)
 
   this.link = null
 
@@ -5011,16 +5009,18 @@ function Input (node, position, numIns) {
   var vertex = this.vertex.relative
 
   var rect = this.rect = draw.rect(size, size)
-                             .move(vertex.x , vertex.y)
+                             .move(vertex.x, vertex.y)
                              .fill(fillPin)
 
   node.group.add(rect)
 }
 
+inherits(Input, Pin)
+
 module.exports = Input
 
 
-},{}],8:[function(require,module,exports){
+},{"./Pin":13,"inherits":2}],8:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -5276,15 +5276,12 @@ module.exports = NodeSelector
 
 },{}],12:[function(require,module,exports){
 
-var PreLink = require('./PreLink')
+var inherits = require('inherits'),
+    Pin      = require('./Pin'),
+    PreLink  = require('./PreLink')
 
 function Output (node, position, numOuts) {
-  this.node     = node
-  this.position = position
-
-  function getData () { return node.outs[position] }
-
-  Object.defineProperty(this, 'data', { get: getData })
+  Pin.call(this, 'outs', node, position)
 
   this.link = {}
 
@@ -5354,10 +5351,54 @@ function Output (node, position, numOuts) {
   rect.on('mouseover', mouseover.bind(this))
 }
 
+inherits(Output, Pin)
+
 module.exports = Output
 
 
-},{"./PreLink":13}],13:[function(require,module,exports){
+},{"./Pin":13,"./PreLink":14,"inherits":2}],13:[function(require,module,exports){
+
+function Pin (type, node, position) {
+  this.type     = type
+  this.node     = node
+  this.position = position
+
+}
+
+function get (key) {
+  var node     = this.node,
+      position = this.position,
+      type     = this.type
+
+  return node[type][position][key]
+}
+
+Pin.prototype.get = get
+
+function has (key) {
+  var node     = this.node,
+      position = this.position,
+      type     = this.type
+
+  return typeof node[type][position][key] !== 'undefined'
+}
+
+Pin.prototype.has = has
+
+function set (key, data) {
+  var node     = this.node,
+      position = this.position,
+      type     = this.type
+
+  this.node[type][position][key] = data
+}
+
+Pin.prototype.set = set
+
+module.exports = Pin
+
+
+},{}],14:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5479,7 +5520,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":8}],14:[function(require,module,exports){
+},{"./Link":8}],15:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -5500,7 +5541,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],15:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],16:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -5526,13 +5567,13 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 var Canvas = require('./Canvas')
 exports.Canvas = Canvas
@@ -5559,4 +5600,4 @@ exports.render = render
 module.exports = require('./src')
 
 
-},{"./src":17}]},{},[]);
+},{"./src":18}]},{},[]);

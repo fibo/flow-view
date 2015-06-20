@@ -121,11 +121,11 @@ canvas.addLink()
 
 The *view* object contains two objects:
 
-  * box
+  * node
   * link
 
 
-##Node 
+## Node
 
 The *Node* constructor should not be used directly, use [addNode()](#addnode) instead.
 
@@ -140,10 +140,12 @@ The *y* coord of the top left vertex of the node.
 ### w
 
 The *width* of the rect containing the node. It is expressed in width units.
+It defaults to a value enough to contain node text.
 
 ### h
 
 The *height* of the rect containing the node. It is expressed in height units.
+It defaults to 1.
 
 ### text
 
@@ -175,27 +177,27 @@ An array with two entries:
   0. The key of the target node.
   1. The position of the input.
 
-## Pin
-
-The *Pin* object is an abstract class, furthermore it is not coded.
-
-It has the following attributes
-
-### name
-
-It is a String with the name of the object.
-
-### data
-
-Can have any type that fits in a JSON attribute.
-
 ## Input
 
-Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
+Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
 
 ```
 ins: [{name: "in0"}, {name: "in1"}]
 ```
+
+### center
+
+### node
+
+### position
+
+### vertex
+
+### get(key)
+
+### has(key)
+
+### set(key, value)
 
 ## Output
 
@@ -204,6 +206,20 @@ Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `outP` where `P` is
 ```
 outs: [{name: "out0"}]
 ```
+
+### center
+
+### node
+
+### position
+
+### vertex
+
+### get(key)
+
+### has(key)
+
+### set(key, value)
 
   [1]: http://svgjs.com/ "SVG.js"
 

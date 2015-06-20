@@ -1,13 +1,10 @@
 
-var PreLink = require('./PreLink')
+var inherits = require('inherits'),
+    Pin      = require('./Pin'),
+    PreLink  = require('./PreLink')
 
 function Output (node, position, numOuts) {
-  this.node     = node
-  this.position = position
-
-  function getData () { return node.outs[position] }
-
-  Object.defineProperty(this, 'data', { get: getData })
+  Pin.call(this, 'outs', node, position)
 
   this.link = {}
 
@@ -76,6 +73,8 @@ function Output (node, position, numOuts) {
 
   rect.on('mouseover', mouseover.bind(this))
 }
+
+inherits(Output, Pin)
 
 module.exports = Output
 

@@ -1,11 +1,9 @@
 
+var inherits = require('inherits'),
+    Pin      = require('./Pin')
+
 function Input (node, position, numIns) {
-  this.node     = node
-  this.position = position
-
-  function getData () { return node.ins[position] }
-
-  Object.defineProperty(this, 'data', { get: getData })
+  Pin.call(this, 'ins', node, position)
 
   this.link = null
 
@@ -62,11 +60,13 @@ function Input (node, position, numIns) {
   var vertex = this.vertex.relative
 
   var rect = this.rect = draw.rect(size, size)
-                             .move(vertex.x , vertex.y)
+                             .move(vertex.x, vertex.y)
                              .fill(fillPin)
 
   node.group.add(rect)
 }
+
+inherits(Input, Pin)
 
 module.exports = Input
 

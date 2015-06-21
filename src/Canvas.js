@@ -4,8 +4,8 @@ var EventEmitter = require('events').EventEmitter,
     SVG          = require('./SVG')
 
 var Node          = require('./Node'),
+    NodeCreator   = require('./NodeCreator'),
     NodeInspector = require('./NodeInspector'),
-    NodeSelector  = require('./NodeSelector'),
     Link          = require('./Link')
 
 var defaultTheme = require('./default/theme.json'),
@@ -55,16 +55,16 @@ function Canvas (id, view, theme) {
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 
-  var nodeSelector = new NodeSelector(this)
-  this.nodeSelector = nodeSelector
+  var nodeCreator  = new NodeCreator(this)
+  this.nodeCreator = nodeCreator
 
-  var nodeInspector = new NodeInspector(this)
+  var nodeInspector  = new NodeInspector(this)
   this.NodeInspector = NodeInspector
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
-  SVG.on(element, 'click', nodeSelector.hide.bind(nodeSelector))
+  SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
+  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
 }
 
 inherits(Canvas, EventEmitter)

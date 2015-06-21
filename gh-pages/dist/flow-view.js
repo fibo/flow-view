@@ -4864,8 +4864,8 @@ var EventEmitter = require('events').EventEmitter,
     SVG          = require('./SVG')
 
 var Node          = require('./Node'),
+    NodeCreator   = require('./NodeCreator'),
     NodeInspector = require('./NodeInspector'),
-    NodeSelector  = require('./NodeSelector'),
     Link          = require('./Link')
 
 var defaultTheme = require('./default/theme.json'),
@@ -4915,16 +4915,16 @@ function Canvas (id, view, theme) {
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 
-  var nodeSelector = new NodeSelector(this)
-  this.nodeSelector = nodeSelector
+  var nodeCreator  = new NodeCreator(this)
+  this.nodeCreator = nodeCreator
 
-  var nodeInspector = new NodeInspector(this)
+  var nodeInspector  = new NodeInspector(this)
   this.NodeInspector = NodeInspector
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
-  SVG.on(element, 'click', nodeSelector.hide.bind(nodeSelector))
+  SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
+  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
 }
 
 inherits(Canvas, EventEmitter)
@@ -4973,7 +4973,7 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Link":8,"./Node":9,"./NodeInspector":10,"./NodeSelector":11,"./SVG":15,"./default/theme.json":16,"./default/view.json":17,"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"./Link":8,"./Node":9,"./NodeCreator":10,"./NodeInspector":11,"./SVG":15,"./default/theme.json":16,"./default/view.json":17,"events":1,"inherits":2}],7:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5218,19 +5218,10 @@ module.exports = Node
 
 },{"./Input":7,"./Output":12}],10:[function(require,module,exports){
 
-function NodeInspector (canvas) {
-
-}
-
-module.exports = NodeInspector
-
-
-},{}],11:[function(require,module,exports){
-
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
-function NodeSelector (canvas) {
+function NodeCreator (canvas) {
   var draw  = canvas.draw
   this.draw = draw
 
@@ -5267,7 +5258,7 @@ function NodeSelector (canvas) {
     inputText.value = ''
 
     // It is required to return false to have a form with no action.
-    return false;
+    return false
   }
 
   form.onsubmit = createNode.bind(this)
@@ -5280,13 +5271,13 @@ function NodeSelector (canvas) {
   this.foreignObject = foreignObject
 }
 
-function hideNodeSelector (ev) {
+function hideNodeCreator (ev) {
   this.foreignObject.hide()
 }
 
-NodeSelector.prototype.hide = hideNodeSelector
+NodeCreator.prototype.hide = hideNodeCreator
 
-function showNodeSelector (ev) {
+function showNodeCreator (ev) {
   var x = ev.clientX,
       y = ev.clientY
 
@@ -5297,9 +5288,18 @@ function showNodeSelector (ev) {
                     .show()
 }
 
-NodeSelector.prototype.show = showNodeSelector
+NodeCreator.prototype.show = showNodeCreator
 
-module.exports = NodeSelector
+module.exports = NodeCreator
+
+
+},{}],11:[function(require,module,exports){
+
+function NodeInspector (canvas) {
+
+}
+
+module.exports = NodeInspector
 
 
 },{}],12:[function(require,module,exports){

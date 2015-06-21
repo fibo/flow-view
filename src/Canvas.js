@@ -3,19 +3,22 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var Node          = require('./Node'),
-    NodeInspector = require('./NodeInspector'),
-    NodeSelector  = require('./NodeSelector'),
-    Link          = require('./Link')
+var DeleteNodeButton = require('./DeleteNodeButton'),
+    Node             = require('./Node'),
+    NodeCreator      = require('./NodeCreator'),
+    NodeInspector    = require('./NodeInspector'),
+    Link             = require('./Link')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id, view, theme) {
-  this.view  = view  || defaultView
-  this.theme = theme || defaultTheme
+function Canvas (id, view) {
+  this.view  = view || defaultView
 
-  var node = this.node  = {}
+  var theme = defaultTheme
+  this.theme = theme
+
+  var node = this.node = {}
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)
@@ -55,16 +58,19 @@ function Canvas (id, view, theme) {
 
   Object.defineProperty(this, 'nextKey', { get: getNextKey })
 
-  var nodeSelector = new NodeSelector(this)
-  this.nodeSelector = nodeSelector
+  var nodeCreator  = new NodeCreator(this)
+  this.nodeCreator = nodeCreator
 
-  var nodeInspector = new NodeInspector(this)
+  var nodeInspector  = new NodeInspector(this)
   this.NodeInspector = NodeInspector
+
+  var deleteNodeButton = new DeleteNodeButton(this)
+  this.deleteNodeButton = deleteNodeButton
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
-  SVG.on(element, 'click', nodeSelector.hide.bind(nodeSelector))
+  SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
+  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
 }
 
 inherits(Canvas, EventEmitter)

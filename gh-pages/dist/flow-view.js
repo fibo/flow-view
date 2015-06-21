@@ -4863,19 +4863,22 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var Node          = require('./Node'),
-    NodeCreator   = require('./NodeCreator'),
-    NodeInspector = require('./NodeInspector'),
-    Link          = require('./Link')
+var DeleteNodeButton = require('./DeleteNodeButton'),
+    Node             = require('./Node'),
+    NodeCreator      = require('./NodeCreator'),
+    NodeInspector    = require('./NodeInspector'),
+    Link             = require('./Link')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id, view, theme) {
-  this.view  = view  || defaultView
-  this.theme = theme || defaultTheme
+function Canvas (id, view) {
+  this.view  = view || defaultView
 
-  var node = this.node  = {}
+  var theme = defaultTheme
+  this.theme = theme
+
+  var node = this.node = {}
   var link = this.link = {}
 
   var draw = this.draw = SVG(id).size(1000, 1000)
@@ -4920,6 +4923,9 @@ function Canvas (id, view, theme) {
 
   var nodeInspector  = new NodeInspector(this)
   this.NodeInspector = NodeInspector
+
+  var deleteNodeButton = new DeleteNodeButton(this)
+  this.deleteNodeButton = deleteNodeButton
 
   var element = document.getElementById(id)
 
@@ -4973,7 +4979,64 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Link":8,"./Node":9,"./NodeCreator":10,"./NodeInspector":11,"./SVG":15,"./default/theme.json":16,"./default/view.json":17,"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"./DeleteNodeButton":7,"./Link":9,"./Node":10,"./NodeCreator":11,"./NodeInspector":12,"./SVG":16,"./default/theme.json":17,"./default/view.json":18,"events":1,"inherits":2}],7:[function(require,module,exports){
+
+function DeleteNodeButton (canvas) {
+  this.node = null
+
+  this.canvas = canvas
+
+  var draw  = canvas.draw,
+      theme = canvas.theme
+
+  var halfPinSize           = theme.halfPinSize,
+      strokeLine            = theme.strokeLine,
+      strokeLineHighlighted = theme.strokeLineHighlighted
+
+  var size = halfPinSize * 2
+  this.size = size
+
+  var group = draw.group()
+
+  var diag1 = draw.line(0, 0, size, size)
+                  .stroke(strokeLine)
+
+  var diag2 = draw.line(0, size, size, 0)
+                  .stroke(strokeLine)
+
+  group.add(diag1)
+       .add(diag2)
+       .hide()
+
+  group.on('click', function () { console.log('delete') })
+
+  this.group = group
+}
+
+function hideDeleteNodeButton () {
+  this.group.hide()
+  this.node = null
+}
+
+DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+
+function attachTo (node) {
+  var group = this.group
+
+  group.move(node.x + node.w, node.y - this.size)
+       .show()
+
+  this.node = node
+
+}
+
+DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+
+module.exports = DeleteNodeButton
+
+
+
+},{}],8:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5047,7 +5110,7 @@ inherits(Input, Pin)
 module.exports = Input
 
 
-},{"./Pin":13,"inherits":2}],8:[function(require,module,exports){
+},{"./Pin":14,"inherits":2}],9:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -5112,7 +5175,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -5203,20 +5266,38 @@ function Node (canvas, view, key) {
 
   group.on('dragmove', dragmove.bind(this))
 
-  function focusOnNode (ev) {
-    ev.stopPropagation()
+  function dragstart () {
+    var canvas = this.canvas
 
-    canvas.nodeSelector.hide()
-
+    canvas.deleteNodeButton.hide()
   }
 
-  group.on('click', focusOnNode.bind(this))
+  group.on('dragstart', dragstart.bind(this))
+
+  function showDeleteButton (ev) {
+    ev.stopPropagation()
+
+    var canvas = this.canvas
+
+    var x = this.x,
+        y = this.y,
+        w = this.w
+
+    var theme = canvas.theme
+
+    var size = theme.halfPinSize * 2
+
+    canvas.deleteNodeButton.move(x + w, y - size)
+                           .show()
+  }
+
+  group.on('click', showDeleteButton.bind(this))
 }
 
 module.exports = Node
 
 
-},{"./Input":7,"./Output":12}],10:[function(require,module,exports){
+},{"./Input":8,"./Output":13}],11:[function(require,module,exports){
 
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
@@ -5293,7 +5374,7 @@ NodeCreator.prototype.show = showNodeCreator
 module.exports = NodeCreator
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 function NodeInspector (canvas) {
 
@@ -5302,7 +5383,7 @@ function NodeInspector (canvas) {
 module.exports = NodeInspector
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin'),
@@ -5384,7 +5465,7 @@ inherits(Output, Pin)
 module.exports = Output
 
 
-},{"./Pin":13,"./PreLink":14,"inherits":2}],13:[function(require,module,exports){
+},{"./Pin":14,"./PreLink":15,"inherits":2}],14:[function(require,module,exports){
 
 function Pin (type, node, position) {
   this.type     = type
@@ -5426,7 +5507,7 @@ Pin.prototype.set = set
 module.exports = Pin
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5548,7 +5629,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":8}],15:[function(require,module,exports){
+},{"./Link":9}],16:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -5569,7 +5650,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],16:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],17:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -5595,13 +5676,13 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 var Canvas = require('./Canvas')
 exports.Canvas = Canvas
@@ -5628,4 +5709,4 @@ exports.render = render
 module.exports = require('./src')
 
 
-},{"./src":18}]},{},[]);
+},{"./src":19}]},{},[]);

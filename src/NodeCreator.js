@@ -2,7 +2,7 @@
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
-function NodeSelector (canvas) {
+function NodeCreator (canvas) {
   var draw  = canvas.draw
   this.draw = draw
 
@@ -39,7 +39,7 @@ function NodeSelector (canvas) {
     inputText.value = ''
 
     // It is required to return false to have a form with no action.
-    return false;
+    return false
   }
 
   form.onsubmit = createNode.bind(this)
@@ -52,13 +52,13 @@ function NodeSelector (canvas) {
   this.foreignObject = foreignObject
 }
 
-function hideNodeSelector (ev) {
+function hideNodeCreator (ev) {
   this.foreignObject.hide()
 }
 
-NodeSelector.prototype.hide = hideNodeSelector
+NodeCreator.prototype.hide = hideNodeCreator
 
-function showNodeSelector (ev) {
+function showNodeCreator (ev) {
   var x = ev.clientX,
       y = ev.clientY
 
@@ -69,7 +69,7 @@ function showNodeSelector (ev) {
                     .show()
 }
 
-NodeSelector.prototype.show = showNodeSelector
+NodeCreator.prototype.show = showNodeCreator
 
-module.exports = NodeSelector
+module.exports = NodeCreator
 

@@ -177,13 +177,7 @@ An array with two entries:
   0. The key of the target node.
   1. The position of the input.
 
-## Input
-
-Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
-
-```
-ins: [{name: "in0"}, {name: "in1"}]
-```
+## Pin
 
 ### center
 
@@ -199,9 +193,19 @@ ins: [{name: "in0"}, {name: "in1"}]
 
 ### set(key, value)
 
+## Input
+
+Is a [Pin](#pin) Object.
+Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
+
+```
+ins: [{name: "in0"}, {name: "in1"}]
+```
+
 ## Output
 
-Is a [Pin](#pin) Object. Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
+Is a [Pin](#pin) Object.
+Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
 
 ```
 outs: [{name: "out0"}]

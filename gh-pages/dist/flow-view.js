@@ -4918,9 +4918,13 @@ function Canvas (id, view, theme) {
   var nodeSelector = new NodeSelector(this)
   this.nodeSelector = nodeSelector
 
+  var nodeInspector = new NodeInspector(this)
+  this.NodeInspector = NodeInspector
+
   var element = document.getElementById(id)
 
   SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
+  SVG.on(element, 'click', nodeSelector.hide.bind(nodeSelector))
 }
 
 inherits(Canvas, EventEmitter)
@@ -4942,6 +4946,29 @@ function addLink (view, key) {
 }
 
 Canvas.prototype.addLink = addLink
+
+function delNode (key) {
+  var link = this.link
+
+  delete this.node[key]
+
+  // Remove links connected to node.
+  for (var i in link) {
+    if (link[i].from[0] === key)
+      delete link[i]
+
+    if (link[i].to[0] === key)
+      delete link[i]
+  }
+}
+
+Canvas.prototype.delNode = delNode
+
+function delLink (key) {
+  delete this.link[key]
+}
+
+Canvas.prototype.delLink = delLink
 
 module.exports = Canvas
 
@@ -5134,10 +5161,12 @@ function Node (canvas, view, key) {
        .move(view.x, view.y)
        .draggable()
 
-  Object.defineProperty(this, 'x', { get: function () { return group.x() } })
-  Object.defineProperty(this, 'y', { get: function () { return group.y() } })
-  Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
-  Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
+  Object.defineProperties(this, {
+    'x': { get: function () { return group.x()     } },
+    'y': { get: function () { return group.y()     } },
+    'w': { get: function () { return rect.width()  } },
+    'h': { get: function () { return rect.height() } }
+  })
 
   var numIns  = 0,
       numOuts = 0
@@ -5174,21 +5203,14 @@ function Node (canvas, view, key) {
 
   group.on('dragmove', dragmove.bind(this))
 
-  function getView () {
-    var view = {
-      x: this.x,
-      y: this.y,
-      w: this.w,
-      h: this.h,
-      text: this.text,
-      ins: this.ins,
-      outs: this.outs
-    }
+  function focusOnNode (ev) {
+    ev.stopPropagation()
 
-    return view
+    canvas.nodeSelector.hide()
+
   }
 
-  Object.defineProperty(this, 'view', { get: getView.bind(this) })
+  group.on('click', focusOnNode.bind(this))
 }
 
 module.exports = Node
@@ -5257,6 +5279,12 @@ function NodeSelector (canvas) {
 
   this.foreignObject = foreignObject
 }
+
+function hideNodeSelector (ev) {
+  this.foreignObject.hide()
+}
+
+NodeSelector.prototype.hide = hideNodeSelector
 
 function showNodeSelector (ev) {
   var x = ev.clientX,

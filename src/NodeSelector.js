@@ -52,6 +52,12 @@ function NodeSelector (canvas) {
   this.foreignObject = foreignObject
 }
 
+function hideNodeSelector (ev) {
+  this.foreignObject.hide()
+}
+
+NodeSelector.prototype.hide = hideNodeSelector
+
 function showNodeSelector (ev) {
   var x = ev.clientX,
       y = ev.clientY

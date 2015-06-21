@@ -58,9 +58,13 @@ function Canvas (id, view, theme) {
   var nodeSelector = new NodeSelector(this)
   this.nodeSelector = nodeSelector
 
+  var nodeInspector = new NodeInspector(this)
+  this.NodeInspector = NodeInspector
+
   var element = document.getElementById(id)
 
   SVG.on(element, 'dblclick', nodeSelector.show.bind(nodeSelector))
+  SVG.on(element, 'click', nodeSelector.hide.bind(nodeSelector))
 }
 
 inherits(Canvas, EventEmitter)
@@ -82,6 +86,29 @@ function addLink (view, key) {
 }
 
 Canvas.prototype.addLink = addLink
+
+function delNode (key) {
+  var link = this.link
+
+  delete this.node[key]
+
+  // Remove links connected to node.
+  for (var i in link) {
+    if (link[i].from[0] === key)
+      delete link[i]
+
+    if (link[i].to[0] === key)
+      delete link[i]
+  }
+}
+
+Canvas.prototype.delNode = delNode
+
+function delLink (key) {
+  delete this.link[key]
+}
+
+Canvas.prototype.delLink = delLink
 
 module.exports = Canvas
 

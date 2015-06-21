@@ -46,10 +46,12 @@ function Node (canvas, view, key) {
        .move(view.x, view.y)
        .draggable()
 
-  Object.defineProperty(this, 'x', { get: function () { return group.x() } })
-  Object.defineProperty(this, 'y', { get: function () { return group.y() } })
-  Object.defineProperty(this, 'w', { get: function () { return rect.width() } })
-  Object.defineProperty(this, 'h', { get: function () { return rect.height() } })
+  Object.defineProperties(this, {
+    'x': { get: function () { return group.x()     } },
+    'y': { get: function () { return group.y()     } },
+    'w': { get: function () { return rect.width()  } },
+    'h': { get: function () { return rect.height() } }
+  })
 
   var numIns  = 0,
       numOuts = 0
@@ -86,21 +88,14 @@ function Node (canvas, view, key) {
 
   group.on('dragmove', dragmove.bind(this))
 
-  function getView () {
-    var view = {
-      x: this.x,
-      y: this.y,
-      w: this.w,
-      h: this.h,
-      text: this.text,
-      ins: this.ins,
-      outs: this.outs
-    }
+  function focusOnNode (ev) {
+    ev.stopPropagation()
 
-    return view
+    canvas.nodeSelector.hide()
+
   }
 
-  Object.defineProperty(this, 'view', { get: getView.bind(this) })
+  group.on('click', focusOnNode.bind(this))
 }
 
 module.exports = Node

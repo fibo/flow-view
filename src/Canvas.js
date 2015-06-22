@@ -70,7 +70,7 @@ function Canvas (id, view) {
   var element = document.getElementById(id)
 
   SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
-  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
+//  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
 }
 
 inherits(Canvas, EventEmitter)
@@ -96,21 +96,29 @@ Canvas.prototype.addLink = addLink
 function delNode (key) {
   var link = this.link
 
+  var node = this.node[key]
+
+  node.group.remove()
+
   delete this.node[key]
 
   // Remove links connected to node.
   for (var i in link) {
     if (link[i].from.key === key)
-      delete link[i]
+      this.delLink(i)
 
     if (link[i].to.key === key)
-      delete link[i]
+      this.delLink(i)
   }
 }
 
 Canvas.prototype.delNode = delNode
 
 function delLink (key) {
+  var link = this.link[key]
+
+  link.line.remove()
+
   delete this.link[key]
 }
 

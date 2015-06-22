@@ -34,6 +34,8 @@ function DeleteNodeButton (canvas) {
 
     var key = node.key
 
+    this.detach()
+
     canvas.delNode(key)
   }
 

@@ -15,10 +15,14 @@ function NodeCreator (canvas) {
   var foreignObject = draw.foreignObject(100,100)
                           .attr({id: 'flow-view-selector'})
 
-  foreignObject.appendChild('form', {id: 'flow-view-selector-form'})
+  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodecreator'})
 
   var form = foreignObject.getChild(0)
-  form.innerHTML = '<input id="flow-view-selector-input" name="node" type="text" autofocus />'
+
+  form.innerHTML = '<input id="flow-view-selector-input" name="selectnode" type="text" autofocus />'
+
+  // TODO give focus to input text
+  form.selectnode.focus()
 
   function createNode () {
     foreignObject.hide()

@@ -4960,10 +4960,10 @@ function delNode (key) {
 
   // Remove links connected to node.
   for (var i in link) {
-    if (link[i].from[0] === key)
+    if (link[i].from.key === key)
       delete link[i]
 
-    if (link[i].to[0] === key)
+    if (link[i].to.key === key)
       delete link[i]
   }
 }
@@ -5008,32 +5008,56 @@ function DeleteNodeButton (canvas) {
        .add(diag2)
        .hide()
 
-  group.on('click', function () { console.log('delete') })
-
   this.group = group
+
+  function delNode () {
+    var canvas = this.canvas,
+        node   = this.node
+
+    var key = node.key
+
+    canvas.delNode(key)
+  }
+
+  function deselectButton () {
+    group.off('click')
+
+    diag1.stroke(strokeLine)
+    diag2.stroke(strokeLine)
+  }
+
+  group.on('mouseout', deselectButton.bind(this))
+
+  function selectButton () {
+    group.on('click', delNode.bind(this))
+
+    diag1.stroke(strokeLineHighlighted)
+    diag2.stroke(strokeLineHighlighted)
+  }
+
+  group.on('mouseover', selectButton.bind(this))
 }
 
-function hideDeleteNodeButton () {
+function detachDeleteNodeButton () {
   this.group.hide()
+
   this.node = null
 }
 
-DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+DeleteNodeButton.prototype.detach = detachDeleteNodeButton
 
-function attachTo (node) {
+function deleteNodeButtonAttachTo (node) {
   var group = this.group
 
   group.move(node.x + node.w, node.y - this.size)
        .show()
 
   this.node = node
-
 }
 
-DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+DeleteNodeButton.prototype.attachTo = deleteNodeButtonAttachTo
 
 module.exports = DeleteNodeButton
-
 
 
 },{}],8:[function(require,module,exports){
@@ -5127,6 +5151,13 @@ function Link (canvas, view, key) {
       end   = to.ins[view.to[1]]
 
   Object.defineProperties(this, {
+    'from' : { value: from  },
+    'to'   : { value: to    },
+    'start': { value: start },
+    'end'  : { value: end   }
+  })
+
+  Object.defineProperties(this, {
     'x1': { get: function () { return start.center.absolute.x } },
     'y1': { get: function () { return start.center.absolute.y } },
     'x2': { get: function () { return end.center.absolute.x   } },
@@ -5151,21 +5182,22 @@ function Link (canvas, view, key) {
         .stroke(strokeLine)
   }
 
+  line.on('mouseout', deselectLine)
+
   function selectLine () {
     line.on('click', remove)
         .stroke(strokeLineHighlighted)
   }
 
   line.on('mouseover', selectLine)
-  line.on('mouseout', deselectLine)
 }
 
 function linePlot () {
-var line = this.line,
-    x1   = this.x1,
-    y1   = this.y1,
-    x2   = this.x2,
-    y2   = this.y2
+  var line = this.line,
+      x1   = this.x1,
+      y1   = this.y1,
+      x2   = this.x2,
+      y2   = this.y2
 
   line.plot(x1, y1, x2, y2)
 }
@@ -5269,7 +5301,7 @@ function Node (canvas, view, key) {
   function dragstart () {
     var canvas = this.canvas
 
-    canvas.deleteNodeButton.hide()
+    canvas.deleteNodeButton.detach()
   }
 
   group.on('dragstart', dragstart.bind(this))
@@ -5287,8 +5319,7 @@ function Node (canvas, view, key) {
 
     var size = theme.halfPinSize * 2
 
-    canvas.deleteNodeButton.move(x + w, y - size)
-                           .show()
+    canvas.deleteNodeButton.attachTo(this)
   }
 
   group.on('click', showDeleteButton.bind(this))

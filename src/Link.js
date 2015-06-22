@@ -14,6 +14,13 @@ function Link (canvas, view, key) {
       end   = to.ins[view.to[1]]
 
   Object.defineProperties(this, {
+    'from' : { value: from  },
+    'to'   : { value: to    },
+    'start': { value: start },
+    'end'  : { value: end   }
+  })
+
+  Object.defineProperties(this, {
     'x1': { get: function () { return start.center.absolute.x } },
     'y1': { get: function () { return start.center.absolute.y } },
     'x2': { get: function () { return end.center.absolute.x   } },
@@ -38,21 +45,22 @@ function Link (canvas, view, key) {
         .stroke(strokeLine)
   }
 
+  line.on('mouseout', deselectLine)
+
   function selectLine () {
     line.on('click', remove)
         .stroke(strokeLineHighlighted)
   }
 
   line.on('mouseover', selectLine)
-  line.on('mouseout', deselectLine)
 }
 
 function linePlot () {
-var line = this.line,
-    x1   = this.x1,
-    y1   = this.y1,
-    x2   = this.x2,
-    y2   = this.y2
+  var line = this.line,
+      x1   = this.x1,
+      y1   = this.y1,
+      x2   = this.x2,
+      y2   = this.y2
 
   line.plot(x1, y1, x2, y2)
 }

@@ -91,7 +91,7 @@ function Node (canvas, view, key) {
   function dragstart () {
     var canvas = this.canvas
 
-    canvas.deleteNodeButton.hide()
+    canvas.deleteNodeButton.detach()
   }
 
   group.on('dragstart', dragstart.bind(this))
@@ -109,8 +109,7 @@ function Node (canvas, view, key) {
 
     var size = theme.halfPinSize * 2
 
-    canvas.deleteNodeButton.move(x + w, y - size)
-                           .show()
+    canvas.deleteNodeButton.attachTo(this)
   }
 
   group.on('click', showDeleteButton.bind(this))

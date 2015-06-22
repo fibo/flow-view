@@ -26,30 +26,54 @@ function DeleteNodeButton (canvas) {
        .add(diag2)
        .hide()
 
-  group.on('click', function () { console.log('delete') })
-
   this.group = group
+
+  function delNode () {
+    var canvas = this.canvas,
+        node   = this.node
+
+    var key = node.key
+
+    canvas.delNode(key)
+  }
+
+  function deselectButton () {
+    group.off('click')
+
+    diag1.stroke(strokeLine)
+    diag2.stroke(strokeLine)
+  }
+
+  group.on('mouseout', deselectButton.bind(this))
+
+  function selectButton () {
+    group.on('click', delNode.bind(this))
+
+    diag1.stroke(strokeLineHighlighted)
+    diag2.stroke(strokeLineHighlighted)
+  }
+
+  group.on('mouseover', selectButton.bind(this))
 }
 
-function hideDeleteNodeButton () {
+function detachDeleteNodeButton () {
   this.group.hide()
+
   this.node = null
 }
 
-DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+DeleteNodeButton.prototype.detach = detachDeleteNodeButton
 
-function attachTo (node) {
+function deleteNodeButtonAttachTo (node) {
   var group = this.group
 
   group.move(node.x + node.w, node.y - this.size)
        .show()
 
   this.node = node
-
 }
 
-DeleteNodeButton.prototype.hide = hideDeleteNodeButton
+DeleteNodeButton.prototype.attachTo = deleteNodeButtonAttachTo
 
 module.exports = DeleteNodeButton
-
 

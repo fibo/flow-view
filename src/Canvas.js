@@ -100,10 +100,10 @@ function delNode (key) {
 
   // Remove links connected to node.
   for (var i in link) {
-    if (link[i].from[0] === key)
+    if (link[i].from.key === key)
       delete link[i]
 
-    if (link[i].to[0] === key)
+    if (link[i].to.key === key)
       delete link[i]
   }
 }

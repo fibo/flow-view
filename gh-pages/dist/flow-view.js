@@ -4863,11 +4863,11 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var DeleteNodeButton = require('./DeleteNodeButton'),
-    Node             = require('./Node'),
-    NodeCreator      = require('./NodeCreator'),
-    NodeInspector    = require('./NodeInspector'),
-    Link             = require('./Link')
+var Node          = require('./Node'),
+    NodeControls  = require('./NodeControls'),
+    NodeCreator   = require('./NodeCreator'),
+    NodeInspector = require('./NodeInspector'),
+    Link          = require('./Link')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
@@ -4924,13 +4924,12 @@ function Canvas (id, view) {
   var nodeInspector  = new NodeInspector(this)
   this.NodeInspector = NodeInspector
 
-  var deleteNodeButton = new DeleteNodeButton(this)
-  this.deleteNodeButton = deleteNodeButton
+  var nodeControls = new NodeControls(this)
+  this.nodeControls = nodeControls
 
   var element = document.getElementById(id)
 
   SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
-//  SVG.on(element, 'click', nodeCreator.hide.bind(nodeCreator))
 }
 
 inherits(Canvas, EventEmitter)
@@ -4954,22 +4953,23 @@ function addLink (view, key) {
 Canvas.prototype.addLink = addLink
 
 function delNode (key) {
-  var link = this.link
+  var link = this.link,
+      node = this.node[key]
 
-  var node = this.node[key]
-
-  node.group.remove()
-
-  delete this.node[key]
-
-  // Remove links connected to node.
+  // First remove links connected to node.
   for (var i in link) {
-    if (link[i].from.key === key)
-      this.delLink(i)
+    var nodeIsSource = link[i].from.key === key,
+        nodeIsTarget = link[i].to.key   === key
 
-    if (link[i].to.key === key)
+    if (nodeIsSource || nodeIsTarget)
       this.delLink(i)
   }
+
+  // Then remove node.
+  node.group.remove()
+  delete this.node[key]
+
+  this.emit('delNode', key)
 }
 
 Canvas.prototype.delNode = delNode
@@ -4980,6 +4980,8 @@ function delLink (key) {
   link.line.remove()
 
   delete this.link[key]
+
+  this.emit('delLink', key)
 }
 
 Canvas.prototype.delLink = delLink
@@ -4987,90 +4989,7 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./DeleteNodeButton":7,"./Link":9,"./Node":10,"./NodeCreator":11,"./NodeInspector":12,"./SVG":16,"./default/theme.json":17,"./default/view.json":18,"events":1,"inherits":2}],7:[function(require,module,exports){
-
-function DeleteNodeButton (canvas) {
-  this.node = null
-
-  this.canvas = canvas
-
-  var draw  = canvas.draw,
-      theme = canvas.theme
-
-  var halfPinSize           = theme.halfPinSize,
-      strokeLine            = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted
-
-  var size = halfPinSize * 2
-  this.size = size
-
-  var group = draw.group()
-
-  var diag1 = draw.line(0, 0, size, size)
-                  .stroke(strokeLine)
-
-  var diag2 = draw.line(0, size, size, 0)
-                  .stroke(strokeLine)
-
-  group.add(diag1)
-       .add(diag2)
-       .hide()
-
-  this.group = group
-
-  function delNode () {
-    var canvas = this.canvas,
-        node   = this.node
-
-    var key = node.key
-
-    this.detach()
-
-    canvas.delNode(key)
-  }
-
-  function deselectButton () {
-    group.off('click')
-
-    diag1.stroke(strokeLine)
-    diag2.stroke(strokeLine)
-  }
-
-  group.on('mouseout', deselectButton.bind(this))
-
-  function selectButton () {
-    group.on('click', delNode.bind(this))
-
-    diag1.stroke(strokeLineHighlighted)
-    diag2.stroke(strokeLineHighlighted)
-  }
-
-  group.on('mouseover', selectButton.bind(this))
-}
-
-function detachDeleteNodeButton () {
-  this.group.hide()
-
-  this.node = null
-}
-
-DeleteNodeButton.prototype.detach = detachDeleteNodeButton
-
-function deleteNodeButtonAttachTo (node) {
-  var group = this.group
-
-  group.move(node.x + node.w, node.y - this.size)
-       .show()
-
-  this.node = node
-}
-
-DeleteNodeButton.prototype.attachTo = deleteNodeButtonAttachTo
-
-module.exports = DeleteNodeButton
-
-
-},{}],8:[function(require,module,exports){
+},{"./Link":8,"./Node":9,"./NodeControls":12,"./NodeCreator":13,"./NodeInspector":14,"./SVG":18,"./default/theme.json":19,"./default/view.json":20,"events":1,"inherits":2}],7:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5144,7 +5063,7 @@ inherits(Input, Pin)
 module.exports = Input
 
 
-},{"./Pin":14,"inherits":2}],9:[function(require,module,exports){
+},{"./Pin":16,"inherits":2}],8:[function(require,module,exports){
 
 function Link (canvas, view, key) {
   var draw = canvas.draw
@@ -5217,7 +5136,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -5311,34 +5230,194 @@ function Node (canvas, view, key) {
   function dragstart () {
     var canvas = this.canvas
 
-    canvas.deleteNodeButton.detach()
+    canvas.nodeControls.detach()
   }
 
   group.on('dragstart', dragstart.bind(this))
 
-  function showDeleteButton (ev) {
+  function showNodeControls (ev) {
     ev.stopPropagation()
 
     var canvas = this.canvas
 
-    var x = this.x,
-        y = this.y,
-        w = this.w
-
-    var theme = canvas.theme
-
-    var size = theme.halfPinSize * 2
-
-    canvas.deleteNodeButton.attachTo(this)
+    canvas.nodeControls.attachTo(this)
   }
 
-  group.on('click', showDeleteButton.bind(this))
+  group.on('click', showNodeControls.bind(this))
 }
 
 module.exports = Node
 
 
-},{"./Input":8,"./Output":13}],11:[function(require,module,exports){
+},{"./Input":7,"./Output":15}],10:[function(require,module,exports){
+
+function NodeButton (canvas) {
+  this.node = null
+
+  this.canvas = canvas
+
+  var draw  = canvas.draw,
+      theme = canvas.theme
+
+  var size = theme.halfPinSize * 2
+
+  this.size = size
+
+  var group = draw.group()
+
+  this.group = group
+}
+
+function nodeButtonAttachTo (node) {
+  var group = this.group,
+      x     = this.x,
+      y     = this.y
+
+  group.move(node.x + node.w, node.y - this.size)
+       .show()
+
+  this.node = node
+}
+
+NodeButton.prototype.attachTo = nodeButtonAttachTo
+
+function detachNodeButton () {
+  this.group.hide()
+
+  this.node = null
+}
+
+NodeButton.prototype.detach = detachNodeButton
+
+function nodeButtonAttachTo (node) {
+  var group = this.group
+
+  group.move(node.x + node.w, node.y - this.size)
+       .show()
+
+  this.node = node
+}
+
+NodeButton.prototype.attachTo = nodeButtonAttachTo
+
+module.exports = NodeButton
+
+
+},{}],11:[function(require,module,exports){
+
+var inherits   = require('inherits'),
+    NodeButton = require('../NodeButton')
+
+function DeleteNode (canvas) {
+  this.node = null
+
+  this.canvas = canvas
+
+  var draw  = canvas.draw,
+      theme = canvas.theme
+
+  var halfPinSize           = theme.halfPinSize,
+      strokeLine            = theme.strokeLine,
+      strokeLineHighlighted = theme.strokeLineHighlighted
+
+  var size = halfPinSize * 2
+  this.size = size
+
+  var group = draw.group()
+
+  var diag1 = draw.line(0, 0, size, size)
+                  .stroke(strokeLine)
+
+  var diag2 = draw.line(0, size, size, 0)
+                  .stroke(strokeLine)
+
+  group.add(diag1)
+       .add(diag2)
+       .hide()
+
+  this.group = group
+
+  function delNode () {
+    var canvas = this.canvas,
+        node   = this.node
+
+    var key = node.key
+
+    this.detach()
+
+    canvas.delNode(key)
+  }
+
+  function deselectButton () {
+    group.off('click')
+
+    diag1.stroke(strokeLine)
+    diag2.stroke(strokeLine)
+  }
+
+  group.on('mouseout', deselectButton.bind(this))
+
+  function selectButton () {
+    group.on('click', delNode.bind(this))
+
+    diag1.stroke(strokeLineHighlighted)
+    diag2.stroke(strokeLineHighlighted)
+  }
+
+  group.on('mouseover', selectButton.bind(this))
+}
+
+function detachDeleteNode () {
+  this.group.hide()
+
+  this.node = null
+}
+
+DeleteNode.prototype.detach = detachDeleteNode
+
+function deleteNodeButtonAttachTo (node) {
+  var group = this.group
+
+  group.move(node.x + node.w, node.y - this.size)
+       .show()
+
+  this.node = node
+}
+
+DeleteNode.prototype.attachTo = deleteNodeButtonAttachTo
+
+module.exports = DeleteNode
+
+
+},{"../NodeButton":10,"inherits":2}],12:[function(require,module,exports){
+
+var DeleteNodeButton = require('./NodeButton/DeleteNode')
+
+function NodeControls (canvas) {
+  this.canvas = canvas
+
+  this.node = null
+
+  var deleteNodeButton = new DeleteNodeButton(canvas)
+  this.deleteNodeButton = deleteNodeButton
+}
+
+function nodeControlsAttachTo (node) {
+  this.deleteNodeButton.attachTo(node)
+}
+
+NodeControls.prototype.attachTo = nodeControlsAttachTo
+
+function nodeControlsDetach () {
+  this.deleteNodeButton.detach()
+}
+
+NodeControls.prototype.detach = nodeControlsDetach
+
+module.exports = NodeControls
+
+
+},{"./NodeButton/DeleteNode":11}],13:[function(require,module,exports){
 
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
@@ -5419,7 +5498,7 @@ NodeCreator.prototype.show = showNodeCreator
 module.exports = NodeCreator
 
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 function NodeInspector (canvas) {
 
@@ -5428,7 +5507,7 @@ function NodeInspector (canvas) {
 module.exports = NodeInspector
 
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin'),
@@ -5510,7 +5589,7 @@ inherits(Output, Pin)
 module.exports = Output
 
 
-},{"./Pin":14,"./PreLink":15,"inherits":2}],14:[function(require,module,exports){
+},{"./Pin":16,"./PreLink":17,"inherits":2}],16:[function(require,module,exports){
 
 function Pin (type, node, position) {
   this.type     = type
@@ -5552,7 +5631,7 @@ Pin.prototype.set = set
 module.exports = Pin
 
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -5674,7 +5753,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":9}],16:[function(require,module,exports){
+},{"./Link":8}],18:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -5695,7 +5774,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],17:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],19:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -5721,13 +5800,13 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 var Canvas = require('./Canvas')
 exports.Canvas = Canvas
@@ -5754,4 +5833,4 @@ exports.render = render
 module.exports = require('./src')
 
 
-},{"./src":19}]},{},[]);
+},{"./src":21}]},{},[]);

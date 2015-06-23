@@ -91,28 +91,20 @@ function Node (canvas, view, key) {
   function dragstart () {
     var canvas = this.canvas
 
-    canvas.deleteNodeButton.detach()
+    canvas.nodeControls.detach()
   }
 
   group.on('dragstart', dragstart.bind(this))
 
-  function showDeleteButton (ev) {
+  function showNodeControls (ev) {
     ev.stopPropagation()
 
     var canvas = this.canvas
 
-    var x = this.x,
-        y = this.y,
-        w = this.w
-
-    var theme = canvas.theme
-
-    var size = theme.halfPinSize * 2
-
-    canvas.deleteNodeButton.attachTo(this)
+    canvas.nodeControls.attachTo(this)
   }
 
-  group.on('click', showDeleteButton.bind(this))
+  group.on('click', showNodeControls.bind(this))
 }
 
 module.exports = Node

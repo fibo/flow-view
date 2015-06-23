@@ -1,5 +1,8 @@
 
-function DeleteNodeButton (canvas) {
+var inherits   = require('inherits'),
+    NodeButton = require('../NodeButton')
+
+function DeleteNode (canvas) {
   this.node = null
 
   this.canvas = canvas
@@ -58,13 +61,13 @@ function DeleteNodeButton (canvas) {
   group.on('mouseover', selectButton.bind(this))
 }
 
-function detachDeleteNodeButton () {
+function detachDeleteNode () {
   this.group.hide()
 
   this.node = null
 }
 
-DeleteNodeButton.prototype.detach = detachDeleteNodeButton
+DeleteNode.prototype.detach = detachDeleteNode
 
 function deleteNodeButtonAttachTo (node) {
   var group = this.group
@@ -75,7 +78,7 @@ function deleteNodeButtonAttachTo (node) {
   this.node = node
 }
 
-DeleteNodeButton.prototype.attachTo = deleteNodeButtonAttachTo
+DeleteNode.prototype.attachTo = deleteNodeButtonAttachTo
 
-module.exports = DeleteNodeButton
+module.exports = DeleteNode
 

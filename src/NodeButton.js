@@ -1,5 +1,7 @@
 
-function NodeButton (canvas) {
+function NodeButton (canvas, relativeCoordinate) {
+  this.relativeCoordinate = relativeCoordinate
+
   this.node = null
 
   this.canvas = canvas
@@ -16,19 +18,6 @@ function NodeButton (canvas) {
   this.group = group
 }
 
-function nodeButtonAttachTo (node) {
-  var group = this.group,
-      x     = this.x,
-      y     = this.y
-
-  group.move(node.x + node.w, node.y - this.size)
-       .show()
-
-  this.node = node
-}
-
-NodeButton.prototype.attachTo = nodeButtonAttachTo
-
 function detachNodeButton () {
   this.group.hide()
 
@@ -36,17 +25,6 @@ function detachNodeButton () {
 }
 
 NodeButton.prototype.detach = detachNodeButton
-
-function nodeButtonAttachTo (node) {
-  var group = this.group
-
-  group.move(node.x + node.w, node.y - this.size)
-       .show()
-
-  this.node = node
-}
-
-NodeButton.prototype.attachTo = nodeButtonAttachTo
 
 module.exports = NodeButton
 

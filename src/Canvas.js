@@ -3,11 +3,11 @@ var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits'),
     SVG          = require('./SVG')
 
-var Node          = require('./Node'),
+var Link          = require('./Link'),
+    Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
-    NodeInspector = require('./NodeInspector'),
-    Link          = require('./Link')
+    NodeInspector = require('./NodeInspector')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
@@ -27,7 +27,7 @@ function Canvas (id, view) {
   function createNode (key) {
     var view = this.view.node[key]
 
-    this.addNode(view, key)
+    this.node[key] = new Node(this, view, key)
   }
 
   Object.keys(view.node)
@@ -36,7 +36,7 @@ function Canvas (id, view) {
   function createLink (key) {
     var view = this.view.link[key]
 
-    this.addLink(view, key)
+    this.link[key] = new Link(this, view, key)
   }
 
   Object.keys(view.link).forEach(createLink.bind(this))
@@ -74,23 +74,27 @@ function Canvas (id, view) {
 
 inherits(Canvas, EventEmitter)
 
-function addNode (view, key) {
-  if (typeof key === 'undefined')
-     key = this.nextKey
-
-  this.node[key] = new Node(this, view, key)
-}
-
-Canvas.prototype.addNode = addNode
-
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
   this.link[key] = new Link(this, view, key)
+
+  this.emit('addLink', { key: key, view: view })
 }
 
 Canvas.prototype.addLink = addLink
+
+function addNode (view, key) {
+  if (typeof key === 'undefined')
+     key = this.nextKey
+
+  this.node[key] = new Node(this, view, key)
+
+  this.emit('addNode', { key: key, view: view })
+}
+
+Canvas.prototype.addNode = addNode
 
 function delNode (key) {
   var link = this.link,

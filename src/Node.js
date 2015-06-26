@@ -30,6 +30,23 @@ function Node (canvas, view, key) {
   this.ins  = []
   this.outs = []
 
+  Object.defineProperties(this, {
+    'numIns':  { get: function () { this.ins.length } },
+    'numOuts': { get: function () { this.outs.length } }
+  })
+
+  var numIns  = 0,
+      numOuts = 0
+
+  if (view.ins) numIns = view.ins.length
+  if (view.outs) numOuts = view.outs.length
+
+  for (var i = 0; i < numIns; i++)
+    this.ins[i] = new Input(this, i, numIns)
+
+  for (var o = 0; o < numOuts; o++)
+    this.outs[o] = new Output(this, o, numOuts)
+
   this.draw = draw
 
   var rect = this.rect = draw.rect(w, h)
@@ -53,21 +70,6 @@ function Node (canvas, view, key) {
     'h': { get: function () { return rect.height() } }
   })
 
-  var numIns  = 0,
-      numOuts = 0
-
-  if (view.ins)
-    numIns = view.ins.length
-
-  if (view.outs)
-    numOuts = view.outs.length
-
-  for (var i = 0; i < numIns; i++)
-    this.ins[i] = new Input(this, i, numIns)
-
-  for (var o = 0; o < numOuts; o++)
-    this.outs[o] = new Output(this, o, numOuts)
-
   function dragmove () {
     this.outs.forEach(function (output) {
       Object.keys(output.link).forEach(function (key) {
@@ -89,8 +91,6 @@ function Node (canvas, view, key) {
   group.on('dragmove', dragmove.bind(this))
 
   function dragstart () {
-    var canvas = this.canvas
-
     canvas.nodeControls.detach()
   }
 
@@ -99,13 +99,35 @@ function Node (canvas, view, key) {
   function showNodeControls (ev) {
     ev.stopPropagation()
 
-    var canvas = this.canvas
-
     canvas.nodeControls.attachTo(this)
   }
 
   group.on('click', showNodeControls.bind(this))
 }
+
+function addInput () {
+    var numIns = this.numIns
+
+    var position = numIns - 1
+
+    var input = new Input(node, position, numIns)
+
+    this.ins.push(input)
+}
+
+Node.prototype.addInput = addInput
+
+function addOutput () {
+    var numOuts = this.outs.length + 1
+
+    var position = numOuts - 1
+
+    var output = new Output(node, position, numOuts)
+
+    this.outs.push(output)
+}
+
+Node.prototype.addOutput = addOutput
 
 module.exports = Node
 

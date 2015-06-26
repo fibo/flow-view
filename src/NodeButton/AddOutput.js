@@ -2,7 +2,7 @@
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
 
-function DeleteNode (canvas) {
+function AddOutput (canvas) {
   NodeButton.call(this, canvas)
 
   var draw  = canvas.draw,
@@ -17,61 +17,55 @@ function DeleteNode (canvas) {
 
   var group = draw.group()
 
-  var diag1 = draw.line(0, 0, size, size)
+  var line1 = draw.line(0, halfPinSize, size, halfPinSize)
                   .stroke(strokeLine)
 
-  var diag2 = draw.line(0, size, size, 0)
+  var line2 = draw.line(halfPinSize, 0, halfPinSize, size)
                   .stroke(strokeLine)
 
-  group.add(diag1)
-       .add(diag2)
+  group.add(line1)
+       .add(line2)
        .hide()
 
   this.group = group
 
-  function delNode () {
-    var canvas = this.canvas,
-        node   = this.node
-
-    var key = node.key
-
-    canvas.nodeControls.detach()
-
-    canvas.delNode(key)
+  function addOutput (ev) {
+    this.node.addOutput()
   }
 
   function deselectButton () {
     group.off('click')
 
-    diag1.stroke(strokeLine)
-    diag2.stroke(strokeLine)
+    line1.stroke(strokeLine)
+    line2.stroke(strokeLine)
   }
 
   group.on('mouseout', deselectButton.bind(this))
 
   function selectButton () {
-    group.on('click', delNode.bind(this))
+    group.on('click', addOutput.bind(this))
 
-    diag1.stroke(strokeLineHighlighted)
-    diag2.stroke(strokeLineHighlighted)
+    line1.stroke(strokeLineHighlighted)
+    line2.stroke(strokeLineHighlighted)
   }
 
   group.on('mouseover', selectButton.bind(this))
 }
 
-inherits(DeleteNode, NodeButton)
+inherits(AddOutput, NodeButton)
 
 function attachTo (node) {
   var group = this.group,
       size  = this.size
 
-  group.move(node.x + node.w, node.y - size)
+  group.move(node.x - size, node.y + node.h - size)
        .show()
 
   this.node = node
 }
 
-DeleteNode.prototype.attachTo = attachTo
+AddOutput.prototype.attachTo = attachTo
 
-module.exports = DeleteNode
+module.exports = AddOutput
+
 

@@ -24,7 +24,6 @@ function Input (node, position, numIns) {
           relative: {}
         }
 
-
     if (numIns > 1)
       vertex.relative.x = position * ((node.w - size) / (numIns - 1))
     else

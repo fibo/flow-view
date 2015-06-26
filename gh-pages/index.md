@@ -34,7 +34,7 @@ $ bower install flow-view
 
 ## Synopsis
 
-Go to [examples/synopsis/](http://g14n.info/flow-view/examples/synopsis.html) to see results.
+Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html) to see results.
 
 ```html
 <div id="drawing"></div>
@@ -108,13 +108,25 @@ var canvas = new flowView.Canvas('drawing', view)
 ### addNode()
 
 ```js
-canvas.addNode()
+canvas.addNode(view)
 ```
 
 ### addLink()
 
 ```js
-canvas.addLink()
+canvas.addLink(view)
+```
+
+### delNode()
+
+```js
+canvas.delNode(key)
+```
+
+### delLink()
+
+```js
+canvas.delLink(key)
 ```
 
 ### view

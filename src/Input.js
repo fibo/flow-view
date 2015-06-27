@@ -24,11 +24,14 @@ function Input (node, position, numIns) {
           relative: {}
         }
 
+    /*
+      */
     if (numIns > 1)
       vertex.relative.x = position * ((node.w - size) / (numIns - 1))
     else
       vertex.relative.x = 0
 
+//    vertex.relative.x = node.xCoordinateOf(this)
     vertex.relative.y = 0
     vertex.absolute.x = vertex.relative.x + node.x
     vertex.absolute.y = vertex.relative.y + node.y
@@ -36,7 +39,7 @@ function Input (node, position, numIns) {
     return vertex
   }
 
-  Object.defineProperty(this, 'vertex', { get: getVertex })
+  Object.defineProperty(this, 'vertex', { get: getVertex.bind(this) })
 
   function getCenter () {
     var center = {

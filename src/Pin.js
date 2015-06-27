@@ -3,7 +3,6 @@ function Pin (type, node, position) {
   this.type     = type
   this.node     = node
   this.position = position
-
 }
 
 function get (key) {

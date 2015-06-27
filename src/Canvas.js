@@ -36,7 +36,7 @@ function Canvas (id, view) {
   function createLink (key) {
     var view = this.view.link[key]
 
-    this.link[key] = new Link(this, view, key)
+//    this.link[key] = new Link(this, view, key)
   }
 
   Object.keys(view.link).forEach(createLink.bind(this))

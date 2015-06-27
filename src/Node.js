@@ -38,6 +38,7 @@ function Node (canvas, view, key) {
   var numIns  = 0,
       numOuts = 0
 
+        /*
   if (view.ins) numIns = view.ins.length
   if (view.outs) numOuts = view.outs.length
 
@@ -46,6 +47,7 @@ function Node (canvas, view, key) {
 
   for (var o = 0; o < numOuts; o++)
     this.outs[o] = new Output(this, o, numOuts)
+    */
 
   this.draw = draw
 
@@ -105,12 +107,31 @@ function Node (canvas, view, key) {
   group.on('click', showNodeControls.bind(this))
 }
 
+function xCoordinateOf (pin) {
+  var position = pin.position,
+      size     = pin.size,
+      type     = pin.type,
+      w        = this.w,
+      x
+
+  var numPins = this[type].length
+
+  if (numPins > 1)
+      x = position * ((w - size) / (numPins - 1))
+  else
+      x = 0
+
+  return x
+}
+
+Node.prototype.xCoordinateOf = xCoordinateOf
+
 function addInput () {
     var numIns = this.numIns
 
     var position = numIns - 1
 
-    var input = new Input(node, position, numIns)
+    var input = new Input(this, position, numIns)
 
     this.ins.push(input)
 }
@@ -122,7 +143,7 @@ function addOutput () {
 
     var position = numOuts - 1
 
-    var output = new Output(node, position, numOuts)
+    var output = new Output(this, position, numOuts)
 
     this.outs.push(output)
 }

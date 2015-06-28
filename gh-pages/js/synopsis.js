@@ -1,6 +1,5 @@
-var flowView = require('flow-view')
 
-var Canvas = flowView.Canvas,
+var Canvas = require('flow-view').Canvas,
     view = {
       node: {
         a: {
@@ -25,5 +24,7 @@ var Canvas = flowView.Canvas,
      }
    }
 
-var canvas = new Canvas('drawing', view)
+var canvas = new Canvas('drawing')
+
+canvas.createView(view)
 

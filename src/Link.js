@@ -1,5 +1,15 @@
 
-function Link (canvas, view, key) {
+function Link (canvas, key) {
+  this.canvas = canvas
+  this.key    = key
+}
+
+function createView (view) {
+  var self = this
+
+  var canvas = this.canvas,
+      key    = this.key
+
   var draw = canvas.draw
 
   var theme = canvas.theme
@@ -27,8 +37,10 @@ function Link (canvas, view, key) {
     'y2': { get: function () { return end.center.absolute.y   } }
   })
 
-  var line = this.line = draw.line(this.x1, this.y1, this.x2, this.y2)
-                             .stroke(strokeLine)
+  var line = draw.line(this.x1, this.y1, this.x2, this.y2)
+                 .stroke(strokeLine)
+
+  this.line = line
 
   end.link = this
   start.link[key] = this
@@ -54,6 +66,8 @@ function Link (canvas, view, key) {
 
   line.on('mouseover', selectLine)
 }
+
+Link.prototype.createView = createView
 
 function linePlot () {
   var line = this.line,

@@ -4868,38 +4868,20 @@ var Link          = require('./Link'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
     NodeInspector = require('./NodeInspector')
+    validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id, view) {
-  this.view  = view || defaultView
-
+function Canvas (id) {
   var theme = defaultTheme
   this.theme = theme
 
-  var node = this.node = {}
-  var link = this.link = {}
+  this.node = {}
+  this.link = {}
 
-  var draw = this.draw = SVG(id).size(1000, 1000)
-                                .spof()
-
-  function createNode (key) {
-    var view = this.view.node[key]
-
-    this.node[key] = new Node(this, view, key)
-  }
-
-  Object.keys(view.node)
-        .forEach(createNode.bind(this))
-
-  function createLink (key) {
-    var view = this.view.link[key]
-
-//    this.link[key] = new Link(this, view, key)
-  }
-
-  Object.keys(view.link).forEach(createLink.bind(this))
+  this.draw = SVG(id).size(1000, 1000)
+                     .spof()
 
   var nextKey = 0
 
@@ -4907,10 +4889,10 @@ function Canvas (id, view) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (node[currentKey])
+    if (this.node[currentKey])
       return getNextKey()
 
-    if (link[currentKey])
+    if (this.link[currentKey])
       return getNextKey()
 
     return currentKey
@@ -4934,11 +4916,61 @@ function Canvas (id, view) {
 
 inherits(Canvas, EventEmitter)
 
+function createView (view) {
+  validate(view)
+
+  var self = this
+
+  function createNode (key) {
+    var node = new Node(self, key)
+
+    node.createView(view.node[key])
+
+    self.node[key] = node
+  }
+
+  Object.keys(view.node).forEach(createNode)
+
+  function createLink (key) {
+    var link = new Link(self, key)
+
+    link.createView(view.link[key])
+
+    self.link[key] = link
+  }
+
+  Object.keys(view.link).forEach(createLink)
+}
+
+Canvas.prototype.createView = createView
+
+function deleteView (view) {
+
+}
+
+Canvas.prototype.deleteView = deleteView
+
+function readView () {
+  var view = this.view
+}
+
+Canvas.prototype.readView = readView
+
+function updateView (view) {
+
+}
+
+Canvas.prototype.updateView = updateView
+
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  this.link[key] = new Link(this, view, key)
+  var link = new Link(this, view, key)
+
+  this.link[key] = link
+
+  link.createView(view)
 
   this.emit('addLink', { key: key, view: view })
 }
@@ -4949,7 +4981,11 @@ function addNode (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  this.node[key] = new Node(this, view, key)
+  var node = new Node(this, view, key)
+
+  this.node[key] = node
+
+  node.createView(view)
 
   this.emit('addNode', { key: key, view: view })
 }
@@ -4993,15 +5029,23 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Link":8,"./Node":9,"./NodeControls":14,"./NodeCreator":15,"./NodeInspector":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"./Link":8,"./Node":9,"./NodeControls":14,"./NodeCreator":15,"./NodeInspector":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"./validate":24,"events":1,"inherits":2}],7:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
 
-function Input (node, position, numIns) {
+function Input (node, position) {
   Pin.call(this, 'ins', node, position)
 
   this.link = null
+}
+
+inherits(Input, Pin)
+
+function createView (view) {
+  var self = this
+
+  var node = this.node
 
   var canvas = node.canvas
 
@@ -5014,64 +5058,35 @@ function Input (node, position, numIns) {
 
   var draw = canvas.draw
 
-  function getVertex () {
-    var vertex = {
-          absolute: {},
-          relative: {}
-        }
-
-    /*
-      */
-    if (numIns > 1)
-      vertex.relative.x = position * ((node.w - size) / (numIns - 1))
-    else
-      vertex.relative.x = 0
-
-//    vertex.relative.x = node.xCoordinateOf(this)
-    vertex.relative.y = 0
-    vertex.absolute.x = vertex.relative.x + node.x
-    vertex.absolute.y = vertex.relative.y + node.y
-
-    return vertex
-  }
-
-  Object.defineProperty(this, 'vertex', { get: getVertex.bind(this) })
-
-  function getCenter () {
-    var center = {
-          absolute: {},
-          relative: {}
-        }
-
-    var vertex = this.vertex
-
-    center.relative.x = vertex.relative.x + halfPinSize
-    center.relative.y = vertex.relative.y + halfPinSize
-    center.absolute.x = center.relative.x + node.x
-    center.absolute.y = center.relative.y + node.y
-
-    return center
-  }
-
-  Object.defineProperty(this, 'center', { get: getCenter })
-
   var vertex = this.vertex.relative
 
-  var rect = this.rect = draw.rect(size, size)
-                             .move(vertex.x, vertex.y)
-                             .fill(fillPin)
+  var rect = draw.rect(size, size)
+                 .move(vertex.x, vertex.y)
+                 .fill(fillPin)
+
+  this.rect = rect
 
   node.group.add(rect)
 }
 
-inherits(Input, Pin)
+Input.prototype.createView = createView
 
 module.exports = Input
 
 
 },{"./Pin":18,"inherits":2}],8:[function(require,module,exports){
 
-function Link (canvas, view, key) {
+function Link (canvas, key) {
+  this.canvas = canvas
+  this.key    = key
+}
+
+function createView (view) {
+  var self = this
+
+  var canvas = this.canvas,
+      key    = this.key
+
   var draw = canvas.draw
 
   var theme = canvas.theme
@@ -5099,8 +5114,10 @@ function Link (canvas, view, key) {
     'y2': { get: function () { return end.center.absolute.y   } }
   })
 
-  var line = this.line = draw.line(this.x1, this.y1, this.x2, this.y2)
-                             .stroke(strokeLine)
+  var line = draw.line(this.x1, this.y1, this.x2, this.y2)
+                 .stroke(strokeLine)
+
+  this.line = line
 
   end.link = this
   start.link[key] = this
@@ -5127,6 +5144,8 @@ function Link (canvas, view, key) {
   line.on('mouseover', selectLine)
 }
 
+Link.prototype.createView = createView
+
 function linePlot () {
   var line = this.line,
       x1   = this.x1,
@@ -5147,9 +5166,23 @@ module.exports = Link
 var Input   = require('./Input'),
     Output  = require('./Output')
 
-function Node (canvas, view, key) {
+function Node (canvas, key) {
   this.canvas = canvas
   this.key    = key
+
+  var draw  = canvas.draw
+
+  this.group = draw.group()
+
+  this.ins  = []
+  this.outs = []
+}
+
+function createView (view) {
+  var self = this
+
+  var canvas = this.canvas,
+      group  = this.group
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -5170,45 +5203,20 @@ function Node (canvas, view, key) {
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
 
-  var group = this.group = draw.group()
+  var ins  = view.ins || [],
+      outs = view.outs || []
 
-  this.ins  = []
-  this.outs = []
+  var rect = draw.rect(w, h)
+                 .fill(fillRect)
 
-  Object.defineProperties(this, {
-    'numIns':  { get: function () { this.ins.length } },
-    'numOuts': { get: function () { this.outs.length } }
-  })
-
-  var numIns  = 0,
-      numOuts = 0
-
-        /*
-  if (view.ins) numIns = view.ins.length
-  if (view.outs) numOuts = view.outs.length
-
-  for (var i = 0; i < numIns; i++)
-    this.ins[i] = new Input(this, i, numIns)
-
-  for (var o = 0; o < numOuts; o++)
-    this.outs[o] = new Output(this, o, numOuts)
-    */
-
-  this.draw = draw
-
-  var rect = this.rect = draw.rect(w, h)
-                             .fill(fillRect)
-
-  var text = this.text = draw.text(view.text)
-                             .fill(fillLabel)
-                             .back()
-                             .move(10, 10)
-                             .font(labelFont)
+  var text = draw.text(view.text)
+                 .fill(fillLabel)
+                 .back()
+                 .move(10, 10)
+                 .font(labelFont)
 
   group.add(rect)
        .add(text)
-       .move(view.x, view.y)
-       .draggable()
 
   Object.defineProperties(this, {
     'x': { get: function () { return group.x()     } },
@@ -5216,6 +5224,36 @@ function Node (canvas, view, key) {
     'w': { get: function () { return rect.width()  } },
     'h': { get: function () { return rect.height() } }
   })
+
+  function createInput (inputView, position) {
+    var input = new Input(self, position)
+
+    input.createView(inputView)
+
+    self.ins.push(input)
+  }
+
+  ins.forEach(createInput)
+
+  function createInputView (input, position) {
+    var inputView = view.ins[position]
+
+  }
+
+  ins.forEach(createInputView)
+
+  function createOutput (outputView, position) {
+    var output = new Output(self, position)
+
+    output.createView(outputView)
+
+    self.outs.push(output)
+  }
+
+  outs.forEach(createOutput)
+
+  group.move(view.x, view.y)
+       .draggable()
 
   function dragmove () {
     this.outs.forEach(function (output) {
@@ -5252,6 +5290,26 @@ function Node (canvas, view, key) {
   group.on('click', showNodeControls.bind(this))
 }
 
+Node.prototype.createView = createView
+
+function readView () {
+  var view = {}
+
+  return view
+}
+
+Node.prototype.readView = readView
+
+function deleteView () {
+}
+
+Node.prototype.deleteView = deleteView
+
+function updateView () {
+}
+
+Node.prototype.updateView = updateView
+
 function xCoordinateOf (pin) {
   var position = pin.position,
       size     = pin.size,
@@ -5271,26 +5329,54 @@ function xCoordinateOf (pin) {
 
 Node.prototype.xCoordinateOf = xCoordinateOf
 
-function addInput () {
-    var numIns = this.numIns
+function addPin (type, position) {
+  var newPin,
+      numPins = this[type].length
 
-    var position = numIns - 1
+  if (typeof position === 'undefined')
+    position = numPins
 
-    var input = new Input(this, position, numIns)
+  if (type === 'ins')
+    newPin = new Input(this, position)
 
-    this.ins.push(input)
+  if (type === 'outs')
+    newPin = new Output(this, position)
+
+  this[type].splice(position, 0, newPin)
+
+  newPin.createView()
+
+  console.log(this[type])
+
+  // Move existing pins to new position.
+  //
+  // Nothing to do it there is no pin yet.
+  if (numPins > 0) {
+    // Start loop on i = 1, the second position. The first pin is not moved.
+    // The loop ends at numPins + 1 cause one pin was added.
+    for (var i = 1; i < numPins + 1; i++) {
+      // Nothing to do for input added right now.
+      if (i === position)
+        continue
+
+      var pin = this[type][position]
+
+      var rect   = pin.rect,
+          vertex = pin.vertex.relative
+
+      rect.move(vertex.x, vertex.y)
+    }
+  }
+}
+
+function addInput (position) {
+  addPin.bind(this)('ins', position)
 }
 
 Node.prototype.addInput = addInput
 
-function addOutput () {
-    var numOuts = this.outs.length + 1
-
-    var position = numOuts - 1
-
-    var output = new Output(this, position, numOuts)
-
-    this.outs.push(output)
+function addOutput (position) {
+  addPin.bind(this)('outs', position)
 }
 
 Node.prototype.addOutput = addOutput
@@ -5689,11 +5775,19 @@ var inherits = require('inherits'),
     Pin      = require('./Pin'),
     PreLink  = require('./PreLink')
 
-function Output (node, position, numOuts) {
+function Output (node, position) {
   Pin.call(this, 'outs', node, position)
 
   this.link = {}
+}
 
+inherits(Output, Pin)
+
+function createView (view) {
+  var self = this
+
+  // TODO for var i in view this.set(i, view[i])
+  var node = this.node
   var canvas = node.canvas
 
   var theme = canvas.theme
@@ -5705,18 +5799,59 @@ function Output (node, position, numOuts) {
 
   var draw = canvas.draw
 
+  var vertex = this.vertex.relative
+
+  var rect = draw.rect(size, size)
+                 .move(vertex.x, vertex.y)
+                 .fill(fillPin)
+
+  node.group.add(rect)
+
+  var preLink = null
+
+  function mouseover () {
+    preLink = new PreLink(canvas, this)
+  }
+
+  rect.on('mouseover', mouseover.bind(this))
+}
+
+Output.prototype.createView = createView
+
+module.exports = Output
+
+
+},{"./Pin":18,"./PreLink":19,"inherits":2}],18:[function(require,module,exports){
+
+function Pin (type, node, position) {
+  var self = this
+
+  this.type     = type
+  this.node     = node
+  this.position = position
+
+  var canvas = node.canvas
+
+  var theme = canvas.theme
+
+  var fillPin     = theme.fillPin,
+      halfPinSize = theme.halfPinSize
+
+  var size = halfPinSize * 2
+
   function getVertex () {
     var vertex = {
           absolute: {},
           relative: {}
         }
 
-    if (numOuts > 1)
-      vertex.relative.x = position * ((node.w - size) / (numOuts - 1))
-    else
-      vertex.relative.x = 0
+    vertex.relative.x = node.xCoordinateOf(self)
 
-    vertex.relative.y = node.h - size
+    if (type === 'ins')
+      vertex.relative.y = 0
+    if (type === 'outs')
+      vertex.relative.y = node.h - size
+
     vertex.absolute.x = vertex.relative.x + node.x
     vertex.absolute.y = vertex.relative.y + node.y
 
@@ -5743,34 +5878,6 @@ function Output (node, position, numOuts) {
 
   Object.defineProperty(this, 'center', { get: getCenter })
 
-  var vertex = this.vertex.relative
-
-  var rect = this.rect = draw.rect(size, size)
-                             .move(vertex.x, vertex.y)
-                             .fill(fillPin)
-
-  node.group.add(rect)
-
-  var preLink = null
-
-  function mouseover () {
-    preLink = new PreLink(canvas, this)
-  }
-
-  rect.on('mouseover', mouseover.bind(this))
-}
-
-inherits(Output, Pin)
-
-module.exports = Output
-
-
-},{"./Pin":18,"./PreLink":19,"inherits":2}],18:[function(require,module,exports){
-
-function Pin (type, node, position) {
-  this.type     = type
-  this.node     = node
-  this.position = position
 }
 
 function get (key) {
@@ -6003,7 +6110,23 @@ function render (element, callback) {
 exports.render = render
 
 
-},{"./Canvas":6}],"flow-view":[function(require,module,exports){
+},{"./Canvas":6}],24:[function(require,module,exports){
+
+function validate (view) {
+  if (typeof view !== 'object')
+    throw new TypeError()
+
+  if (typeof view.node !== 'object')
+    throw new TypeError()
+
+  if (typeof view.link !== 'object')
+    throw new TypeError()
+}
+
+module.exports = validate
+
+
+},{}],"flow-view":[function(require,module,exports){
 
 module.exports = require('./src')
 

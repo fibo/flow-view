@@ -8,38 +8,20 @@ var Link          = require('./Link'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
     NodeInspector = require('./NodeInspector')
+    validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id, view) {
-  this.view  = view || defaultView
-
+function Canvas (id) {
   var theme = defaultTheme
   this.theme = theme
 
-  var node = this.node = {}
-  var link = this.link = {}
+  this.node = {}
+  this.link = {}
 
-  var draw = this.draw = SVG(id).size(1000, 1000)
-                                .spof()
-
-  function createNode (key) {
-    var view = this.view.node[key]
-
-    this.node[key] = new Node(this, view, key)
-  }
-
-  Object.keys(view.node)
-        .forEach(createNode.bind(this))
-
-  function createLink (key) {
-    var view = this.view.link[key]
-
-//    this.link[key] = new Link(this, view, key)
-  }
-
-  Object.keys(view.link).forEach(createLink.bind(this))
+  this.draw = SVG(id).size(1000, 1000)
+                     .spof()
 
   var nextKey = 0
 
@@ -47,10 +29,10 @@ function Canvas (id, view) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (node[currentKey])
+    if (this.node[currentKey])
       return getNextKey()
 
-    if (link[currentKey])
+    if (this.link[currentKey])
       return getNextKey()
 
     return currentKey
@@ -74,11 +56,61 @@ function Canvas (id, view) {
 
 inherits(Canvas, EventEmitter)
 
+function createView (view) {
+  validate(view)
+
+  var self = this
+
+  function createNode (key) {
+    var node = new Node(self, key)
+
+    node.createView(view.node[key])
+
+    self.node[key] = node
+  }
+
+  Object.keys(view.node).forEach(createNode)
+
+  function createLink (key) {
+    var link = new Link(self, key)
+
+    link.createView(view.link[key])
+
+    self.link[key] = link
+  }
+
+  Object.keys(view.link).forEach(createLink)
+}
+
+Canvas.prototype.createView = createView
+
+function deleteView (view) {
+
+}
+
+Canvas.prototype.deleteView = deleteView
+
+function readView () {
+  var view = this.view
+}
+
+Canvas.prototype.readView = readView
+
+function updateView (view) {
+
+}
+
+Canvas.prototype.updateView = updateView
+
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  this.link[key] = new Link(this, view, key)
+  var link = new Link(this, view, key)
+
+  this.link[key] = link
+
+  link.createView(view)
 
   this.emit('addLink', { key: key, view: view })
 }
@@ -89,7 +121,11 @@ function addNode (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  this.node[key] = new Node(this, view, key)
+  var node = new Node(this, view, key)
+
+  this.node[key] = node
+
+  node.createView(view)
 
   this.emit('addNode', { key: key, view: view })
 }

@@ -2,9 +2,23 @@
 var Input   = require('./Input'),
     Output  = require('./Output')
 
-function Node (canvas, view, key) {
+function Node (canvas, key) {
   this.canvas = canvas
   this.key    = key
+
+  var draw  = canvas.draw
+
+  this.group = draw.group()
+
+  this.ins  = []
+  this.outs = []
+}
+
+function createView (view) {
+  var self = this
+
+  var canvas = this.canvas,
+      group  = this.group
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -25,45 +39,20 @@ function Node (canvas, view, key) {
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
 
-  var group = this.group = draw.group()
+  var ins  = view.ins || [],
+      outs = view.outs || []
 
-  this.ins  = []
-  this.outs = []
+  var rect = draw.rect(w, h)
+                 .fill(fillRect)
 
-  Object.defineProperties(this, {
-    'numIns':  { get: function () { this.ins.length } },
-    'numOuts': { get: function () { this.outs.length } }
-  })
-
-  var numIns  = 0,
-      numOuts = 0
-
-        /*
-  if (view.ins) numIns = view.ins.length
-  if (view.outs) numOuts = view.outs.length
-
-  for (var i = 0; i < numIns; i++)
-    this.ins[i] = new Input(this, i, numIns)
-
-  for (var o = 0; o < numOuts; o++)
-    this.outs[o] = new Output(this, o, numOuts)
-    */
-
-  this.draw = draw
-
-  var rect = this.rect = draw.rect(w, h)
-                             .fill(fillRect)
-
-  var text = this.text = draw.text(view.text)
-                             .fill(fillLabel)
-                             .back()
-                             .move(10, 10)
-                             .font(labelFont)
+  var text = draw.text(view.text)
+                 .fill(fillLabel)
+                 .back()
+                 .move(10, 10)
+                 .font(labelFont)
 
   group.add(rect)
        .add(text)
-       .move(view.x, view.y)
-       .draggable()
 
   Object.defineProperties(this, {
     'x': { get: function () { return group.x()     } },
@@ -71,6 +60,36 @@ function Node (canvas, view, key) {
     'w': { get: function () { return rect.width()  } },
     'h': { get: function () { return rect.height() } }
   })
+
+  function createInput (inputView, position) {
+    var input = new Input(self, position)
+
+    input.createView(inputView)
+
+    self.ins.push(input)
+  }
+
+  ins.forEach(createInput)
+
+  function createInputView (input, position) {
+    var inputView = view.ins[position]
+
+  }
+
+  ins.forEach(createInputView)
+
+  function createOutput (outputView, position) {
+    var output = new Output(self, position)
+
+    output.createView(outputView)
+
+    self.outs.push(output)
+  }
+
+  outs.forEach(createOutput)
+
+  group.move(view.x, view.y)
+       .draggable()
 
   function dragmove () {
     this.outs.forEach(function (output) {
@@ -107,6 +126,26 @@ function Node (canvas, view, key) {
   group.on('click', showNodeControls.bind(this))
 }
 
+Node.prototype.createView = createView
+
+function readView () {
+  var view = {}
+
+  return view
+}
+
+Node.prototype.readView = readView
+
+function deleteView () {
+}
+
+Node.prototype.deleteView = deleteView
+
+function updateView () {
+}
+
+Node.prototype.updateView = updateView
+
 function xCoordinateOf (pin) {
   var position = pin.position,
       size     = pin.size,
@@ -126,26 +165,54 @@ function xCoordinateOf (pin) {
 
 Node.prototype.xCoordinateOf = xCoordinateOf
 
-function addInput () {
-    var numIns = this.numIns
+function addPin (type, position) {
+  var newPin,
+      numPins = this[type].length
 
-    var position = numIns - 1
+  if (typeof position === 'undefined')
+    position = numPins
 
-    var input = new Input(this, position, numIns)
+  if (type === 'ins')
+    newPin = new Input(this, position)
 
-    this.ins.push(input)
+  if (type === 'outs')
+    newPin = new Output(this, position)
+
+  this[type].splice(position, 0, newPin)
+
+  newPin.createView()
+
+  console.log(this[type])
+
+  // Move existing pins to new position.
+  //
+  // Nothing to do it there is no pin yet.
+  if (numPins > 0) {
+    // Start loop on i = 1, the second position. The first pin is not moved.
+    // The loop ends at numPins + 1 cause one pin was added.
+    for (var i = 1; i < numPins + 1; i++) {
+      // Nothing to do for input added right now.
+      if (i === position)
+        continue
+
+      var pin = this[type][position]
+
+      var rect   = pin.rect,
+          vertex = pin.vertex.relative
+
+      rect.move(vertex.x, vertex.y)
+    }
+  }
+}
+
+function addInput (position) {
+  addPin.bind(this)('ins', position)
 }
 
 Node.prototype.addInput = addInput
 
-function addOutput () {
-    var numOuts = this.outs.length + 1
-
-    var position = numOuts - 1
-
-    var output = new Output(this, position, numOuts)
-
-    this.outs.push(output)
+function addOutput (position) {
+  addPin.bind(this)('outs', position)
 }
 
 Node.prototype.addOutput = addOutput

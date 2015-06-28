@@ -40,7 +40,7 @@ Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html
 <div id="drawing"></div>
 <script type="text/javascript" src="path/to/flowView.js"></script>
 <script type="text/javascript">
-  var Canvas = flowView.Canvas,
+  var Canvas = require(flow-view).Canvas,
       view = {
         node: {
           a: {
@@ -62,11 +62,13 @@ Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html
        }
      }
 
-  var canvas = new Canvas('drawing', view)
+  var canvas = new Canvas('drawing')
+
+  canvas.createView(view)
 </script>
 ```
 
-## Canvas
+### Canvas
 
 A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In your HTML file, put a *div* like this
 
@@ -74,8 +76,7 @@ A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In you
 <div id="drawing"></div>
 ```
 
-In order to start with a not empty *Canvas*, create an optional [view object](#view)
-
+Create an [view object](#view)
 
 ```
 var view = {
@@ -99,143 +100,76 @@ var view = {
    }
 ```
 
-and pass it to the *Canvas* constructor
+Create a *canvas* instance
 
 ```js
-var canvas = new flowView.Canvas('drawing', view)
+  var canvas = new Canvas('drawing')
 ```
 
-### addNode()
+and pass it its view
 
 ```js
-canvas.addNode(view)
-```
-
-### addLink()
-
-```js
-canvas.addLink(view)
-```
-
-### delNode()
-
-```js
-canvas.delNode(key)
-```
-
-### delLink()
-
-```js
-canvas.delLink(key)
+  canvas.createView(view)
 ```
 
 ### view
 
-The *view* object contains two objects:
+The *view* object contains two collections:
 
   * node
   * link
 
+### view.node
 
-## Node
+The *view.node* collection contains the canvas nodes, that are objects with the following attributes
 
-The *Node* constructor should not be used directly, use [addNode()](#addnode) instead.
-
-### x
+#### x
 
 The *x* coord of the top left vertex of the node.
 
-### y
+#### y
 
 The *y* coord of the top left vertex of the node.
 
-### w
+#### w
 
 The *width* of the rect containing the node. It is expressed in width units.
 It defaults to a value enough to contain node text.
 
-### h
+#### h
 
 The *height* of the rect containing the node. It is expressed in height units.
 It defaults to 1.
 
-### text
+#### text
 
 The *text* label displayed in the node.
 
-### ins
+#### ins
 
-An optional array of [Input](#input) objects.
+An optional list of *node inputs*, which are objects that can contain anything accepted by JSON.
 
-### outs
+#### outs
 
-An optional array of [Ouput](#output) objects.
+An optional list of *node outputs*, which are objects that can contain anything accepted by JSON.
 
-## Link
+### view.link
 
-The *Link* constructor should not be used directly, use [addLink()](#addlink) instead.
+The *view.link* collection contains the canvas links, that are objects with the following attributes
 
-### from
+#### from
 
 An array with two entries:
 
   0. The key of the source node.
   1. The position of the output.
 
-### to
+#### to
 
 An array with two entries:
 
   0. The key of the target node.
   1. The position of the input.
-
-## Pin
-
-### center
-
-### node
-
-### position
-
-### vertex
-
-### get(key)
-
-### has(key)
-
-### set(key, value)
-
-## Input
-
-Is a [Pin](#pin) Object.
-Attribute [name](#name) defaults to `inP` where `P` is the *position* in the [ins](#ins) array.
-
-```
-ins: [{name: "in0"}, {name: "in1"}]
-```
-
-## Output
-
-Is a [Pin](#pin) Object.
-Attribute [name](#name) defaults to `outP` where `P` is the *position* in the [outs](#outs) array.
-
-```
-outs: [{name: "out0"}]
-```
-
-### center
-
-### node
-
-### position
-
-### vertex
-
-### get(key)
-
-### has(key)
-
-### set(key, value)
 
   [1]: http://svgjs.com/ "SVG.js"
 

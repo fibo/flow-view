@@ -10,10 +10,15 @@ function Pin (type, node, position) {
 
   var theme = canvas.theme
 
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
+  var fill     = theme.fillPin,
+      halfSize = theme.halfPinSize
 
-  var size = halfPinSize * 2
+  this.fill = fill
+
+  this.halfSize = halfSize
+
+  var size = halfSize * 2
+  this.size = size
 
   function getVertex () {
     var vertex = {
@@ -44,8 +49,8 @@ function Pin (type, node, position) {
 
     var vertex = this.vertex
 
-    center.relative.x = vertex.relative.x + halfPinSize
-    center.relative.y = vertex.relative.y + halfPinSize
+    center.relative.x = vertex.relative.x + halfSize
+    center.relative.y = vertex.relative.y + halfSize
     center.absolute.x = center.relative.x + node.x
     center.absolute.y = center.relative.y + node.y
 

@@ -4874,6 +4874,8 @@ var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
 function Canvas (id) {
+  var self = this
+
   var theme = defaultTheme
   this.theme = theme
 
@@ -4889,10 +4891,10 @@ function Canvas (id) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (this.node[currentKey])
+    if (self.node[currentKey])
       return getNextKey()
 
-    if (this.link[currentKey])
+    if (self.link[currentKey])
       return getNextKey()
 
     return currentKey
@@ -4922,21 +4924,13 @@ function createView (view) {
   var self = this
 
   function createNode (key) {
-    var node = new Node(self, key)
-
-    node.createView(view.node[key])
-
-    self.node[key] = node
+    self.addNode(view.node[key], key)
   }
 
   Object.keys(view.node).forEach(createNode)
 
   function createLink (key) {
-    var link = new Link(self, key)
-
-    link.createView(view.link[key])
-
-    self.link[key] = link
+    self.addLink(view.link[key], key)
   }
 
   Object.keys(view.link).forEach(createLink)
@@ -4951,7 +4945,20 @@ function deleteView (view) {
 Canvas.prototype.deleteView = deleteView
 
 function readView () {
-  var view = this.view
+  var view = { link: {}, node: {} }
+
+  var link = this.link,
+      node = this.node
+
+  Object.keys(link).forEach(function (key) {
+    view.link[key] = link[key].readView()
+  })
+
+  Object.keys(node).forEach(function (key) {
+    view.node[key] = node[key].readView()
+  })
+
+  return view
 }
 
 Canvas.prototype.readView = readView
@@ -4966,13 +4973,13 @@ function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  var link = new Link(this, view, key)
-
-  this.link[key] = link
+  var link = new Link(this, key)
 
   link.createView(view)
 
-  this.emit('addLink', { key: key, view: view })
+  this.link[key] = link
+
+  this.emit('addLink', { link: { key: view } })
 }
 
 Canvas.prototype.addLink = addLink
@@ -4981,13 +4988,13 @@ function addNode (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  var node = new Node(this, view, key)
-
-  this.node[key] = node
+  var node = new Node(this, key)
 
   node.createView(view)
 
-  this.emit('addNode', { key: key, view: view })
+  this.node[key] = node
+
+  this.emit('addNode', { node: { key: view } })
 }
 
 Canvas.prototype.addNode = addNode
@@ -5006,8 +5013,7 @@ function delNode (key) {
   }
 
   // Then remove node.
-  node.group.remove()
-  delete this.node[key]
+  node.deleteView()
 
   this.emit('delNode', key)
 }
@@ -5017,9 +5023,7 @@ Canvas.prototype.delNode = delNode
 function delLink (key) {
   var link = this.link[key]
 
-  link.line.remove()
-
-  delete this.link[key]
+  link.deleteView()
 
   this.emit('delLink', key)
 }
@@ -5042,27 +5046,17 @@ function Input (node, position) {
 
 inherits(Input, Pin)
 
-function createView (view) {
-  var self = this
+function createView () {
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
 
-  var node = this.node
-
-  var canvas = node.canvas
-
-  var theme = canvas.theme
-
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
-
-  var size = halfPinSize * 2
-
-  var draw = canvas.draw
-
-  var vertex = this.vertex.relative
+  var draw = node.canvas.draw
 
   var rect = draw.rect(size, size)
                  .move(vertex.x, vertex.y)
-                 .fill(fillPin)
+                 .fill(fill)
 
   this.rect = rect
 
@@ -5123,10 +5117,7 @@ function createView (view) {
   start.link[key] = this
 
   function remove () {
-    end.link = null
-    delete start.link[key]
-    delete canvas.view.link[key]
-    line.remove()
+    canvas.delLink(key)
   }
 
   function deselectLine () {
@@ -5145,6 +5136,38 @@ function createView (view) {
 }
 
 Link.prototype.createView = createView
+
+function deleteView () {
+  var canvas = this.canvas,
+      end    = this.end,
+      key    = this.key,
+      line   = this.line,
+      start  = this.start
+
+  line.remove()
+
+  end.link = null
+
+  delete start.link[key]
+
+  delete canvas.link[key]
+}
+
+Link.prototype.deleteView = deleteView
+
+function readView () {
+  var view = { from: [], to: [] }
+
+  view.from[0] = this.from.key
+  view.from[1] = this.start.position
+
+  view.to[0] = this.to.key
+  view.to[1] = this.end.position
+
+  return view
+}
+
+Link.prototype.readView = readView
 
 function linePlot () {
   var line = this.line,
@@ -5203,7 +5226,7 @@ function createView (view) {
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
 
-  var ins  = view.ins || [],
+  var ins  = view.ins  || [],
       outs = view.outs || []
 
   var rect = draw.rect(w, h)
@@ -5226,28 +5249,13 @@ function createView (view) {
   })
 
   function createInput (inputView, position) {
-    var input = new Input(self, position)
-
-    input.createView(inputView)
-
-    self.ins.push(input)
+    self.addInput(position, inputView)
   }
 
   ins.forEach(createInput)
 
-  function createInputView (input, position) {
-    var inputView = view.ins[position]
-
-  }
-
-  ins.forEach(createInputView)
-
   function createOutput (outputView, position) {
-    var output = new Output(self, position)
-
-    output.createView(outputView)
-
-    self.outs.push(output)
+    self.addOutput(position, outputView)
   }
 
   outs.forEach(createOutput)
@@ -5293,7 +5301,20 @@ function createView (view) {
 Node.prototype.createView = createView
 
 function readView () {
-  var view = {}
+  var view = { ins: [], outs: [] }
+
+  var ins  = this.ins,
+      outs = this.outs
+
+  view.text = this.text
+
+  ins.forEach(function (position) {
+    view.ins[position] = {} // TODO get input data
+  })
+
+  outs.forEach(function (position) {
+    view.outs[position] = {} // TODO get output data
+  })
 
   return view
 }
@@ -5301,6 +5322,13 @@ function readView () {
 Node.prototype.readView = readView
 
 function deleteView () {
+  var canvas = this.canvas,
+      group  = this.group,
+      key    = this.key
+
+  group.remove()
+
+  delete canvas.node[key]
 }
 
 Node.prototype.deleteView = deleteView
@@ -5311,20 +5339,20 @@ function updateView () {
 Node.prototype.updateView = updateView
 
 function xCoordinateOf (pin) {
-  var position = pin.position,
-      size     = pin.size,
+  var position = pin.position
+
+  if (position === 0)
+    return 0
+
+  var size     = pin.size,
       type     = pin.type,
       w        = this.w,
-      x
+      x        = 0
 
   var numPins = this[type].length
 
   if (numPins > 1)
-      x = position * ((w - size) / (numPins - 1))
-  else
-      x = 0
-
-  return x
+    return position * ((w - size) / (numPins - 1))
 }
 
 Node.prototype.xCoordinateOf = xCoordinateOf
@@ -5346,8 +5374,6 @@ function addPin (type, position) {
 
   newPin.createView()
 
-  console.log(this[type])
-
   // Move existing pins to new position.
   //
   // Nothing to do it there is no pin yet.
@@ -5359,7 +5385,13 @@ function addPin (type, position) {
       if (i === position)
         continue
 
-      var pin = this[type][position]
+      var pin
+
+      if (i < position)
+        pin = this[type][i]
+
+      if (i > position)
+        pin = this[type][i + 1]
 
       var rect   = pin.rect,
           vertex = pin.vertex.relative
@@ -5783,37 +5815,35 @@ function Output (node, position) {
 
 inherits(Output, Pin)
 
-function createView (view) {
+function createView () {
+  // TODO for var i in view this.set(i, view[i])
   var self = this
 
-  // TODO for var i in view this.set(i, view[i])
-  var node = this.node
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
+
   var canvas = node.canvas
 
-  var theme = canvas.theme
-
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
-
-  var size = halfPinSize * 2
-
-  var draw = canvas.draw
-
-  var vertex = this.vertex.relative
+  var draw  = canvas.draw,
+      theme = canvas.theme
 
   var rect = draw.rect(size, size)
                  .move(vertex.x, vertex.y)
-                 .fill(fillPin)
+                 .fill(fill)
+
+  this.rect = rect
 
   node.group.add(rect)
 
   var preLink = null
 
-  function mouseover () {
-    preLink = new PreLink(canvas, this)
+  function mouseoverOutput () {
+    preLink = new PreLink(canvas, self)
   }
 
-  rect.on('mouseover', mouseover.bind(this))
+  rect.on('mouseover', mouseoverOutput)
 }
 
 Output.prototype.createView = createView
@@ -5834,10 +5864,15 @@ function Pin (type, node, position) {
 
   var theme = canvas.theme
 
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
+  var fill     = theme.fillPin,
+      halfSize = theme.halfPinSize
 
-  var size = halfPinSize * 2
+  this.fill = fill
+
+  this.halfSize = halfSize
+
+  var size = halfSize * 2
+  this.size = size
 
   function getVertex () {
     var vertex = {
@@ -5868,8 +5903,8 @@ function Pin (type, node, position) {
 
     var vertex = this.vertex
 
-    center.relative.x = vertex.relative.x + halfPinSize
-    center.relative.y = vertex.relative.y + halfPinSize
+    center.relative.x = vertex.relative.x + halfSize
+    center.relative.y = vertex.relative.y + halfSize
     center.absolute.x = center.relative.x + node.x
     center.absolute.y = center.relative.y + node.y
 
@@ -6076,7 +6111,7 @@ module.exports={
   },
   "strokeLineHighlighted": {
     "color": "#d63518",
-    "width": 5
+    "width": 4
   },
   "unitHeight": 40,
   "unitWidth": 10
@@ -6090,24 +6125,7 @@ module.exports={
 
 },{}],23:[function(require,module,exports){
 
-var Canvas = require('./Canvas')
-exports.Canvas = Canvas
-
-function render (element, callback) {
-  return function loading (graph) {
-    try {
-    if (typeof callback === 'function')
-      callback(graph)
-    }
-    catch (message) {
-      console.error(message)
-    }
-
-    return new Canvas(element, graph.view)
-  }
-}
-
-exports.render = render
+exports.Canvas = require('./Canvas')
 
 
 },{"./Canvas":6}],24:[function(require,module,exports){

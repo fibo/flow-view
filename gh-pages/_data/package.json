@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "main": "index.js",
   "scripts": {

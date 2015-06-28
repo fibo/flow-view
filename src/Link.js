@@ -46,10 +46,7 @@ function createView (view) {
   start.link[key] = this
 
   function remove () {
-    end.link = null
-    delete start.link[key]
-    delete canvas.view.link[key]
-    line.remove()
+    canvas.delLink(key)
   }
 
   function deselectLine () {
@@ -68,6 +65,38 @@ function createView (view) {
 }
 
 Link.prototype.createView = createView
+
+function deleteView () {
+  var canvas = this.canvas,
+      end    = this.end,
+      key    = this.key,
+      line   = this.line,
+      start  = this.start
+
+  line.remove()
+
+  end.link = null
+
+  delete start.link[key]
+
+  delete canvas.link[key]
+}
+
+Link.prototype.deleteView = deleteView
+
+function readView () {
+  var view = { from: [], to: [] }
+
+  view.from[0] = this.from.key
+  view.from[1] = this.start.position
+
+  view.to[0] = this.to.key
+  view.to[1] = this.end.position
+
+  return view
+}
+
+Link.prototype.readView = readView
 
 function linePlot () {
   var line = this.line,

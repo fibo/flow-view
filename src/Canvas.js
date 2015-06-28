@@ -14,6 +14,8 @@ var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
 function Canvas (id) {
+  var self = this
+
   var theme = defaultTheme
   this.theme = theme
 
@@ -29,10 +31,10 @@ function Canvas (id) {
     var currentKey = ++nextKey + ''
 
     // Make next key unique.
-    if (this.node[currentKey])
+    if (self.node[currentKey])
       return getNextKey()
 
-    if (this.link[currentKey])
+    if (self.link[currentKey])
       return getNextKey()
 
     return currentKey
@@ -62,21 +64,13 @@ function createView (view) {
   var self = this
 
   function createNode (key) {
-    var node = new Node(self, key)
-
-    node.createView(view.node[key])
-
-    self.node[key] = node
+    self.addNode(view.node[key], key)
   }
 
   Object.keys(view.node).forEach(createNode)
 
   function createLink (key) {
-    var link = new Link(self, key)
-
-    link.createView(view.link[key])
-
-    self.link[key] = link
+    self.addLink(view.link[key], key)
   }
 
   Object.keys(view.link).forEach(createLink)
@@ -91,7 +85,20 @@ function deleteView (view) {
 Canvas.prototype.deleteView = deleteView
 
 function readView () {
-  var view = this.view
+  var view = { link: {}, node: {} }
+
+  var link = this.link,
+      node = this.node
+
+  Object.keys(link).forEach(function (key) {
+    view.link[key] = link[key].readView()
+  })
+
+  Object.keys(node).forEach(function (key) {
+    view.node[key] = node[key].readView()
+  })
+
+  return view
 }
 
 Canvas.prototype.readView = readView
@@ -106,13 +113,13 @@ function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  var link = new Link(this, view, key)
-
-  this.link[key] = link
+  var link = new Link(this, key)
 
   link.createView(view)
 
-  this.emit('addLink', { key: key, view: view })
+  this.link[key] = link
+
+  this.emit('addLink', { link: { key: view } })
 }
 
 Canvas.prototype.addLink = addLink
@@ -121,13 +128,13 @@ function addNode (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
 
-  var node = new Node(this, view, key)
-
-  this.node[key] = node
+  var node = new Node(this, key)
 
   node.createView(view)
 
-  this.emit('addNode', { key: key, view: view })
+  this.node[key] = node
+
+  this.emit('addNode', { node: { key: view } })
 }
 
 Canvas.prototype.addNode = addNode
@@ -146,8 +153,7 @@ function delNode (key) {
   }
 
   // Then remove node.
-  node.group.remove()
-  delete this.node[key]
+  node.deleteView()
 
   this.emit('delNode', key)
 }
@@ -157,9 +163,7 @@ Canvas.prototype.delNode = delNode
 function delLink (key) {
   var link = this.link[key]
 
-  link.line.remove()
-
-  delete this.link[key]
+  link.deleteView()
 
   this.emit('delLink', key)
 }

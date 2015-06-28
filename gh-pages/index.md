@@ -76,7 +76,7 @@ A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In you
 <div id="drawing"></div>
 ```
 
-Create an [view object](#view)
+Create a [view object](#view)
 
 ```
 var view = {

@@ -39,7 +39,7 @@ function createView (view) {
   var h = view.h * theme.unitHeight,
       w = view.w * theme.unitWidth
 
-  var ins  = view.ins || [],
+  var ins  = view.ins  || [],
       outs = view.outs || []
 
   var rect = draw.rect(w, h)
@@ -62,28 +62,13 @@ function createView (view) {
   })
 
   function createInput (inputView, position) {
-    var input = new Input(self, position)
-
-    input.createView(inputView)
-
-    self.ins.push(input)
+    self.addInput(position, inputView)
   }
 
   ins.forEach(createInput)
 
-  function createInputView (input, position) {
-    var inputView = view.ins[position]
-
-  }
-
-  ins.forEach(createInputView)
-
   function createOutput (outputView, position) {
-    var output = new Output(self, position)
-
-    output.createView(outputView)
-
-    self.outs.push(output)
+    self.addOutput(position, outputView)
   }
 
   outs.forEach(createOutput)
@@ -129,7 +114,20 @@ function createView (view) {
 Node.prototype.createView = createView
 
 function readView () {
-  var view = {}
+  var view = { ins: [], outs: [] }
+
+  var ins  = this.ins,
+      outs = this.outs
+
+  view.text = this.text
+
+  ins.forEach(function (position) {
+    view.ins[position] = {} // TODO get input data
+  })
+
+  outs.forEach(function (position) {
+    view.outs[position] = {} // TODO get output data
+  })
 
   return view
 }
@@ -137,6 +135,13 @@ function readView () {
 Node.prototype.readView = readView
 
 function deleteView () {
+  var canvas = this.canvas,
+      group  = this.group,
+      key    = this.key
+
+  group.remove()
+
+  delete canvas.node[key]
 }
 
 Node.prototype.deleteView = deleteView
@@ -147,20 +152,20 @@ function updateView () {
 Node.prototype.updateView = updateView
 
 function xCoordinateOf (pin) {
-  var position = pin.position,
-      size     = pin.size,
+  var position = pin.position
+
+  if (position === 0)
+    return 0
+
+  var size     = pin.size,
       type     = pin.type,
       w        = this.w,
-      x
+      x        = 0
 
   var numPins = this[type].length
 
   if (numPins > 1)
-      x = position * ((w - size) / (numPins - 1))
-  else
-      x = 0
-
-  return x
+    return position * ((w - size) / (numPins - 1))
 }
 
 Node.prototype.xCoordinateOf = xCoordinateOf
@@ -182,8 +187,6 @@ function addPin (type, position) {
 
   newPin.createView()
 
-  console.log(this[type])
-
   // Move existing pins to new position.
   //
   // Nothing to do it there is no pin yet.
@@ -195,7 +198,13 @@ function addPin (type, position) {
       if (i === position)
         continue
 
-      var pin = this[type][position]
+      var pin
+
+      if (i < position)
+        pin = this[type][i]
+
+      if (i > position)
+        pin = this[type][i + 1]
 
       var rect   = pin.rect,
           vertex = pin.vertex.relative

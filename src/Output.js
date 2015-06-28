@@ -11,37 +11,35 @@ function Output (node, position) {
 
 inherits(Output, Pin)
 
-function createView (view) {
+function createView () {
+  // TODO for var i in view this.set(i, view[i])
   var self = this
 
-  // TODO for var i in view this.set(i, view[i])
-  var node = this.node
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
+
   var canvas = node.canvas
 
-  var theme = canvas.theme
-
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
-
-  var size = halfPinSize * 2
-
-  var draw = canvas.draw
-
-  var vertex = this.vertex.relative
+  var draw  = canvas.draw,
+      theme = canvas.theme
 
   var rect = draw.rect(size, size)
                  .move(vertex.x, vertex.y)
-                 .fill(fillPin)
+                 .fill(fill)
+
+  this.rect = rect
 
   node.group.add(rect)
 
   var preLink = null
 
-  function mouseover () {
-    preLink = new PreLink(canvas, this)
+  function mouseoverOutput () {
+    preLink = new PreLink(canvas, self)
   }
 
-  rect.on('mouseover', mouseover.bind(this))
+  rect.on('mouseover', mouseoverOutput)
 }
 
 Output.prototype.createView = createView

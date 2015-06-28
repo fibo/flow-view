@@ -10,27 +10,17 @@ function Input (node, position) {
 
 inherits(Input, Pin)
 
-function createView (view) {
-  var self = this
+function createView () {
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
 
-  var node = this.node
-
-  var canvas = node.canvas
-
-  var theme = canvas.theme
-
-  var fillPin     = theme.fillPin,
-      halfPinSize = theme.halfPinSize
-
-  var size = halfPinSize * 2
-
-  var draw = canvas.draw
-
-  var vertex = this.vertex.relative
+  var draw = node.canvas.draw
 
   var rect = draw.rect(size, size)
                  .move(vertex.x, vertex.y)
-                 .fill(fillPin)
+                 .fill(fill)
 
   this.rect = rect
 

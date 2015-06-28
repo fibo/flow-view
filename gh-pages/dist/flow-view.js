@@ -5390,6 +5390,7 @@ function addPin (type, position) {
       if (i < position)
         pin = this[type][i]
 
+      // After new pin position, it is necessary to use i + 1 as index.
       if (i > position)
         pin = this[type][i + 1]
 
@@ -5397,6 +5398,16 @@ function addPin (type, position) {
           vertex = pin.vertex.relative
 
       rect.move(vertex.x, vertex.y)
+
+      // Move also any link connected to pin.
+      if (type === 'ins')
+        if (pin.link)
+          pin.link.linePlot()
+
+      if (type === 'outs')
+        Object.keys(pin.link).forEach(function (key) {
+          pin.link[key].linePlot()
+        })
     }
   }
 }

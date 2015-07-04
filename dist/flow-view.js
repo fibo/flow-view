@@ -5744,10 +5744,7 @@ function NodeCreator (canvas) {
 
   var form = foreignObject.getChild(0)
 
-  form.innerHTML = '<input id="flow-view-selector-input" name="selectnode" type="text" autofocus />'
-
-  // TODO give focus to input text
-  form.selectnode.focus()
+  form.innerHTML = '<input id="flow-view-selector-input" name="selectnode" type="text" />'
 
   function createNode () {
     foreignObject.hide()
@@ -5791,11 +5788,16 @@ function showNodeCreator (ev) {
   var x = ev.offsetX,
       y = ev.offsetY
 
+  var foreignObject = this.foreignObject
+
   this.x = x
   this.y = y
 
-  this.foreignObject.move(x, y)
-                    .show()
+  foreignObject.move(x, y)
+               .show()
+
+  var form = foreignObject.getChild(0)
+  form.selectnode.focus()
 }
 
 NodeCreator.prototype.show = showNodeCreator

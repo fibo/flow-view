@@ -5788,8 +5788,8 @@ function hideNodeCreator (ev) {
 NodeCreator.prototype.hide = hideNodeCreator
 
 function showNodeCreator (ev) {
-  var x = ev.clientX,
-      y = ev.clientY
+  var x = ev.offsetX,
+      y = ev.offsetY
 
   this.x = x
   this.y = y

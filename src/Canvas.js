@@ -53,7 +53,11 @@ function Canvas (id) {
 
   var element = document.getElementById(id)
 
-  SVG.on(element, 'dblclick', nodeCreator.show.bind(nodeCreator))
+  var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
+      showNodeCreator = nodeCreator.show.bind(nodeCreator)
+
+  SVG.on(element, 'click',    hideNodeCreator)
+  SVG.on(element, 'dblclick', showNodeCreator)
 }
 
 inherits(Canvas, EventEmitter)

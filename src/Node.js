@@ -77,7 +77,7 @@ function createView (view) {
        .draggable()
 
   function dragmove () {
-    this.outs.forEach(function (output) {
+    self.outs.forEach(function (output) {
       Object.keys(output.link).forEach(function (key) {
         var link = output.link[key]
 
@@ -86,7 +86,7 @@ function createView (view) {
       })
     })
 
-    this.ins.forEach(function (input) {
+    self.ins.forEach(function (input) {
       var link = input.link
 
       if (link)
@@ -94,13 +94,13 @@ function createView (view) {
     })
   }
 
-  group.on('dragmove', dragmove.bind(this))
+  group.on('dragmove', dragmove)
 
   function dragstart () {
     canvas.nodeControls.detach()
   }
 
-  group.on('dragstart', dragstart.bind(this))
+  group.on('dragstart', dragstart)
 
   function showNodeControls (ev) {
     ev.stopPropagation()
@@ -122,11 +122,11 @@ function readView () {
   view.text = this.text
 
   ins.forEach(function (position) {
-    view.ins[position] = {} // TODO get input data
+    view.ins[position] = ins[position].readView()
   })
 
   outs.forEach(function (position) {
-    view.outs[position] = {} // TODO get output data
+    view.outs[position] = outs[position].readView()
   })
 
   return view
@@ -187,41 +187,44 @@ function addPin (type, position) {
 
   newPin.createView()
 
+  // Nothing more to do it there is no pin yet.
+  if (numPins === 0)
+    return
+
+  // Update link view for outputs.
+  function updateLinkViews (pin, key) {
+    pin.link[key].linePlot()
+  }
+
   // Move existing pins to new position.
-  //
-  // Nothing to do it there is no pin yet.
-  if (numPins > 0) {
-    // Start loop on i = 1, the second position. The first pin is not moved.
-    // The loop ends at numPins + 1 cause one pin was added.
-    for (var i = 1; i < numPins + 1; i++) {
-      // Nothing to do for input added right now.
-      if (i === position)
-        continue
+  // Start loop on i = 1, the second position. The first pin is not moved.
+  // The loop ends at numPins + 1 cause one pin was added.
+  for (var i = 1; i < numPins + 1; i++) {
+    // Nothing to do for input added right now.
+    if (i === position)
+      continue
 
-      var pin
+    var pin
 
-      if (i < position)
-        pin = this[type][i]
+    if (i < position)
+      pin = this[type][i]
 
-      // After new pin position, it is necessary to use i + 1 as index.
-      if (i > position)
-        pin = this[type][i + 1]
+    // After new pin position, it is necessary to use i + 1 as index.
+    if (i > position)
+      pin = this[type][i + 1]
 
-      var rect   = pin.rect,
-          vertex = pin.vertex.relative
+    var rect   = pin.rect,
+        vertex = pin.vertex.relative
 
-      rect.move(vertex.x, vertex.y)
+    rect.move(vertex.x, vertex.y)
 
-      // Move also any link connected to pin.
-      if (type === 'ins')
-        if (pin.link)
-          pin.link.linePlot()
+    // Move also any link connected to pin.
+    if (type === 'ins')
+      if (pin.link)
+        pin.link.linePlot()
 
-      if (type === 'outs')
-        Object.keys(pin.link).forEach(function (key) {
-          pin.link[key].linePlot()
-        })
-    }
+    if (type === 'outs')
+      Object.keys(pin.link).forEach(updateLinkViews.bind(null, pin))
   }
 }
 

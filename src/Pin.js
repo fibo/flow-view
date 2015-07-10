@@ -82,14 +82,23 @@ function has (key) {
 Pin.prototype.has = has
 
 function set (key, data) {
-  var node     = this.node,
-      position = this.position,
+  var position = this.position,
       type     = this.type
 
   this.node[type][position][key] = data
 }
 
 Pin.prototype.set = set
+
+function readView () {
+  var node     = this.node,
+      position = this.position,
+      type     = this.type
+
+  return node[type][position]
+}
+
+Pin.prototype.readView = readView
 
 module.exports = Pin
 

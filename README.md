@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/fibo/flow-view.png?label=ready&title=Ready)](https://waffle.io/fibo/flow-view)
 # flow-view
 
 > Visual editor for dataflow programming, powered by [svg.js][1]

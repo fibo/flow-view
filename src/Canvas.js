@@ -123,7 +123,10 @@ function addLink (view, key) {
 
   this.link[key] = link
 
-  this.emit('addLink', { link: { key: view } })
+  var eventData = { link: {} }
+  eventData.link[key] = view
+
+  this.emit('addLink', eventData)
 }
 
 Canvas.prototype.addLink = addLink
@@ -138,7 +141,10 @@ function addNode (view, key) {
 
   this.node[key] = node
 
-  this.emit('addNode', { node: { key: view } })
+  var eventData = { node: {} }
+  eventData.node[key] = view
+
+  this.emit('addNode', eventData)
 }
 
 Canvas.prototype.addNode = addNode

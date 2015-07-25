@@ -171,5 +171,17 @@ An array with two entries:
   0. The key of the target node.
   1. The position of the input.
 
+### Events
+
+The following events are triggered
+
+* addNode
+* addLink
+* delNode
+* delLink
+* moveNode
+* addInput
+* addOutput
+
   [1]: http://svgjs.com/ "SVG.js"
 

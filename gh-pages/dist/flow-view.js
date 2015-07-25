@@ -5025,7 +5025,7 @@ function delNode (key) {
   // Then remove node.
   node.deleteView()
 
-  this.emit('delNode', key)
+  this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -5035,7 +5035,7 @@ function delLink (key) {
 
   link.deleteView()
 
-  this.emit('delLink', key)
+  this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink
@@ -5437,12 +5437,32 @@ function addPin (type, position) {
 
 function addInput (position) {
   addPin.bind(this)('ins', position)
+
+  var canvas = this.canvas,
+      key    = this.key
+
+  var eventData = { node: {} }
+  eventData.node[key] = {
+    ins: [{position: position}]
+  }
+
+  this.canvas.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
 
 function addOutput (position) {
   addPin.bind(this)('outs', position)
+
+  var canvas = this.canvas,
+      key    = this.key
+
+  var eventData = { node: {} }
+  eventData.node[key] = {
+    outs: [{position: position}]
+  }
+
+  this.canvas.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput

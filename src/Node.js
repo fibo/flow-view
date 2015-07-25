@@ -18,7 +18,8 @@ function createView (view) {
   var self = this
 
   var canvas = this.canvas,
-      group  = this.group
+      group  = this.group,
+      key    = this.key
 
   var draw  = canvas.draw,
       theme = canvas.theme
@@ -54,7 +55,7 @@ function createView (view) {
   group.add(rect)
        .add(text)
 
-  Object.defineProperties(this, {
+  Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
     'y': { get: function () { return group.y()     } },
     'w': { get: function () { return rect.width()  } },
@@ -75,6 +76,15 @@ function createView (view) {
 
   group.move(view.x, view.y)
        .draggable()
+
+  function dragend () {
+    var eventData = { node: {} }
+    eventData.node[key] = {x: self.x, y: self.y}
+
+    canvas.emit('moveNode', eventData)
+  }
+
+  group.on('dragend', dragend)
 
   function dragmove () {
     self.outs.forEach(function (output) {

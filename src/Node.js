@@ -240,12 +240,32 @@ function addPin (type, position) {
 
 function addInput (position) {
   addPin.bind(this)('ins', position)
+
+  var canvas = this.canvas,
+      key    = this.key
+
+  var eventData = { node: {} }
+  eventData.node[key] = {
+    ins: [{position: position}]
+  }
+
+  this.canvas.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
 
 function addOutput (position) {
   addPin.bind(this)('outs', position)
+
+  var canvas = this.canvas,
+      key    = this.key
+
+  var eventData = { node: {} }
+  eventData.node[key] = {
+    outs: [{position: position}]
+  }
+
+  this.canvas.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput

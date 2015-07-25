@@ -165,7 +165,7 @@ function delNode (key) {
   // Then remove node.
   node.deleteView()
 
-  this.emit('delNode', key)
+  this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -175,7 +175,7 @@ function delLink (key) {
 
   link.deleteView()
 
-  this.emit('delLink', key)
+  this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink

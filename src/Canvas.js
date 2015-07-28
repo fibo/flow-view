@@ -1,9 +1,8 @@
 
-var EventEmitter = require('events').EventEmitter,
-    inherits     = require('inherits'),
-    SVG          = require('./SVG')
+var SVG = require('./SVG')
 
-var Link          = require('./Link'),
+var Broker        = require('./Broker'),
+    Link          = require('./Link'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
@@ -13,8 +12,12 @@ var Link          = require('./Link'),
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id) {
+function Canvas (id, eventHooks) {
   var self = this
+
+  var broker = new Broker(this, eventHooks)
+  broker.init(eventHooks)
+  this.broker = broker
 
   var theme = defaultTheme
   this.theme = theme
@@ -59,8 +62,6 @@ function Canvas (id) {
   SVG.on(element, 'click',    hideNodeCreator)
   SVG.on(element, 'dblclick', showNodeCreator)
 }
-
-inherits(Canvas, EventEmitter)
 
 function createView (view) {
   validate(view)
@@ -107,12 +108,6 @@ function readView () {
 
 Canvas.prototype.readView = readView
 
-function updateView (view) {
-
-}
-
-Canvas.prototype.updateView = updateView
-
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -126,7 +121,7 @@ function addLink (view, key) {
   var eventData = { link: {} }
   eventData.link[key] = view
 
-  this.emit('addLink', eventData)
+  //this.emit('addLink', eventData)
 }
 
 Canvas.prototype.addLink = addLink
@@ -144,7 +139,7 @@ function addNode (view, key) {
   var eventData = { node: {} }
   eventData.node[key] = view
 
-  this.emit('addNode', eventData)
+  //this.emit('addNode', eventData)
 }
 
 Canvas.prototype.addNode = addNode
@@ -165,7 +160,7 @@ function delNode (key) {
   // Then remove node.
   node.deleteView()
 
-  this.emit('delNode', [key])
+  //this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -175,7 +170,7 @@ function delLink (key) {
 
   link.deleteView()
 
-  this.emit('delLink', [key])
+  //this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink

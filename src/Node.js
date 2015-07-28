@@ -81,7 +81,7 @@ function createView (view) {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    canvas.emit('moveNode', eventData)
+    //canvas.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
@@ -249,7 +249,7 @@ function addInput (position) {
     ins: [{position: position}]
   }
 
-  this.canvas.emit('addInput', eventData)
+  //this.canvas.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -265,7 +265,7 @@ function addOutput (position) {
     outs: [{position: position}]
   }
 
-  this.canvas.emit('addOutput', eventData)
+  //this.canvas.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput

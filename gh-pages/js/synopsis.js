@@ -12,7 +12,8 @@ var Canvas = require('flow-view').Canvas,
           y: 200,
           w: 10,
           h: 1,
-          text: "Hello",
+          link: 'http://g14n.info/flow-view',
+          text: "Click me",
           ins: [{name: "in0"}, {name: "in1"}]
         }
      },

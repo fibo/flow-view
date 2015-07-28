@@ -4860,10 +4860,51 @@ return SVG;
 },{}],6:[function(require,module,exports){
 
 var EventEmitter = require('events').EventEmitter,
-    inherits     = require('inherits'),
-    SVG          = require('./SVG')
+    inherits     = require('inherits')
 
-var Link          = require('./Link'),
+function Broker (canvas) {
+  this.canvas = canvas
+}
+
+inherits(Broker, EventEmitter)
+
+function init (eventHook) {
+  var canvas = this.canvas
+
+  function addLink (view, key) {
+    if (typeof key === 'undefined')
+      key = canvas.nextKey
+
+    var beforeAddLink = eventHook.beforeAddLink
+
+    if (typeof beforeAddLink === 'function') {
+      try {
+        beforeAddLink(view, key)
+        canvas.addLink(view, key)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      canvas.addLink(view, key)
+    }
+  }
+
+  this.on('addLink', addLink)
+}
+
+Broker.prototype.init = init
+
+module.exports = Broker
+
+
+},{"events":1,"inherits":2}],7:[function(require,module,exports){
+
+var SVG = require('./SVG')
+
+var Broker        = require('./Broker'),
+    Link          = require('./Link'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
@@ -4873,8 +4914,12 @@ var Link          = require('./Link'),
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id) {
+function Canvas (id, eventHooks) {
   var self = this
+
+  var broker = new Broker(this, eventHooks)
+  broker.init(eventHooks)
+  this.broker = broker
 
   var theme = defaultTheme
   this.theme = theme
@@ -4919,8 +4964,6 @@ function Canvas (id) {
   SVG.on(element, 'click',    hideNodeCreator)
   SVG.on(element, 'dblclick', showNodeCreator)
 }
-
-inherits(Canvas, EventEmitter)
 
 function createView (view) {
   validate(view)
@@ -4967,12 +5010,6 @@ function readView () {
 
 Canvas.prototype.readView = readView
 
-function updateView (view) {
-
-}
-
-Canvas.prototype.updateView = updateView
-
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -4986,7 +5023,7 @@ function addLink (view, key) {
   var eventData = { link: {} }
   eventData.link[key] = view
 
-  this.emit('addLink', eventData)
+  //this.emit('addLink', eventData)
 }
 
 Canvas.prototype.addLink = addLink
@@ -5004,7 +5041,7 @@ function addNode (view, key) {
   var eventData = { node: {} }
   eventData.node[key] = view
 
-  this.emit('addNode', eventData)
+  //this.emit('addNode', eventData)
 }
 
 Canvas.prototype.addNode = addNode
@@ -5025,7 +5062,7 @@ function delNode (key) {
   // Then remove node.
   node.deleteView()
 
-  this.emit('delNode', [key])
+  //this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -5035,7 +5072,7 @@ function delLink (key) {
 
   link.deleteView()
 
-  this.emit('delLink', [key])
+  //this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink
@@ -5043,7 +5080,7 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Link":8,"./Node":9,"./NodeControls":14,"./NodeCreator":15,"./NodeInspector":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"./validate":24,"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./NodeInspector":17,"./SVG":21,"./default/theme.json":22,"./default/view.json":23,"./validate":25}],8:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5078,7 +5115,7 @@ Input.prototype.createView = createView
 module.exports = Input
 
 
-},{"./Pin":18,"inherits":2}],8:[function(require,module,exports){
+},{"./Pin":19,"inherits":2}],9:[function(require,module,exports){
 
 function Link (canvas, key) {
   this.canvas = canvas
@@ -5194,7 +5231,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -5278,7 +5315,7 @@ function createView (view) {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    canvas.emit('moveNode', eventData)
+    //canvas.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
@@ -5446,7 +5483,7 @@ function addInput (position) {
     ins: [{position: position}]
   }
 
-  this.canvas.emit('addInput', eventData)
+  //this.canvas.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -5462,7 +5499,7 @@ function addOutput (position) {
     outs: [{position: position}]
   }
 
-  this.canvas.emit('addOutput', eventData)
+  //this.canvas.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput
@@ -5470,7 +5507,7 @@ Node.prototype.addOutput = addOutput
 module.exports = Node
 
 
-},{"./Input":7,"./Output":17}],10:[function(require,module,exports){
+},{"./Input":8,"./Output":18}],11:[function(require,module,exports){
 
 function NodeButton (canvas, relativeCoordinate) {
   this.relativeCoordinate = relativeCoordinate
@@ -5502,7 +5539,7 @@ NodeButton.prototype.detach = detachNodeButton
 module.exports = NodeButton
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5574,7 +5611,7 @@ AddInput.prototype.attachTo = attachTo
 module.exports = AddInput
 
 
-},{"../NodeButton":10,"inherits":2}],12:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],13:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5647,7 +5684,7 @@ module.exports = AddOutput
 
 
 
-},{"../NodeButton":10,"inherits":2}],13:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],14:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5726,7 +5763,7 @@ DeleteNode.prototype.attachTo = attachTo
 module.exports = DeleteNode
 
 
-},{"../NodeButton":10,"inherits":2}],14:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],15:[function(require,module,exports){
 
 var AddInputButton   = require('./NodeButton/AddInput'),
     AddOutputButton  = require('./NodeButton/AddOutput'),
@@ -5765,7 +5802,7 @@ NodeControls.prototype.detach = nodeControlsDetach
 module.exports = NodeControls
 
 
-},{"./NodeButton/AddInput":11,"./NodeButton/AddOutput":12,"./NodeButton/DeleteNode":13}],15:[function(require,module,exports){
+},{"./NodeButton/AddInput":12,"./NodeButton/AddOutput":13,"./NodeButton/DeleteNode":14}],16:[function(require,module,exports){
 
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
@@ -5848,7 +5885,7 @@ NodeCreator.prototype.show = showNodeCreator
 module.exports = NodeCreator
 
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 function NodeInspector (canvas) {
 
@@ -5857,7 +5894,7 @@ function NodeInspector (canvas) {
 module.exports = NodeInspector
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin'),
@@ -5907,7 +5944,7 @@ Output.prototype.createView = createView
 module.exports = Output
 
 
-},{"./Pin":18,"./PreLink":19,"inherits":2}],18:[function(require,module,exports){
+},{"./Pin":19,"./PreLink":20,"inherits":2}],19:[function(require,module,exports){
 
 function Pin (type, node, position) {
   var self = this
@@ -6013,7 +6050,7 @@ Pin.prototype.readView = readView
 module.exports = Pin
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -6109,7 +6146,8 @@ function PreLink (canvas, output) {
             to: [node.key, input.position]
           }
 
-          canvas.addLink(view)
+          //canvas.addLink(view)
+          canvas.broker.emit('addLink', view)
         }
       })
     }
@@ -6135,7 +6173,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":8}],20:[function(require,module,exports){
+},{"./Link":9}],21:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -6156,7 +6194,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],21:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],22:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -6182,18 +6220,18 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":6}],24:[function(require,module,exports){
+},{"./Canvas":7}],25:[function(require,module,exports){
 
 function validate (view) {
   if (typeof view !== 'object')
@@ -6214,4 +6252,4 @@ module.exports = validate
 module.exports = require('./src')
 
 
-},{"./src":23}]},{},[]);
+},{"./src":24}]},{},[]);

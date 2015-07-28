@@ -4,7 +4,7 @@ function Link (canvas, key) {
   this.key    = key
 }
 
-function createView (view) {
+function render (view) {
   var self = this
 
   var canvas = this.canvas,
@@ -64,7 +64,7 @@ function createView (view) {
   line.on('mouseover', selectLine)
 }
 
-Link.prototype.createView = createView
+Link.prototype.render = render
 
 function deleteView () {
   var canvas = this.canvas,
@@ -84,7 +84,7 @@ function deleteView () {
 
 Link.prototype.deleteView = deleteView
 
-function readView () {
+function toJSON () {
   var view = { from: [], to: [] }
 
   view.from[0] = this.from.key
@@ -96,7 +96,7 @@ function readView () {
   return view
 }
 
-Link.prototype.readView = readView
+Link.prototype.toJSON = toJSON
 
 function linePlot () {
   var line = this.line,

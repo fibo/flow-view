@@ -14,7 +14,7 @@ function Node (canvas, key) {
   this.outs = []
 }
 
-function createView (view) {
+function render (view) {
   var self = this
 
   var canvas = this.canvas,
@@ -85,7 +85,7 @@ function createView (view) {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    //canvas.emit('moveNode', eventData)
+    canvas.broker.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
@@ -125,9 +125,9 @@ function createView (view) {
   group.on('click', showNodeControls.bind(this))
 }
 
-Node.prototype.createView = createView
+Node.prototype.render = render
 
-function readView () {
+function toJSON () {
   var view = { ins: [], outs: [] }
 
   var ins  = this.ins,
@@ -136,17 +136,17 @@ function readView () {
   view.text = this.text
 
   ins.forEach(function (position) {
-    view.ins[position] = ins[position].readView()
+    view.ins[position] = ins[position].toJSON()
   })
 
   outs.forEach(function (position) {
-    view.outs[position] = outs[position].readView()
+    view.outs[position] = outs[position].toJSON()
   })
 
   return view
 }
 
-Node.prototype.readView = readView
+Node.prototype.toJSON = toJSON
 
 function deleteView () {
   var canvas = this.canvas,
@@ -194,7 +194,7 @@ function addPin (type, position) {
 
   this[type].splice(position, 0, newPin)
 
-  newPin.createView()
+  newPin.render()
 
   // Nothing more to do it there is no pin yet.
   if (numPins === 0)
@@ -248,7 +248,7 @@ function addInput (position) {
     ins: [{position: position}]
   }
 
-  //this.canvas.emit('addInput', eventData)
+  canvas.broker.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -264,7 +264,7 @@ function addOutput (position) {
     outs: [{position: position}]
   }
 
-  //this.canvas.emit('addOutput', eventData)
+  canvas.broker.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput

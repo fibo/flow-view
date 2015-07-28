@@ -63,7 +63,7 @@ function Canvas (id, eventHooks) {
   SVG.on(element, 'dblclick', showNodeCreator)
 }
 
-function createView (view) {
+function render (view) {
   validate(view)
 
   var self = this
@@ -81,7 +81,7 @@ function createView (view) {
   Object.keys(view.link).forEach(createLink)
 }
 
-Canvas.prototype.createView = createView
+Canvas.prototype.render = render
 
 function deleteView (view) {
 
@@ -89,24 +89,24 @@ function deleteView (view) {
 
 Canvas.prototype.deleteView = deleteView
 
-function readView () {
+function toJSON () {
   var view = { link: {}, node: {} }
 
   var link = this.link,
       node = this.node
 
   Object.keys(link).forEach(function (key) {
-    view.link[key] = link[key].readView()
+    view.link[key] = link[key].toJSON()
   })
 
   Object.keys(node).forEach(function (key) {
-    view.node[key] = node[key].readView()
+    view.node[key] = node[key].toJSON()
   })
 
   return view
 }
 
-Canvas.prototype.readView = readView
+Canvas.prototype.toJSON = toJSON
 
 function addLink (view, key) {
   if (typeof key === 'undefined')
@@ -114,14 +114,12 @@ function addLink (view, key) {
 
   var link = new Link(this, key)
 
-  link.createView(view)
+  link.render(view)
 
   this.link[key] = link
 
   var eventData = { link: {} }
   eventData.link[key] = view
-
-  //this.emit('addLink', eventData)
 }
 
 Canvas.prototype.addLink = addLink
@@ -132,14 +130,12 @@ function addNode (view, key) {
 
   var node = new Node(this, key)
 
-  node.createView(view)
+  node.render(view)
 
   this.node[key] = node
 
   var eventData = { node: {} }
   eventData.node[key] = view
-
-  //this.emit('addNode', eventData)
 }
 
 Canvas.prototype.addNode = addNode
@@ -159,8 +155,6 @@ function delNode (key) {
 
   // Then remove node.
   node.deleteView()
-
-  //this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -169,8 +163,6 @@ function delLink (key) {
   var link = this.link[key]
 
   link.deleteView()
-
-  //this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink

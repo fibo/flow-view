@@ -12,7 +12,7 @@ flow: /empty.json
 
 ## Description
 
-*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project. I am using it for [dflow](http://g14n.info/dflow), but, I would like it'd be used by other node projects, like [graft](https://github.com/GraftJS/graft).
+*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project. I am using it for [dflow][2], but, I would like it'd be used by other node projects, like [graft](https://github.com/GraftJS/graft).
 
 > Please, help me give Node a common visual interface. Use *flow-view*!
 
@@ -64,11 +64,11 @@ Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html
 
   var canvas = new Canvas('drawing')
 
-  canvas.createView(view)
+  canvas.render(view)
 </script>
 ```
 
-### Canvas
+## Canvas
 
 A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In your HTML file, put a *div* like this
 
@@ -106,10 +106,10 @@ Create a *canvas* instance
   var canvas = new Canvas('drawing')
 ```
 
-and pass it its view
+and render a view graph
 
 ```js
-  canvas.createView(view)
+  canvas.render(view)
 ```
 
 ### view
@@ -171,17 +171,44 @@ An array with two entries:
   0. The key of the target node.
   1. The position of the input.
 
-### Events
+## Events and hooks
 
 The following events are triggered
 
-* addNode
-* addLink
-* delNode
-* delLink
-* moveNode
-* addInput
-* addOutput
+  * addNode
+  * addLink
+  * delNode
+  * delLink
+  * moveNode
+  * addInput
+  * addOutput
+
+Integration of *flow-view* with other libs can be achieved with events hooks:
+
+  * afterMoveNode
+  * beforeAddNode
+  * beforeAddLink
+  * beforeDelNode
+  * beforeDelLink
+
+For example, I used event hooks in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
+
+Event hooks can be passed as a second optional parameter to *Canvas* constructor
+
+```
+var eventHooks = {
+  afterMoveNode: function (eventData) { console.log('moveNode', eventData) },
+  beforeAddLink: function (view) { console.log('addLink', view) },
+  beforeAddNode: function (view) { console.log('addNode', view) },
+  beforedelLink: function (key) { console.log('delLink', key) },
+  beforedelNode: function (key) { console.log('delNode', key) }
+})
+
+var canvas = new Canvas('drawing', eventHooks)
+```
+
+Go to [examples/event-hooks.html](http://g14n.info/flow-view/examples/event-hooks.html) to see results.
 
   [1]: http://svgjs.com/ "SVG.js"
+  [2]: http://g14n.info/dflow "dflow"
 

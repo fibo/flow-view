@@ -24,9 +24,15 @@ var Canvas = require('flow-view').Canvas,
      }
    }
 
-var canvas = new Canvas('drawing', {
-  beforeAddLink: function () { console.log('ok') }
-})
+var eventHooks = {
+  afterMoveNode: function (eventData) { console.log('moveNode', eventData) },
+  beforeAddLink: function (view) { console.log('addLink', view) },
+  beforeAddNode: function (view) { console.log('addNode', view) },
+  beforedelLink: function (key) { console.log('delLink', key) },
+  beforedelNode: function (key) { console.log('delNode', key) }
+}
 
-canvas.createView(view)
+var canvas = new Canvas('drawing', eventHooks)
+
+canvas.render(view)
 

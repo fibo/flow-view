@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "main": "dist/flow-view.js",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "homepage": "http://g14n.info/flow-view",
   "authors": [
     "Gianluca Casati"

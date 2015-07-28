@@ -553,14 +553,14 @@ SVG.extend(SVG.Container, {
 
 },{}],5:[function(require,module,exports){
 /*!
-* svg.js - A lightweight library for manipulating and animating SVG.
-* @version 2.0.5
+* SVG.js - A lightweight library for manipulating and animating SVG.
+* @version 2.0.0-rc.2
 * http://www.svgjs.com
 *
 * @copyright Wout Fierens <wout@impinc.co.uk>
 * @license MIT
 *
-* BUILT: Sun Jul 05 2015 01:42:48 GMT+0200 (Mitteleuropäische Sommerzeit)
+* BUILT: Thu Jun 11 2015 00:40:21 GMT+0200 (Mitteleuropäische Sommerzeit)
 */;
 
 (function(root, factory) {
@@ -755,12 +755,12 @@ SVG.regex = {
 
 }
 SVG.utils = {
-    // Map function
-    map: function(array, block) {
+  // Map function
+  map: function(array, block) {
     var i
       , il = array.length
       , result = []
-    
+
     for (i = 0; i < il; i++)
       result.push(block(array[i]))
     
@@ -769,15 +769,12 @@ SVG.utils = {
 
   // Degrees to radians
 , radians: function(d) {
-    return d % 360 * Math.PI / 180
-  }
-  // Radians to degrees
+		return d % 360 * Math.PI / 180
+	}
+	// Radians to degrees
 , degrees: function(r) {
-    return r * 180 / Math.PI % 360
-  }
-, filterSVGElements: function(p) {
-    return [].filter.call(p, function(el){ return el instanceof SVGElement })
-  }
+		return r * 180 / Math.PI % 360
+	}
 
 }
 
@@ -992,7 +989,7 @@ SVG.extend(SVG.Array, {
   }
   // Strip unnecessary whitespace
 , split: function(string) {
-    return string.trim().split(/\s+/)
+    return string.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g,'').split(' ') 
   }
   // Reverse array
 , reverse: function() {
@@ -1482,10 +1479,18 @@ SVG.Element = SVG.invent({
 , extend: {
     // Move over x-axis
     x: function(x) {
+      if (x != null) {
+        x = new SVG.Number(x)
+        x.value /= this.transform('scaleX')
+      }
       return this.attr('x', x)
     }
     // Move over y-axis
   , y: function(y) {
+      if (y != null) {
+        y = new SVG.Number(y)
+        y.value /= this.transform('scaleY')
+      }
       return this.attr('y', y)
     }
     // Move by center over x-axis
@@ -1527,14 +1532,14 @@ SVG.Element = SVG.invent({
 
       // insert the clone after myself
       this.after(clone)
-
+      
       return clone
     }
     // Remove element
   , remove: function() {
       if (this.parent())
         this.parent().removeElement(this)
-
+      
       return this
     }
     // Replace element
@@ -1558,7 +1563,7 @@ SVG.Element = SVG.invent({
     // Checks whether the given point inside the bounding box of the element
   , inside: function(x, y) {
       var box = this.bbox()
-
+      
       return x > box.x
           && y > box.y
           && x < box.x + box.width
@@ -1634,7 +1639,7 @@ SVG.Element = SVG.invent({
     }
     // Get parent document
   , doc: function(type) {
-      return this instanceof SVG.Doc ? this : this.parent(SVG.Doc)
+      return this.parent(type || SVG.Doc)
     }
     // Returns the svg node to call native svg methods on it
   , native: function() {
@@ -1652,7 +1657,7 @@ SVG.Element = SVG.invent({
 
         // transplant nodes
         for (var i = 0, il = well.firstChild.childNodes.length; i < il; i++)
-          this.node.appendChild(well.firstChild.firstChild)
+          this.node.appendChild(well.firstChild.childNodes[i])
 
       // otherwise act as a getter
       } else {
@@ -1714,7 +1719,7 @@ SVG.FX = SVG.invent({
           if (element.morphArray && (fx.destination.plot || akeys.indexOf('points') > -1)) {
             // get destination
             var box
-              , p = new element.morphArray(fx.destination.plot || fx.attrs.points || element.array())
+              , p = new element.morphArray(fx.destination.plot || fx.attrs.points || element.array)
 
             // add size
             if (fx.destination.size)
@@ -1735,7 +1740,7 @@ SVG.FX = SVG.invent({
 
             // reset destination values
             fx.destination = {
-              plot: element.array().morph(p)
+              plot: element.array.morph(p)
             }
           }
         }
@@ -2298,8 +2303,8 @@ SVG.Matrix = SVG.invent({
     var i, base = arrayToMatrix([1, 0, 0, 1, 0, 0])
 
     // ensure source as object
-    source = source instanceof SVG.Element ?
-      source.matrixify() :
+    source = source && source.node && source.node.getCTM ?
+      source.node.getCTM() :
     typeof source === 'string' ?
       stringToMatrix(source) :
     arguments.length == 6 ?
@@ -2312,7 +2317,7 @@ SVG.Matrix = SVG.invent({
       this[abcdef[i]] = source && typeof source[abcdef[i]] === 'number' ?
         source[abcdef[i]] : base[abcdef[i]]
   }
-
+  
   // Add methods
 , extend: {
     // Extract individual transformations
@@ -2321,7 +2326,7 @@ SVG.Matrix = SVG.invent({
       var px    = deltaTransformPoint(this, 0, 1)
         , py    = deltaTransformPoint(this, 1, 0)
         , skewX = 180 / Math.PI * Math.atan2(px.y, px.x) - 90
-
+  
       return {
         // translation
         x:        this.e
@@ -2394,7 +2399,7 @@ SVG.Matrix = SVG.invent({
     }
     // Translate matrix
   , translate: function(x, y) {
-      return new SVG.Matrix(this.native().translate(x || 0, y || 0))
+      return new SVG.Matrix(this.native().translate(x || 0, y || 0))  
     }
     // Scale matrix
   , scale: function(x, y, cx, cy) {
@@ -2412,7 +2417,7 @@ SVG.Matrix = SVG.invent({
   , rotate: function(r, cx, cy) {
       // convert degrees to radians
       r = SVG.utils.radians(r)
-
+      
       return this.around(cx, cy, new SVG.Matrix(Math.cos(r), Math.sin(r), -Math.sin(r), Math.cos(r), 0, 0))
     }
     // Flip matrix on x or y, at a given offset
@@ -2434,7 +2439,7 @@ SVG.Matrix = SVG.invent({
   , native: function() {
       // create new matrix
       var matrix = SVG.parser.draw.node.createSVGMatrix()
-
+  
       // update with current values
       for (var i = abcdef.length - 1; i >= 0; i--)
         matrix[abcdef[i]] = this[abcdef[i]]
@@ -2454,9 +2459,9 @@ SVG.Matrix = SVG.invent({
 , construct: {
     // Get current matrix
     ctm: function() {
-      return new SVG.Matrix(this.node.getCTM())
+      return new SVG.Matrix(this)
     }
-
+  
   }
 
 })
@@ -2490,7 +2495,7 @@ SVG.extend(SVG.Element, {
         parseFloat(v) : v
     
     } else {
-      // BUG FIX: some browsers will render a stroke if a color is given even though stroke width is 0
+      // bUG FIX: some browsers will render a stroke if a color is given even though stroke width is 0
       if (a == 'stroke-width')
         this.attr('stroke', parseFloat(v) > 0 ? this._stroke : null)
       else if (a == 'stroke')
@@ -2553,7 +2558,7 @@ SVG.extend(SVG.Element, SVG.FX, {
     // act as a getter
     if (typeof o !== 'object') {
       // get current matrix
-      matrix = new SVG.Matrix(target).extract()
+      matrix = target.ctm().extract()
 
       // add parametric rotation
       if (typeof this.param === 'object') {
@@ -2572,7 +2577,7 @@ SVG.extend(SVG.Element, SVG.FX, {
 
     // ensure relative flag
     relative = !!relative || !!o.relative
-
+    
     // act on matrix
     if (o.a != null) {
       matrix = relative ?
@@ -2580,7 +2585,7 @@ SVG.extend(SVG.Element, SVG.FX, {
         matrix.multiply(new SVG.Matrix(o)) :
         // absolute
         new SVG.Matrix(o)
-
+    
     // act on rotation
     } else if (o.rotation != null) {
       // ensure centre point
@@ -2600,11 +2605,11 @@ SVG.extend(SVG.Element, SVG.FX, {
       if (this instanceof SVG.Element) {
         matrix = relative ?
           // relative
-          matrix.rotate(o.rotation, o.cx, o.cy) :
+          target.attr('transform', matrix + ' rotate(' + [o.rotation, o.cx, o.cy].join() + ')').ctm() :
           // absolute
           matrix.rotate(o.rotation - matrix.extract().rotation, o.cx, o.cy)
       }
-
+    
     // act on scale
     } else if (o.scale != null || o.scaleX != null || o.scaleY != null) {
       // ensure centre point
@@ -2637,7 +2642,7 @@ SVG.extend(SVG.Element, SVG.FX, {
         var e = matrix.extract()
         matrix = matrix.multiply(new SVG.Matrix().skew(e.skewX, e.skewY, o.cx, o.cy).inverse())
       }
-
+      
       matrix = matrix.skew(o.skewX, o.skewY, o.cx, o.cy)
 
     // act on flip
@@ -2658,7 +2663,7 @@ SVG.extend(SVG.Element, SVG.FX, {
         if (o.y != null) matrix.f = o.y
       }
     }
-
+    
     return this.attr('transform', matrix)
   }
 })
@@ -2667,27 +2672,6 @@ SVG.extend(SVG.Element, {
   // Reset all transformations
   untransform: function() {
     return this.attr('transform', null)
-  },
-  matrixify: function() {
-
-    var matrix = (this.attr('transform') || '')
-      // split transformations
-      .split(/\)\s*/).slice(0,-1).map(function(str){
-        // generate key => value pairs
-        var kv = str.trim().split('(')
-        return [kv[0], kv[1].split(',').map(function(str){ return parseFloat(str) })]
-      })
-      // calculate every transformation into one matrix
-      .reduce(function(matrix, transform){
-
-        if(transform[0] == 'matrix') return matrix.multiply(arrayToMatrix(transform[1]))
-        return matrix[transform[0]].apply(matrix, transform[1])
-
-      }, new SVG.Matrix())
-    // apply calculated matrix to element
-    this.attr('transform', matrix)
-
-    return matrix
   }
 })
 SVG.extend(SVG.Element, {
@@ -2736,7 +2720,7 @@ SVG.Parent = SVG.invent({
 , extend: {
     // Returns all child elements
     children: function() {
-      return SVG.utils.map(SVG.utils.filterSVGElements(this.node.childNodes), function(node) {
+      return SVG.utils.map(this.node.childNodes, function(node) {
         return SVG.adopt(node)
       })
     }
@@ -2915,23 +2899,13 @@ SVG.off = function(node, event, listener) {
       delete SVG.listeners[index][ev][ns || '*'][listener]
     }
 
-  } else if (ns && ev) {
-    // remove all listeners for a namespaced event
+  } else if (ns) {
+    // remove all listeners for the namespaced event
     if (SVG.listeners[index][ev] && SVG.listeners[index][ev][ns]) {
       for (listener in SVG.listeners[index][ev][ns])
         SVG.off(node, [ev, ns].join('.'), listener)
 
       delete SVG.listeners[index][ev][ns]
-    }
-
-  } else if (ns){
-    // remove all listeners for a specific namespace
-    for(event in SVG.listeners[index]){
-        for(namespace in SVG.listeners[index][event]){
-            if(ns === namespace){
-                SVG.off(node, [event, ns].join('.'))
-            }
-        }
     }
 
   } else if (ev) {
@@ -2971,11 +2945,7 @@ SVG.extend(SVG.Element, {
 , fire: function(event, data) {
     
     // Dispatch event
-    if(event instanceof Event){
-        this.node.dispatchEvent(event)
-    }else{
-        this.node.dispatchEvent(new CustomEvent(event, {detail:data}))
-    }
+    this.node.dispatchEvent(new CustomEvent(event, {detail:data}))
 
     return this
   }
@@ -3344,10 +3314,10 @@ SVG.Pattern = SVG.invent({
 	  }
 	  // Update pattern by rebuilding
 	, update: function(block) {
-      // remove content
+			/* remove content */
       this.clear()
       
-      // invoke passed block
+      /* invoke passed block */
       if (typeof block == 'function')
       	block.call(this, this)
       
@@ -3473,47 +3443,47 @@ SVG.Shape = SVG.invent({
 })
 
 SVG.Bare = SVG.invent({
-  // Initialize
-  create: function(element, inherit) {
-    // construct element
-    this.constructor.call(this, SVG.create(element))
+	// Initialize
+	create: function(element, inherit) {
+		// construct element
+		this.constructor.call(this, SVG.create(element))
 
-    // inherit custom methods
-    if (inherit)
-      for (var method in inherit.prototype)
-        if (typeof inherit.prototype[method] === 'function')
-          this[method] = inherit.prototype[method]
-  }
+		// inherit custom methods
+		if (inherit)
+			for (var method in inherit.prototype)
+				if (typeof inherit.prototype[method] === 'function')
+					element[method] = inherit.prototype[method]
+	}
 
-  // Inherit from
+	// Inherit from
 , inherit: SVG.Element
-
-  // Add methods
+	
+	// Add methods
 , extend: {
-    // Insert some plain text
-    words: function(text) {
-      // remove contents
-      while (this.node.hasChildNodes())
-        this.node.removeChild(this.node.lastChild)
+		// Insert some plain text
+		words: function(text) {
+			// remove contents
+			while (this.node.hasChildNodes())
+      	this.node.removeChild(this.node.lastChild)
 
       // create text node
       this.node.appendChild(document.createTextNode(text))
 
       return this
-    }
-  }
+		}
+	}
 })
 
 
 SVG.extend(SVG.Parent, {
-  // Create an element that is not described by SVG.js
-  element: function(element, inherit) {
-    return this.put(new SVG.Bare(element, inherit))
-  }
-  // Add symbol element
+	// Create an element that is not described by SVG.js
+	element: function(element, inherit) {
+		return this.put(new SVG.Bare(element, inherit))
+	}
+	// Add symbol element
 , symbol: function() {
-    return this.defs().element('symbol', SVG.Container)
-  }
+		return this.defs().element('symbol', SVG.Container)
+	}
 
 })
 SVG.Use = SVG.invent({
@@ -3527,6 +3497,9 @@ SVG.Use = SVG.invent({
 , extend: {
     // Use element as a reference
     element: function(element, file) {
+      /* Store target element */
+      this.target = element
+
       /* Set lined element */
       return this.attr('href', (file || '') + '#' + element, SVG.xlink)
     }
@@ -3621,11 +3594,11 @@ SVG.extend(SVG.Circle, SVG.Ellipse, {
     }
     // Move by center over x-axis
   , cx: function(x) {
-      return x == null ? this.attr('cx') : this.attr('cx', x)
+      return x == null ? this.attr('cx') : this.attr('cx', new SVG.Number(x).divide(this.transform('scaleX')))
     }
     // Move by center over y-axis
   , cy: function(y) {
-      return y == null ? this.attr('cy') : this.attr('cy', y)
+      return y == null ? this.attr('cy') : this.attr('cy', new SVG.Number(y).divide(this.transform('scaleY')))
     }
     // Set width of element
   , width: function(width) {
@@ -3843,7 +3816,7 @@ SVG.Image = SVG.invent({
       
       // preload image
       img.onload = function() {
-        var p = self.parent(SVG.Pattern)
+        var p = self.doc(SVG.Pattern)
 
         // ensure image size
         if (self.width() == 0 && self.height() == 0)
@@ -3972,10 +3945,10 @@ SVG.Text = SVG.invent({
     // Get all the first level lines
   , lines: function() {
       // filter tspans and map them to SVG.js instances
-      var lines = SVG.utils.map(SVG.utils.filterSVGElements(this.node.childNodes), function(el){
-        return SVG.adopt(el)
-      })
-
+      for (var i = 0, il = this.node.childNodes.length, lines = []; i < il; i++)
+        if (this.node.childNodes[i] instanceof SVGElement)
+          lines.push(SVG.adopt(this.node.childNodes[i]))
+      
       // return an instance of SVG.set
       return new SVG.Set(lines)
     }
@@ -4050,7 +4023,7 @@ SVG.Tspan = SVG.invent({
     // Create new line
   , newLine: function() {
       // fetch text parent
-      var t = this.parent(SVG.Text)
+      var t = this.doc(SVG.Text)
 
       // mark new line
       this.newLined = true
@@ -4085,6 +4058,13 @@ SVG.extend(SVG.Text, SVG.Tspan, {
     
     // add new tspan
     node.appendChild(tspan.node)
+
+    // only first level tspans are considered to be "lines"
+    // that doenst make sence. A line is added to a SVG.Set which is never used or returned.
+    // So why bother adding it?
+    // Also: lines() reads all children so it already has this tspan in it because we added it before
+    if (this instanceof SVG.Text)
+      this.lines().add(tspan)
 
     return tspan.text(text)
   }
@@ -4879,6 +4859,10 @@ return SVG;
 
 },{}],6:[function(require,module,exports){
 
+// TODO create closures to generate hooks
+// every hook can accept only one parameter, since addNode and addLink triggered
+// by user input does not need to pass a key.
+
 var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits')
 
@@ -4895,11 +4879,11 @@ function init (eventHook) {
     if (typeof key === 'undefined')
       key = canvas.nextKey
 
-    var beforeAddLink = eventHook.beforeAddLink
+    var beforeAdd = eventHook.beforeAddLink
 
-    if (typeof beforeAddLink === 'function') {
+    if (typeof beforeAdd === 'function') {
       try {
-        beforeAddLink(view, key)
+        beforeAdd(view, key)
         canvas.addLink(view, key)
       }
       catch (err) {
@@ -4912,6 +4896,85 @@ function init (eventHook) {
   }
 
   this.on('addLink', addLink)
+
+  function addNode (view, key) {
+    if (typeof key === 'undefined')
+      key = canvas.nextKey
+
+    var beforeAdd = eventHook.beforeAddNode
+
+    if (typeof before === 'function') {
+      try {
+        beforeAdd(view, key)
+        canvas.addNode(view, key)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      canvas.addNode(view, key)
+    }
+  }
+
+  this.on('addNode', addNode)
+
+  function delLink (key) {
+    var beforeDel = eventHook.beforeDelLink
+
+    if (typeof beforeDel === 'function') {
+      try {
+        beforeDel(key)
+        canvas.delLink(key)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      canvas.delLink(key)
+    }
+  }
+
+  this.on('delLink', delLink)
+
+  function delNode (key) {
+    var beforeDel = eventHook.beforeDelNode
+
+    if (typeof beforeDel === 'function') {
+      try {
+        beforeDel(key)
+        canvas.delNode(key)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      canvas.delNode(key)
+    }
+  }
+
+  this.on('delNode', delNode)
+
+  function moveNode (eventData) {
+    var beforeMove = eventHook.beforeMoveNode
+
+    if (typeof beforeMove === 'function') {
+      try {
+        beforeMove(key)
+        canvas.moveNode(eventData)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      canvas.moveNode(eventData)
+    }
+  }
+
+  this.on('moveNode', moveNode)
 }
 
 Broker.prototype.init = init
@@ -4985,7 +5048,7 @@ function Canvas (id, eventHooks) {
   SVG.on(element, 'dblclick', showNodeCreator)
 }
 
-function createView (view) {
+function render (view) {
   validate(view)
 
   var self = this
@@ -5003,7 +5066,7 @@ function createView (view) {
   Object.keys(view.link).forEach(createLink)
 }
 
-Canvas.prototype.createView = createView
+Canvas.prototype.render = render
 
 function deleteView (view) {
 
@@ -5011,24 +5074,24 @@ function deleteView (view) {
 
 Canvas.prototype.deleteView = deleteView
 
-function readView () {
+function toJSON () {
   var view = { link: {}, node: {} }
 
   var link = this.link,
       node = this.node
 
   Object.keys(link).forEach(function (key) {
-    view.link[key] = link[key].readView()
+    view.link[key] = link[key].toJSON()
   })
 
   Object.keys(node).forEach(function (key) {
-    view.node[key] = node[key].readView()
+    view.node[key] = node[key].toJSON()
   })
 
   return view
 }
 
-Canvas.prototype.readView = readView
+Canvas.prototype.toJSON = toJSON
 
 function addLink (view, key) {
   if (typeof key === 'undefined')
@@ -5036,14 +5099,12 @@ function addLink (view, key) {
 
   var link = new Link(this, key)
 
-  link.createView(view)
+  link.render(view)
 
   this.link[key] = link
 
   var eventData = { link: {} }
   eventData.link[key] = view
-
-  //this.emit('addLink', eventData)
 }
 
 Canvas.prototype.addLink = addLink
@@ -5054,14 +5115,12 @@ function addNode (view, key) {
 
   var node = new Node(this, key)
 
-  node.createView(view)
+  node.render(view)
 
   this.node[key] = node
 
   var eventData = { node: {} }
   eventData.node[key] = view
-
-  //this.emit('addNode', eventData)
 }
 
 Canvas.prototype.addNode = addNode
@@ -5081,8 +5140,6 @@ function delNode (key) {
 
   // Then remove node.
   node.deleteView()
-
-  //this.emit('delNode', [key])
 }
 
 Canvas.prototype.delNode = delNode
@@ -5091,8 +5148,6 @@ function delLink (key) {
   var link = this.link[key]
 
   link.deleteView()
-
-  //this.emit('delLink', [key])
 }
 
 Canvas.prototype.delLink = delLink
@@ -5113,7 +5168,7 @@ function Input (node, position) {
 
 inherits(Input, Pin)
 
-function createView () {
+function render () {
   var fill   = this.fill,
       node   = this.node,
       size   = this.size,
@@ -5130,7 +5185,7 @@ function createView () {
   node.group.add(rect)
 }
 
-Input.prototype.createView = createView
+Input.prototype.render = render
 
 module.exports = Input
 
@@ -5142,7 +5197,7 @@ function Link (canvas, key) {
   this.key    = key
 }
 
-function createView (view) {
+function render (view) {
   var self = this
 
   var canvas = this.canvas,
@@ -5202,7 +5257,7 @@ function createView (view) {
   line.on('mouseover', selectLine)
 }
 
-Link.prototype.createView = createView
+Link.prototype.render = render
 
 function deleteView () {
   var canvas = this.canvas,
@@ -5222,7 +5277,7 @@ function deleteView () {
 
 Link.prototype.deleteView = deleteView
 
-function readView () {
+function toJSON () {
   var view = { from: [], to: [] }
 
   view.from[0] = this.from.key
@@ -5234,7 +5289,7 @@ function readView () {
   return view
 }
 
-Link.prototype.readView = readView
+Link.prototype.toJSON = toJSON
 
 function linePlot () {
   var line = this.line,
@@ -5268,7 +5323,7 @@ function Node (canvas, key) {
   this.outs = []
 }
 
-function createView (view) {
+function render (view) {
   var self = this
 
   var canvas = this.canvas,
@@ -5339,7 +5394,7 @@ function createView (view) {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    //canvas.emit('moveNode', eventData)
+    canvas.broker.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
@@ -5379,9 +5434,9 @@ function createView (view) {
   group.on('click', showNodeControls.bind(this))
 }
 
-Node.prototype.createView = createView
+Node.prototype.render = render
 
-function readView () {
+function toJSON () {
   var view = { ins: [], outs: [] }
 
   var ins  = this.ins,
@@ -5390,17 +5445,17 @@ function readView () {
   view.text = this.text
 
   ins.forEach(function (position) {
-    view.ins[position] = ins[position].readView()
+    view.ins[position] = ins[position].toJSON()
   })
 
   outs.forEach(function (position) {
-    view.outs[position] = outs[position].readView()
+    view.outs[position] = outs[position].toJSON()
   })
 
   return view
 }
 
-Node.prototype.readView = readView
+Node.prototype.toJSON = toJSON
 
 function deleteView () {
   var canvas = this.canvas,
@@ -5448,7 +5503,7 @@ function addPin (type, position) {
 
   this[type].splice(position, 0, newPin)
 
-  newPin.createView()
+  newPin.render()
 
   // Nothing more to do it there is no pin yet.
   if (numPins === 0)
@@ -5502,7 +5557,7 @@ function addInput (position) {
     ins: [{position: position}]
   }
 
-  //this.canvas.emit('addInput', eventData)
+  canvas.broker.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -5518,7 +5573,7 @@ function addOutput (position) {
     outs: [{position: position}]
   }
 
-  //this.canvas.emit('addOutput', eventData)
+  canvas.broker.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput
@@ -5927,7 +5982,7 @@ function Output (node, position) {
 
 inherits(Output, Pin)
 
-function createView () {
+function render () {
   // TODO for var i in view this.set(i, view[i])
   var self = this
 
@@ -5958,7 +6013,7 @@ function createView () {
   rect.on('mouseover', mouseoverOutput)
 }
 
-Output.prototype.createView = createView
+Output.prototype.render = render
 
 module.exports = Output
 
@@ -6056,7 +6111,7 @@ function set (key, data) {
 
 Pin.prototype.set = set
 
-function readView () {
+function toJSON () {
   var node     = this.node,
       position = this.position,
       type     = this.type
@@ -6064,7 +6119,7 @@ function readView () {
   return node[type][position]
 }
 
-Pin.prototype.readView = readView
+Pin.prototype.toJSON = toJSON
 
 module.exports = Pin
 

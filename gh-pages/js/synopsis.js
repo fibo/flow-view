@@ -31,5 +31,5 @@ var eventHooks = {
 
 var canvas = new Canvas('drawing', eventHooks)
 
-canvas.createView(view)
+canvas.render(view)
 

@@ -10,7 +10,7 @@ function Input (node, position) {
 
 inherits(Input, Pin)
 
-function createView () {
+function render () {
   var fill   = this.fill,
       node   = this.node,
       size   = this.size,
@@ -27,7 +27,7 @@ function createView () {
   node.group.add(rect)
 }
 
-Input.prototype.createView = createView
+Input.prototype.render = render
 
 module.exports = Input
 

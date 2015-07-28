@@ -90,7 +90,7 @@ function set (key, data) {
 
 Pin.prototype.set = set
 
-function readView () {
+function toJSON () {
   var node     = this.node,
       position = this.position,
       type     = this.type
@@ -98,7 +98,7 @@ function readView () {
   return node[type][position]
 }
 
-Pin.prototype.readView = readView
+Pin.prototype.toJSON = toJSON
 
 module.exports = Pin
 

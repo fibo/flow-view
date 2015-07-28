@@ -11,7 +11,7 @@ function Output (node, position) {
 
 inherits(Output, Pin)
 
-function createView () {
+function render () {
   // TODO for var i in view this.set(i, view[i])
   var self = this
 
@@ -42,7 +42,7 @@ function createView () {
   rect.on('mouseover', mouseoverOutput)
 }
 
-Output.prototype.createView = createView
+Output.prototype.render = render
 
 module.exports = Output
 

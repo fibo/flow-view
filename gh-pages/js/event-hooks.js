@@ -12,8 +12,7 @@ var Canvas = require('flow-view').Canvas,
           y: 200,
           w: 10,
           h: 1,
-          link: 'http://g14n.info/flow-view',
-          text: "Click me",
+          text: "Hello",
           ins: [{name: "in0"}, {name: "in1"}]
         }
      },
@@ -25,11 +24,9 @@ var Canvas = require('flow-view').Canvas,
      }
    }
 
-var eventHooks = {
+var canvas = new Canvas('drawing', {
   beforeAddLink: function () { console.log('ok') }
-}
-
-var canvas = new Canvas('drawing', eventHooks)
+})
 
 canvas.createView(view)
 

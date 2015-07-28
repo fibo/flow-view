@@ -93,7 +93,8 @@ function PreLink (canvas, output) {
             to: [node.key, input.position]
           }
 
-          canvas.addLink(view)
+          //canvas.addLink(view)
+          canvas.broker.emit('addLink', view)
         }
       })
     }

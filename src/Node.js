@@ -55,6 +55,10 @@ function createView (view) {
   group.add(rect)
        .add(text)
 
+  // Add link, if any.
+  if (typeof view.link === 'string')
+    group.linkTo(view.link)
+
   Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
     'y': { get: function () { return group.y()     } },
@@ -155,11 +159,6 @@ function deleteView () {
 }
 
 Node.prototype.deleteView = deleteView
-
-function updateView () {
-}
-
-Node.prototype.updateView = updateView
 
 function xCoordinateOf (pin) {
   var position = pin.position

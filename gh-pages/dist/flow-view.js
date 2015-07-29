@@ -4897,13 +4897,37 @@ function init (eventHook) {
 
   this.on('addLink', addLink)
 
+  function addInput (eventData) {
+    var beforeAdd = eventHook.beforeAddInput
+
+    var key      = eventData.node,
+        position = eventData.position
+
+    var node = canvas.node[key]
+
+    if (typeof beforeAdd === 'function') {
+      try {
+        beforeAdd(eventData)
+        node.addInput(position)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      node.addInput(position)
+    }
+  }
+
+  this.on('addInput', addInput)
+
   function addNode (view, key) {
     if (typeof key === 'undefined')
       key = canvas.nextKey
 
     var beforeAdd = eventHook.beforeAddNode
 
-    if (typeof before === 'function') {
+    if (typeof beforeAdd === 'function') {
       try {
         beforeAdd(view, key)
         canvas.addNode(view, key)
@@ -4922,6 +4946,7 @@ function init (eventHook) {
   function delLink (key) {
     var beforeDel = eventHook.beforeDelLink
 
+      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
@@ -4941,6 +4966,7 @@ function init (eventHook) {
   function delNode (key) {
     var beforeDel = eventHook.beforeDelNode
 
+      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
@@ -4958,20 +4984,10 @@ function init (eventHook) {
   this.on('delNode', delNode)
 
   function moveNode (eventData) {
-    var beforeMove = eventHook.beforeMoveNode
+    var afterMove = eventHook.afterMoveNode
 
-    if (typeof beforeMove === 'function') {
-      try {
-        beforeMove(key)
-        canvas.moveNode(eventData)
-      }
-      catch (err) {
-        console.log(err)
-      }
-    }
-    else {
-      canvas.moveNode(eventData)
-    }
+    if (typeof afterMove === 'function')
+      afterMove(eventData)
   }
 
   this.on('moveNode', moveNode)
@@ -5239,7 +5255,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    canvas.delLink(key)
+    canvas.broker.emit('delLink', key)
   }
 
   function deselectLine () {
@@ -5364,9 +5380,11 @@ function render (view) {
   group.add(rect)
        .add(text)
 
-  // Add link, if any.
-  if (typeof view.link === 'string')
-    group.linkTo(view.link)
+  // Add url, if any.
+  if (typeof view.url === 'string') {
+    group.linkTo(view.url)
+    this.url = view.url
+  }
 
   Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
@@ -5390,16 +5408,25 @@ function render (view) {
   group.move(view.x, view.y)
        .draggable()
 
+  // Click on a node, without dragging it, actually fires dragstart, dragmove
+  // once and dragend. It is necessary to keep track of dragMoves to realize if
+  // node was really dragged.
+  var dragMoves = -1
+
   function dragend () {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    canvas.broker.emit('moveNode', eventData)
+    if (dragMoves > 0)
+      canvas.broker.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
 
   function dragmove () {
+    // First time node is clicked, dragMoves will be eqal to zero.
+    dragMoves++
+
     self.outs.forEach(function (output) {
       Object.keys(output.link).forEach(function (key) {
         var link = output.link[key]
@@ -5420,6 +5447,7 @@ function render (view) {
   group.on('dragmove', dragmove)
 
   function dragstart () {
+    dragMoves = -1
     canvas.nodeControls.detach()
   }
 
@@ -5443,6 +5471,9 @@ function toJSON () {
       outs = this.outs
 
   view.text = this.text
+
+  if (typeof this.url === 'string')
+    view.url = this.url
 
   ins.forEach(function (position) {
     view.ins[position] = ins[position].toJSON()
@@ -5556,8 +5587,6 @@ function addInput (position) {
   eventData.node[key] = {
     ins: [{position: position}]
   }
-
-  canvas.broker.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -5646,7 +5675,8 @@ function AddInput (canvas) {
   this.group = group
 
   function addInput (ev) {
-    this.node.addInput()
+    var node = this.node
+    canvas.broker.emit('addInput', { node: node.key })
   }
 
   function deselectButton () {
@@ -5798,7 +5828,7 @@ function DeleteNode (canvas) {
 
     canvas.nodeControls.detach()
 
-    canvas.delNode(key)
+    canvas.broker.emit('delNode', key)
   }
 
   function deselectButton () {
@@ -5913,7 +5943,7 @@ function NodeCreator (canvas) {
       y: this.y
     }
 
-    canvas.addNode(nodeView)
+    canvas.broker.emit('addNode', nodeView)
 
     // Remove input text, so next time node selector is shown empty again.
     inputText.value = ''

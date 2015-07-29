@@ -37,13 +37,37 @@ function init (eventHook) {
 
   this.on('addLink', addLink)
 
+  function addInput (eventData) {
+    var beforeAdd = eventHook.beforeAddInput
+
+    var key      = eventData.node,
+        position = eventData.position
+
+    var node = canvas.node[key]
+
+    if (typeof beforeAdd === 'function') {
+      try {
+        beforeAdd(eventData)
+        node.addInput(position)
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      node.addInput(position)
+    }
+  }
+
+  this.on('addInput', addInput)
+
   function addNode (view, key) {
     if (typeof key === 'undefined')
       key = canvas.nextKey
 
     var beforeAdd = eventHook.beforeAddNode
 
-    if (typeof before === 'function') {
+    if (typeof beforeAdd === 'function') {
       try {
         beforeAdd(view, key)
         canvas.addNode(view, key)
@@ -62,6 +86,7 @@ function init (eventHook) {
   function delLink (key) {
     var beforeDel = eventHook.beforeDelLink
 
+      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
@@ -81,6 +106,7 @@ function init (eventHook) {
   function delNode (key) {
     var beforeDel = eventHook.beforeDelNode
 
+      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
@@ -98,20 +124,10 @@ function init (eventHook) {
   this.on('delNode', delNode)
 
   function moveNode (eventData) {
-    var beforeMove = eventHook.beforeMoveNode
+    var afterMove = eventHook.afterMoveNode
 
-    if (typeof beforeMove === 'function') {
-      try {
-        beforeMove(key)
-        canvas.moveNode(eventData)
-      }
-      catch (err) {
-        console.log(err)
-      }
-    }
-    else {
-      canvas.moveNode(eventData)
-    }
+    if (typeof afterMove === 'function')
+      afterMove(eventData)
   }
 
   this.on('moveNode', moveNode)

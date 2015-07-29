@@ -46,7 +46,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    canvas.delLink(key)
+    canvas.broker.emit('delLink', key)
   }
 
   function deselectLine () {

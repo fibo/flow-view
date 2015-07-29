@@ -30,7 +30,8 @@ function AddInput (canvas) {
   this.group = group
 
   function addInput (ev) {
-    this.node.addInput()
+    var node = this.node
+    canvas.broker.emit('addInput', { node: node.key })
   }
 
   function deselectButton () {

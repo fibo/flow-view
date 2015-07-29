@@ -27,7 +27,7 @@ function init (eventHook) {
         canvas.addLink(view, key)
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
     else {
@@ -51,7 +51,7 @@ function init (eventHook) {
         node.addInput(position)
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
     else {
@@ -73,7 +73,7 @@ function init (eventHook) {
         canvas.addNode(view, key)
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
     else {
@@ -86,14 +86,13 @@ function init (eventHook) {
   function delLink (key) {
     var beforeDel = eventHook.beforeDelLink
 
-      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
         canvas.delLink(key)
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
     else {
@@ -106,14 +105,13 @@ function init (eventHook) {
   function delNode (key) {
     var beforeDel = eventHook.beforeDelNode
 
-      console.log(beforeDel)
     if (typeof beforeDel === 'function') {
       try {
         beforeDel(key)
         canvas.delNode(key)
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
     else {

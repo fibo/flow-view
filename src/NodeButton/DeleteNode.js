@@ -37,7 +37,7 @@ function DeleteNode (canvas) {
 
     canvas.nodeControls.detach()
 
-    canvas.delNode(key)
+    canvas.broker.emit('delNode', key)
   }
 
   function deselectButton () {

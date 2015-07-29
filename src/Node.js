@@ -55,9 +55,11 @@ function render (view) {
   group.add(rect)
        .add(text)
 
-  // Add link, if any.
-  if (typeof view.link === 'string')
-    group.linkTo(view.link)
+  // Add url, if any.
+  if (typeof view.url === 'string') {
+    group.linkTo(view.url)
+    this.url = view.url
+  }
 
   Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
@@ -81,16 +83,25 @@ function render (view) {
   group.move(view.x, view.y)
        .draggable()
 
+  // Click on a node, without dragging it, actually fires dragstart, dragmove
+  // once and dragend. It is necessary to keep track of dragMoves to realize if
+  // node was really dragged.
+  var dragMoves = -1
+
   function dragend () {
     var eventData = { node: {} }
     eventData.node[key] = {x: self.x, y: self.y}
 
-    canvas.broker.emit('moveNode', eventData)
+    if (dragMoves > 0)
+      canvas.broker.emit('moveNode', eventData)
   }
 
   group.on('dragend', dragend)
 
   function dragmove () {
+    // First time node is clicked, dragMoves will be eqal to zero.
+    dragMoves++
+
     self.outs.forEach(function (output) {
       Object.keys(output.link).forEach(function (key) {
         var link = output.link[key]
@@ -111,6 +122,7 @@ function render (view) {
   group.on('dragmove', dragmove)
 
   function dragstart () {
+    dragMoves = -1
     canvas.nodeControls.detach()
   }
 
@@ -134,6 +146,9 @@ function toJSON () {
       outs = this.outs
 
   view.text = this.text
+
+  if (typeof this.url === 'string')
+    view.url = this.url
 
   ins.forEach(function (position) {
     view.ins[position] = ins[position].toJSON()
@@ -247,8 +262,6 @@ function addInput (position) {
   eventData.node[key] = {
     ins: [{position: position}]
   }
-
-  canvas.broker.emit('addInput', eventData)
 }
 
 Node.prototype.addInput = addInput

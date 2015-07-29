@@ -34,7 +34,7 @@ function NodeCreator (canvas) {
       y: this.y
     }
 
-    canvas.addNode(nodeView)
+    canvas.broker.emit('addNode', nodeView)
 
     // Remove input text, so next time node selector is shown empty again.
     inputText.value = ''

@@ -2,9 +2,8 @@
 var Link = require('./Link')
 
 function PreLink (canvas, output) {
-  var draw = canvas.draw
-
-  var theme = canvas.theme
+  var svg   = canvas.svg,
+      theme = canvas.theme
 
   var fillPinHighlighted = theme.fillPinHighlighted,
       halfPinSize        = theme.halfPinSize,
@@ -13,19 +12,19 @@ function PreLink (canvas, output) {
 
   var pinSize = halfPinSize * 2
 
-  var rect = draw.rect(pinSize, pinSize)
-                 .fill(fillPinHighlighted)
-                 .move(output.vertex.absolute.x, output.vertex.absolute.y)
-                 .draggable()
+  var rect = svg.rect(pinSize, pinSize)
+                .fill(fillPinHighlighted)
+                .move(output.vertex.absolute.x, output.vertex.absolute.y)
+                .draggable()
 
   Object.defineProperty(this, 'x1', { get: function () { return output.center.absolute.x } })
   Object.defineProperty(this, 'y1', { get: function () { return output.center.absolute.y } })
   Object.defineProperty(this, 'x2', { get: function () { return rect.x() + halfPinSize } })
   Object.defineProperty(this, 'y2', { get: function () { return rect.y() + halfPinSize } })
 
-  var line = draw.line(this.x1, this.y1, this.x2, this.y2)
-                 .stroke(strokeLine)
-                 .attr('stroke-dasharray', strokeDasharray)
+  var line = svg.line(this.x1, this.y1, this.x2, this.y2)
+                .stroke(strokeLine)
+                .attr('stroke-dasharray', strokeDasharray)
 
   function remove () {
     output.preLink = null

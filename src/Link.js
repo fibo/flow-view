@@ -10,15 +10,16 @@ function render (view) {
   var canvas = this.canvas,
       key    = this.key
 
-  var draw = canvas.draw
-
-  var theme = canvas.theme
+  var broker = canvas.broker,
+      node  = canvas.node,
+      svg    = canvas.svg,
+      theme  = canvas.theme
 
   var strokeLine            = theme.strokeLine,
       strokeLineHighlighted = theme.strokeLineHighlighted
 
-  var from = canvas.node[view.from[0]],
-      to   = canvas.node[view.to[0]]
+  var from = node[view.from[0]],
+      to   = node[view.to[0]]
 
   var start = from.outs[view.from[1]],
       end   = to.ins[view.to[1]]
@@ -37,8 +38,8 @@ function render (view) {
     'y2': { get: function () { return end.center.absolute.y   } }
   })
 
-  var line = draw.line(this.x1, this.y1, this.x2, this.y2)
-                 .stroke(strokeLine)
+  var line = svg.line(this.x1, this.y1, this.x2, this.y2)
+                .stroke(strokeLine)
 
   this.line = line
 
@@ -46,7 +47,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    canvas.broker.emit('delLink', key)
+    broker.emit('delLink', key)
   }
 
   function deselectLine () {

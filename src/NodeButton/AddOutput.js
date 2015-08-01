@@ -5,7 +5,7 @@ var inherits   = require('inherits'),
 function AddOutput (canvas) {
   NodeButton.call(this, canvas)
 
-  var draw  = canvas.draw,
+  var svg   = canvas.svg,
       theme = canvas.theme
 
   var halfPinSize           = theme.halfPinSize,
@@ -15,13 +15,13 @@ function AddOutput (canvas) {
   var size = halfPinSize * 2
   this.size = size
 
-  var group = draw.group()
+  var group = svg.group()
 
-  var line1 = draw.line(0, halfPinSize, size, halfPinSize)
-                  .stroke(strokeLine)
+  var line1 = svg.line(0, halfPinSize, size, halfPinSize)
+                 .stroke(strokeLine)
 
-  var line2 = draw.line(halfPinSize, 0, halfPinSize, size)
-                  .stroke(strokeLine)
+  var line2 = svg.line(halfPinSize, 0, halfPinSize, size)
+                 .stroke(strokeLine)
 
   group.add(line1)
        .add(line2)

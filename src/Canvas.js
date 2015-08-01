@@ -12,11 +12,19 @@ var Broker        = require('./Broker'),
 var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
-function Canvas (id, eventHooks) {
+/**
+ * Create a flow-view canvas
+ *
+ * @constructor
+ * @param {String} id of div
+ * @param {Object} arg can contain width, height, eventHooks
+ */
+
+function Canvas (id, arg) {
   var self = this
 
-  var broker = new Broker(this, eventHooks)
-  broker.init(eventHooks)
+  var broker = new Broker(this)
+  broker.init(arg.eventHooks)
   this.broker = broker
 
   var theme = defaultTheme
@@ -25,8 +33,35 @@ function Canvas (id, eventHooks) {
   this.node = {}
   this.link = {}
 
-  this.draw = SVG(id).size(1000, 1000)
-                     .spof()
+  var svg = this.svg = SVG(id).spof()
+
+  var element = document.getElementById(id)
+
+  var height = arg.height || element.clientHeight,
+      width  = arg.width  || element.clientWidth
+
+  console.log(element.clientHeight)
+  console.log(element.clientWidth)
+
+  svg.size(width, height)
+
+  function getHeight () { return height }
+
+  function setHeight (value) {
+    height = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'height', {get: getHeight, set: setHeight});
+
+  function getWidth () { return width }
+
+  function setWidth (value) {
+    width = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
 
   var nextKey = 0
 
@@ -83,11 +118,10 @@ function render (view) {
 
 Canvas.prototype.render = render
 
-function deleteView (view) {
-
-}
-
-Canvas.prototype.deleteView = deleteView
+/**
+ *
+ * @returns {Object} json
+ */
 
 function toJSON () {
   var view = { link: {}, node: {} }

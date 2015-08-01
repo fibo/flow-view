@@ -3,17 +3,14 @@
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
 function NodeCreator (canvas) {
-  var draw  = canvas.draw
-  this.draw = draw
-
   var x = 0
   this.x = x
 
   var y = 0
   this.y = y
 
-  var foreignObject = draw.foreignObject(100,100)
-                          .attr({id: 'flow-view-selector'})
+  var foreignObject = canvas.svg.foreignObject(100, 100)
+                            .attr({id: 'flow-view-selector'})
 
   foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodecreator'})
 

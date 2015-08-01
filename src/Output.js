@@ -22,12 +22,9 @@ function render () {
 
   var canvas = node.canvas
 
-  var draw  = canvas.draw,
-      theme = canvas.theme
-
-  var rect = draw.rect(size, size)
-                 .move(vertex.x, vertex.y)
-                 .fill(fill)
+  var rect = canvas.svg.rect(size, size)
+                   .move(vertex.x, vertex.y)
+                   .fill(fill)
 
   this.rect = rect
 

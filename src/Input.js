@@ -16,11 +16,11 @@ function render () {
       size   = this.size,
       vertex = this.vertex.relative
 
-  var draw = node.canvas.draw
+  var svg = node.canvas.svg
 
-  var rect = draw.rect(size, size)
-                 .move(vertex.x, vertex.y)
-                 .fill(fill)
+  var rect = svg.rect(size, size)
+                .move(vertex.x, vertex.y)
+                .fill(fill)
 
   this.rect = rect
 

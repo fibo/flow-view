@@ -6,17 +6,13 @@ function NodeButton (canvas, relativeCoordinate) {
 
   this.canvas = canvas
 
-  var draw  = canvas.draw,
-      theme = canvas.theme
-
-  var size = theme.halfPinSize * 2
-
-  this.size = size
-
-  var group = draw.group()
-
-  this.group = group
+  this.size = canvas.theme.halfPinSize * 2
+  this.group = canvas.svg.group()
 }
+
+/**
+ * Remove button from currently selected node
+ */
 
 function detachNodeButton () {
   this.group.hide()

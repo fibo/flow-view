@@ -6,9 +6,7 @@ function Node (canvas, key) {
   this.canvas = canvas
   this.key    = key
 
-  var draw  = canvas.draw
-
-  this.group = draw.group()
+  this.group = canvas.svg.group()
 
   this.ins  = []
   this.outs = []
@@ -21,7 +19,7 @@ function render (view) {
       group  = this.group,
       key    = this.key
 
-  var draw  = canvas.draw,
+  var svg   = canvas.svg,
       theme = canvas.theme
 
   var fillLabel = theme.fillLabel,
@@ -43,14 +41,14 @@ function render (view) {
   var ins  = view.ins  || [],
       outs = view.outs || []
 
-  var rect = draw.rect(w, h)
-                 .fill(fillRect)
+  var rect = svg.rect(w, h)
+                .fill(fillRect)
 
-  var text = draw.text(view.text)
-                 .fill(fillLabel)
-                 .back()
-                 .move(10, 10)
-                 .font(labelFont)
+  var text = svg.text(view.text)
+                .fill(fillLabel)
+                .back()
+                .move(10, 10)
+                .font(labelFont)
 
   group.add(rect)
        .add(text)
@@ -80,11 +78,18 @@ function render (view) {
 
   outs.forEach(createOutput)
 
-  group.move(view.x, view.y)
-       .draggable()
+  function dynamicConstraint (x, y) {
+    var horyzontalContraint = (x > 0) && (x < canvas.width - self.w),
+        verticalContraint   = (y > 0) && (y < canvas.height - self.h)
 
-  // Click on a node, without dragging it, actually fires dragstart, dragmove
-  // once and dragend. It is necessary to keep track of dragMoves to realize if
+    return { x: horyzontalContraint, y: verticalContraint }
+  }
+
+  group.move(view.x, view.y)
+       .draggable(dynamicConstraint)
+
+  // Click on a node, without dragging it, actually fires dragstart, dragmove (once)
+  // and dragend. It is necessary to keep track of how many dragMoves were to realize if
   // node was really dragged.
   var dragMoves = -1
 

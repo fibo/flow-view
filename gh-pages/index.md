@@ -145,6 +145,10 @@ It defaults to 1.
 
 The *text* label displayed in the node.
 
+#### url
+
+Optional *url* associated to the node.
+
 #### ins
 
 An optional list of *node inputs*, which are objects that can contain anything accepted by JSON.
@@ -193,7 +197,7 @@ Integration of *flow-view* with other libs can be achieved with events hooks:
 
 For example, I used event hooks in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
 
-Event hooks can be passed as a second optional parameter to *Canvas* constructor
+Event hooks can be passed as an optional argument to *Canvas* constructor
 
 ```
 var eventHooks = {
@@ -204,7 +208,7 @@ var eventHooks = {
   beforeDelNode: function (key) { console.log('delNode', key) }
 })
 
-var canvas = new Canvas('drawing', eventHooks)
+var canvas = new Canvas('drawing', { eventHooks: eventHooks })
 ```
 
 Go to [examples/event-hooks.html](http://g14n.info/flow-view/examples/event-hooks.html) to see results.

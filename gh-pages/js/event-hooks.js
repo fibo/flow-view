@@ -33,7 +33,7 @@ var eventHooks = {
   beforeDelNode: function (key) { console.log('delNode', key) }
 }
 
-var canvas = new Canvas('drawing', eventHooks)
+var canvas = new Canvas('drawing', { eventHooks: eventHooks })
 
 canvas.render(view)
 

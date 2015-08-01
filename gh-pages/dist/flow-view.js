@@ -5052,35 +5052,22 @@ function Canvas (id, arg) {
   this.node = {}
   this.link = {}
 
-  var svg = this.svg = SVG(id).spof()
+  var svg = this.svg = SVG(id)
 
   var element = document.getElementById(id)
 
-  var height = arg.height || element.clientHeight,
-      width  = arg.width  || element.clientWidth
+  var height = element.clientHeight,
+      width  = element.clientWidth
 
-  console.log(element.clientHeight)
-  console.log(element.clientWidth)
-
-  svg.size(width, height)
+  svg.size(width, height).spof()
 
   function getHeight () { return height }
 
-  function setHeight (value) {
-    height = value
-    svg.size(height, width).spof()
-  }
-
-  Object.defineProperty(this, 'height', {get: getHeight, set: setHeight});
+  Object.defineProperty(this, 'height', { get: getHeight });
 
   function getWidth () { return width }
 
-  function setWidth (value) {
-    width = value
-    svg.size(height, width).spof()
-  }
-
-  Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
+  Object.defineProperty(this, 'width', { get: getWidth });
 
   var nextKey = 0
 
@@ -5107,8 +5094,6 @@ function Canvas (id, arg) {
 
   var nodeControls = new NodeControls(this)
   this.nodeControls = nodeControls
-
-  var element = document.getElementById(id)
 
   var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
       showNodeCreator = nodeCreator.show.bind(nodeCreator)

@@ -34,7 +34,7 @@ $ bower install flow-view
 ```
 
 Note that *flow-view* should be used client side. However, if you want to import it in your Node package
-and bundle it with browserify, or hatever, you can install it with [npm](https://npmjs.org/) doing
+and bundle it with browserify, or whatever, you can install it with [npm](https://npmjs.org/) doing
 
 ```bash
 $ npm install flow-view

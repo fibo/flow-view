@@ -60,46 +60,38 @@ class Pin {
 
     Object.defineProperty(this, 'center', { get: getCenter })
   }
+
+  get (key) {
+    var node     = this.node,
+        position = this.position,
+        type     = this.type
+
+    return node[type][position][key]
+  }
+
+  has (key) {
+    var node     = this.node,
+        position = this.position,
+        type     = this.type
+
+    return typeof node[type][position][key] !== 'undefined'
+  }
+
+  set (key, data) {
+    var position = this.position,
+        type     = this.type
+
+    this.node[type][position][key] = data
+  }
+
+  toJSON () {
+    var node     = this.node,
+        position = this.position,
+        type     = this.type
+
+    return node[type][position]
+  }
 }
-
-function get (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position][key]
-}
-
-Pin.prototype.get = get
-
-function has (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return typeof node[type][position][key] !== 'undefined'
-}
-
-Pin.prototype.has = has
-
-function set (key, data) {
-  var position = this.position,
-      type     = this.type
-
-  this.node[type][position][key] = data
-}
-
-Pin.prototype.set = set
-
-function toJSON () {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position]
-}
-
-Pin.prototype.toJSON = toJSON
 
 module.exports = Pin
 

@@ -1,7 +1,8 @@
 
 var Link = require('./Link')
 
-function PreLink (canvas, output) {
+class PreLink {
+  constructor (canvas, output) {
   var svg   = canvas.svg,
       theme = canvas.theme
 
@@ -17,10 +18,15 @@ function PreLink (canvas, output) {
                 .move(output.vertex.absolute.x, output.vertex.absolute.y)
                 .draggable()
 
-  Object.defineProperty(this, 'x1', { get: function () { return output.center.absolute.x } })
-  Object.defineProperty(this, 'y1', { get: function () { return output.center.absolute.y } })
-  Object.defineProperty(this, 'x2', { get: function () { return rect.x() + halfPinSize } })
-  Object.defineProperty(this, 'y2', { get: function () { return rect.y() + halfPinSize } })
+  function getX1 () { return output.center.absolute.x }
+  function getY1 () { return output.center.absolute.y }
+  function getX2 () { return rect.x() + halfPinSize }
+  function getY2 () { return rect.y() + halfPinSize }
+
+  Object.defineProperty(this, 'x1', { get: getX1 })
+  Object.defineProperty(this, 'y1', { get: getY1 })
+  Object.defineProperty(this, 'x2', { get: getX2 })
+  Object.defineProperty(this, 'y2', { get: getY2 })
 
   var line = svg.line(this.x1, this.y1, this.x2, this.y2)
                 .stroke(strokeLine)
@@ -41,7 +47,12 @@ function PreLink (canvas, output) {
   rect.on('beforedrag', beforedrag)
 
   function dragmove () {
-    line.plot(this.x1, this.y1, this.x2, this.y2)
+    var x1 = getX1(),
+        y1 = getY1(),
+        x2 = getX2(),
+        y2 = getY2()
+
+    line.plot(x1, y1, x2, y2)
   }
 
   rect.on('dragmove', dragmove.bind(this))
@@ -53,9 +64,9 @@ function PreLink (canvas, output) {
     var center = {}
 
     //center.x = rect.x() + halfPinSize
-    center.x = this.x2
+    center.x = getX2()
     //center.y = rect.y() + halfPinSize
-    center.y = this.y2
+    center.y = getY2()
 
     function isInside (center) {
       function centerIsInside (bbox, x, y) {
@@ -114,6 +125,7 @@ function PreLink (canvas, output) {
   }
 
   rect.on('dragend', dragend.bind(this))
+  }
 }
 
 module.exports = PreLink

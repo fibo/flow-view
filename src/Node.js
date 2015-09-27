@@ -2,14 +2,16 @@
 var Input   = require('./Input'),
     Output  = require('./Output')
 
-function Node (canvas, key) {
-  this.canvas = canvas
-  this.key    = key
+class Node {
+  constructor (canvas, key) {
+    this.canvas = canvas
+    this.key    = key
 
-  this.group = canvas.svg.group()
+    this.group = canvas.svg.group()
 
-  this.ins  = []
-  this.outs = []
+    this.ins  = []
+    this.outs = []
+  }
 }
 
 function render (view) {
@@ -88,9 +90,12 @@ function render (view) {
   group.move(view.x, view.y)
        .draggable(dynamicConstraint)
 
-  // Click on a node, without dragging it, actually fires dragstart, dragmove (once)
-  // and dragend. It is necessary to keep track of how many dragMoves were to realize if
-  // node was really dragged.
+  // Clicking on a node without dragging it, actually fires:
+  // * dragstart
+  // * dragmove (once)
+  // * dragend
+  // It is necessary to keep track of how many time was fired a dragmove
+  // to realize if node was clicked or dragged.
   var dragMoves = -1
 
   function dragend () {
@@ -264,9 +269,12 @@ function addInput (position) {
       key    = this.key
 
   var eventData = { node: {} }
+
   eventData.node[key] = {
     ins: [{position: position}]
   }
+
+  canvas.broker.emit('addOutput', eventData)
 }
 
 Node.prototype.addInput = addInput
@@ -278,6 +286,7 @@ function addOutput (position) {
       key    = this.key
 
   var eventData = { node: {} }
+
   eventData.node[key] = {
     outs: [{position: position}]
   }

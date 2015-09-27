@@ -12,24 +12,32 @@ flow: /empty.json
 
 ## Description
 
-*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project. I am using it for [dflow][2], but, I would like it'd be used by other node projects, like [graft](https://github.com/GraftJS/graft).
+*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project.
+I am using it for [dflow][2], but, I would like it'd be used by other node projects, like [graft](https://github.com/GraftJS/graft).
 
 > Please, help me give Node a common visual interface. Use *flow-view*!
 
 Any feedback is welcome!
 
+### Status
+
+The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
+I am adding events and hooks to let integrate with other libs.
+I am porting code base to ES6 cause it would be nice to have an easy way to customize Node and Link shape and behaviour.
+
 ## Installation
-
-With [npm](https://npmjs.org/) do
-
-```bash
-$ npm install flow-view
-```
 
 With [bower](http://bower.io/) do
 
 ```bash
 $ bower install flow-view
+```
+
+Note that *flow-view* should be used client side. However, if you want to import it in your Node package
+and bundle it with browserify, or hatever, you can install it with [npm](https://npmjs.org/) doing
+
+```bash
+$ npm install flow-view
 ```
 
 ## Synopsis
@@ -70,7 +78,8 @@ Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html
 
 ## Canvas
 
-A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In your HTML file, put a *div* like this
+A *Canvas* needs to know its *div* id which will be passed to [svg.js][1].
+In your HTML file, put a *div* like this
 
 ```html
 <div id="drawing"></div>

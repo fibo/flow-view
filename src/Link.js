@@ -1,7 +1,9 @@
 
-function Link (canvas, key) {
-  this.canvas = canvas
-  this.key    = key
+class Link {
+  constructor (canvas, key) {
+    this.canvas = canvas
+    this.key    = key
+  }
 }
 
 function render (view) {

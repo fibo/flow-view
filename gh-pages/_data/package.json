@@ -4,10 +4,10 @@
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "main": "index.js",
   "scripts": {
-    "_build": "npm run browserify && npm run minify && npm run jekyll; git status",
+    "_build": "npm run browserify && npm run jekyll; git status",
     "_push": "git push origin master && npm run gh-pages:push",
     "_pull": "git pull origin master && npm run gh-pages:pull",
-    "browserify": "browserify -s $npm_package_name -e index.js -t babelify -o dist/${npm_package_name}.js",
+    "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
     "cp": "npm run cp:dist; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",
     "cp:package.json": "cp package.json gh-pages/_data/",
@@ -16,7 +16,7 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jshint": "jshint -c .jshintrc src/**.js",
-    "minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
+    "TODO:minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
     "test": "mocha --bail --require should --reporter min --recursive"
   },
   "repository": {

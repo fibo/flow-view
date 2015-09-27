@@ -1,7 +1,7 @@
 
 var Pin = require('./Pin')
 
-class Input extends Pin (node, position) {
+class Input extends Pin {
   constructor (node, position) {
     super('ins', node, position)
 

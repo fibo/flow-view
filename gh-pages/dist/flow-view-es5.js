@@ -3,7 +3,7 @@
 
 module.exports = require('./src');
 
-},{"./src":25}],2:[function(require,module,exports){
+},{"./src":23}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -307,31 +307,6 @@ function isUndefined(arg) {
 }
 
 },{}],3:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],4:[function(require,module,exports){
 /*! svg.draggable.js - v1.0.0 - 2015-06-12
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -523,7 +498,7 @@ if (typeof Object.create === 'function') {
   })
 
 }).call(this);
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*! svg.foreignobject.js - v1.0.0 - 2015-06-14
 * https://github.com/fibo/svg.foreignobject.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -556,7 +531,7 @@ SVG.extend(SVG.Container, {
   }
 })
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.0.5
@@ -4882,7 +4857,7 @@ return SVG;
 
 }));
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 // TODO create closures to generate hooks
 // every hook can accept only one parameter, since addNode and addLink triggered
@@ -4890,14 +4865,27 @@ return SVG;
 
 'use strict';
 
-var EventEmitter = require('events').EventEmitter,
-    inherits = require('inherits');
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-function Broker(canvas) {
-  this.canvas = canvas;
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-inherits(Broker, EventEmitter);
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var EventEmitter = require('events').EventEmitter;
+
+var Broker = (function (_EventEmitter) {
+  _inherits(Broker, _EventEmitter);
+
+  function Broker(canvas) {
+    _classCallCheck(this, Broker);
+
+    _get(Object.getPrototypeOf(Broker.prototype), 'constructor', this).call(this);
+
+    this.canvas = canvas;
+  }
+
+  return Broker;
+})(EventEmitter);
 
 function init(eventHook) {
   var canvas = this.canvas;
@@ -5009,7 +4997,7 @@ Broker.prototype.init = init;
 
 module.exports = Broker;
 
-},{"events":2,"inherits":3}],8:[function(require,module,exports){
+},{"events":2}],7:[function(require,module,exports){
 'use strict';
 
 var SVG = require('./SVG');
@@ -5019,8 +5007,7 @@ var Broker = require('./Broker'),
     Node = require('./Node'),
     NodeControls = require('./NodeControls'),
     NodeCreator = require('./NodeCreator'),
-    NodeInspector = require('./NodeInspector');
-validate = require('./validate');
+    validate = require('./validate');
 
 var defaultTheme = require('./default/theme.json'),
     defaultView = require('./default/view.json');
@@ -5097,9 +5084,6 @@ function Canvas(id, arg) {
 
   var nodeCreator = new NodeCreator(this);
   this.nodeCreator = nodeCreator;
-
-  var nodeInspector = new NodeInspector(this);
-  this.NodeInspector = NodeInspector;
 
   var nodeControls = new NodeControls(this);
   this.nodeControls = nodeControls;
@@ -5213,46 +5197,64 @@ Canvas.prototype.delLink = delLink;
 
 module.exports = Canvas;
 
-},{"./Broker":7,"./Link":10,"./Node":11,"./NodeControls":16,"./NodeCreator":17,"./NodeInspector":18,"./SVG":22,"./default/theme.json":23,"./default/view.json":24,"./validate":26}],9:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"./validate":24}],8:[function(require,module,exports){
 'use strict';
 
-var inherits = require('inherits'),
-    Pin = require('./Pin');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function Input(node, position) {
-    Pin.call(this, 'ins', node, position);
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Pin = require('./Pin');
+
+var Input = (function (_Pin) {
+  _inherits(Input, _Pin);
+
+  function Input(node, position) {
+    _classCallCheck(this, Input);
+
+    _get(Object.getPrototypeOf(Input.prototype), 'constructor', this).call(this, 'ins', node, position);
 
     this.link = null;
-}
+  }
 
-inherits(Input, Pin);
+  _createClass(Input, [{
+    key: 'render',
+    value: function render() {
+      var fill = this.fill,
+          node = this.node,
+          size = this.size,
+          vertex = this.vertex.relative;
 
-function render() {
-    var fill = this.fill,
-        node = this.node,
-        size = this.size,
-        vertex = this.vertex.relative;
+      var svg = node.canvas.svg;
 
-    var svg = node.canvas.svg;
+      var rect = svg.rect(size, size).move(vertex.x, vertex.y).fill(fill);
 
-    var rect = svg.rect(size, size).move(vertex.x, vertex.y).fill(fill);
+      this.rect = rect;
 
-    this.rect = rect;
+      node.group.add(rect);
+    }
+  }]);
 
-    node.group.add(rect);
-}
-
-Input.prototype.render = render;
+  return Input;
+})(Pin);
 
 module.exports = Input;
 
-},{"./Pin":20,"inherits":3}],10:[function(require,module,exports){
+},{"./Pin":18}],9:[function(require,module,exports){
 'use strict';
 
-function Link(canvas, key) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var Link = function Link(canvas, key) {
+  _classCallCheck(this, Link);
+
   this.canvas = canvas;
   this.key = key;
-}
+};
 
 function render(view) {
   var self = this;
@@ -5368,13 +5370,17 @@ Link.prototype.linePlot = linePlot;
 
 module.exports = Link;
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Input = require('./Input'),
     Output = require('./Output');
 
-function Node(canvas, key) {
+var Node = function Node(canvas, key) {
+  _classCallCheck(this, Node);
+
   this.canvas = canvas;
   this.key = key;
 
@@ -5382,7 +5388,7 @@ function Node(canvas, key) {
 
   this.ins = [];
   this.outs = [];
-}
+};
 
 function render(view) {
   var self = this;
@@ -5458,9 +5464,12 @@ function render(view) {
 
   group.move(view.x, view.y).draggable(dynamicConstraint);
 
-  // Click on a node, without dragging it, actually fires dragstart, dragmove (once)
-  // and dragend. It is necessary to keep track of how many dragMoves were to realize if
-  // node was really dragged.
+  // Clicking on a node without dragging it, actually fires:
+  // * dragstart
+  // * dragmove (once)
+  // * dragend
+  // It is necessary to keep track of how many time was fired a dragmove
+  // to realize if node was clicked or dragged.
   var dragMoves = -1;
 
   function dragend() {
@@ -5618,9 +5627,12 @@ function addInput(position) {
       key = this.key;
 
   var eventData = { node: {} };
+
   eventData.node[key] = {
     ins: [{ position: position }]
   };
+
+  canvas.broker.emit('addOutput', eventData);
 }
 
 Node.prototype.addInput = addInput;
@@ -5632,6 +5644,7 @@ function addOutput(position) {
       key = this.key;
 
   var eventData = { node: {} };
+
   eventData.node[key] = {
     outs: [{ position: position }]
   };
@@ -5643,283 +5656,346 @@ Node.prototype.addOutput = addOutput;
 
 module.exports = Node;
 
-},{"./Input":9,"./Output":19}],12:[function(require,module,exports){
+},{"./Input":8,"./Output":17}],11:[function(require,module,exports){
 "use strict";
 
-function NodeButton(canvas, relativeCoordinate) {
-  this.relativeCoordinate = relativeCoordinate;
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-  this.node = null;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  this.canvas = canvas;
+var NodeButton = (function () {
+  function NodeButton(canvas, relativeCoordinate) {
+    _classCallCheck(this, NodeButton);
 
-  this.size = canvas.theme.halfPinSize * 2;
-  this.group = canvas.svg.group();
-}
+    this.relativeCoordinate = relativeCoordinate;
 
-/**
- * Remove button from currently selected node
- */
+    this.node = null;
 
-function detachNodeButton() {
-  this.group.hide();
+    this.canvas = canvas;
 
-  this.node = null;
-}
+    this.size = canvas.theme.halfPinSize * 2;
+    this.group = canvas.svg.group();
+  }
 
-NodeButton.prototype.detach = detachNodeButton;
+  /**
+   * Remove button from currently selected node
+   */
+
+  _createClass(NodeButton, [{
+    key: "detach",
+    value: function detach() {
+      this.group.hide();
+
+      this.node = null;
+    }
+  }]);
+
+  return NodeButton;
+})();
 
 module.exports = NodeButton;
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
-var inherits = require('inherits'),
-    NodeButton = require('../NodeButton');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function AddInput(canvas) {
-  NodeButton.call(this, canvas);
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-  var svg = canvas.svg,
-      theme = canvas.theme;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  var halfPinSize = theme.halfPinSize,
-      strokeLine = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted;
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  var size = halfPinSize * 2;
-  this.size = size;
+var NodeButton = require('../NodeButton');
 
-  var group = svg.group();
+var AddInput = (function (_NodeButton) {
+  _inherits(AddInput, _NodeButton);
 
-  var line1 = svg.line(0, halfPinSize, size, halfPinSize).stroke(strokeLine);
+  function AddInput(canvas) {
+    _classCallCheck(this, AddInput);
 
-  var line2 = svg.line(halfPinSize, 0, halfPinSize, size).stroke(strokeLine);
+    _get(Object.getPrototypeOf(AddInput.prototype), 'constructor', this).call(this, canvas);
 
-  group.add(line1).add(line2).hide();
+    var svg = canvas.svg,
+        theme = canvas.theme;
 
-  this.group = group;
+    var halfPinSize = theme.halfPinSize,
+        strokeLine = theme.strokeLine,
+        strokeLineHighlighted = theme.strokeLineHighlighted;
 
-  function addInput(ev) {
-    var node = this.node;
-    canvas.broker.emit('addInput', { node: node.key });
+    var size = halfPinSize * 2;
+    this.size = size;
+
+    var group = svg.group();
+
+    var line1 = svg.line(0, halfPinSize, size, halfPinSize).stroke(strokeLine);
+
+    var line2 = svg.line(halfPinSize, 0, halfPinSize, size).stroke(strokeLine);
+
+    group.add(line1).add(line2).hide();
+
+    this.group = group;
+
+    function addInput(ev) {
+      var node = this.node;
+      canvas.broker.emit('addInput', { node: node.key });
+    }
+
+    function deselectButton() {
+      group.off('click');
+
+      line1.stroke(strokeLine);
+      line2.stroke(strokeLine);
+    }
+
+    group.on('mouseout', deselectButton.bind(this));
+
+    function selectButton() {
+      group.on('click', addInput.bind(this));
+
+      line1.stroke(strokeLineHighlighted);
+      line2.stroke(strokeLineHighlighted);
+    }
+
+    group.on('mouseover', selectButton.bind(this));
   }
 
-  function deselectButton() {
-    group.off('click');
+  _createClass(AddInput, [{
+    key: 'attachTo',
+    value: function attachTo(node) {
+      var group = this.group,
+          size = this.size;
 
-    line1.stroke(strokeLine);
-    line2.stroke(strokeLine);
-  }
+      group.move(node.x - size, node.y).show();
 
-  group.on('mouseout', deselectButton.bind(this));
+      this.node = node;
+    }
+  }]);
 
-  function selectButton() {
-    group.on('click', addInput.bind(this));
-
-    line1.stroke(strokeLineHighlighted);
-    line2.stroke(strokeLineHighlighted);
-  }
-
-  group.on('mouseover', selectButton.bind(this));
-}
-
-inherits(AddInput, NodeButton);
-
-function attachTo(node) {
-  var group = this.group,
-      size = this.size;
-
-  group.move(node.x - size, node.y).show();
-
-  this.node = node;
-}
-
-AddInput.prototype.attachTo = attachTo;
+  return AddInput;
+})(NodeButton);
 
 module.exports = AddInput;
 
-},{"../NodeButton":12,"inherits":3}],14:[function(require,module,exports){
+},{"../NodeButton":11}],13:[function(require,module,exports){
 'use strict';
 
-var inherits = require('inherits'),
-    NodeButton = require('../NodeButton');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function AddOutput(canvas) {
-  NodeButton.call(this, canvas);
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-  var svg = canvas.svg,
-      theme = canvas.theme;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  var halfPinSize = theme.halfPinSize,
-      strokeLine = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted;
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  var size = halfPinSize * 2;
-  this.size = size;
+var NodeButton = require('../NodeButton');
 
-  var group = svg.group();
+var AddOutput = (function (_NodeButton) {
+  _inherits(AddOutput, _NodeButton);
 
-  var line1 = svg.line(0, halfPinSize, size, halfPinSize).stroke(strokeLine);
+  function AddOutput(canvas) {
+    _classCallCheck(this, AddOutput);
 
-  var line2 = svg.line(halfPinSize, 0, halfPinSize, size).stroke(strokeLine);
+    _get(Object.getPrototypeOf(AddOutput.prototype), 'constructor', this).call(this, canvas);
 
-  group.add(line1).add(line2).hide();
+    var svg = canvas.svg,
+        theme = canvas.theme;
 
-  this.group = group;
+    var halfPinSize = theme.halfPinSize,
+        strokeLine = theme.strokeLine,
+        strokeLineHighlighted = theme.strokeLineHighlighted;
 
-  function addOutput(ev) {
-    this.node.addOutput();
+    var size = halfPinSize * 2;
+    this.size = size;
+
+    var group = svg.group();
+
+    var line1 = svg.line(0, halfPinSize, size, halfPinSize).stroke(strokeLine);
+
+    var line2 = svg.line(halfPinSize, 0, halfPinSize, size).stroke(strokeLine);
+
+    group.add(line1).add(line2).hide();
+
+    this.group = group;
+
+    function addOutput(ev) {
+      this.node.addOutput();
+    }
+
+    function deselectButton() {
+      group.off('click');
+
+      line1.stroke(strokeLine);
+      line2.stroke(strokeLine);
+    }
+
+    group.on('mouseout', deselectButton.bind(this));
+
+    function selectButton() {
+      group.on('click', addOutput.bind(this));
+
+      line1.stroke(strokeLineHighlighted);
+      line2.stroke(strokeLineHighlighted);
+    }
+
+    group.on('mouseover', selectButton.bind(this));
   }
 
-  function deselectButton() {
-    group.off('click');
+  _createClass(AddOutput, [{
+    key: 'attachTo',
+    value: function attachTo(node) {
+      var group = this.group,
+          size = this.size;
 
-    line1.stroke(strokeLine);
-    line2.stroke(strokeLine);
-  }
+      group.move(node.x - size, node.y + node.h - size).show();
 
-  group.on('mouseout', deselectButton.bind(this));
+      this.node = node;
+    }
+  }]);
 
-  function selectButton() {
-    group.on('click', addOutput.bind(this));
-
-    line1.stroke(strokeLineHighlighted);
-    line2.stroke(strokeLineHighlighted);
-  }
-
-  group.on('mouseover', selectButton.bind(this));
-}
-
-inherits(AddOutput, NodeButton);
-
-function attachTo(node) {
-  var group = this.group,
-      size = this.size;
-
-  group.move(node.x - size, node.y + node.h - size).show();
-
-  this.node = node;
-}
-
-AddOutput.prototype.attachTo = attachTo;
+  return AddOutput;
+})(NodeButton);
 
 module.exports = AddOutput;
 
-},{"../NodeButton":12,"inherits":3}],15:[function(require,module,exports){
+},{"../NodeButton":11}],14:[function(require,module,exports){
 'use strict';
 
-var inherits = require('inherits'),
-    NodeButton = require('../NodeButton');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function DeleteNode(canvas) {
-  NodeButton.call(this, canvas);
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-  var svg = canvas.svg,
-      theme = canvas.theme;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  var halfPinSize = theme.halfPinSize,
-      strokeLine = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted;
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  var size = halfPinSize * 2;
-  this.size = size;
+var NodeButton = require('../NodeButton');
 
-  var group = svg.group();
+var DeleteNode = (function (_NodeButton) {
+  _inherits(DeleteNode, _NodeButton);
 
-  var diag1 = svg.line(0, 0, size, size).stroke(strokeLine);
+  function DeleteNode(canvas) {
+    _classCallCheck(this, DeleteNode);
 
-  var diag2 = svg.line(0, size, size, 0).stroke(strokeLine);
+    _get(Object.getPrototypeOf(DeleteNode.prototype), 'constructor', this).call(this, canvas);
 
-  group.add(diag1).add(diag2).hide();
+    var svg = canvas.svg,
+        theme = canvas.theme;
 
-  this.group = group;
+    var halfPinSize = theme.halfPinSize,
+        strokeLine = theme.strokeLine,
+        strokeLineHighlighted = theme.strokeLineHighlighted;
 
-  function delNode() {
-    var canvas = this.canvas,
-        node = this.node;
+    var size = halfPinSize * 2;
+    this.size = size;
 
-    var key = node.key;
+    var group = svg.group();
 
-    canvas.nodeControls.detach();
+    var diag1 = svg.line(0, 0, size, size).stroke(strokeLine);
 
-    canvas.broker.emit('delNode', key);
+    var diag2 = svg.line(0, size, size, 0).stroke(strokeLine);
+
+    group.add(diag1).add(diag2).hide();
+
+    this.group = group;
+
+    function delNode() {
+      var canvas = this.canvas,
+          node = this.node;
+
+      var key = node.key;
+
+      canvas.nodeControls.detach();
+
+      canvas.broker.emit('delNode', key);
+    }
+
+    function deselectButton() {
+      group.off('click');
+
+      diag1.stroke(strokeLine);
+      diag2.stroke(strokeLine);
+    }
+
+    group.on('mouseout', deselectButton.bind(this));
+
+    function selectButton() {
+      group.on('click', delNode.bind(this));
+
+      diag1.stroke(strokeLineHighlighted);
+      diag2.stroke(strokeLineHighlighted);
+    }
+
+    group.on('mouseover', selectButton.bind(this));
   }
 
-  function deselectButton() {
-    group.off('click');
+  _createClass(DeleteNode, [{
+    key: 'attachTo',
+    value: function attachTo(node) {
+      var group = this.group,
+          size = this.size;
 
-    diag1.stroke(strokeLine);
-    diag2.stroke(strokeLine);
-  }
+      group.move(node.x + node.w, node.y - size).show();
 
-  group.on('mouseout', deselectButton.bind(this));
+      this.node = node;
+    }
+  }]);
 
-  function selectButton() {
-    group.on('click', delNode.bind(this));
-
-    diag1.stroke(strokeLineHighlighted);
-    diag2.stroke(strokeLineHighlighted);
-  }
-
-  group.on('mouseover', selectButton.bind(this));
-}
-
-inherits(DeleteNode, NodeButton);
-
-function attachTo(node) {
-  var group = this.group,
-      size = this.size;
-
-  group.move(node.x + node.w, node.y - size).show();
-
-  this.node = node;
-}
-
-DeleteNode.prototype.attachTo = attachTo;
+  return DeleteNode;
+})(NodeButton);
 
 module.exports = DeleteNode;
 
-},{"../NodeButton":12,"inherits":3}],16:[function(require,module,exports){
+},{"../NodeButton":11}],15:[function(require,module,exports){
 'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var AddInputButton = require('./NodeButton/AddInput'),
     AddOutputButton = require('./NodeButton/AddOutput'),
     DeleteNodeButton = require('./NodeButton/DeleteNode');
 
-function NodeControls(canvas) {
-  this.canvas = canvas;
+var NodeControls = (function () {
+  function NodeControls(canvas) {
+    _classCallCheck(this, NodeControls);
 
-  this.node = null;
+    this.canvas = canvas;
 
-  var addInputButton = new AddInputButton(canvas),
-      addOutputButton = new AddOutputButton(canvas),
-      deleteNodeButton = new DeleteNodeButton(canvas);
+    this.node = null;
 
-  this.addInputButton = addInputButton;
-  this.addOutputButton = addOutputButton;
-  this.deleteNodeButton = deleteNodeButton;
-}
+    var addInputButton = new AddInputButton(canvas),
+        addOutputButton = new AddOutputButton(canvas),
+        deleteNodeButton = new DeleteNodeButton(canvas);
 
-function nodeControlsAttachTo(node) {
-  this.addInputButton.attachTo(node);
-  this.addOutputButton.attachTo(node);
-  this.deleteNodeButton.attachTo(node);
-}
+    this.addInputButton = addInputButton;
+    this.addOutputButton = addOutputButton;
+    this.deleteNodeButton = deleteNodeButton;
+  }
 
-NodeControls.prototype.attachTo = nodeControlsAttachTo;
+  _createClass(NodeControls, [{
+    key: 'attachTo',
+    value: function attachTo(node) {
+      this.addInputButton.attachTo(node);
+      this.addOutputButton.attachTo(node);
+      this.deleteNodeButton.attachTo(node);
+    }
+  }, {
+    key: 'detach',
+    value: function detach() {
+      this.addInputButton.detach();
+      this.addOutputButton.detach();
+      this.deleteNodeButton.detach();
+    }
+  }]);
 
-function nodeControlsDetach() {
-  this.addInputButton.detach();
-  this.addOutputButton.detach();
-  this.deleteNodeButton.detach();
-}
-
-NodeControls.prototype.detach = nodeControlsDetach;
+  return NodeControls;
+})();
 
 module.exports = NodeControls;
 
-},{"./NodeButton/AddInput":13,"./NodeButton/AddOutput":14,"./NodeButton/DeleteNode":15}],17:[function(require,module,exports){
+},{"./NodeButton/AddInput":12,"./NodeButton/AddOutput":13,"./NodeButton/DeleteNode":14}],16:[function(require,module,exports){
 
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
@@ -5996,62 +6072,73 @@ NodeCreator.prototype.show = showNodeCreator;
 
 module.exports = NodeCreator;
 
-},{}],18:[function(require,module,exports){
-"use strict";
-
-function NodeInspector(canvas) {}
-
-module.exports = NodeInspector;
-
-},{}],19:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
-var inherits = require('inherits'),
-    Pin = require('./Pin'),
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Pin = require('./Pin'),
     PreLink = require('./PreLink');
 
-function Output(node, position) {
-  Pin.call(this, 'outs', node, position);
+var Output = (function (_Pin) {
+  _inherits(Output, _Pin);
 
-  this.link = {};
-}
+  function Output(node, position) {
+    _classCallCheck(this, Output);
 
-inherits(Output, Pin);
+    _get(Object.getPrototypeOf(Output.prototype), 'constructor', this).call(this, 'outs', node, position);
 
-function render() {
-  // TODO for var i in view this.set(i, view[i])
-  var self = this;
-
-  var fill = this.fill,
-      node = this.node,
-      size = this.size,
-      vertex = this.vertex.relative;
-
-  var canvas = node.canvas;
-
-  var rect = canvas.svg.rect(size, size).move(vertex.x, vertex.y).fill(fill);
-
-  this.rect = rect;
-
-  node.group.add(rect);
-
-  var preLink = null;
-
-  function mouseoverOutput() {
-    preLink = new PreLink(canvas, self);
+    this.link = {};
   }
 
-  rect.on('mouseover', mouseoverOutput);
-}
+  _createClass(Output, [{
+    key: 'render',
+    value: function render() {
+      // TODO for var i in view this.set(i, view[i])
+      var self = this;
 
-Output.prototype.render = render;
+      var fill = this.fill,
+          node = this.node,
+          size = this.size,
+          vertex = this.vertex.relative;
+
+      var canvas = node.canvas;
+
+      var rect = canvas.svg.rect(size, size).move(vertex.x, vertex.y).fill(fill);
+
+      this.rect = rect;
+
+      node.group.add(rect);
+
+      var preLink = null;
+
+      function mouseoverOutput() {
+        preLink = new PreLink(canvas, self);
+      }
+
+      rect.on('mouseover', mouseoverOutput);
+    }
+  }]);
+
+  return Output;
+})(Pin);
 
 module.exports = Output;
 
-},{"./Pin":20,"./PreLink":21,"inherits":3}],20:[function(require,module,exports){
+},{"./Pin":18,"./PreLink":19}],18:[function(require,module,exports){
 'use strict';
 
-function Pin(type, node, position) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var Pin = function Pin(type, node, position) {
+  _classCallCheck(this, Pin);
+
   var self = this;
 
   this.type = type;
@@ -6097,7 +6184,7 @@ function Pin(type, node, position) {
       relative: {}
     };
 
-    var vertex = this.vertex;
+    var vertex = getVertex();
 
     center.relative.x = vertex.relative.x + halfSize;
     center.relative.y = vertex.relative.y + halfSize;
@@ -6108,7 +6195,7 @@ function Pin(type, node, position) {
   }
 
   Object.defineProperty(this, 'center', { get: getCenter });
-}
+};
 
 function get(key) {
   var node = this.node,
@@ -6151,12 +6238,16 @@ Pin.prototype.toJSON = toJSON;
 
 module.exports = Pin;
 
-},{}],21:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Link = require('./Link');
 
-function PreLink(canvas, output) {
+var PreLink = function PreLink(canvas, output) {
+  _classCallCheck(this, PreLink);
+
   var svg = canvas.svg,
       theme = canvas.theme;
 
@@ -6169,18 +6260,23 @@ function PreLink(canvas, output) {
 
   var rect = svg.rect(pinSize, pinSize).fill(fillPinHighlighted).move(output.vertex.absolute.x, output.vertex.absolute.y).draggable();
 
-  Object.defineProperty(this, 'x1', { get: function get() {
-      return output.center.absolute.x;
-    } });
-  Object.defineProperty(this, 'y1', { get: function get() {
-      return output.center.absolute.y;
-    } });
-  Object.defineProperty(this, 'x2', { get: function get() {
-      return rect.x() + halfPinSize;
-    } });
-  Object.defineProperty(this, 'y2', { get: function get() {
-      return rect.y() + halfPinSize;
-    } });
+  function getX1() {
+    return output.center.absolute.x;
+  }
+  function getY1() {
+    return output.center.absolute.y;
+  }
+  function getX2() {
+    return rect.x() + halfPinSize;
+  }
+  function getY2() {
+    return rect.y() + halfPinSize;
+  }
+
+  Object.defineProperty(this, 'x1', { get: getX1 });
+  Object.defineProperty(this, 'y1', { get: getY1 });
+  Object.defineProperty(this, 'x2', { get: getX2 });
+  Object.defineProperty(this, 'y2', { get: getY2 });
 
   var line = svg.line(this.x1, this.y1, this.x2, this.y2).stroke(strokeLine).attr('stroke-dasharray', strokeDasharray);
 
@@ -6199,7 +6295,12 @@ function PreLink(canvas, output) {
   rect.on('beforedrag', beforedrag);
 
   function dragmove() {
-    line.plot(this.x1, this.y1, this.x2, this.y2);
+    var x1 = getX1(),
+        y1 = getY1(),
+        x2 = getX2(),
+        y2 = getY2();
+
+    line.plot(x1, y1, x2, y2);
   }
 
   rect.on('dragmove', dragmove.bind(this));
@@ -6211,9 +6312,9 @@ function PreLink(canvas, output) {
     var center = {};
 
     //center.x = rect.x() + halfPinSize
-    center.x = this.x2;
+    center.x = getX2();
     //center.y = rect.y() + halfPinSize
-    center.y = this.y2;
+    center.y = getY2();
 
     function isInside(center) {
       function centerIsInside(bbox, x, y) {
@@ -6270,11 +6371,11 @@ function PreLink(canvas, output) {
   }
 
   rect.on('dragend', dragend.bind(this));
-}
+};
 
 module.exports = PreLink;
 
-},{"./Link":10}],22:[function(require,module,exports){
+},{"./Link":9}],20:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -6283,7 +6384,7 @@ module.exports = PreLink;
 
 var SVG = require('svg.js');
 
-// ... then load plugins: since plugins do not use *module.exports*, they are
+// ... then load plugins: since plugins do not use *module.module.exports = they are
 // loaded as plain text, and when browserified they will be included in the bundle.
 require('svg.draggable.js');
 require('svg.foreignobject.js');
@@ -6296,7 +6397,7 @@ require('svg.foreignobject.js');
 
 module.exports = SVG;
 
-},{"svg.draggable.js":4,"svg.foreignobject.js":5,"svg.js":6}],23:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],21:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -6322,26 +6423,31 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],24:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 exports.Canvas = require('./Canvas');
 
-},{"./Canvas":8}],26:[function(require,module,exports){
+},{"./Canvas":7}],24:[function(require,module,exports){
+
+/**
+ * @api private
+ */
+
 'use strict';
 
 function validate(view) {
-  if (typeof view !== 'object') throw new TypeError();
+  if (typeof view !== 'object') throw new TypeError('view is not an object');
 
-  if (typeof view.node !== 'object') throw new TypeError();
+  if (typeof view.node !== 'object') throw new TypeError('node is not an object');
 
-  if (typeof view.link !== 'object') throw new TypeError();
+  if (typeof view.link !== 'object') throw new TypeError('link is not an object');
 }
 
 module.exports = validate;

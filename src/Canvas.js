@@ -6,7 +6,6 @@ var Broker        = require('./Broker'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
-    NodeInspector = require('./NodeInspector')
     validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
@@ -69,9 +68,6 @@ function Canvas (id, arg) {
 
   var nodeCreator  = new NodeCreator(this)
   this.nodeCreator = nodeCreator
-
-  var nodeInspector  = new NodeInspector(this)
-  this.NodeInspector = NodeInspector
 
   var nodeControls = new NodeControls(this)
   this.nodeControls = nodeControls

@@ -48,7 +48,7 @@ class Pin {
             relative: {}
           }
 
-      var vertex = getVertex()
+      var vertex = this.vertex
 
       center.relative.x = vertex.relative.x + halfSize
       center.relative.y = vertex.relative.y + halfSize

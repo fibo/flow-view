@@ -38,5 +38,6 @@ class Output extends Pin {
   }
 }
 
+
 module.exports = Output
 

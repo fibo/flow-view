@@ -5,6 +5,5 @@
     "module": true,
     "require": true
   },
-  "laxcomma": true,
-  "esnext": true
+  "laxcomma": true
 }

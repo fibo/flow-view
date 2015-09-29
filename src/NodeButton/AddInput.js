@@ -5,8 +5,6 @@ class AddInput extends NodeButton {
   constructor (canvas) {
     super(canvas)
 
-    var node = this.node
-
     var svg   = canvas.svg,
         theme = canvas.theme
 
@@ -32,6 +30,7 @@ class AddInput extends NodeButton {
     this.group = group
 
     function addInput (ev) {
+      var node = this.node
       canvas.broker.emit('addInput', { node: node.key })
     }
 
@@ -45,7 +44,7 @@ class AddInput extends NodeButton {
     group.on('mouseout', deselectButton.bind(this))
 
     function selectButton () {
-      group.on('click', addInput)
+      group.on('click', addInput.bind(this))
 
       line1.stroke(strokeLineHighlighted)
       line2.stroke(strokeLineHighlighted)

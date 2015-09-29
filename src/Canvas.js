@@ -14,153 +14,173 @@ var defaultTheme = require('./default/theme.json'),
 /**
  * Create a flow-view canvas
  *
+ * @constructor
  * @param {String} id of div
  * @param {Object} arg can contain width, height, eventHooks
  */
 
-class Canvas {
-  constructor (id, arg) {
-    var self = this
-   
-    var broker = new Broker(this)
-    broker.init(arg.eventHooks)
-    this.broker = broker
+function Canvas (id, arg) {
+  var self = this
 
-    var theme = defaultTheme
-    this.theme = theme
+  var broker = new Broker(this)
+  broker.init(arg.eventHooks)
+  this.broker = broker
 
-    var node = this.node = {}
-    var link = this.link = {}
+  var theme = defaultTheme
+  this.theme = theme
 
-    var svg = this.svg = SVG(id)
+  this.node = {}
+  this.link = {}
 
-    var element = document.getElementById(id)
+  var svg = this.svg = SVG(id)
 
-    var height = this.height = element.clientHeight
-    var width  = this.width  = element.clientWidth
+  var element = document.getElementById(id)
 
-    svg.size(width, height).spof()
+  var height = element.clientHeight,
+      width  = element.clientWidth
 
-    var nextKey = 0
+  svg.size(width, height).spof()
 
-    function getNextKey () {
-      var currentKey = ++nextKey + ''
+  function getHeight () { return height }
 
-      // Make next key unique.
-      if (node[currentKey])
-        return getNextKey()
+  Object.defineProperty(this, 'height', { get: getHeight });
 
-      if (link[currentKey])
-        return getNextKey()
+  function getWidth () { return width }
 
-      return currentKey
-    }
+  Object.defineProperty(this, 'width', { get: getWidth });
 
-    Object.defineProperty(this, 'nextKey', { get: getNextKey })
+  var nextKey = 0
 
-    var nodeCreator  = this.nodeCreator  = new NodeCreator(this)
-    var nodeControls = this.nodeControls = new NodeControls(this)
+  function getNextKey () {
+    var currentKey = ++nextKey + ''
 
-    var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
-        showNodeCreator = nodeCreator.show.bind(nodeCreator)
+    // Make next key unique.
+    if (self.node[currentKey])
+      return getNextKey()
 
-    SVG.on(element, 'click',    hideNodeCreator)
-    SVG.on(element, 'dblclick', showNodeCreator)
+    if (self.link[currentKey])
+      return getNextKey()
+
+    return currentKey
   }
 
-  render (view) {
-    validate(view)
+  Object.defineProperty(this, 'nextKey', { get: getNextKey })
 
-    var addLink = this.addLink,
-        addNode = this.addNode
+  var nodeCreator  = new NodeCreator(this)
+  this.nodeCreator = nodeCreator
 
-    function createNode (key) {
-      addNode(view.node[key], key)
-    }
+  var nodeControls = new NodeControls(this)
+  this.nodeControls = nodeControls
 
-    Object.keys(view.node).forEach(createNode)
+  var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
+      showNodeCreator = nodeCreator.show.bind(nodeCreator)
 
-    function createLink (key) {
-      addLink(view.link[key], key)
-    }
-
-    Object.keys(view.link).forEach(createLink)
-  }
-
-  /**
-  *
-  * @returns {Object} json
-  */
-
-  toJSON () {
-    var view = { link: {}, node: {} }
-
-    var link = this.link,
-        node = this.node
-
-    Object.keys(link).forEach(function (key) {
-      view.link[key] = link[key].toJSON()
-    })
-
-    Object.keys(node).forEach(function (key) {
-      view.node[key] = node[key].toJSON()
-    })
-
-    return view
-  }
-
-  addLink (view, key) {
-    if (typeof key === 'undefined')
-      key = this.nextKey
-
-    var link = new Link(this, key)
-
-    link.render(view)
-
-    this.link[key] = link
-
-    var eventData = { link: {} }
-    eventData.link[key] = view
-  }
-
-  addNode (view, key) {
-    if (typeof key === 'undefined')
-      key = this.nextKey
-
-    var node = new Node(this, key)
-
-    node.render(view)
-
-    this.node[key] = node
-
-    var eventData = { node: {} }
-    eventData.node[key] = view
-  }
-
-  delNode (key) {
-    var link = this.link,
-        node = this.node[key]
-
-    // First remove links connected to node.
-    for (var i in link) {
-      var nodeIsSource = link[i].from.key === key,
-          nodeIsTarget = link[i].to.key   === key
-
-      if (nodeIsSource || nodeIsTarget)
-        this.delLink(i)
-    }
-
-    // Then remove node.
-    node.deleteView()
-  }
-
-  delLink (key) {
-    var link = this.link[key]
-
-    link.deleteView()
-  }
+  SVG.on(element, 'click',    hideNodeCreator)
+  SVG.on(element, 'dblclick', showNodeCreator)
 }
 
+function render (view) {
+  validate(view)
+
+  var self = this
+
+  function createNode (key) {
+    self.addNode(view.node[key], key)
+  }
+
+  Object.keys(view.node).forEach(createNode)
+
+  function createLink (key) {
+    self.addLink(view.link[key], key)
+  }
+
+  Object.keys(view.link).forEach(createLink)
+}
+
+Canvas.prototype.render = render
+
+/**
+ *
+ * @returns {Object} json
+ */
+
+function toJSON () {
+  var view = { link: {}, node: {} }
+
+  var link = this.link,
+      node = this.node
+
+  Object.keys(link).forEach(function (key) {
+    view.link[key] = link[key].toJSON()
+  })
+
+  Object.keys(node).forEach(function (key) {
+    view.node[key] = node[key].toJSON()
+  })
+
+  return view
+}
+
+Canvas.prototype.toJSON = toJSON
+
+function addLink (view, key) {
+  if (typeof key === 'undefined')
+     key = this.nextKey
+
+  var link = new Link(this, key)
+
+  link.render(view)
+
+  this.link[key] = link
+
+  var eventData = { link: {} }
+  eventData.link[key] = view
+}
+
+Canvas.prototype.addLink = addLink
+
+function addNode (view, key) {
+  if (typeof key === 'undefined')
+     key = this.nextKey
+
+  var node = new Node(this, key)
+
+  node.render(view)
+
+  this.node[key] = node
+
+  var eventData = { node: {} }
+  eventData.node[key] = view
+}
+
+Canvas.prototype.addNode = addNode
+
+function delNode (key) {
+  var link = this.link,
+      node = this.node[key]
+
+  // First remove links connected to node.
+  for (var i in link) {
+    var nodeIsSource = link[i].from.key === key,
+        nodeIsTarget = link[i].to.key   === key
+
+    if (nodeIsSource || nodeIsTarget)
+      this.delLink(i)
+  }
+
+  // Then remove node.
+  node.deleteView()
+}
+
+Canvas.prototype.delNode = delNode
+
+function delLink (key) {
+  var link = this.link[key]
+
+  link.deleteView()
+}
+
+Canvas.prototype.delLink = delLink
 
 module.exports = Canvas
 

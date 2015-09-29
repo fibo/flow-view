@@ -30,6 +30,9 @@ class DeleteNode extends NodeButton {
   this.group = group
 
   function delNode () {
+    var canvas = this.canvas,
+        node   = this.node
+
     var key = node.key
 
     canvas.nodeControls.detach()
@@ -47,7 +50,7 @@ class DeleteNode extends NodeButton {
   group.on('mouseout', deselectButton.bind(this))
 
   function selectButton () {
-    group.on('click', delNode)
+    group.on('click', delNode.bind(this))
 
     diag1.stroke(strokeLineHighlighted)
     diag2.stroke(strokeLineHighlighted)

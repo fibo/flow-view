@@ -1,9 +1,9 @@
 
-var NodeButton = require('../NodeButton')
+var inherits   = require('inherits'),
+    NodeButton = require('../NodeButton')
 
-class DeleteNode extends NodeButton {
-  constructor (canvas) {
-    super(canvas)
+function DeleteNode (canvas) {
+  NodeButton.call(this, canvas)
 
   var svg   = canvas.svg,
       theme = canvas.theme
@@ -59,7 +59,9 @@ class DeleteNode extends NodeButton {
   group.on('mouseover', selectButton.bind(this))
 }
 
-attachTo (node) {
+inherits(DeleteNode, NodeButton)
+
+function attachTo (node) {
   var group = this.group,
       size  = this.size
 
@@ -68,7 +70,8 @@ attachTo (node) {
 
   this.node = node
 }
-}
+
+DeleteNode.prototype.attachTo = attachTo
 
 module.exports = DeleteNode
 

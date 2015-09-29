@@ -7,9 +7,7 @@
     "_build": "npm run browserify && npm run jekyll; git status",
     "_push": "git push origin master && npm run gh-pages:push",
     "_pull": "git pull origin master && npm run gh-pages:pull",
-    "browserify": "npm run browserify:es5; npm run browserify:es6",
-    "browserify:es5": "browserify -s $npm_package_name -e index.js -t babelify -o dist/${npm_package_name}-es5.js",
-    "browserify:es6": "browserify -s $npm_package_name -e index.js -o dist/${npm_package_name}.js",
+    "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
     "cp": "npm run cp:dist; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",
     "cp:package.json": "cp package.json gh-pages/_data/",
@@ -44,7 +42,6 @@
     "svg.js": "^2.0.0"
   },
   "devDependencies": {
-    "babelify": "^6.3.0",
     "browserify": "^10.2.4",
     "jsdom": "^6.5.1",
     "mocha": "^2.2.5",

@@ -13,8 +13,8 @@ describe('examples/synopsis.html', function () {
     jsdom.env({
       url: 'http://g14n.info/flow-view/examples/synopsis.html',
       scripts: [
-        'http://g14n.info/flow-view/dist/flow-view.js'/*,
-        'http://g14n.info/flow-view/js/synopsis.js'*/
+        'http://g14n.info/flow-view/dist/flow-view.js',
+        'http://g14n.info/flow-view/js/synopsis.js'
       ],
       done: function (errors, window) {
               context = window

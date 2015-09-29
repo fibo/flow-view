@@ -23,8 +23,13 @@ var defaultTheme = require('./default/theme.json'),
 function Canvas (id, arg) {
   var self = this
 
+  if (typeof arg === 'undefined')
+    arg = {}
+
+  var eventHooks = arg.eventHooks || {}
+
   var broker = new Broker(this)
-  broker.init(arg.eventHooks)
+  broker.init(eventHooks)
   this.broker = broker
 
   var theme = defaultTheme
@@ -33,22 +38,32 @@ function Canvas (id, arg) {
   this.node = {}
   this.link = {}
 
-  var svg = this.svg = SVG(id)
+  var svg = this.svg = SVG(id).spof()
 
   var element = document.getElementById(id)
 
-  var height = element.clientHeight,
-      width  = element.clientWidth
+  var height = arg.height || element.clientHeight,
+      width  = arg.width  || element.clientWidth
 
-  svg.size(width, height).spof()
+  svg.size(width, height)
 
   function getHeight () { return height }
 
-  Object.defineProperty(this, 'height', { get: getHeight });
+  function setHeight (value) {
+    height = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'height', {get: getHeight, set: setHeight});
 
   function getWidth () { return width }
 
-  Object.defineProperty(this, 'width', { get: getWidth });
+  function setWidth (value) {
+    width = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
 
   var nextKey = 0
 

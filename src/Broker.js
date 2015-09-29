@@ -3,15 +3,14 @@
 // every hook can accept only one parameter, since addNode and addLink triggered
 // by user input does not need to pass a key.
 
-var EventEmitter = require('events').EventEmitter
+var EventEmitter = require('events').EventEmitter,
+    inherits     = require('inherits')
 
-class Broker extends EventEmitter {
-  constructor (canvas) {
-    super()
-
-    this.canvas = canvas
-  }
+function Broker (canvas) {
+  this.canvas = canvas
 }
+
+inherits(Broker, EventEmitter)
 
 function init (eventHook) {
   var canvas = this.canvas

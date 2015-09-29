@@ -25,11 +25,7 @@ var Canvas = require('flow-view').Canvas,
      }
    }
 
-var eventHooks = {
-  beforeAddLink: function () { console.log('ok') }
-}
-
-var canvas = new Canvas('drawing', eventHooks)
+var canvas = new Canvas('drawing')
 
 canvas.render(view)
 

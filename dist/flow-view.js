@@ -1,9 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.flowView = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-module.exports = require('./src')
-
-
-},{"./src":25}],2:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -306,7 +301,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -331,7 +326,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*! svg.draggable.js - v1.0.0 - 2015-06-12
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -523,7 +518,7 @@ if (typeof Object.create === 'function') {
   })
 
 }).call(this);
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*! svg.foreignobject.js - v1.0.0 - 2015-06-14
 * https://github.com/fibo/svg.foreignobject.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -556,7 +551,7 @@ SVG.extend(SVG.Container, {
   }
 })
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.0.5
@@ -4882,21 +4877,20 @@ return SVG;
 
 }));
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 // TODO create closures to generate hooks
 // every hook can accept only one parameter, since addNode and addLink triggered
 // by user input does not need to pass a key.
 
-var EventEmitter = require('events').EventEmitter
+var EventEmitter = require('events').EventEmitter,
+    inherits     = require('inherits')
 
-class Broker extends EventEmitter {
-  constructor (canvas) {
-    super()
-
-    this.canvas = canvas
-  }
+function Broker (canvas) {
+  this.canvas = canvas
 }
+
+inherits(Broker, EventEmitter)
 
 function init (eventHook) {
   var canvas = this.canvas
@@ -5022,7 +5016,7 @@ Broker.prototype.init = init
 module.exports = Broker
 
 
-},{"events":2}],8:[function(require,module,exports){
+},{"events":1,"inherits":2}],7:[function(require,module,exports){
 
 var SVG = require('./SVG')
 
@@ -5048,8 +5042,13 @@ var defaultTheme = require('./default/theme.json'),
 function Canvas (id, arg) {
   var self = this
 
+  if (typeof arg === 'undefined')
+    arg = {}
+
+  var eventHooks = arg.eventHooks || {}
+
   var broker = new Broker(this)
-  broker.init(arg.eventHooks)
+  broker.init(eventHooks)
   this.broker = broker
 
   var theme = defaultTheme
@@ -5058,22 +5057,32 @@ function Canvas (id, arg) {
   this.node = {}
   this.link = {}
 
-  var svg = this.svg = SVG(id)
+  var svg = this.svg = SVG(id).spof()
 
   var element = document.getElementById(id)
 
-  var height = element.clientHeight,
-      width  = element.clientWidth
+  var height = arg.height || element.clientHeight,
+      width  = arg.width  || element.clientWidth
 
-  svg.size(width, height).spof()
+  svg.size(width, height)
 
   function getHeight () { return height }
 
-  Object.defineProperty(this, 'height', { get: getHeight });
+  function setHeight (value) {
+    height = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'height', {get: getHeight, set: setHeight});
 
   function getWidth () { return width }
 
-  Object.defineProperty(this, 'width', { get: getWidth });
+  function setWidth (value) {
+    width = value
+    svg.size(height, width).spof()
+  }
+
+  Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
 
   var nextKey = 0
 
@@ -5214,39 +5223,42 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Broker":7,"./Link":10,"./Node":11,"./NodeControls":16,"./NodeCreator":17,"./NodeInspector":18,"./SVG":22,"./default/theme.json":23,"./default/view.json":24,"./validate":26}],9:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./NodeInspector":17,"./SVG":21,"./default/theme.json":22,"./default/view.json":23,"./validate":25}],8:[function(require,module,exports){
 
-var Pin = require('./Pin')
+var inherits = require('inherits'),
+    Pin      = require('./Pin')
 
-class Input extends Pin (node, position) {
-  constructor (node, position) {
-    super('ins', node, position)
+function Input (node, position) {
+  Pin.call(this, 'ins', node, position)
 
-    this.link = null
-  }
-
-  render () {
-    var fill   = this.fill,
-        node   = this.node,
-        size   = this.size,
-        vertex = this.vertex.relative
-
-    var svg = node.canvas.svg
-
-    var rect = svg.rect(size, size)
-                  .move(vertex.x, vertex.y)
-                  .fill(fill)
-
-    this.rect = rect
-
-    node.group.add(rect)
-  }
+  this.link = null
 }
+
+inherits(Input, Pin)
+
+function render () {
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
+
+  var svg = node.canvas.svg
+
+  var rect = svg.rect(size, size)
+                .move(vertex.x, vertex.y)
+                .fill(fill)
+
+  this.rect = rect
+
+  node.group.add(rect)
+}
+
+Input.prototype.render = render
 
 module.exports = Input
 
 
-},{"./Pin":20}],10:[function(require,module,exports){
+},{"./Pin":19,"inherits":2}],9:[function(require,module,exports){
 
 function Link (canvas, key) {
   this.canvas = canvas
@@ -5363,7 +5375,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -5656,35 +5668,35 @@ Node.prototype.addOutput = addOutput
 module.exports = Node
 
 
-},{"./Input":9,"./Output":19}],12:[function(require,module,exports){
+},{"./Input":8,"./Output":18}],11:[function(require,module,exports){
 
-class NodeButton {
-  constructor (canvas, relativeCoordinate) {
-    this.relativeCoordinate = relativeCoordinate
+function NodeButton (canvas, relativeCoordinate) {
+  this.relativeCoordinate = relativeCoordinate
 
-    this.node = null
+  this.node = null
 
-    this.canvas = canvas
+  this.canvas = canvas
 
-    this.size = canvas.theme.halfPinSize * 2
-    this.group = canvas.svg.group()
-  }
-
-  /**
-   * Remove button from currently selected node
-   */
-
-  detach () {
-    this.group.hide()
-
-    this.node = null
-  }
+  this.size = canvas.theme.halfPinSize * 2
+  this.group = canvas.svg.group()
 }
+
+/**
+ * Remove button from currently selected node
+ */
+
+function detachNodeButton () {
+  this.group.hide()
+
+  this.node = null
+}
+
+NodeButton.prototype.detach = detachNodeButton
 
 module.exports = NodeButton
 
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5757,7 +5769,7 @@ AddInput.prototype.attachTo = attachTo
 module.exports = AddInput
 
 
-},{"../NodeButton":12,"inherits":3}],14:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],13:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5830,7 +5842,7 @@ module.exports = AddOutput
 
 
 
-},{"../NodeButton":12,"inherits":3}],15:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],14:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5909,7 +5921,7 @@ DeleteNode.prototype.attachTo = attachTo
 module.exports = DeleteNode
 
 
-},{"../NodeButton":12,"inherits":3}],16:[function(require,module,exports){
+},{"../NodeButton":11,"inherits":2}],15:[function(require,module,exports){
 
 var AddInputButton   = require('./NodeButton/AddInput'),
     AddOutputButton  = require('./NodeButton/AddOutput'),
@@ -5948,7 +5960,7 @@ NodeControls.prototype.detach = nodeControlsDetach
 module.exports = NodeControls
 
 
-},{"./NodeButton/AddInput":13,"./NodeButton/AddOutput":14,"./NodeButton/DeleteNode":15}],17:[function(require,module,exports){
+},{"./NodeButton/AddInput":12,"./NodeButton/AddOutput":13,"./NodeButton/DeleteNode":14}],16:[function(require,module,exports){
 
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
@@ -6028,7 +6040,7 @@ NodeCreator.prototype.show = showNodeCreator
 module.exports = NodeCreator
 
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 function NodeInspector (canvas) {
 
@@ -6037,114 +6049,115 @@ function NodeInspector (canvas) {
 module.exports = NodeInspector
 
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
-var Pin      = require('./Pin'),
+var inherits = require('inherits'),
+    Pin      = require('./Pin'),
     PreLink  = require('./PreLink')
 
-class Output extends Pin {
-  constructor (node, position) {
-    super('outs', node, position)
+function Output (node, position) {
+  Pin.call(this, 'outs', node, position)
 
-    this.link = {}
-  }
-
-  render () {
-    // TODO for var i in view this.set(i, view[i])
-    var self = this
-
-    var fill   = this.fill,
-        node   = this.node,
-        size   = this.size,
-        vertex = this.vertex.relative
-
-    var canvas = node.canvas
-
-    var rect = canvas.svg.rect(size, size)
-                     .move(vertex.x, vertex.y)
-                     .fill(fill)
-
-    this.rect = rect
-
-    node.group.add(rect)
-
-    var preLink = null
-
-    function mouseoverOutput () {
-      preLink = new PreLink(canvas, self)
-    }
-
-    rect.on('mouseover', mouseoverOutput)
-  }
+  this.link = {}
 }
 
+inherits(Output, Pin)
+
+function render () {
+  // TODO for var i in view this.set(i, view[i])
+  var self = this
+
+  var fill   = this.fill,
+      node   = this.node,
+      size   = this.size,
+      vertex = this.vertex.relative
+
+  var canvas = node.canvas
+
+  var rect = canvas.svg.rect(size, size)
+                   .move(vertex.x, vertex.y)
+                   .fill(fill)
+
+  this.rect = rect
+
+  node.group.add(rect)
+
+  var preLink = null
+
+  function mouseoverOutput () {
+    preLink = new PreLink(canvas, self)
+  }
+
+  rect.on('mouseover', mouseoverOutput)
+}
+
+Output.prototype.render = render
 
 module.exports = Output
 
 
-},{"./Pin":20,"./PreLink":21}],20:[function(require,module,exports){
+},{"./Pin":19,"./PreLink":20,"inherits":2}],19:[function(require,module,exports){
 
-class Pin {
-  constructor (type, node, position) {
-    var self = this
+function Pin (type, node, position) {
+  var self = this
 
-    this.type     = type
-    this.node     = node
-    this.position = position
+  this.type     = type
+  this.node     = node
+  this.position = position
 
-    var canvas = node.canvas
+  var canvas = node.canvas
 
-    var theme = canvas.theme
+  var theme = canvas.theme
 
-    var fill     = theme.fillPin,
-        halfSize = theme.halfPinSize
+  var fill     = theme.fillPin,
+      halfSize = theme.halfPinSize
 
-    this.fill = fill
+  this.fill = fill
 
-    this.halfSize = halfSize
+  this.halfSize = halfSize
 
-    var size = halfSize * 2
-    this.size = size
+  var size = halfSize * 2
+  this.size = size
 
-    function getVertex () {
-      var vertex = {
-            absolute: {},
-            relative: {}
-          }
+  function getVertex () {
+    var vertex = {
+          absolute: {},
+          relative: {}
+        }
 
-      vertex.relative.x = node.xCoordinateOf(self)
+    vertex.relative.x = node.xCoordinateOf(self)
 
-      if (type === 'ins')
-        vertex.relative.y = 0
-      if (type === 'outs')
-        vertex.relative.y = node.h - size
+    if (type === 'ins')
+      vertex.relative.y = 0
+    if (type === 'outs')
+      vertex.relative.y = node.h - size
 
-      vertex.absolute.x = vertex.relative.x + node.x
-      vertex.absolute.y = vertex.relative.y + node.y
+    vertex.absolute.x = vertex.relative.x + node.x
+    vertex.absolute.y = vertex.relative.y + node.y
 
-      return vertex
-    }
-
-    Object.defineProperty(this, 'vertex', { get: getVertex })
-
-    function getCenter () {
-      var center = {
-            absolute: {},
-            relative: {}
-          }
-
-      var vertex = this.vertex
-
-      center.relative.x = vertex.relative.x + halfSize
-      center.relative.y = vertex.relative.y + halfSize
-      center.absolute.x = center.relative.x + node.x
-      center.absolute.y = center.relative.y + node.y
-
-      return center
-    }
-
-    Object.defineProperty(this, 'center', { get: getCenter })
+    return vertex
   }
+
+  Object.defineProperty(this, 'vertex', { get: getVertex })
+
+  function getCenter () {
+    var center = {
+          absolute: {},
+          relative: {}
+        }
+
+    var vertex = this.vertex
+
+    center.relative.x = vertex.relative.x + halfSize
+    center.relative.y = vertex.relative.y + halfSize
+    center.absolute.x = center.relative.x + node.x
+    center.absolute.y = center.relative.y + node.y
+
+    return center
+  }
+
+  Object.defineProperty(this, 'center', { get: getCenter })
+
 }
 
 function get (key) {
@@ -6189,7 +6202,7 @@ Pin.prototype.toJSON = toJSON
 module.exports = Pin
 
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -6311,7 +6324,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":10}],22:[function(require,module,exports){
+},{"./Link":9}],21:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -6332,7 +6345,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":4,"svg.foreignobject.js":5,"svg.js":6}],23:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],22:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -6358,18 +6371,18 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":8}],26:[function(require,module,exports){
+},{"./Canvas":7}],25:[function(require,module,exports){
 
 function validate (view) {
   if (typeof view !== 'object')
@@ -6385,5 +6398,9 @@ function validate (view) {
 module.exports = validate
 
 
-},{}]},{},[1])(1)
-});
+},{}],"flow-view":[function(require,module,exports){
+
+module.exports = require('./src')
+
+
+},{"./src":24}]},{},[]);

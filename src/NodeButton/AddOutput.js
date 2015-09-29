@@ -1,9 +1,9 @@
 
-var NodeButton = require('../NodeButton')
+var inherits   = require('inherits'),
+    NodeButton = require('../NodeButton')
 
-class AddOutput extends NodeButton {
-  constructor (canvas) {
-    super(canvas)
+function AddOutput (canvas) {
+  NodeButton.call(this, canvas)
 
   var svg   = canvas.svg,
       theme = canvas.theme
@@ -52,7 +52,9 @@ class AddOutput extends NodeButton {
   group.on('mouseover', selectButton.bind(this))
 }
 
-  attachTo (node) {
+inherits(AddOutput, NodeButton)
+
+function attachTo (node) {
   var group = this.group,
       size  = this.size
 
@@ -60,8 +62,9 @@ class AddOutput extends NodeButton {
        .show()
 
   this.node = node
-  }
 }
+
+AddOutput.prototype.attachTo = attachTo
 
 module.exports = AddOutput
 

@@ -14,18 +14,24 @@
 
 Any feedback is welcome!
 
+### Status
+
+The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
+I am adding [events and hooks](#events-and-hooks) to let integrate with other libs.
+
 ## Installation
-
-With [npm](https://npmjs.org/) do
-
-```bash
-$ npm install flow-view
-```
 
 With [bower](http://bower.io/) do
 
 ```bash
 $ bower install flow-view
+```
+
+Note that *flow-view* should be used client side. However, if you want to import it in your Node package
+and bundle it with browserify, or whatever, you can install it with [npm](https://npmjs.org/) doing
+
+```bash
+$ npm install flow-view
 ```
 
 ## Synopsis

@@ -6,7 +6,7 @@ flow: /empty.json
 
 > Visual editor for dataflow programming, powered by [svg.js][1]
 
-[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.png?branch=master)](https://travis-ci.org/fibo/flow-view.png?branch=master) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view) [![Stories in Ready](https://badge.waffle.io/fibo/flow-view.png?label=ready&title=Ready)](https://waffle.io/fibo/flow-view)
+[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.png?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view) [![Stories in Ready](https://badge.waffle.io/fibo/flow-view.png?label=ready&title=Ready)](https://waffle.io/fibo/flow-view)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
@@ -18,18 +18,24 @@ flow: /empty.json
 
 Any feedback is welcome!
 
+### Status
+
+The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
+I am adding [events and hooks](#events-and-hooks) to let integrate with other libs.
+
 ## Installation
-
-With [npm](https://npmjs.org/) do
-
-```bash
-$ npm install flow-view
-```
 
 With [bower](http://bower.io/) do
 
 ```bash
 $ bower install flow-view
+```
+
+Note that *flow-view* should be used client side. However, if you want to import it in your Node package
+and bundle it with browserify, or whatever, you can install it with [npm](https://npmjs.org/) doing
+
+```bash
+$ npm install flow-view
 ```
 
 ## Synopsis

@@ -1,7 +1,14 @@
 {
   "name": "flow-view",
-  "version": "0.5.1",
   "description": "Visual editor for dataflow programming, powered by svg.js",
+  "version": "0.5.1",
+  "engines": { "node": ">=4.0.0" },
+  "homepage": "https://github.com/fibo/flow-view",
+  "author": {
+    "name": "Gianluca Casati",
+    "url": "http://g14n.info"
+  },
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "_build": "npm run browserify && npm run jekyll; git status",
@@ -28,12 +35,9 @@
     "svg",
     "editor"
   ],
-  "author": "fibo",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "homepage": "https://github.com/fibo/flow-view",
   "dependencies": {
     "events": "^1.0.2",
     "inherits": "^2.0.1",

@@ -6,7 +6,7 @@ flow: /empty.json
 
 > Visual editor for dataflow programming, powered by [svg.js][1]
 
-[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.png?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view) [![Stories in Ready](https://badge.waffle.io/fibo/flow-view.png?label=ready&title=Ready)](https://waffle.io/fibo/flow-view)
+[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Test page](https://img.shields.io/badge/test-page-blue.svg)](http://g14n.info/flow-view/test) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view) [![Stories Done](https://badge.waffle.io/fibo/flow-view.png?label=done&title=Done)](https://waffle.io/fibo/flow-view?milestone=minimum%20viable)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 

@@ -554,13 +554,13 @@ SVG.extend(SVG.Container, {
 },{}],5:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
-* @version 2.0.5
+* @version 2.1.1
 * http://www.svgjs.com
 *
 * @copyright Wout Fierens <wout@impinc.co.uk>
 * @license MIT
 *
-* BUILT: Sun Jul 05 2015 01:42:48 GMT+0200 (Mitteleuropäische Sommerzeit)
+* BUILT: Mon Oct 05 2015 20:47:18 GMT+0200 (Mitteleuropäische Sommerzeit)
 */;
 
 (function(root, factory) {
@@ -673,8 +673,8 @@ SVG.adopt = function(node) {
   // adopt with element-specific settings
   if (node.nodeName == 'svg')
     element = node.parentNode instanceof SVGElement ? new SVG.Nested : new SVG.Doc
-  else if (node.nodeName == 'lineairGradient') // lineair?
-    element = new SVG.Gradient('lineair')
+  else if (node.nodeName == 'linearGradient')
+    element = new SVG.Gradient('linear')
   else if (node.nodeName == 'radialGradient')
     element = new SVG.Gradient('radial')
   else if (SVG[capitalize(node.nodeName)])
@@ -712,6 +712,7 @@ SVG.prepare = function(element) {
   , path: path
   }
 }
+
 // Storage for regular expressions
 SVG.regex = {
   // Parse unit value
@@ -728,6 +729,9 @@ SVG.regex = {
   
   // Parse matrix wrapper
 , matrix:           /matrix\(|\)/g
+
+  // Elements of a matrix
+, matrixElements:   /,*\s+|,/
   
   // Whitespace
 , whitespace:       /\s/g
@@ -2423,6 +2427,14 @@ SVG.Matrix = SVG.invent({
   , skew: function(x, y, cx, cy) {
       return this.around(cx, cy, this.native().skewX(x || 0).skewY(y || 0))
     }
+    // SkewX
+  , skewX: function(x, cx, cy) {
+      return this.around(cx, cy, this.native().skewX(x || 0))
+    }
+    // SkewY
+  , skewY: function(y, cx, cy) {
+      return this.around(cx, cy, this.native().skewY(y || 0))
+    }
     // Transform around a center point
   , around: function(cx, cy, matrix) {
       return this
@@ -2659,7 +2671,7 @@ SVG.extend(SVG.Element, SVG.FX, {
       }
     }
 
-    return this.attr('transform', matrix)
+    return this.attr(this instanceof SVG.Pattern ? 'patternTransform' : this instanceof SVG.Gradient ? 'gradientTransform' : 'transform', matrix)
   }
 })
 
@@ -2675,7 +2687,7 @@ SVG.extend(SVG.Element, {
       .split(/\)\s*/).slice(0,-1).map(function(str){
         // generate key => value pairs
         var kv = str.trim().split('(')
-        return [kv[0], kv[1].split(',').map(function(str){ return parseFloat(str) })]
+        return [kv[0], kv[1].split(SVG.regex.matrixElements).map(function(str){ return parseFloat(str) })]
       })
       // calculate every transformation into one matrix
       .reduce(function(matrix, transform){
@@ -2878,9 +2890,9 @@ SVG.listeners = []
 SVG.handlerMap = []
 
 // Add event binder in the SVG namespace
-SVG.on = function(node, event, listener) {
+SVG.on = function(node, event, listener, binding) {
   // create listener, get object-index
-  var l     = listener.bind(node.instance || node)
+  var l     = listener.bind(binding || node.instance || node)
     , index = (SVG.handlerMap.indexOf(node) + 1 || SVG.handlerMap.push(node)) - 1
     , ev    = event.split('.')[0]
     , ns    = event.split('.')[1] || '*'
@@ -2956,8 +2968,8 @@ SVG.off = function(node, event, listener) {
 //
 SVG.extend(SVG.Element, {
   // Bind given event to listener
-  on: function(event, listener) {
-    SVG.on(this.node, event, listener)
+  on: function(event, listener, binding) {
+    SVG.on(this.node, event, listener, binding)
     
     return this
   }
@@ -3899,8 +3911,22 @@ SVG.Text = SVG.invent({
 
   // Add class methods
 , extend: {
+    clone: function(){
+      // clone element and assign new id
+      var clone = assignNewId(this.node.cloneNode(true))
+
+      // mark first level tspans as newlines
+      clone.lines().each(function(){
+        this.newLined = true
+      })
+      
+      // insert the clone after myself
+      this.after(clone)
+
+      return clone
+    }
     // Move over x-axis
-    x: function(x) {
+  , x: function(x) {
       // act as getter
       if (x == null)
         return this.attr('x')
@@ -4318,7 +4344,7 @@ var sugar = {
 /* Add sugar for fill and stroke */
 ;['fill', 'stroke'].forEach(function(m) {
   var i, extension = {}
-  
+
   extension[m] = function(o) {
     if (typeof o == 'string' || SVG.Color.isRgb(o) || (o && typeof o.fill === 'function'))
       this.attr(m, o)
@@ -4328,12 +4354,12 @@ var sugar = {
       for (i = sugar[m].length - 1; i >= 0; i--)
         if (o[sugar[m][i]] != null)
           this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]])
-    
+
     return this
   }
-  
+
   SVG.extend(SVG.Element, SVG.FX, extension)
-  
+
 })
 
 SVG.extend(SVG.Element, SVG.FX, {
@@ -4384,8 +4410,9 @@ SVG.extend(SVG.Element, SVG.FX, {
 SVG.extend(SVG.Rect, SVG.Ellipse, SVG.Circle, SVG.Gradient, SVG.FX, {
   // Add x and y radius
   radius: function(x, y) {
-    return (this.target || this).type == 'radial' ?
-      this.attr({ r: new SVG.Number(x) }) :
+    var type = (this.target || this).type;
+    return type == 'radial' || type == 'circle' ?
+      this.attr({ 'r': new SVG.Number(x) }) :
       this.rx(x).ry(y == null ? x : y)
   }
 })
@@ -4402,7 +4429,7 @@ SVG.extend(SVG.Path, {
 })
 
 SVG.extend(SVG.Parent, SVG.Text, SVG.FX, {
-  // Set font 
+  // Set font
   font: function(o) {
     for (var k in o)
       k == 'leading' ?
@@ -4412,7 +4439,7 @@ SVG.extend(SVG.Parent, SVG.Text, SVG.FX, {
       k == 'size' || k == 'family' || k == 'weight' || k == 'stretch' || k == 'variant' || k == 'style' ?
         this.attr('font-'+ k, o[k]) :
         this.attr(k, o[k])
-    
+
     return this
   }
 })
@@ -4733,7 +4760,7 @@ function stringToMatrix(source) {
   source = source
     .replace(SVG.regex.whitespace, '')
     .replace(SVG.regex.matrix, '')
-    .split(',')
+    .split(SVG.regex.matrixElements)
 
   // convert string values to floats and convert to a matrix-formatted object
   return arrayToMatrix(
@@ -5025,7 +5052,6 @@ var Broker        = require('./Broker'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
     NodeCreator   = require('./NodeCreator'),
-    NodeInspector = require('./NodeInspector')
     validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
@@ -5103,9 +5129,6 @@ function Canvas (id, arg) {
 
   var nodeCreator  = new NodeCreator(this)
   this.nodeCreator = nodeCreator
-
-  var nodeInspector  = new NodeInspector(this)
-  this.NodeInspector = NodeInspector
 
   var nodeControls = new NodeControls(this)
   this.nodeControls = nodeControls
@@ -5223,7 +5246,7 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./NodeInspector":17,"./SVG":21,"./default/theme.json":22,"./default/view.json":23,"./validate":25}],8:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"./validate":24}],8:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5258,7 +5281,7 @@ Input.prototype.render = render
 module.exports = Input
 
 
-},{"./Pin":19,"inherits":2}],9:[function(require,module,exports){
+},{"./Pin":18,"inherits":2}],9:[function(require,module,exports){
 
 function Link (canvas, key) {
   this.canvas = canvas
@@ -5668,7 +5691,7 @@ Node.prototype.addOutput = addOutput
 module.exports = Node
 
 
-},{"./Input":8,"./Output":18}],11:[function(require,module,exports){
+},{"./Input":8,"./Output":17}],11:[function(require,module,exports){
 
 function NodeButton (canvas, relativeCoordinate) {
   this.relativeCoordinate = relativeCoordinate
@@ -6042,15 +6065,6 @@ module.exports = NodeCreator
 
 },{}],17:[function(require,module,exports){
 
-function NodeInspector (canvas) {
-
-}
-
-module.exports = NodeInspector
-
-
-},{}],18:[function(require,module,exports){
-
 var inherits = require('inherits'),
     Pin      = require('./Pin'),
     PreLink  = require('./PreLink')
@@ -6096,7 +6110,7 @@ Output.prototype.render = render
 module.exports = Output
 
 
-},{"./Pin":19,"./PreLink":20,"inherits":2}],19:[function(require,module,exports){
+},{"./Pin":18,"./PreLink":19,"inherits":2}],18:[function(require,module,exports){
 
 function Pin (type, node, position) {
   var self = this
@@ -6202,7 +6216,7 @@ Pin.prototype.toJSON = toJSON
 module.exports = Pin
 
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 var Link = require('./Link')
 
@@ -6324,7 +6338,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":9}],21:[function(require,module,exports){
+},{"./Link":9}],20:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -6345,7 +6359,7 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],22:[function(require,module,exports){
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],21:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -6371,18 +6385,18 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":7}],25:[function(require,module,exports){
+},{"./Canvas":7}],24:[function(require,module,exports){
 
 function validate (view) {
   if (typeof view !== 'object')
@@ -6403,4 +6417,4 @@ module.exports = validate
 module.exports = require('./src')
 
 
-},{"./src":24}]},{},[]);
+},{"./src":23}]},{},[]);

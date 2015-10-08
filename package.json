@@ -46,7 +46,7 @@
     "inherits": "^2.0.1",
     "svg.draggable.js": "fibo/svg.draggable.js",
     "svg.foreignobject.js": "fibo/svg.foreignobject.js",
-    "svg.js": "^2.0.0"
+    "svg.js": "fibo/svg.js"
   },
   "devDependencies": {
     "browserify": "^10.2.4",

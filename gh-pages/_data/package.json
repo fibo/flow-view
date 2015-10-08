@@ -2,7 +2,9 @@
   "name": "flow-view",
   "description": "Visual editor for dataflow programming, powered by svg.js",
   "version": "0.5.1",
-  "engines": { "node": ">=4.0.0" },
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "homepage": "https://github.com/fibo/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -11,7 +13,7 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "_build": "npm run browserify && npm run jekyll; git status",
+    "_build": "npm run browserify && npm run minify && npm run jekyll; git status",
     "_push": "git push origin master && npm run gh-pages:push",
     "_pull": "git pull origin master && npm run gh-pages:pull",
     "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
@@ -23,6 +25,7 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jshint": "jshint -c .jshintrc src/**.js",
+    "minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
     "test": "mocha --bail --require should --reporter min --recursive"
   },
   "repository": {
@@ -47,8 +50,8 @@
   },
   "devDependencies": {
     "browserify": "^10.2.4",
-    "jsdom": "^6.5.1",
     "mocha": "^2.2.5",
-    "should": "^7.0.1"
+    "should": "^7.0.1",
+    "uglify-js": "^2.4.24"
   }
 }

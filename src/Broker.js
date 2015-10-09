@@ -1,8 +1,4 @@
 
-// TODO create closures to generate hooks
-// every hook can accept only one parameter, since addNode and addLink triggered
-// by user input does not need to pass a key.
-
 var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits')
 
@@ -37,29 +33,46 @@ function init (eventHook) {
 
   this.on('addLink', addLink)
 
-  function addInput (eventData) {
-    var beforeAdd = eventHook.beforeAddInput
+  /**
+   * Generate addInput or addOutput event callback
+   *
+   * @api private
+   *
+   * @param {String} type can be In or Out
+   *
+   * @returns {Function} anonymous
+   */
 
-    var key      = eventData.node,
-        position = eventData.position
+  function addPin (type) {
+    return function (eventData) {
+      // Can be addInput or addOutput.
+      var action = 'add' + type + 'put'
 
-    var node = canvas.node[key]
+      // Can be beforeAddInput or beforeAddOutput hook.
+      var beforeAdd = eventHook['beforeAdd' + type + 'put']
 
-    if (typeof beforeAdd === 'function') {
-      try {
-        beforeAdd(eventData)
-        node.addInput(position)
+      var key      = eventData.node,
+          position = eventData.position
+
+      var node = canvas.node[key]
+
+      if (typeof beforeAdd === 'function') {
+        try {
+          beforeAdd(eventData)
+          node[action](position)
+        }
+        catch (err) {
+          console.error(err)
+        }
       }
-      catch (err) {
-        console.error(err)
+      else {
+        node[action](position)
       }
-    }
-    else {
-      node.addInput(position)
     }
   }
 
-  this.on('addInput', addInput)
+  this.on('addInput', addPin('In'))
+  this.on('addOutput', addPin('Out'))
 
   function addNode (view, key) {
     if (typeof key === 'undefined')
@@ -83,43 +96,41 @@ function init (eventHook) {
 
   this.on('addNode', addNode)
 
-  function delLink (key) {
-    var beforeDel = eventHook.beforeDelLink
+  /**
+   * Generate delLink or delNode event callback
+   *
+   * @api private
+   *
+   * @param {String} type can be Link or Node
+   *
+   * @returns {Function} anonymous
+   */
 
-    if (typeof beforeDel === 'function') {
-      try {
-        beforeDel(key)
-        canvas.delLink(key)
-      }
-      catch (err) {
-        console.error(err)
-      }
-    }
-    else {
-      canvas.delLink(key)
-    }
-  }
+  function del (type) {
+    return function (key) {
+      // Can be delLink or delNode.
+      var action = 'del' + type
 
-  this.on('delLink', delLink)
+      // Can be beforeAddInput or beforeAddOutput hook.
+      var beforeDel = eventHook['beforeDel' + type]
 
-  function delNode (key) {
-    var beforeDel = eventHook.beforeDelNode
-
-    if (typeof beforeDel === 'function') {
-      try {
-        beforeDel(key)
-        canvas.delNode(key)
+      if (typeof beforeDel === 'function') {
+        try {
+          beforeDel(key)
+          canvas[action](key)
+        }
+        catch (err) {
+          console.error(err)
+        }
       }
-      catch (err) {
-        console.error(err)
+      else {
+        canvas[action](key)
       }
-    }
-    else {
-      canvas.delNode(key)
     }
   }
 
-  this.on('delNode', delNode)
+  this.on('delLink', del('Link'))
+  this.on('delNode', del('Node'))
 
   function moveNode (eventData) {
     var afterMove = eventHook.afterMoveNode

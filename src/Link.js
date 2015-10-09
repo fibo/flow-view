@@ -1,12 +1,17 @@
 
+/**
+ * Connect an output to an input
+ *
+ * @param {Object} canvas
+ * @param {String} key
+ */
+
 function Link (canvas, key) {
   this.canvas = canvas
   this.key    = key
 }
 
 function render (view) {
-  var self = this
-
   var canvas = this.canvas,
       key    = this.key
 

@@ -186,10 +186,9 @@ function xCoordinateOf (pin) {
   if (position === 0)
     return 0
 
-  var size     = pin.size,
-      type     = pin.type,
-      w        = this.w,
-      x        = 0
+  var size = pin.size,
+      type = pin.type,
+      w    = this.w
 
   var numPins = this[type].length
 
@@ -259,30 +258,12 @@ function addPin (type, position) {
 
 function addInput (position) {
   addPin.bind(this)('ins', position)
-
-  var canvas = this.canvas,
-      key    = this.key
-
-  var eventData = { node: {} }
-  eventData.node[key] = {
-    ins: [{position: position}]
-  }
 }
 
 Node.prototype.addInput = addInput
 
 function addOutput (position) {
   addPin.bind(this)('outs', position)
-
-  var canvas = this.canvas,
-      key    = this.key
-
-  var eventData = { node: {} }
-  eventData.node[key] = {
-    outs: [{position: position}]
-  }
-
-  canvas.broker.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput

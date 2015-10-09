@@ -560,7 +560,7 @@ SVG.extend(SVG.Container, {
 * @copyright Wout Fierens <wout@impinc.co.uk>
 * @license MIT
 *
-* BUILT: Mon Oct 05 2015 20:47:18 GMT+0200 (Mitteleuropäische Sommerzeit)
+* BUILT: Fri Oct 09 2015 14:46:55 GMT-0400 (EDT)
 */;
 
 (function(root, factory) {
@@ -3121,123 +3121,6 @@ SVG.extend(SVG.Element, {
   }
 
 })
-SVG.Mask = SVG.invent({
-  // Initialize node
-  create: function() {
-    this.constructor.call(this, SVG.create('mask'))
-
-    /* keep references to masked elements */
-    this.targets = []
-  }
-
-  // Inherit from
-, inherit: SVG.Container
-
-  // Add class methods
-, extend: {
-    // Unmask all masked elements and remove itself
-    remove: function() {
-      /* unmask all targets */
-      for (var i = this.targets.length - 1; i >= 0; i--)
-        if (this.targets[i])
-          this.targets[i].unmask()
-      delete this.targets
-
-      /* remove mask from parent */
-      this.parent().removeElement(this)
-      
-      return this
-    }
-  }
-  
-  // Add parent method
-, construct: {
-    // Create masking element
-    mask: function() {
-      return this.defs().put(new SVG.Mask)
-    }
-  }
-})
-
-
-SVG.extend(SVG.Element, {
-  // Distribute mask to svg element
-  maskWith: function(element) {
-    /* use given mask or create a new one */
-    this.masker = element instanceof SVG.Mask ? element : this.parent().mask().add(element)
-
-    /* store reverence on self in mask */
-    this.masker.targets.push(this)
-    
-    /* apply mask */
-    return this.attr('mask', 'url("#' + this.masker.attr('id') + '")')
-  }
-  // Unmask element
-, unmask: function() {
-    delete this.masker
-    return this.attr('mask', null)
-  }
-  
-})
-
-SVG.ClipPath = SVG.invent({
-  // Initialize node
-  create: function() {
-    this.constructor.call(this, SVG.create('clipPath'))
-
-    /* keep references to clipped elements */
-    this.targets = []
-  }
-
-  // Inherit from
-, inherit: SVG.Container
-
-  // Add class methods
-, extend: {
-    // Unclip all clipped elements and remove itself
-    remove: function() {
-      /* unclip all targets */
-      for (var i = this.targets.length - 1; i >= 0; i--)
-        if (this.targets[i])
-          this.targets[i].unclip()
-      delete this.targets
-
-      /* remove clipPath from parent */
-      this.parent().removeElement(this)
-      
-      return this
-    }
-  }
-  
-  // Add parent method
-, construct: {
-    // Create clipping element
-    clip: function() {
-      return this.defs().put(new SVG.ClipPath)
-    }
-  }
-})
-
-//
-SVG.extend(SVG.Element, {
-  // Distribute clipPath to svg element
-  clipWith: function(element) {
-    /* use given clip or create a new one */
-    this.clipper = element instanceof SVG.ClipPath ? element : this.parent().clip().add(element)
-
-    /* store reverence on self in mask */
-    this.clipper.targets.push(this)
-    
-    /* apply mask */
-    return this.attr('clip-path', 'url("#' + this.clipper.attr('id') + '")')
-  }
-  // Unclip element
-, unclip: function() {
-    delete this.clipper
-    return this.attr('clip-path', null)
-  }
-  
-})
 SVG.Gradient = SVG.invent({
   // Initialize node
   create: function(type) {
@@ -3483,51 +3366,6 @@ SVG.Shape = SVG.invent({
 , inherit: SVG.Element
 
 })
-
-SVG.Bare = SVG.invent({
-  // Initialize
-  create: function(element, inherit) {
-    // construct element
-    this.constructor.call(this, SVG.create(element))
-
-    // inherit custom methods
-    if (inherit)
-      for (var method in inherit.prototype)
-        if (typeof inherit.prototype[method] === 'function')
-          this[method] = inherit.prototype[method]
-  }
-
-  // Inherit from
-, inherit: SVG.Element
-
-  // Add methods
-, extend: {
-    // Insert some plain text
-    words: function(text) {
-      // remove contents
-      while (this.node.hasChildNodes())
-        this.node.removeChild(this.node.lastChild)
-
-      // create text node
-      this.node.appendChild(document.createTextNode(text))
-
-      return this
-    }
-  }
-})
-
-
-SVG.extend(SVG.Parent, {
-  // Create an element that is not described by SVG.js
-  element: function(element, inherit) {
-    return this.put(new SVG.Bare(element, inherit))
-  }
-  // Add symbol element
-, symbol: function() {
-    return this.defs().element('symbol', SVG.Container)
-  }
-
-})
 SVG.Use = SVG.invent({
   // Initialize node
   create: 'use'
@@ -3755,31 +3593,6 @@ SVG.extend(SVG.Polyline, SVG.Polygon, {
     return this.attr('points', this.array().size(p.width, p.height))
   }
 
-})
-// unify all point to point elements
-SVG.extend(SVG.Line, SVG.Polyline, SVG.Polygon, {
-  // Define morphable array
-  morphArray:  SVG.PointArray
-  // Move by left top corner over x-axis
-, x: function(x) {
-    return x == null ? this.bbox().x : this.move(x, this.bbox().y)
-  }
-  // Move by left top corner over y-axis
-, y: function(y) {
-    return y == null ? this.bbox().y : this.move(this.bbox().x, y)
-  }
-  // Set width of element
-, width: function(width) {
-    var b = this.bbox()
-
-    return width == null ? b.width : this.size(width, b.height)
-  }
-  // Set height of element
-, height: function(height) {
-    var b = this.bbox()
-
-    return height == null ? b.height : this.size(b.width, height) 
-  }
 })
 SVG.Path = SVG.invent({
   // Initialize node
@@ -4206,132 +4019,6 @@ SVG.Nested = SVG.invent({
     }
   }
 })
-SVG.A = SVG.invent({
-  // Initialize node
-  create: 'a'
-
-  // Inherit from
-, inherit: SVG.Container
-
-  // Add class methods
-, extend: {
-    // Link url
-    to: function(url) {
-      return this.attr('href', url, SVG.xlink)
-    }
-    // Link show attribute
-  , show: function(target) {
-      return this.attr('show', target, SVG.xlink)
-    }
-    // Link target attribute
-  , target: function(target) {
-      return this.attr('target', target)
-    }
-  }
-  
-  // Add parent method
-, construct: {
-    // Create a hyperlink element
-    link: function(url) {
-      return this.put(new SVG.A).to(url)
-    }
-  }
-})
-
-SVG.extend(SVG.Element, {
-  // Create a hyperlink element
-  linkTo: function(url) {
-    var link = new SVG.A
-
-    if (typeof url == 'function')
-      url.call(link, link)
-    else
-      link.to(url)
-
-    return this.parent().put(link).put(this)
-  }
-  
-})
-SVG.Marker = SVG.invent({
-  // Initialize node
-  create: 'marker'
-
-  // Inherit from
-, inherit: SVG.Container
-
-  // Add class methods
-, extend: {
-    // Set width of element
-    width: function(width) {
-      return this.attr('markerWidth', width)
-    }
-    // Set height of element
-  , height: function(height) {
-      return this.attr('markerHeight', height)
-    }
-    // Set marker refX and refY
-  , ref: function(x, y) {
-      return this.attr('refX', x).attr('refY', y)
-    }
-    // Update marker
-  , update: function(block) {
-      /* remove all content */
-      this.clear()
-      
-      /* invoke passed block */
-      if (typeof block == 'function')
-        block.call(this, this)
-      
-      return this
-    }
-    // Return the fill id
-  , toString: function() {
-      return 'url(#' + this.id() + ')'
-    }
-  }
-
-  // Add parent method
-, construct: {
-    marker: function(width, height, block) {
-      // Create marker element in defs
-      return this.defs().marker(width, height, block)
-    }
-  }
-
-})
-
-SVG.extend(SVG.Defs, {
-  // Create marker
-  marker: function(width, height, block) {
-    // Set default viewbox to match the width and height, set ref to cx and cy and set orient to auto
-    return this.put(new SVG.Marker)
-      .size(width, height)
-      .ref(width / 2, height / 2)
-      .viewbox(0, 0, width, height)
-      .attr('orient', 'auto')
-      .update(block)
-  }
-  
-})
-
-SVG.extend(SVG.Line, SVG.Polyline, SVG.Polygon, SVG.Path, {
-  // Create and attach markers
-  marker: function(marker, width, height, block) {
-    var attr = ['marker']
-
-    // Build attribute name
-    if (marker != 'all') attr.push(marker)
-    attr = attr.join('-')
-
-    // Set marker attribute
-    marker = arguments[1] instanceof SVG.Marker ?
-      arguments[1] :
-      this.doc().marker(width, height, block)
-    
-    return this.attr(attr, marker)
-  }
-  
-})
 // Define list of available attributes for stroke and fill
 var sugar = {
   stroke: ['color', 'width', 'opacity', 'linecap', 'linejoin', 'miterlimit', 'dasharray', 'dashoffset']
@@ -4664,28 +4351,6 @@ SVG.extend(SVG.Element, {
   }
 
 })
-// Method for getting an element by id
-SVG.get = function(id) {
-  var node = document.getElementById(idFromReference(id) || id)
-  if (node) return SVG.adopt(node)
-}
-
-// Select elements by query string
-SVG.select = function(query, parent) {
-  return new SVG.Set(
-    SVG.utils.map((parent || document).querySelectorAll(query), function(node) {
-      return SVG.adopt(node)
-    })
-  )
-}
-
-SVG.extend(SVG.Parent, {
-  // Scoped select method
-  select: function(query) {
-    return SVG.select(query, this.node)
-  }
-
-})
 // Convert dash-separated-string to camelCase
 function camelCase(s) { 
   return s.toLowerCase().replace(/-(.)/g, function(m, g) {
@@ -4858,57 +4523,11 @@ function idFromReference(url) {
 
 // Create matrix array for looping
 var abcdef = 'abcdef'.split('')
-// Add CustomEvent to IE9 and IE10 
-if (typeof CustomEvent !== 'function') {
-  // Code from: https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
-  var CustomEvent = function(event, options) {
-    options = options || { bubbles: false, cancelable: false, detail: undefined }
-    var e = document.createEvent('CustomEvent')
-    e.initCustomEvent(event, options.bubbles, options.cancelable, options.detail)
-    return e
-  }
-
-  CustomEvent.prototype = window.Event.prototype
-
-  window.CustomEvent = CustomEvent
-}
-
-// requestAnimationFrame / cancelAnimationFrame Polyfill with fallback based on Paul Irish
-(function(w) {
-  var lastTime = 0
-  var vendors = ['moz', 'webkit']
-  
-  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    w.requestAnimationFrame = w[vendors[x] + 'RequestAnimationFrame']
-    w.cancelAnimationFrame  = w[vendors[x] + 'CancelAnimationFrame'] ||
-                              w[vendors[x] + 'CancelRequestAnimationFrame']
-  }
- 
-  w.requestAnimationFrame = w.requestAnimationFrame || 
-    function(callback) {
-      var currTime = new Date().getTime()
-      var timeToCall = Math.max(0, 16 - (currTime - lastTime))
-      
-      var id = w.setTimeout(function() {
-        callback(currTime + timeToCall)
-      }, timeToCall)
-      
-      lastTime = currTime + timeToCall
-      return id
-    }
- 
-  w.cancelAnimationFrame = w.cancelAnimationFrame || w.clearTimeout;
-
-}(window))
 return SVG;
 
 }));
 
 },{}],6:[function(require,module,exports){
-
-// TODO create closures to generate hooks
-// every hook can accept only one parameter, since addNode and addLink triggered
-// by user input does not need to pass a key.
 
 var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits')
@@ -4944,29 +4563,46 @@ function init (eventHook) {
 
   this.on('addLink', addLink)
 
-  function addInput (eventData) {
-    var beforeAdd = eventHook.beforeAddInput
+  /**
+   * Generate addInput or addOutput event callback
+   *
+   * @api private
+   *
+   * @param {String} type can be In or Out
+   *
+   * @returns {Function} anonymous
+   */
 
-    var key      = eventData.node,
-        position = eventData.position
+  function addPin (type) {
+    return function (eventData) {
+      // Can be addInput or addOutput.
+      var action = 'add' + type + 'put'
 
-    var node = canvas.node[key]
+      // Can be beforeAddInput or beforeAddOutput hook.
+      var beforeAdd = eventHook['beforeAdd' + type + 'put']
 
-    if (typeof beforeAdd === 'function') {
-      try {
-        beforeAdd(eventData)
-        node.addInput(position)
+      var key      = eventData.node,
+          position = eventData.position
+
+      var node = canvas.node[key]
+
+      if (typeof beforeAdd === 'function') {
+        try {
+          beforeAdd(eventData)
+          node[action](position)
+        }
+        catch (err) {
+          console.error(err)
+        }
       }
-      catch (err) {
-        console.error(err)
+      else {
+        node[action](position)
       }
-    }
-    else {
-      node.addInput(position)
     }
   }
 
-  this.on('addInput', addInput)
+  this.on('addInput', addPin('In'))
+  this.on('addOutput', addPin('Out'))
 
   function addNode (view, key) {
     if (typeof key === 'undefined')
@@ -4990,43 +4626,41 @@ function init (eventHook) {
 
   this.on('addNode', addNode)
 
-  function delLink (key) {
-    var beforeDel = eventHook.beforeDelLink
+  /**
+   * Generate delLink or delNode event callback
+   *
+   * @api private
+   *
+   * @param {String} type can be Link or Node
+   *
+   * @returns {Function} anonymous
+   */
 
-    if (typeof beforeDel === 'function') {
-      try {
-        beforeDel(key)
-        canvas.delLink(key)
-      }
-      catch (err) {
-        console.error(err)
-      }
-    }
-    else {
-      canvas.delLink(key)
-    }
-  }
+  function del (type) {
+    return function (key) {
+      // Can be delLink or delNode.
+      var action = 'del' + type
 
-  this.on('delLink', delLink)
+      // Can be beforeAddInput or beforeAddOutput hook.
+      var beforeDel = eventHook['beforeDel' + type]
 
-  function delNode (key) {
-    var beforeDel = eventHook.beforeDelNode
-
-    if (typeof beforeDel === 'function') {
-      try {
-        beforeDel(key)
-        canvas.delNode(key)
+      if (typeof beforeDel === 'function') {
+        try {
+          beforeDel(key)
+          canvas[action](key)
+        }
+        catch (err) {
+          console.error(err)
+        }
       }
-      catch (err) {
-        console.error(err)
+      else {
+        canvas[action](key)
       }
-    }
-    else {
-      canvas.delNode(key)
     }
   }
 
-  this.on('delNode', delNode)
+  this.on('delLink', del('Link'))
+  this.on('delNode', del('Node'))
 
   function moveNode (eventData) {
     var afterMove = eventHook.afterMoveNode
@@ -5283,14 +4917,19 @@ module.exports = Input
 
 },{"./Pin":18,"inherits":2}],9:[function(require,module,exports){
 
+/**
+ * Connect an output to an input
+ *
+ * @param {Object} canvas
+ * @param {String} key
+ */
+
 function Link (canvas, key) {
   this.canvas = canvas
   this.key    = key
 }
 
 function render (view) {
-  var self = this
-
   var canvas = this.canvas,
       key    = this.key
 
@@ -5587,10 +5226,9 @@ function xCoordinateOf (pin) {
   if (position === 0)
     return 0
 
-  var size     = pin.size,
-      type     = pin.type,
-      w        = this.w,
-      x        = 0
+  var size = pin.size,
+      type = pin.type,
+      w    = this.w
 
   var numPins = this[type].length
 
@@ -5660,30 +5298,12 @@ function addPin (type, position) {
 
 function addInput (position) {
   addPin.bind(this)('ins', position)
-
-  var canvas = this.canvas,
-      key    = this.key
-
-  var eventData = { node: {} }
-  eventData.node[key] = {
-    ins: [{position: position}]
-  }
 }
 
 Node.prototype.addInput = addInput
 
 function addOutput (position) {
   addPin.bind(this)('outs', position)
-
-  var canvas = this.canvas,
-      key    = this.key
-
-  var eventData = { node: {} }
-  eventData.node[key] = {
-    outs: [{position: position}]
-  }
-
-  canvas.broker.emit('addOutput', eventData)
 }
 
 Node.prototype.addOutput = addOutput
@@ -6218,7 +5838,12 @@ module.exports = Pin
 
 },{}],19:[function(require,module,exports){
 
-var Link = require('./Link')
+/**
+ * A link that is not already attached
+ *
+ * @param {Object} canvas
+ * @param {Object} output
+ */
 
 function PreLink (canvas, output) {
   var svg   = canvas.svg,
@@ -6338,7 +5963,7 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{"./Link":9}],20:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 // Consider this module will be browserified.
 

@@ -29,6 +29,7 @@ var eventHooks = {
   beforeAddLink: function (view) { console.log('addLink', view) },
   beforeAddNode: function (view) { console.log('addNode', view) },
   beforeAddInput: function (eventData) { console.log('addInput', eventData) },
+  beforeAddOutput: function (eventData) { console.log('addOutput', eventData) },
   beforeDelLink: function (key) { console.log('delLink', key) },
   beforeDelNode: function (key) { console.log('delNode', key) }
 }

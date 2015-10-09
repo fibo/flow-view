@@ -1,5 +1,10 @@
 
-var Link = require('./Link')
+/**
+ * A link that is not already attached
+ *
+ * @param {Object} canvas
+ * @param {Object} output
+ */
 
 function PreLink (canvas, output) {
   var svg   = canvas.svg,

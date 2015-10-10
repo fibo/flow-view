@@ -4897,7 +4897,7 @@ Canvas.prototype.delLink = delLink
 module.exports = Canvas
 
 
-},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./SVG":20,"./default/theme.json":21,"./default/view.json":22,"./validate":24}],8:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./SVG":24,"./default/theme.json":20,"./default/view.json":21,"./validate":23}],8:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5110,12 +5110,6 @@ function render (view) {
   group.add(rect)
        .add(text)
 
-  // Add url, if any.
-  if (typeof view.url === 'string') {
-    group.linkTo(view.url)
-    this.url = view.url
-  }
-
   Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
     'y': { get: function () { return group.y()     } },
@@ -5208,9 +5202,6 @@ function toJSON () {
       outs = this.outs
 
   view.text = this.text
-
-  if (typeof this.url === 'string')
-    view.url = this.url
 
   ins.forEach(function (position) {
     view.ins[position] = ins[position].toJSON()
@@ -5994,27 +5985,6 @@ module.exports = PreLink
 
 
 },{}],20:[function(require,module,exports){
-
-// Consider this module will be browserified.
-
-// Load svg.js first ...
-var SVG = require('svg.js')
-
-// ... then load plugins: since plugins do not use *module.exports*, they are
-// loaded as plain text, and when browserified they will be included in the bundle.
-require('svg.draggable.js')
-require('svg.foreignobject.js')
-
-// Note that, in order to be included as expected by browserify, dynamic imports
-// do not work: for instance a code like the following won't work client-side
-//
-//    ['svg.draggable.js', 'svg.foreignobject.js'].forEach(require)
-//
-
-module.exports = SVG
-
-
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],21:[function(require,module,exports){
 module.exports={
   "fillCircle": "#fff",
   "fillLabel": "#333",
@@ -6040,18 +6010,18 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":7}],24:[function(require,module,exports){
+},{"./Canvas":7}],23:[function(require,module,exports){
 
 function validate (view) {
   if (typeof view !== 'object')
@@ -6067,9 +6037,30 @@ function validate (view) {
 module.exports = validate
 
 
-},{}],"flow-view":[function(require,module,exports){
+},{}],24:[function(require,module,exports){
+
+// Consider this module will be browserified.
+
+// Load svg.js first ...
+var SVG = require('svg.js')
+
+// ... then load plugins: since plugins do not use *module.exports*, they are
+// loaded as plain text, and when browserified they will be included in the bundle.
+require('svg.draggable.js')
+require('svg.foreignobject.js')
+
+// Note that, in order to be included as expected by browserify, dynamic imports
+// do not work: for instance a code like the following won't work client-side
+//
+//    ['svg.draggable.js', 'svg.foreignobject.js'].forEach(require)
+//
+
+module.exports = SVG
+
+
+},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],"flow-view":[function(require,module,exports){
 
 module.exports = require('./src')
 
 
-},{"./src":23}]},{},[]);
+},{"./src":22}]},{},[]);

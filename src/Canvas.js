@@ -115,6 +115,7 @@ function render (view) {
 Canvas.prototype.render = render
 
 /**
+ * Get model.
  *
  * @returns {Object} json
  */
@@ -138,6 +139,10 @@ function toJSON () {
 
 Canvas.prototype.toJSON = toJSON
 
+/**
+ * Add a link.
+ */
+
 function addLink (view, key) {
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -153,6 +158,10 @@ function addLink (view, key) {
 }
 
 Canvas.prototype.addLink = addLink
+
+/**
+ * Add a node.
+ */
 
 function addNode (view, key) {
   if (typeof key === 'undefined')
@@ -170,6 +179,10 @@ function addNode (view, key) {
 
 Canvas.prototype.addNode = addNode
 
+/**
+ * Delete a node.
+ */
+
 function delNode (key) {
   var link = this.link,
       node = this.node[key]
@@ -180,7 +193,7 @@ function delNode (key) {
         nodeIsTarget = link[i].to.key   === key
 
     if (nodeIsSource || nodeIsTarget)
-      this.delLink(i)
+      this.broker.emit('delLink', i)
   }
 
   // Then remove node.
@@ -188,6 +201,10 @@ function delNode (key) {
 }
 
 Canvas.prototype.delNode = delNode
+
+/**
+ * Delete a link.
+ */
 
 function delLink (key) {
   var link = this.link[key]

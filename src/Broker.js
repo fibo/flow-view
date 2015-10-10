@@ -51,7 +51,7 @@ function init (eventHook) {
       // Can be beforeAddInput or beforeAddOutput hook.
       var beforeAdd = eventHook['beforeAdd' + type + 'put']
 
-      var key      = eventData.node,
+      var key      = eventData.nodeKey,
           position = eventData.position
 
       var node = canvas.node[key]

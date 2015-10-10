@@ -53,12 +53,6 @@ function render (view) {
   group.add(rect)
        .add(text)
 
-  // Add url, if any.
-  if (typeof view.url === 'string') {
-    group.linkTo(view.url)
-    this.url = view.url
-  }
-
   Object.defineProperties(self, {
     'x': { get: function () { return group.x()     } },
     'y': { get: function () { return group.y()     } },
@@ -79,7 +73,7 @@ function render (view) {
   outs.forEach(createOutput)
 
   function dynamicConstraint (x, y) {
-    var horyzontalContraint = (x > 0) && (x < canvas.width - self.w),
+    var horyzontalContraint = (x > 0) && (x < canvas.width  - self.w),
         verticalContraint   = (y > 0) && (y < canvas.height - self.h)
 
     return { x: horyzontalContraint, y: verticalContraint }
@@ -151,9 +145,6 @@ function toJSON () {
       outs = this.outs
 
   view.text = this.text
-
-  if (typeof this.url === 'string')
-    view.url = this.url
 
   ins.forEach(function (position) {
     view.ins[position] = ins[position].toJSON()

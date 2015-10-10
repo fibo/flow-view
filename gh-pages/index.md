@@ -185,13 +185,15 @@ An array with two entries:
 
 The following events are triggered
 
-  * addNode
-  * addLink
-  * delNode
-  * delLink
-  * moveNode
-  * addInput
-  * addOutput
+| eventName | eventData example                 |
+| --------- | --------------------------------- |
+| addNode   | `{"text":"ciao","x":326,"y":82}`  |
+| addLink   | `{"from":["a",0],"to":["b",1]}`   |
+| delNode   | `"a"`                             |
+| delLink   | `"c"`                             |
+| moveNode  | `{"node":{"a":{"x":362,"y":98}}}` |
+| addInput  | `{"nodeKey":"a","position":0}`    |
+| addOutput | `{"nodeKey":"c","position":2}`    |
 
 Integration of *flow-view* with other libs can be achieved with events hooks:
 

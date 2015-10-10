@@ -25,6 +25,9 @@
     "minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
     "test": "mocha --bail --require should --reporter min --recursive"
   },
+  "browser": {
+    "./src/SVG.js": "./src/window.SVG.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/fibo/flow-view.git"

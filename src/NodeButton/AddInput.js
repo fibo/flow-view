@@ -31,7 +31,13 @@ function AddInput (canvas) {
 
   function addInput (ev) {
     var node = this.node
-    canvas.broker.emit('addInput', { node: node.key })
+
+    var eventData = {
+      nodeKey: node.key,
+      position: node.ins.length
+    }
+
+    canvas.broker.emit('addInput', eventData)
   }
 
   function deselectButton () {

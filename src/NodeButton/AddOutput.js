@@ -30,7 +30,14 @@ function AddOutput (canvas) {
   this.group = group
 
   function addOutput (ev) {
-    this.node.addOutput()
+    var node = this.node
+
+    var eventData = {
+      nodeKey: node.key,
+      position: node.outs.length
+    }
+
+    canvas.broker.emit('addOutput', eventData)
   }
 
   function deselectButton () {

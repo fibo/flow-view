@@ -88,8 +88,11 @@ function render (view) {
   var dragMoves = -1
 
   function dragend () {
-    var eventData = { node: {} }
-    eventData.node[key] = {x: self.x, y: self.y}
+    var eventData = {
+      nodeKey: key,
+      x: self.x,
+      y: self.y
+    }
 
     if (dragMoves > 0)
       canvas.broker.emit('moveNode', eventData)

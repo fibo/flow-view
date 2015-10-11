@@ -1,4 +1,6 @@
 
+// TODO rename key to id, specially linkKey in linkId.
+
 var SVG = require('./SVG')
 
 var Broker        = require('./Broker'),
@@ -100,13 +102,19 @@ function render (view) {
   var self = this
 
   function createNode (key) {
-    self.addNode(view.node[key], key)
+    var data = view.node[key]
+    data.nodeKey = key
+
+    self.addNode(data)
   }
 
   Object.keys(view.node).forEach(createNode)
 
   function createLink (key) {
-    self.addLink(view.link[key], key)
+    var data = view.link[key]
+    data.linkKey = key
+
+    self.addLink(data)
   }
 
   Object.keys(view.link).forEach(createLink)
@@ -143,18 +151,17 @@ Canvas.prototype.toJSON = toJSON
  * Add a link.
  */
 
-function addLink (view, key) {
+function addLink (data) {
+  var key = data.linkKey
+
   if (typeof key === 'undefined')
      key = this.nextKey
 
   var link = new Link(this, key)
 
-  link.render(view)
+  link.render(data)
 
   this.link[key] = link
-
-  var eventData = { link: {} }
-  eventData.link[key] = view
 }
 
 Canvas.prototype.addLink = addLink
@@ -163,18 +170,17 @@ Canvas.prototype.addLink = addLink
  * Add a node.
  */
 
-function addNode (view, key) {
+function addNode (data) {
+  var key = data.nodeKey
+
   if (typeof key === 'undefined')
      key = this.nextKey
 
   var node = new Node(this, key)
 
-  node.render(view)
+  node.render(data)
 
   this.node[key] = node
-
-  var eventData = { node: {} }
-  eventData.node[key] = view
 }
 
 Canvas.prototype.addNode = addNode
@@ -183,7 +189,9 @@ Canvas.prototype.addNode = addNode
  * Delete a node.
  */
 
-function delNode (key) {
+function delNode (data) {
+  var key = data.nodeKey
+
   var link = this.link,
       node = this.node[key]
 
@@ -193,7 +201,7 @@ function delNode (key) {
         nodeIsTarget = link[i].to.key   === key
 
     if (nodeIsSource || nodeIsTarget)
-      this.broker.emit('delLink', i)
+      this.broker.emit('delLink', { key: i })
   }
 
   // Then remove node.
@@ -206,7 +214,9 @@ Canvas.prototype.delNode = delNode
  * Delete a link.
  */
 
-function delLink (key) {
+function delLink (data) {
+  var key = data.linkKey
+
   var link = this.link[key]
 
   link.deleteView()

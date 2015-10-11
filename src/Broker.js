@@ -11,27 +11,27 @@ inherits(Broker, EventEmitter)
 function init (eventHook) {
   var canvas = this.canvas
 
-  function addLink (view, key) {
-    if (typeof key === 'undefined')
-      key = canvas.nextKey
-
+  function addLink (eventData) {
+    /*
     var beforeAdd = eventHook.beforeAddLink
 
     if (typeof beforeAdd === 'function') {
       try {
-        beforeAdd(view, key)
-        canvas.addLink(view, key)
+        var stop = beforeAdd(eventData)
+
+        if (! stop) canvas.addLink(eventData)
       }
       catch (err) {
         console.error(err)
       }
     }
     else {
-      canvas.addLink(view, key)
-    }
+    */
+      canvas.addLink(eventData)
+    //}
   }
 
-  this.on('addLink', addLink)
+  this.on('addLink', canvas.addLink)
 
   /**
    * Generate addInput or addOutput event callback
@@ -48,53 +48,33 @@ function init (eventHook) {
       // Can be addInput or addOutput.
       var action = 'add' + type + 'put'
 
-      // Can be beforeAddInput or beforeAddOutput hook.
-      var beforeAdd = eventHook['beforeAdd' + type + 'put']
-
       var key      = eventData.nodeKey,
           position = eventData.position
 
+        /*
+      // Can be beforeAddInput or beforeAddOutput hook.
+      var beforeAdd = eventHook['beforeAdd' + type + 'put']
       var node = canvas.node[key]
 
       if (typeof beforeAdd === 'function') {
         try {
           beforeAdd(eventData)
-          node[action](position)
         }
         catch (err) {
           console.error(err)
         }
       }
       else {
+      */
         node[action](position)
-      }
+      //}
     }
   }
 
   this.on('addInput', addPin('In'))
   this.on('addOutput', addPin('Out'))
 
-  function addNode (view, key) {
-    if (typeof key === 'undefined')
-      key = canvas.nextKey
-
-    var beforeAdd = eventHook.beforeAddNode
-
-    if (typeof beforeAdd === 'function') {
-      try {
-        beforeAdd(view, key)
-        canvas.addNode(view, key)
-      }
-      catch (err) {
-        console.error(err)
-      }
-    }
-    else {
-      canvas.addNode(view, key)
-    }
-  }
-
-  this.on('addNode', addNode)
+  this.on('addNode', canvas.addNode)
 
   /**
    * Generate delLink or delNode event callback
@@ -107,7 +87,7 @@ function init (eventHook) {
    */
 
   function del (type) {
-    return function (key) {
+    return function (eventData) {
       // Can be delLink or delNode.
       var action = 'del' + type
 
@@ -116,15 +96,14 @@ function init (eventHook) {
 
       if (typeof beforeDel === 'function') {
         try {
-          beforeDel(key)
-          canvas[action](key)
+          beforeDel(eventData, canvas[action])
         }
         catch (err) {
           console.error(err)
         }
       }
       else {
-        canvas[action](key)
+        canvas[action](eventData)
       }
     }
   }

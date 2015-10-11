@@ -189,9 +189,9 @@ The following events are triggered
 | --------- | --------------------------------- |
 | addNode   | `{"text":"ciao","x":326,"y":82}`  |
 | addLink   | `{"from":["a",0],"to":["b",1]}`   |
-| delNode   | `"a"`                             |
-| delLink   | `"c"`                             |
-| moveNode  | `{"node":{"a":{"x":362,"y":98}}}` |
+| delNode   | `{"nodeKey":"a"}`                 |
+| delLink   | `{"linkKey":"c"}`                 |
+| moveNode  | `{"nodeKey":"a","x":362,"y":98}`  |
 | addInput  | `{"nodeKey":"a","position":0}`    |
 | addOutput | `{"nodeKey":"c","position":2}`    |
 
@@ -211,14 +211,29 @@ Event hooks can be passed as an optional argument to *Canvas* constructor
 
 ```
 var eventHooks = {
-  afterMoveNode: function (eventData) { console.log('moveNode', eventData) },
-  beforeAddLink: function (view) { console.log('addLink', view) },
-  beforeAddNode: function (view) { console.log('addNode', view) },
-  beforeAddInput: function (eventData) { console.log('addInput', eventData) },
-  beforeAddOutput: function (eventData) { console.log('addOutput', eventData) },
-  beforeDelLink: function (key) { console.log('delLink', key) },
-  beforeDelNode: function (key) { console.log('delNode', key) }
-})
+  afterMoveNode: function (eventData) {
+    console.log('moveNode', eventData)
+  },
+  beforeAddLink: function (eventData) {
+    console.log('addLink', eventData)
+  },
+  beforeAddNode: function (eventData, addNode) {
+    console.log('addNode', eventData)
+    addNode(eventData)
+  },
+  beforeAddInput: function (eventData) {
+    console.log('addInput', eventData)
+  },
+  beforeAddOutput: function (eventData) {
+    console.log('addOutput', eventData)
+  },
+  beforeDelLink: function (eventData) {
+    console.log('delLink', eventData)
+  },
+  beforeDelNode: function (eventData) {
+    console.log('delNode', eventData)
+  }
+}
 
 var canvas = new Canvas('drawing', { eventHooks: eventHooks })
 ```

@@ -16,7 +16,7 @@ function render (view) {
       key    = this.key
 
   var broker = canvas.broker,
-      node  = canvas.node,
+      node   = canvas.node,
       svg    = canvas.svg,
       theme  = canvas.theme
 
@@ -52,7 +52,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    broker.emit('delLink', key)
+    broker.emit('delLink', { linkKey: key })
   }
 
   function deselectLine () {

@@ -141,6 +141,12 @@ function render (view) {
 
 Node.prototype.render = render
 
+/**
+ * Get model.
+ *
+ * @returns {Object} json
+ */
+
 function toJSON () {
   var view = { ins: [], outs: [] }
 

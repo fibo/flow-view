@@ -201,7 +201,7 @@ function delNode (data) {
         nodeIsTarget = link[i].to.key   === key
 
     if (nodeIsSource || nodeIsTarget)
-      this.broker.emit('delLink', { key: i })
+      this.broker.emit('delLink', { linkKey: i })
   }
 
   // Then remove node.
@@ -223,6 +223,35 @@ function delLink (data) {
 }
 
 Canvas.prototype.delLink = delLink
+
+/**
+ * Move a node.
+ */
+
+function moveNode (data) {
+  var key = data.nodeKey,
+      x   = data.x,
+      y   = data.y
+
+  this.node[key].x = x
+  this.node[key].y = y
+}
+
+Canvas.prototype.moveNode = moveNode
+
+/**
+ * Rename a node.
+ */
+
+function renameNode (data) {
+  // TODO add renameNode event to Broker
+  var id   = data.id,
+      text = data.text
+
+  this.node[id].text = text
+}
+
+Canvas.prototype.renameNode = renameNode
 
 module.exports = Canvas
 

@@ -11,27 +11,17 @@ inherits(Broker, EventEmitter)
 function init (eventHook) {
   var canvas = this.canvas
 
+  /**
+   * On addLink event.
+   *
+   * @api private
+   */
+
   function addLink (eventData) {
-    /*
-    var beforeAdd = eventHook.beforeAddLink
-
-    if (typeof beforeAdd === 'function') {
-      try {
-        var stop = beforeAdd(eventData)
-
-        if (! stop) canvas.addLink(eventData)
-      }
-      catch (err) {
-        console.error(err)
-      }
-    }
-    else {
-    */
-      canvas.addLink(eventData)
-    //}
+    canvas.addLink(eventData)
   }
 
-  this.on('addLink', canvas.addLink)
+  this.on('addLink', addLink)
 
   /**
    * Generate addInput or addOutput event callback
@@ -51,71 +41,59 @@ function init (eventHook) {
       var key      = eventData.nodeKey,
           position = eventData.position
 
-        /*
-      // Can be beforeAddInput or beforeAddOutput hook.
-      var beforeAdd = eventHook['beforeAdd' + type + 'put']
       var node = canvas.node[key]
 
-      if (typeof beforeAdd === 'function') {
-        try {
-          beforeAdd(eventData)
-        }
-        catch (err) {
-          console.error(err)
-        }
-      }
-      else {
-      */
-        node[action](position)
-      //}
+      node[action](position)
     }
   }
 
   this.on('addInput', addPin('In'))
   this.on('addOutput', addPin('Out'))
 
-  this.on('addNode', canvas.addNode)
-
   /**
-   * Generate delLink or delNode event callback
+   * On addNode event.
    *
    * @api private
-   *
-   * @param {String} type can be Link or Node
-   *
-   * @returns {Function} anonymous
    */
 
-  function del (type) {
-    return function (eventData) {
-      // Can be delLink or delNode.
-      var action = 'del' + type
-
-      // Can be beforeAddInput or beforeAddOutput hook.
-      var beforeDel = eventHook['beforeDel' + type]
-
-      if (typeof beforeDel === 'function') {
-        try {
-          beforeDel(eventData, canvas[action])
-        }
-        catch (err) {
-          console.error(err)
-        }
-      }
-      else {
-        canvas[action](eventData)
-      }
-    }
+  function addNode (eventData) {
+    canvas.addNode(eventData)
   }
 
-  this.on('delLink', del('Link'))
-  this.on('delNode', del('Node'))
+  this.on('addNode', addNode)
+
+  /**
+   * On delNode event.
+   *
+   * @api private
+   */
+
+  function delNode (eventData) {
+    canvas.delNode(eventData)
+  }
+
+  this.on('delNode', delNode)
+
+  /**
+   * On delLink event.
+   *
+   * @api private
+   */
+
+  function delLink (eventData) {
+    canvas.delLink(eventData)
+  }
+
+  this.on('delLink', delLink)
+
+  /**
+   * On moveNode event.
+   *
+   * @api private
+   */
 
   function moveNode (eventData) {
-    var afterMove = eventHook.afterMoveNode
-
-    if (typeof afterMove === 'function')
-      afterMove(eventData)
+    canvas.moveNode(eventData)
   }
 
   this.on('moveNode', moveNode)

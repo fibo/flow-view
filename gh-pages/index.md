@@ -21,7 +21,7 @@ Any feedback is welcome!
 ### Status
 
 The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
-I am adding [events and hooks](#events-and-hooks) to let integrate with other libs.
+I am adding [events](#events) to let integrate with other libs.
 
 ## Installation
 
@@ -181,7 +181,7 @@ An array with two entries:
   0. The key of the target node.
   1. The position of the input.
 
-## Events and hooks
+## Events
 
 The following events are triggered
 
@@ -195,50 +195,23 @@ The following events are triggered
 | addInput  | `{"nodeKey":"a","position":0}`    |
 | addOutput | `{"nodeKey":"c","position":2}`    |
 
-Integration of *flow-view* with other libs can be achieved with events hooks:
+For example, I used events in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
 
-  * afterMoveNode
-  * beforeAddNode
-  * beforeAddLink
-  * beforeAddInput
-  * beforeAddOutput
-  * beforeDelNode
-  * beforeDelLink
-
-For example, I used event hooks in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
-
-Event hooks can be passed as an optional argument to *Canvas* constructor
+Follows an example that uses events to log their data.
 
 ```
-var eventHooks = {
-  afterMoveNode: function (eventData) {
-    console.log('moveNode', eventData)
-  },
-  beforeAddLink: function (eventData) {
-    console.log('addLink', eventData)
-  },
-  beforeAddNode: function (eventData, addNode) {
-    console.log('addNode', eventData)
-    addNode(eventData)
-  },
-  beforeAddInput: function (eventData) {
-    console.log('addInput', eventData)
-  },
-  beforeAddOutput: function (eventData) {
-    console.log('addOutput', eventData)
-  },
-  beforeDelLink: function (eventData) {
-    console.log('delLink', eventData)
-  },
-  beforeDelNode: function (eventData) {
-    console.log('delNode', eventData)
-  }
-}
+var eventNames = ['addLink' , 'addNode',
+                  'addInput', 'addOutput',
+                  'delLink' , 'delNode'  , 'moveNode']
 
-var canvas = new Canvas('drawing', { eventHooks: eventHooks })
+eventNames.forEach(function (eventName) {
+  canvas.broker.on(eventName, function (ev) {
+    console.log(eventName, ev)
+  })
+})
 ```
 
-Go to [examples/event-hooks.html](http://g14n.info/flow-view/examples/event-hooks.html) to see results.
+Go to [examples/event-log.html](http://g14n.info/flow-view/examples/event-log.html) to see results.
 
   [1]: http://svgjs.com/ "SVG.js"
   [2]: http://g14n.info/dflow "dflow"

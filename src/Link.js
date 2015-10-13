@@ -3,17 +3,17 @@
  * Connect an output to an input
  *
  * @param {Object} canvas
- * @param {String} key
+ * @param {String} id
  */
 
-function Link (canvas, key) {
+function Link (canvas, id) {
   this.canvas = canvas
-  this.key    = key
+  this.key    = id
 }
 
 function render (view) {
   var canvas = this.canvas,
-      key    = this.key
+      id     = this.key
 
   var broker = canvas.broker,
       node   = canvas.node,
@@ -49,10 +49,10 @@ function render (view) {
   this.line = line
 
   end.link = this
-  start.link[key] = this
+  start.link[id] = this
 
   function remove () {
-    broker.emit('delLink', { linkid: key })
+    broker.emit('delLink', { linkid: id })
   }
 
   function deselectLine () {
@@ -75,7 +75,7 @@ Link.prototype.render = render
 function deleteView () {
   var canvas = this.canvas,
       end    = this.end,
-      key    = this.key,
+      id     = this.key,
       line   = this.line,
       start  = this.start
 
@@ -83,9 +83,9 @@ function deleteView () {
 
   end.link = null
 
-  delete start.link[key]
+  delete start.link[id]
 
-  delete canvas.link[key]
+  delete canvas.link[id]
 }
 
 Link.prototype.deleteView = deleteView

@@ -2,9 +2,9 @@
 var Input   = require('./Input'),
     Output  = require('./Output')
 
-function Node (canvas, key) {
+function Node (canvas, id) {
   this.canvas = canvas
-  this.key    = key
+  this.key    = id
 
   this.group = canvas.svg.group()
 
@@ -17,7 +17,7 @@ function render (view) {
 
   var canvas = this.canvas,
       group  = this.group,
-      key    = this.key
+      id     = this.key
 
   var svg   = canvas.svg,
       theme = canvas.theme
@@ -89,7 +89,7 @@ function render (view) {
 
   function dragend () {
     var eventData = {
-      nodeKey: key,
+      nodeid: id,
       x: self.x,
       y: self.y
     }
@@ -105,8 +105,8 @@ function render (view) {
     dragMoves++
 
     self.outs.forEach(function (output) {
-      Object.keys(output.link).forEach(function (key) {
-        var link = output.link[key]
+      Object.keys(output.link).forEach(function (id) {
+        var link = output.link[id]
 
         if (link)
           link.linePlot()
@@ -171,11 +171,11 @@ Node.prototype.toJSON = toJSON
 function deleteView () {
   var canvas = this.canvas,
       group  = this.group,
-      key    = this.key
+      id     = this.key
 
   group.remove()
 
-  delete canvas.node[key]
+  delete canvas.node[id]
 }
 
 Node.prototype.deleteView = deleteView
@@ -220,8 +220,8 @@ function addPin (type, position) {
     return
 
   // Update link view for outputs.
-  function updateLinkViews (pin, key) {
-    pin.link[key].linePlot()
+  function updateLinkViews (pin, id) {
+    pin.link[id].linePlot()
   }
 
   // Move existing pins to new position.

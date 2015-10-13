@@ -4568,7 +4568,7 @@ function init (eventHook) {
       // Can be addInput or addOutput.
       var action = 'add' + type + 'put'
 
-      var key      = eventData.nodeKey,
+      var key      = eventData.nodeid,
           position = eventData.position
 
       var node = canvas.node[key]
@@ -4635,8 +4635,6 @@ module.exports = Broker
 
 
 },{"events":1,"inherits":2}],7:[function(require,module,exports){
-
-// TODO rename key to id, specially linkKey in linkId.
 
 var SVG = require('./SVG')
 
@@ -4740,7 +4738,7 @@ function render (view) {
 
   function createNode (key) {
     var data = view.node[key]
-    data.nodeKey = key
+    data.nodeid = key
 
     self.addNode(data)
   }
@@ -4749,7 +4747,7 @@ function render (view) {
 
   function createLink (key) {
     var data = view.link[key]
-    data.linkKey = key
+    data.linkid = key
 
     self.addLink(data)
   }
@@ -4789,7 +4787,7 @@ Canvas.prototype.toJSON = toJSON
  */
 
 function addLink (data) {
-  var key = data.linkKey
+  var key = data.linkid
 
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -4808,7 +4806,7 @@ Canvas.prototype.addLink = addLink
  */
 
 function addNode (data) {
-  var key = data.nodeKey
+  var key = data.nodeid
 
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -4827,7 +4825,7 @@ Canvas.prototype.addNode = addNode
  */
 
 function delNode (data) {
-  var key = data.nodeKey
+  var key = data.nodeid
 
   var link = this.link,
       node = this.node[key]
@@ -4838,7 +4836,7 @@ function delNode (data) {
         nodeIsTarget = link[i].to.key   === key
 
     if (nodeIsSource || nodeIsTarget)
-      this.broker.emit('delLink', { linkKey: i })
+      this.broker.emit('delLink', { linkid: i })
   }
 
   // Then remove node.
@@ -4852,7 +4850,7 @@ Canvas.prototype.delNode = delNode
  */
 
 function delLink (data) {
-  var key = data.linkKey
+  var key = data.linkid
 
   var link = this.link[key]
 
@@ -4866,7 +4864,7 @@ Canvas.prototype.delLink = delLink
  */
 
 function moveNode (data) {
-  var key = data.nodeKey,
+  var key = data.nodeid,
       x   = data.x,
       y   = data.y
 
@@ -4983,7 +4981,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    broker.emit('delLink', { linkKey: key })
+    broker.emit('delLink', { linkid: key })
   }
 
   function deselectLine () {
@@ -5388,7 +5386,7 @@ function AddInput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeKey: node.key,
+      nodeid: node.key,
       position: node.ins.length
     }
 
@@ -5467,7 +5465,7 @@ function AddOutput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeKey: node.key,
+      nodeid: node.key,
       position: node.outs.length
     }
 
@@ -5544,14 +5542,13 @@ function DeleteNode (canvas) {
   this.group = group
 
   function delNode () {
-    var canvas = this.canvas,
-        node   = this.node
+    var canvas = this.canvas
 
-    var key = node.key
+    var eventData = { nodeid: this.node.key }
 
     canvas.nodeControls.detach()
 
-    canvas.broker.emit('delNode', { nodeKey: key })
+    canvas.broker.emit('delNode', eventData)
   }
 
   function deselectButton () {

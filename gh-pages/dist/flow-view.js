@@ -4568,10 +4568,10 @@ function init (eventHook) {
       // Can be addInput or addOutput.
       var action = 'add' + type + 'put'
 
-      var key      = eventData.nodeid,
+      var id       = eventData.nodeid,
           position = eventData.position
 
-      var node = canvas.node[key]
+      var node = canvas.node[id]
 
       node[action](position)
     }
@@ -4701,22 +4701,22 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
 
-  var nextKey = 0
+  var nextId = 0
 
-  function getNextKey () {
-    var currentKey = ++nextKey + ''
+  function getNextId () {
+    var currentId = ++nextId + ''
 
-    // Make next key unique.
-    if (self.node[currentKey])
-      return getNextKey()
+    // Make next id unique.
+    if (self.node[currentId])
+      return getNextId()
 
-    if (self.link[currentKey])
-      return getNextKey()
+    if (self.link[currentId])
+      return getNextId()
 
-    return currentKey
+    return currentId
   }
 
-  Object.defineProperty(this, 'nextKey', { get: getNextKey })
+  Object.defineProperty(this, 'nextId', { get: getNextId })
 
   var nodeCreator  = new NodeCreator(this)
   this.nodeCreator = nodeCreator
@@ -4736,23 +4736,25 @@ function render (view) {
 
   var self = this
 
-  function createNode (key) {
-    var data = view.node[key]
-    data.nodeid = key
+  function createNode (id) {
+    var data = view.node[id]
+    data.nodeid = id
 
     self.addNode(data)
   }
 
-  Object.keys(view.node).forEach(createNode)
+  Object.keys(view.node)
+        .forEach(createNode)
 
-  function createLink (key) {
-    var data = view.link[key]
-    data.linkid = key
+  function createLink (id) {
+    var data = view.link[id]
+    data.linkid = id
 
     self.addLink(data)
   }
 
-  Object.keys(view.link).forEach(createLink)
+  Object.keys(view.link)
+        .forEach(createLink)
 }
 
 Canvas.prototype.render = render
@@ -4769,12 +4771,12 @@ function toJSON () {
   var link = this.link,
       node = this.node
 
-  Object.keys(link).forEach(function (key) {
-    view.link[key] = link[key].toJSON()
+  Object.keys(link).forEach(function (id) {
+    view.link[id] = link[id].toJSON()
   })
 
-  Object.keys(node).forEach(function (key) {
-    view.node[key] = node[key].toJSON()
+  Object.keys(node).forEach(function (id) {
+    view.node[id] = node[id].toJSON()
   })
 
   return view
@@ -4787,16 +4789,16 @@ Canvas.prototype.toJSON = toJSON
  */
 
 function addLink (data) {
-  var key = data.linkid
+  var id = data.linkid
 
-  if (typeof key === 'undefined')
-     key = this.nextKey
+  if (typeof id === 'undefined')
+     id = this.nextId
 
-  var link = new Link(this, key)
+  var link = new Link(this, id)
 
   link.render(data)
 
-  this.link[key] = link
+  this.link[id] = link
 }
 
 Canvas.prototype.addLink = addLink
@@ -4806,16 +4808,16 @@ Canvas.prototype.addLink = addLink
  */
 
 function addNode (data) {
-  var key = data.nodeid
+  var id = data.nodeid
 
-  if (typeof key === 'undefined')
-     key = this.nextKey
+  if (typeof id === 'undefined')
+     id = this.nextId
 
-  var node = new Node(this, key)
+  var node = new Node(this, id)
 
   node.render(data)
 
-  this.node[key] = node
+  this.node[id] = node
 }
 
 Canvas.prototype.addNode = addNode
@@ -4825,15 +4827,15 @@ Canvas.prototype.addNode = addNode
  */
 
 function delNode (data) {
-  var key = data.nodeid
+  var id = data.nodeid
 
   var link = this.link,
-      node = this.node[key]
+      node = this.node[id]
 
   // First remove links connected to node.
   for (var i in link) {
-    var nodeIsSource = link[i].from.key === key,
-        nodeIsTarget = link[i].to.key   === key
+    var nodeIsSource = link[i].from.id === id,
+        nodeIsTarget = link[i].to.id   === id
 
     if (nodeIsSource || nodeIsTarget)
       this.broker.emit('delLink', { linkid: i })
@@ -4850,9 +4852,9 @@ Canvas.prototype.delNode = delNode
  */
 
 function delLink (data) {
-  var key = data.linkid
+  var id = data.linkid
 
-  var link = this.link[key]
+  var link = this.link[id]
 
   link.deleteView()
 }
@@ -4864,12 +4866,12 @@ Canvas.prototype.delLink = delLink
  */
 
 function moveNode (data) {
-  var key = data.nodeid,
+  var id = data.nodeid,
       x   = data.x,
       y   = data.y
 
-  this.node[key].x = x
-  this.node[key].y = y
+  this.node[id].x = x
+  this.node[id].y = y
 }
 
 Canvas.prototype.moveNode = moveNode
@@ -4937,12 +4939,12 @@ module.exports = Input
 
 function Link (canvas, id) {
   this.canvas = canvas
-  this.key    = id
+  this.id     = id
 }
 
 function render (view) {
   var canvas = this.canvas,
-      id     = this.key
+      id     = this.id
 
   var broker = canvas.broker,
       node   = canvas.node,
@@ -5004,7 +5006,7 @@ Link.prototype.render = render
 function deleteView () {
   var canvas = this.canvas,
       end    = this.end,
-      id     = this.key,
+      id     = this.id,
       line   = this.line,
       start  = this.start
 
@@ -5022,10 +5024,10 @@ Link.prototype.deleteView = deleteView
 function toJSON () {
   var view = { from: [], to: [] }
 
-  view.from[0] = this.from.key
+  view.from[0] = this.from.id
   view.from[1] = this.start.position
 
-  view.to[0] = this.to.key
+  view.to[0] = this.to.id
   view.to[1] = this.end.position
 
   return view
@@ -5055,7 +5057,7 @@ var Input   = require('./Input'),
 
 function Node (canvas, id) {
   this.canvas = canvas
-  this.key    = id
+  this.id     = id
 
   this.group = canvas.svg.group()
 
@@ -5068,7 +5070,7 @@ function render (view) {
 
   var canvas = this.canvas,
       group  = this.group,
-      id     = this.key
+      id     = this.id
 
   var svg   = canvas.svg,
       theme = canvas.theme
@@ -5220,13 +5222,9 @@ function toJSON () {
 Node.prototype.toJSON = toJSON
 
 function deleteView () {
-  var canvas = this.canvas,
-      group  = this.group,
-      id     = this.key
+  this.group.remove()
 
-  group.remove()
-
-  delete canvas.node[id]
+  delete this.canvas.node[this.id]
 }
 
 Node.prototype.deleteView = deleteView
@@ -5303,7 +5301,8 @@ function addPin (type, position) {
         pin.link.linePlot()
 
     if (type === 'outs')
-      Object.keys(pin.link).forEach(updateLinkViews.bind(null, pin))
+      Object.keys(pin.link)
+            .forEach(updateLinkViews.bind(null, pin))
   }
 }
 
@@ -5386,7 +5385,7 @@ function AddInput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeid: node.key,
+      nodeid: node.id,
       position: node.ins.length
     }
 
@@ -5465,7 +5464,7 @@ function AddOutput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeid: node.key,
+      nodeid: node.id,
       position: node.outs.length
     }
 
@@ -5544,7 +5543,7 @@ function DeleteNode (canvas) {
   function delNode () {
     var canvas = this.canvas
 
-    var eventData = { nodeid: this.node.key }
+    var eventData = { nodeid: this.node.id }
 
     canvas.nodeControls.detach()
 
@@ -5817,31 +5816,20 @@ function Pin (type, node, position) {
 
 }
 
-function get (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position][key]
+function get (id) {
+  return this.node[this.type][this.position][id]
 }
 
 Pin.prototype.get = get
 
-function has (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return typeof node[type][position][key] !== 'undefined'
+function has (id) {
+  return typeof this.node[this.type][this.position][id] !== 'undefined'
 }
 
 Pin.prototype.has = has
 
-function set (key, data) {
-  var position = this.position,
-      type     = this.type
-
-  this.node[type][position][key] = data
+function set (id, data) {
+  this.node[this.type][this.position][id] = data
 }
 
 Pin.prototype.set = set
@@ -5955,8 +5943,8 @@ function PreLink (canvas, output) {
 
         if (centerIsInsideInput) {
           var view = {
-            from: [output.node.key, output.position],
-            to: [node.key, input.position]
+            from: [output.node.id, output.position],
+            to: [node.id, input.position]
           }
 
           //canvas.addLink(view)
@@ -5966,8 +5954,8 @@ function PreLink (canvas, output) {
     }
 
     // Loop over all nodes. If center is inside node, drop on it.
-    Object.keys(canvas.node).forEach(function (key) {
-      var node = canvas.node[key]
+    Object.keys(canvas.node).forEach(function (id) {
+      var node = canvas.node[id]
 
       var bbox = node.group.bbox(),
             x  = node.x,

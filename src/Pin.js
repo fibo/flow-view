@@ -61,31 +61,20 @@ function Pin (type, node, position) {
 
 }
 
-function get (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position][key]
+function get (id) {
+  return this.node[this.type][this.position][id]
 }
 
 Pin.prototype.get = get
 
-function has (key) {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return typeof node[type][position][key] !== 'undefined'
+function has (id) {
+  return typeof this.node[this.type][this.position][id] !== 'undefined'
 }
 
 Pin.prototype.has = has
 
-function set (key, data) {
-  var position = this.position,
-      type     = this.type
-
-  this.node[type][position][key] = data
+function set (id, data) {
+  this.node[this.type][this.position][id] = data
 }
 
 Pin.prototype.set = set

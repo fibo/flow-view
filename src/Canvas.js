@@ -64,22 +64,22 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
 
-  var nextKey = 0
+  var nextId = 0
 
-  function getNextKey () {
-    var currentKey = ++nextKey + ''
+  function getNextId () {
+    var currentId = ++nextId + ''
 
-    // Make next key unique.
-    if (self.node[currentKey])
-      return getNextKey()
+    // Make next id unique.
+    if (self.node[currentId])
+      return getNextId()
 
-    if (self.link[currentKey])
-      return getNextKey()
+    if (self.link[currentId])
+      return getNextId()
 
-    return currentKey
+    return currentId
   }
 
-  Object.defineProperty(this, 'nextKey', { get: getNextKey })
+  Object.defineProperty(this, 'nextId', { get: getNextId })
 
   var nodeCreator  = new NodeCreator(this)
   this.nodeCreator = nodeCreator
@@ -99,23 +99,25 @@ function render (view) {
 
   var self = this
 
-  function createNode (key) {
-    var data = view.node[key]
-    data.nodeid = key
+  function createNode (id) {
+    var data = view.node[id]
+    data.nodeid = id
 
     self.addNode(data)
   }
 
-  Object.keys(view.node).forEach(createNode)
+  Object.keys(view.node)
+        .forEach(createNode)
 
-  function createLink (key) {
-    var data = view.link[key]
-    data.linkid = key
+  function createLink (id) {
+    var data = view.link[id]
+    data.linkid = id
 
     self.addLink(data)
   }
 
-  Object.keys(view.link).forEach(createLink)
+  Object.keys(view.link)
+        .forEach(createLink)
 }
 
 Canvas.prototype.render = render
@@ -132,12 +134,12 @@ function toJSON () {
   var link = this.link,
       node = this.node
 
-  Object.keys(link).forEach(function (key) {
-    view.link[key] = link[key].toJSON()
+  Object.keys(link).forEach(function (id) {
+    view.link[id] = link[id].toJSON()
   })
 
-  Object.keys(node).forEach(function (key) {
-    view.node[key] = node[key].toJSON()
+  Object.keys(node).forEach(function (id) {
+    view.node[id] = node[id].toJSON()
   })
 
   return view
@@ -150,16 +152,16 @@ Canvas.prototype.toJSON = toJSON
  */
 
 function addLink (data) {
-  var key = data.linkid
+  var id = data.linkid
 
-  if (typeof key === 'undefined')
-     key = this.nextKey
+  if (typeof id === 'undefined')
+     id = this.nextId
 
-  var link = new Link(this, key)
+  var link = new Link(this, id)
 
   link.render(data)
 
-  this.link[key] = link
+  this.link[id] = link
 }
 
 Canvas.prototype.addLink = addLink
@@ -169,16 +171,16 @@ Canvas.prototype.addLink = addLink
  */
 
 function addNode (data) {
-  var key = data.nodeid
+  var id = data.nodeid
 
-  if (typeof key === 'undefined')
-     key = this.nextKey
+  if (typeof id === 'undefined')
+     id = this.nextId
 
-  var node = new Node(this, key)
+  var node = new Node(this, id)
 
   node.render(data)
 
-  this.node[key] = node
+  this.node[id] = node
 }
 
 Canvas.prototype.addNode = addNode
@@ -188,15 +190,15 @@ Canvas.prototype.addNode = addNode
  */
 
 function delNode (data) {
-  var key = data.nodeid
+  var id = data.nodeid
 
   var link = this.link,
-      node = this.node[key]
+      node = this.node[id]
 
   // First remove links connected to node.
   for (var i in link) {
-    var nodeIsSource = link[i].from.key === key,
-        nodeIsTarget = link[i].to.key   === key
+    var nodeIsSource = link[i].from.id === id,
+        nodeIsTarget = link[i].to.id   === id
 
     if (nodeIsSource || nodeIsTarget)
       this.broker.emit('delLink', { linkid: i })
@@ -213,9 +215,9 @@ Canvas.prototype.delNode = delNode
  */
 
 function delLink (data) {
-  var key = data.linkid
+  var id = data.linkid
 
-  var link = this.link[key]
+  var link = this.link[id]
 
   link.deleteView()
 }
@@ -227,12 +229,12 @@ Canvas.prototype.delLink = delLink
  */
 
 function moveNode (data) {
-  var key = data.nodeid,
+  var id = data.nodeid,
       x   = data.x,
       y   = data.y
 
-  this.node[key].x = x
-  this.node[key].y = y
+  this.node[id].x = x
+  this.node[id].y = y
 }
 
 Canvas.prototype.moveNode = moveNode

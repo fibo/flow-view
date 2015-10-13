@@ -4,7 +4,7 @@ var Input   = require('./Input'),
 
 function Node (canvas, id) {
   this.canvas = canvas
-  this.key    = id
+  this.id     = id
 
   this.group = canvas.svg.group()
 
@@ -17,7 +17,7 @@ function render (view) {
 
   var canvas = this.canvas,
       group  = this.group,
-      id     = this.key
+      id     = this.id
 
   var svg   = canvas.svg,
       theme = canvas.theme
@@ -169,13 +169,9 @@ function toJSON () {
 Node.prototype.toJSON = toJSON
 
 function deleteView () {
-  var canvas = this.canvas,
-      group  = this.group,
-      id     = this.key
+  this.group.remove()
 
-  group.remove()
-
-  delete canvas.node[id]
+  delete this.canvas.node[this.id]
 }
 
 Node.prototype.deleteView = deleteView
@@ -252,7 +248,8 @@ function addPin (type, position) {
         pin.link.linePlot()
 
     if (type === 'outs')
-      Object.keys(pin.link).forEach(updateLinkViews.bind(null, pin))
+      Object.keys(pin.link)
+            .forEach(updateLinkViews.bind(null, pin))
   }
 }
 

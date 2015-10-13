@@ -93,8 +93,8 @@ function PreLink (canvas, output) {
 
         if (centerIsInsideInput) {
           var view = {
-            from: [output.node.key, output.position],
-            to: [node.key, input.position]
+            from: [output.node.id, output.position],
+            to: [node.id, input.position]
           }
 
           //canvas.addLink(view)
@@ -104,8 +104,8 @@ function PreLink (canvas, output) {
     }
 
     // Loop over all nodes. If center is inside node, drop on it.
-    Object.keys(canvas.node).forEach(function (key) {
-      var node = canvas.node[key]
+    Object.keys(canvas.node).forEach(function (id) {
+      var node = canvas.node[id]
 
       var bbox = node.group.bbox(),
             x  = node.x,

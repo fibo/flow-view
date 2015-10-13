@@ -1,6 +1,4 @@
 
-// TODO rename key to id, specially linkKey in linkId.
-
 var SVG = require('./SVG')
 
 var Broker        = require('./Broker'),
@@ -103,7 +101,7 @@ function render (view) {
 
   function createNode (key) {
     var data = view.node[key]
-    data.nodeKey = key
+    data.nodeid = key
 
     self.addNode(data)
   }
@@ -112,7 +110,7 @@ function render (view) {
 
   function createLink (key) {
     var data = view.link[key]
-    data.linkKey = key
+    data.linkid = key
 
     self.addLink(data)
   }
@@ -152,7 +150,7 @@ Canvas.prototype.toJSON = toJSON
  */
 
 function addLink (data) {
-  var key = data.linkKey
+  var key = data.linkid
 
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -171,7 +169,7 @@ Canvas.prototype.addLink = addLink
  */
 
 function addNode (data) {
-  var key = data.nodeKey
+  var key = data.nodeid
 
   if (typeof key === 'undefined')
      key = this.nextKey
@@ -190,7 +188,7 @@ Canvas.prototype.addNode = addNode
  */
 
 function delNode (data) {
-  var key = data.nodeKey
+  var key = data.nodeid
 
   var link = this.link,
       node = this.node[key]
@@ -201,7 +199,7 @@ function delNode (data) {
         nodeIsTarget = link[i].to.key   === key
 
     if (nodeIsSource || nodeIsTarget)
-      this.broker.emit('delLink', { linkKey: i })
+      this.broker.emit('delLink', { linkid: i })
   }
 
   // Then remove node.
@@ -215,7 +213,7 @@ Canvas.prototype.delNode = delNode
  */
 
 function delLink (data) {
-  var key = data.linkKey
+  var key = data.linkid
 
   var link = this.link[key]
 
@@ -229,7 +227,7 @@ Canvas.prototype.delLink = delLink
  */
 
 function moveNode (data) {
-  var key = data.nodeKey,
+  var key = data.nodeid,
       x   = data.x,
       y   = data.y
 

@@ -38,7 +38,7 @@ function init (eventHook) {
       // Can be addInput or addOutput.
       var action = 'add' + type + 'put'
 
-      var key      = eventData.nodeKey,
+      var key      = eventData.nodeid,
           position = eventData.position
 
       var node = canvas.node[key]

@@ -185,15 +185,16 @@ An array with two entries:
 
 The following events are triggered
 
-| eventName | eventData example                 |
-| --------- | --------------------------------- |
-| addNode   | `{"text":"ciao","x":326,"y":82}`  |
-| addLink   | `{"from":["a",0],"to":["b",1]}`   |
-| delNode   | `{"nodeKey":"a"}`                 |
-| delLink   | `{"linkKey":"c"}`                 |
-| moveNode  | `{"nodeKey":"a","x":362,"y":98}`  |
-| addInput  | `{"nodeKey":"a","position":0}`    |
-| addOutput | `{"nodeKey":"c","position":2}`    |
+| eventName  | eventData                        |
+| ---------- | -------------------------------- |
+| addNode    | `{"text":"ciao","x":326,"y":82}` |
+| addLink    | `{"from":["a",0],"to":["b",1]}`  |
+| delNode    | `{"nodeid":"a"}`                 |
+| delLink    | `{"linkid":"c"}`                 |
+| moveNode   | `{"nodeid":"a","x":362,"y":98}`  |
+| addInput   | `{"nodeid":"a","position":0}`    |
+| addOutput  | `{"nodeid":"c","position":2}`    |
+| renameNode | `{"nodeid":"a","text":"foo"}`    |
 
 For example, I used events in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
 

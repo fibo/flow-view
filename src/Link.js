@@ -52,7 +52,7 @@ function render (view) {
   start.link[key] = this
 
   function remove () {
-    broker.emit('delLink', { linkKey: key })
+    broker.emit('delLink', { linkid: key })
   }
 
   function deselectLine () {

@@ -30,14 +30,13 @@ function DeleteNode (canvas) {
   this.group = group
 
   function delNode () {
-    var canvas = this.canvas,
-        node   = this.node
+    var canvas = this.canvas
 
-    var key = node.key
+    var eventData = { nodeid: this.node.key }
 
     canvas.nodeControls.detach()
 
-    canvas.broker.emit('delNode', { nodeKey: key })
+    canvas.broker.emit('delNode', eventData)
   }
 
   function deselectButton () {

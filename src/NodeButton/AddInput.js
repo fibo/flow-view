@@ -33,7 +33,7 @@ function AddInput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeid: node.key,
+      nodeid: node.id,
       position: node.ins.length
     }
 

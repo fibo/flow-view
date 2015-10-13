@@ -8,12 +8,12 @@
 
 function Link (canvas, id) {
   this.canvas = canvas
-  this.key    = id
+  this.id     = id
 }
 
 function render (view) {
   var canvas = this.canvas,
-      id     = this.key
+      id     = this.id
 
   var broker = canvas.broker,
       node   = canvas.node,
@@ -75,7 +75,7 @@ Link.prototype.render = render
 function deleteView () {
   var canvas = this.canvas,
       end    = this.end,
-      id     = this.key,
+      id     = this.id,
       line   = this.line,
       start  = this.start
 
@@ -93,10 +93,10 @@ Link.prototype.deleteView = deleteView
 function toJSON () {
   var view = { from: [], to: [] }
 
-  view.from[0] = this.from.key
+  view.from[0] = this.from.id
   view.from[1] = this.start.position
 
-  view.to[0] = this.to.key
+  view.to[0] = this.to.id
   view.to[1] = this.end.position
 
   return view

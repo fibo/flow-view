@@ -33,7 +33,7 @@ function AddOutput (canvas) {
     var node = this.node
 
     var eventData = {
-      nodeid: node.key,
+      nodeid: node.id,
       position: node.outs.length
     }
 

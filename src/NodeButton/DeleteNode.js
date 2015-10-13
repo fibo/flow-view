@@ -32,7 +32,7 @@ function DeleteNode (canvas) {
   function delNode () {
     var canvas = this.canvas
 
-    var eventData = { nodeid: this.node.key }
+    var eventData = { nodeid: this.node.id }
 
     canvas.nodeControls.detach()
 

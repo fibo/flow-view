@@ -101,7 +101,7 @@ function render (view) {
   group.on('dragend', dragend)
 
   function dragmove () {
-    // First time node is clicked, dragMoves will be eqal to zero.
+    // First time node is clicked, dragMoves will be equal to zero.
     dragMoves++
 
     self.outs.forEach(function (output) {

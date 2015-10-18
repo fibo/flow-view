@@ -122,6 +122,17 @@ function render (view) {
 
 Canvas.prototype.render = render
 
+function deleteView () {
+
+  var link = this.link,
+      node = this.node
+
+  Object.keys(node).forEach(function (id) { node[id].deleteView() })
+  Object.keys(link).forEach(function (id) { link[id].deleteView() })
+}
+
+Canvas.prototype.deleteView = deleteView
+
 /**
  * Get model.
  *

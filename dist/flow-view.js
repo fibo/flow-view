@@ -5100,6 +5100,8 @@ function Node (canvas, id) {
 
   this.ins  = []
   this.outs = []
+
+  this.text = 'callmename'
 }
 
 function render (view) {
@@ -5116,8 +5118,7 @@ function render (view) {
       fillRect  = theme.fillRect,
       labelFont = theme.labeFont
 
-  if (typeof view.text === 'undefined')
-    view.text = 'callmename'
+  this.text = view.text
 
   if (typeof view.h === 'undefined')
     view.h = 1

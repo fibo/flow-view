@@ -30,7 +30,8 @@ canvas.render(view)
 
 var eventNames = ['addLink' , 'addNode',
                   'addInput', 'addOutput',
-                  'delLink' , 'delNode'  , 'moveNode']
+                  'delLink' , 'delNode'  ,
+                  'moveNode', 'renameNode', 'selectNode']
 
 eventNames.forEach(function (eventName) {
   canvas.broker.on(eventName, function (ev) {

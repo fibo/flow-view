@@ -130,13 +130,17 @@ function render (view) {
 
   group.on('dragstart', dragstart)
 
-  function showNodeControls (ev) {
+  function selectNode (ev) {
     ev.stopPropagation()
 
-    canvas.nodeControls.attachTo(this)
+    var eventData = {
+      nodeid: id,
+    }
+
+    canvas.broker.emit('selectNode', eventData)
   }
 
-  group.on('click', showNodeControls.bind(this))
+  group.on('click', selectNode)
 }
 
 Node.prototype.render = render

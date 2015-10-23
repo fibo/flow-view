@@ -97,6 +97,18 @@ function init (eventHook) {
   }
 
   this.on('moveNode', moveNode)
+
+  /**
+   * On selectNode event.
+   *
+   * @api private
+   */
+
+  function selectNode (eventData) {
+    canvas.selectNode(eventData)
+  }
+
+  this.on('selectNode', selectNode)
 }
 
 Broker.prototype.init = init

@@ -197,6 +197,7 @@ The following events are triggered
 | addInput   | `{"nodeid":"a","position":0}`    |
 | addOutput  | `{"nodeid":"c","position":2}`    |
 | renameNode | `{"nodeid":"a","text":"foo"}`    |
+| selectNode | `{"nodeid":"a"}`                 |
 
 For example, I used events in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
 
@@ -205,7 +206,8 @@ Follows an example that uses events to log their data.
 ```
 var eventNames = ['addLink' , 'addNode',
                   'addInput', 'addOutput',
-                  'delLink' , 'delNode'  , 'moveNode']
+                  'delLink' , 'delNode'  ,
+                  'moveNode', 'renameNode', 'selectNode']
 
 eventNames.forEach(function (eventName) {
   canvas.broker.on(eventName, function (ev) {

@@ -264,5 +264,19 @@ function renameNode (data) {
 
 Canvas.prototype.renameNode = renameNode
 
+/**
+ * Select a node.
+ */
+
+function selectNode (data) {
+  var id = data.nodeid
+
+  var node = this.node[id]
+
+  canvas.nodeControls.attachTo(node)
+}
+
+Canvas.prototype.selectNode = selectNode
+
 module.exports = Canvas
 

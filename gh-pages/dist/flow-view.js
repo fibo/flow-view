@@ -4627,6 +4627,18 @@ function init (eventHook) {
   }
 
   this.on('moveNode', moveNode)
+
+  /**
+   * On selectNode event.
+   *
+   * @api private
+   */
+
+  function selectNode (eventData) {
+    canvas.selectNode(eventData)
+  }
+
+  this.on('selectNode', selectNode)
 }
 
 Broker.prototype.init = init
@@ -4900,6 +4912,20 @@ function renameNode (data) {
 }
 
 Canvas.prototype.renameNode = renameNode
+
+/**
+ * Select a node.
+ */
+
+function selectNode (data) {
+  var id = data.nodeid
+
+  var node = this.node[id]
+
+  canvas.nodeControls.attachTo(node)
+}
+
+Canvas.prototype.selectNode = selectNode
 
 module.exports = Canvas
 
@@ -5194,13 +5220,17 @@ function render (view) {
 
   group.on('dragstart', dragstart)
 
-  function showNodeControls (ev) {
+  function selectNode (ev) {
     ev.stopPropagation()
 
-    canvas.nodeControls.attachTo(this)
+    var eventData = {
+      nodeid: id,
+    }
+
+    canvas.broker.emit('selectNode', eventData)
   }
 
-  group.on('click', showNodeControls.bind(this))
+  group.on('click', selectNode)
 }
 
 Node.prototype.render = render

@@ -5,7 +5,7 @@ var Broker        = require('./Broker'),
     Link          = require('./Link'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
-    NodeCreator   = require('./NodeCreator'),
+    NodeSelector  = require('./NodeSelector'),
     validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
@@ -81,17 +81,17 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'nextId', { get: getNextId })
 
-  var nodeCreator  = new NodeCreator(this)
-  this.nodeCreator = nodeCreator
+  var nodeSelector  = new NodeSelector(this)
+  this.nodeSelector = nodeSelector
 
   var nodeControls = new NodeControls(this)
   this.nodeControls = nodeControls
 
-  var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
-      showNodeCreator = nodeCreator.show.bind(nodeCreator)
+  var hideNodeSelector = nodeSelector.hide.bind(nodeSelector),
+      showNodeSelector = nodeSelector.show.bind(nodeSelector)
 
-  SVG.on(element, 'click',    hideNodeCreator)
-  SVG.on(element, 'dblclick', showNodeCreator)
+  SVG.on(element, 'click',    hideNodeSelector)
+  SVG.on(element, 'dblclick', showNodeSelector)
 }
 
 function render (view) {

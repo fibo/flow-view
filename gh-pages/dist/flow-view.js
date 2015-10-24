@@ -4667,7 +4667,7 @@ var Broker        = require('./Broker'),
     Link          = require('./Link'),
     Node          = require('./Node'),
     NodeControls  = require('./NodeControls'),
-    NodeCreator   = require('./NodeCreator'),
+    NodeSelector  = require('./NodeSelector'),
     validate      = require('./validate')
 
 var defaultTheme = require('./default/theme.json'),
@@ -4743,17 +4743,17 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'nextId', { get: getNextId })
 
-  var nodeCreator  = new NodeCreator(this)
-  this.nodeCreator = nodeCreator
+  var nodeSelector  = new NodeSelector(this)
+  this.nodeSelector = nodeSelector
 
   var nodeControls = new NodeControls(this)
   this.nodeControls = nodeControls
 
-  var hideNodeCreator = nodeCreator.hide.bind(nodeCreator),
-      showNodeCreator = nodeCreator.show.bind(nodeCreator)
+  var hideNodeSelector = nodeSelector.hide.bind(nodeSelector),
+      showNodeSelector = nodeSelector.show.bind(nodeSelector)
 
-  SVG.on(element, 'click',    hideNodeCreator)
-  SVG.on(element, 'dblclick', showNodeCreator)
+  SVG.on(element, 'click',    hideNodeSelector)
+  SVG.on(element, 'dblclick', showNodeSelector)
 }
 
 function render (view) {
@@ -4943,7 +4943,7 @@ Canvas.prototype.selectNode = selectNode
 module.exports = Canvas
 
 
-},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeCreator":16,"./SVG":24,"./default/theme.json":20,"./default/view.json":21,"./validate":23}],8:[function(require,module,exports){
+},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeSelector":16,"./SVG":24,"./default/theme.json":20,"./default/view.json":21,"./validate":23}],8:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -5233,6 +5233,12 @@ function render (view) {
   }
 
   group.on('dragstart', dragstart)
+
+  group.on('dblclick', function () {
+    ev.stopPropagation()
+
+    console.log('click')
+  })
 
   function selectNode (ev) {
     ev.stopPropagation()
@@ -5685,7 +5691,7 @@ module.exports = NodeControls
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
-function NodeCreator (canvas) {
+function NodeSelector (canvas) {
   var x = 0
   this.x = x
 
@@ -5695,7 +5701,7 @@ function NodeCreator (canvas) {
   var foreignObject = canvas.svg.foreignObject(100, 100)
                             .attr({id: 'flow-view-selector'})
 
-  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodecreator'})
+  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodeselector'})
 
   var form = foreignObject.getChild(0)
 
@@ -5733,13 +5739,13 @@ function NodeCreator (canvas) {
   this.foreignObject = foreignObject
 }
 
-function hideNodeCreator (ev) {
+function hide (ev) {
   this.foreignObject.hide()
 }
 
-NodeCreator.prototype.hide = hideNodeCreator
+NodeSelector.prototype.hide = hide
 
-function showNodeCreator (ev) {
+function show (ev) {
   var x = ev.offsetX,
       y = ev.offsetY
 
@@ -5755,9 +5761,9 @@ function showNodeCreator (ev) {
   form.selectnode.focus()
 }
 
-NodeCreator.prototype.show = showNodeCreator
+NodeSelector.prototype.show = show
 
-module.exports = NodeCreator
+module.exports = NodeSelector
 
 
 },{}],17:[function(require,module,exports){

@@ -2,7 +2,7 @@
 // TODO autocompletion from json
 // http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
 
-function NodeCreator (canvas) {
+function NodeSelector (canvas) {
   var x = 0
   this.x = x
 
@@ -12,7 +12,7 @@ function NodeCreator (canvas) {
   var foreignObject = canvas.svg.foreignObject(100, 100)
                             .attr({id: 'flow-view-selector'})
 
-  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodecreator'})
+  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodeselector'})
 
   var form = foreignObject.getChild(0)
 
@@ -50,13 +50,13 @@ function NodeCreator (canvas) {
   this.foreignObject = foreignObject
 }
 
-function hideNodeCreator (ev) {
+function hide (ev) {
   this.foreignObject.hide()
 }
 
-NodeCreator.prototype.hide = hideNodeCreator
+NodeSelector.prototype.hide = hide
 
-function showNodeCreator (ev) {
+function show (ev) {
   var x = ev.offsetX,
       y = ev.offsetY
 
@@ -72,7 +72,7 @@ function showNodeCreator (ev) {
   form.selectnode.focus()
 }
 
-NodeCreator.prototype.show = showNodeCreator
+NodeSelector.prototype.show = show
 
-module.exports = NodeCreator
+module.exports = NodeSelector
 

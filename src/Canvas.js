@@ -81,7 +81,7 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'nextId', { get: getNextId })
 
-  var nodeSelector  = new NodeSelector(this)
+  var nodeSelector  = new NodeSelector(this, arg.dataListURL)
   this.nodeSelector = nodeSelector
 
   var nodeControls = new NodeControls(this)

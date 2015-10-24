@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "Visual editor for dataflow programming, powered by svg.js",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "homepage": "https://github.com/fibo/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "browserify": "^10.2.4",
+    "jsdom": "^7.0.2",
     "mocha": "^2.2.5",
     "should": "^7.0.1",
     "uglify-js": "^2.4.24"

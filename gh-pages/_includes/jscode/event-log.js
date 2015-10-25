@@ -12,8 +12,7 @@ var Canvas = require('flow-view').Canvas,
           y: 200,
           w: 10,
           h: 1,
-          link: 'http://g14n.info/flow-view',
-          text: "Click me",
+          text: "Hello",
           ins: [{name: "in0"}, {name: "in1"}]
         }
      },
@@ -25,9 +24,18 @@ var Canvas = require('flow-view').Canvas,
      }
    }
 
-var canvas = new Canvas('drawing', {
-  dataListURL: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/4621/html-elements.json'
-})
+var canvas = new Canvas('drawing')
 
 canvas.render(view)
+
+var eventNames = ['addLink' , 'addNode',
+                  'addInput', 'addOutput',
+                  'delLink' , 'delNode'  ,
+                  'moveNode', 'renameNode', 'selectNode']
+
+eventNames.forEach(function (eventName) {
+  canvas.broker.on(eventName, function (ev) {
+    console.log(eventName, ev)
+  })
+})
 

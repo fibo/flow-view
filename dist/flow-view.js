@@ -4678,7 +4678,11 @@ var defaultTheme = require('./default/theme.json'),
  *
  * @constructor
  * @param {String} id of div
- * @param {Object} arg can contain width, height, eventHooks
+ * @param {Object} arg
+ * @param {Number} arg.height
+ * @param {Number} arg.width
+ * @param {Object} arg.eventHooks
+ * @param {Object} arg.nodeSelector
  */
 
 function Canvas (id, arg) {
@@ -4743,7 +4747,7 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'nextId', { get: getNextId })
 
-  var nodeSelector  = new NodeSelector(this, arg.dataListURL)
+  var nodeSelector  = new NodeSelector(this, arg.nodeSelector)
   this.nodeSelector = nodeSelector
 
   var nodeControls = new NodeControls(this)
@@ -5689,20 +5693,24 @@ module.exports = NodeControls
  * and this codepen: http://codepen.io/matt-west/pen/jKnzG
  *
  * @param {Object} canvas
- * @param {String} dataListURL containing datalist entries
+ * @param {Object} arg
+ * @param {String} dataListUrl containing datalist entries
  */
 
-function NodeSelector (canvas, dataListURL) {
-  var x = 0
-  this.x = x
+function NodeSelector (canvas, arg) {
+  var x = this.x = 0,
+      y = this.y = 0
 
-  var y = 0
-  this.y = y
+  if (typeof arg === 'undefined')
+    arg = {}
 
   var foreignObject = canvas.svg.foreignObject(100, 100)
                             .attr({id: 'flow-view-selector'})
 
-  foreignObject.appendChild('form', {id: 'flow-view-selector-form', name: 'nodeselector'})
+  foreignObject.appendChild('form', {
+    id: 'flow-view-selector-form',
+    name: 'nodeselector'
+  })
 
   var form = foreignObject.getChild(0)
 
@@ -5712,7 +5720,22 @@ function NodeSelector (canvas, dataListURL) {
   selectorInput.name = 'selectnode'
   selectorInput.type = 'text'
 
-  function addOption (dataList, item) {
+  var dataList      = null,
+      dataListItems = null,
+      dataListURL   = null
+
+  if (typeof arg.dataList === 'object') {
+    dataListItems = arg.dataList.items
+    dataListURL     = arg.dataList.URL
+    dataList = document.createElement('datalist')
+
+    dataList.id = 'flow-view-selector-list'
+
+    selectorInput.setAttribute('list', dataList.id)
+    selectorInput.appendChild(dataList)
+  }
+
+  function addToDataList (item) {
     var option = document.createElement('option')
 
     option.value = item
@@ -5720,37 +5743,25 @@ function NodeSelector (canvas, dataListURL) {
     dataList.appendChild(option)
   }
 
-  function populateDataList (dataList, request) {
-    if (request.readyState === 4) {
-      if (request.status === 200) {
-
-      var jsonOptions = JSON.parse(request.responseText)
-
-      jsonOptions.forEach(addOption.bind(dataList))
-
-      input.placeholder = ''
-    }
-    else {
-      // On error, notify in placeholder.
-      input.placeholder = 'Could not load datalist :)';
-    }
-  }
-
-  }
-
   if (typeof dataListURL === 'string') {
-    selectorInput.placeholder = 'Loading ...'
-
-    var dataList = document.createElement('datalist')
-
-    dataList.id = 'flow-view-selector-list'
-
-    selectorInput.appendChild(dataList)
-
     var request = new XMLHttpRequest()
 
-    request.onreadystatechange = function (request) {
-      populateDataList(dataList, request)
+    selectorInput.placeholder = 'Loading ...'
+
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          var jsonOptions = JSON.parse(request.responseText)
+
+            jsonOptions.forEach(addToDataList)
+
+          selectorInput.placeholder = ''
+        }
+        else {
+          // On error, notify in placeholder.
+          input.placeholder = 'Could not load datalist :(';
+        }
+      }
     }
 
     request.open('GET', dataListURL, true)

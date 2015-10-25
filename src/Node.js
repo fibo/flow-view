@@ -142,6 +142,10 @@ function render (view) {
   }
 
   group.on('click', selectNode)
+
+  group.on('dblclick', function (ev) {
+    ev.stopPropagation()
+  })
 }
 
 Node.prototype.render = render

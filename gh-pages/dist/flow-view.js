@@ -5249,6 +5249,10 @@ function render (view) {
   }
 
   group.on('click', selectNode)
+
+  group.on('dblclick', function (ev) {
+    ev.stopPropagation()
+  })
 }
 
 Node.prototype.render = render
@@ -5798,6 +5802,10 @@ function NodeSelector (canvas, arg) {
   foreignObject.attr({width: 200, height: 100})
                .move(x, y)
                .hide()
+
+  foreignObject.on('click', function (ev) {
+    ev.stopPropagation()
+  })
 
   this.foreignObject = foreignObject
 }

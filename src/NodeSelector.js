@@ -112,6 +112,10 @@ function NodeSelector (canvas, arg) {
                .move(x, y)
                .hide()
 
+  foreignObject.on('click', function (ev) {
+    ev.stopPropagation()
+  })
+
   this.foreignObject = foreignObject
 }
 

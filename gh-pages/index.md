@@ -124,8 +124,10 @@ and render a view graph
 
 The *view* object contains two collections:
 
-  * node
-  * link
+  * [node]{view-node}
+  * [link]{view-link}
+
+Any other property of the *view* object will be just ignored.
 
 ### view.node
 
@@ -152,10 +154,6 @@ It defaults to 1.
 #### text
 
 The *text* label displayed in the node.
-
-#### url
-
-Optional *url* associated to the node.
 
 #### ins
 
@@ -217,6 +215,16 @@ eventNames.forEach(function (eventName) {
 ```
 
 Go to [examples/event-log.html](http://g14n.info/flow-view/examples/event-log.html) to see results.
+
+## NodeSelector
+
+When you double click on svg canvas, a foreign object input text will appear;
+you can use it to create new nodes.
+
+The [NodeSelector](https://github.com/fibo/flow-view/blob/master/src/NodeSelector.js) supports autocompletion via [datalist](https://developer.mozilla.org/it/docs/Web/HTML/Element/datalist).
+
+
+See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/autocompletion-from-url.html).
 
 ## Support and License
 

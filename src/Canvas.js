@@ -16,7 +16,11 @@ var defaultTheme = require('./default/theme.json'),
  *
  * @constructor
  * @param {String} id of div
- * @param {Object} arg can contain width, height, eventHooks
+ * @param {Object} arg
+ * @param {Number} arg.height
+ * @param {Number} arg.width
+ * @param {Object} arg.eventHooks
+ * @param {Object} arg.nodeSelector
  */
 
 function Canvas (id, arg) {
@@ -81,7 +85,7 @@ function Canvas (id, arg) {
 
   Object.defineProperty(this, 'nextId', { get: getNextId })
 
-  var nodeSelector  = new NodeSelector(this, arg.dataListURL)
+  var nodeSelector  = new NodeSelector(this, arg.nodeSelector)
   this.nodeSelector = nodeSelector
 
   var nodeControls = new NodeControls(this)

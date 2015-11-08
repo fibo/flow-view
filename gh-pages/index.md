@@ -6,7 +6,7 @@ flow: /empty.json
 
 > Visual editor for dataflow programming, powered by [svg.js][1]
 
-[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
+[![Project Status](https://stillmaintained.com/fibo/flow-view.png)](https://stillmaintained.com/fibo/flow-view) [![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
@@ -185,17 +185,18 @@ An array with two entries:
 
 The following events are triggered
 
-| eventName  | eventData                        |
-| ---------- | -------------------------------- |
-| addNode    | `{"text":"ciao","x":326,"y":82}` |
-| addLink    | `{"from":["a",0],"to":["b",1]}`  |
-| delNode    | `{"nodeid":"a"}`                 |
-| delLink    | `{"linkid":"c"}`                 |
-| moveNode   | `{"nodeid":"a","x":362,"y":98}`  |
-| addInput   | `{"nodeid":"a","position":0}`    |
-| addOutput  | `{"nodeid":"c","position":2}`    |
-| renameNode | `{"nodeid":"a","text":"foo"}`    |
-| selectNode | `{"nodeid":"a"}`                 |
+| eventName    | eventData                        |
+| ------------ | -------------------------------- |
+| addNode      | `{"text":"ciao","x":326,"y":82}` |
+| addLink      | `{"from":["a",0],"to":["b",1]}`  |
+| delNode      | `{"nodeid":"a"}`                 |
+| delLink      | `{"linkid":"c"}`                 |
+| moveNode     | `{"nodeid":"a","x":362,"y":98}`  |
+| addInput     | `{"nodeid":"a","position":0}`    |
+| addOutput    | `{"nodeid":"c","position":2}`    |
+| renameNode   | `{"nodeid":"a","text":"foo"}`    |
+| clickNode    | `{"nodeid":"a"}`                 |
+| dblclickNode | `{"nodeid":"a"}`                 |
 
 For example, I used events in [dflow][2] editor to save the view server side, using [Socket.IO](http://socket.io/).
 

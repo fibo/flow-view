@@ -131,21 +131,29 @@ function render (view) {
 
   group.on('dragstart', dragstart)
 
-  function selectNode (ev) {
+  function clickNode (ev) {
     ev.stopPropagation()
 
     var eventData = {
       nodeid: id,
     }
 
-    canvas.broker.emit('selectNode', eventData)
+    canvas.broker.emit('clickNode', eventData)
   }
 
-  group.on('click', selectNode)
+  group.on('click', clickNode)
 
-  group.on('dblclick', function (ev) {
+  function dblclickNode (ev) {
     ev.stopPropagation()
-  })
+
+    var eventData = {
+      nodeid: id,
+    }
+
+    canvas.broker.emit('dblclickNode', eventData)
+  }
+
+  group.on('dblclick', dblclickNode)
 }
 
 Node.prototype.render = render

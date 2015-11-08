@@ -99,16 +99,28 @@ function init (eventHook) {
   this.on('moveNode', moveNode)
 
   /**
-   * On selectNode event.
+   * On clickNode event.
    *
    * @api private
    */
 
-  function selectNode (eventData) {
+  function clickNode (eventData) {
     canvas.selectNode(eventData)
   }
 
-  this.on('selectNode', selectNode)
+  this.on('clickNode', selectNode)
+
+  /**
+   * On dblclickNode event.
+   *
+   * @api private
+   */
+
+  function dblclickNode (eventData) {
+    // Do nothing by default.
+  }
+
+  this.on('dblclickNode', dblclickNode)
 }
 
 Broker.prototype.init = init

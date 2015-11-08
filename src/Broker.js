@@ -108,7 +108,7 @@ function init (eventHook) {
     canvas.selectNode(eventData)
   }
 
-  this.on('clickNode', selectNode)
+  this.on('clickNode', clickNode)
 
   /**
    * On dblclickNode event.

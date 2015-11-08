@@ -327,6 +327,47 @@ if (typeof Object.create === 'function') {
 }
 
 },{}],3:[function(require,module,exports){
+/* eslint-disable no-unused-vars */
+'use strict';
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],4:[function(require,module,exports){
 /*! svg.draggable.js - v1.0.0 - 2015-06-12
 * https://github.com/wout/svg.draggable.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -518,7 +559,7 @@ if (typeof Object.create === 'function') {
   })
 
 }).call(this);
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*! svg.foreignobject.js - v1.0.0 - 2015-06-14
 * https://github.com/fibo/svg.foreignobject.js
 * Copyright (c) 2015 Wout Fierens; Licensed MIT */
@@ -551,7 +592,7 @@ SVG.extend(SVG.Container, {
   }
 })
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.1.1
@@ -4540,7 +4581,7 @@ return SVG;
 
 }));
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 var EventEmitter = require('events').EventEmitter,
     inherits     = require('inherits')
@@ -4651,7 +4692,7 @@ function init (eventHook) {
     canvas.selectNode(eventData)
   }
 
-  this.on('clickNode', selectNode)
+  this.on('clickNode', clickNode)
 
   /**
    * On dblclickNode event.
@@ -4671,7 +4712,9 @@ Broker.prototype.init = init
 module.exports = Broker
 
 
-},{"events":1,"inherits":2}],7:[function(require,module,exports){
+},{"events":1,"inherits":2}],8:[function(require,module,exports){
+
+var objectAssign = require('object-assign')
 
 var SVG = require('./SVG')
 
@@ -4694,6 +4737,7 @@ var defaultTheme = require('./default/theme.json'),
  * @param {Number} arg.height
  * @param {Number} arg.width
  * @param {Object} arg.eventHooks
+ * @param {Object} arg.theme
  * @param {Object} arg.nodeSelector
  */
 
@@ -4709,8 +4753,10 @@ function Canvas (id, arg) {
   broker.init(eventHooks)
   this.broker = broker
 
-  var theme = defaultTheme
-  this.theme = theme
+  if (typeof arg.theme === 'undefined')
+    arg.theme = {}
+
+  var theme = this.theme = objectAssign(defaultTheme, arg.theme)
 
   this.node = {}
   this.link = {}
@@ -4959,7 +5005,7 @@ Canvas.prototype.selectNode = selectNode
 module.exports = Canvas
 
 
-},{"./Broker":6,"./Link":9,"./Node":10,"./NodeControls":15,"./NodeSelector":16,"./SVG":24,"./default/theme.json":20,"./default/view.json":21,"./validate":23}],8:[function(require,module,exports){
+},{"./Broker":7,"./Link":10,"./Node":11,"./NodeControls":16,"./NodeSelector":17,"./SVG":25,"./default/theme.json":21,"./default/view.json":22,"./validate":24,"object-assign":3}],9:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin')
@@ -4994,7 +5040,7 @@ Input.prototype.render = render
 module.exports = Input
 
 
-},{"./Pin":18,"inherits":2}],9:[function(require,module,exports){
+},{"./Pin":19,"inherits":2}],10:[function(require,module,exports){
 
 /**
  * Connect an output to an input
@@ -5116,7 +5162,7 @@ Link.prototype.linePlot = linePlot
 module.exports = Link
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 var Input   = require('./Input'),
     Output  = require('./Output')
@@ -5404,7 +5450,7 @@ Node.prototype.addOutput = addOutput
 module.exports = Node
 
 
-},{"./Input":8,"./Output":17}],11:[function(require,module,exports){
+},{"./Input":9,"./Output":18}],12:[function(require,module,exports){
 
 function NodeButton (canvas, relativeCoordinate) {
   this.relativeCoordinate = relativeCoordinate
@@ -5432,7 +5478,7 @@ NodeButton.prototype.detach = detachNodeButton
 module.exports = NodeButton
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5511,7 +5557,7 @@ AddInput.prototype.attachTo = attachTo
 module.exports = AddInput
 
 
-},{"../NodeButton":11,"inherits":2}],13:[function(require,module,exports){
+},{"../NodeButton":12,"inherits":2}],14:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5591,7 +5637,7 @@ module.exports = AddOutput
 
 
 
-},{"../NodeButton":11,"inherits":2}],14:[function(require,module,exports){
+},{"../NodeButton":12,"inherits":2}],15:[function(require,module,exports){
 
 var inherits   = require('inherits'),
     NodeButton = require('../NodeButton')
@@ -5669,7 +5715,7 @@ DeleteNode.prototype.attachTo = attachTo
 module.exports = DeleteNode
 
 
-},{"../NodeButton":11,"inherits":2}],15:[function(require,module,exports){
+},{"../NodeButton":12,"inherits":2}],16:[function(require,module,exports){
 
 var AddInputButton   = require('./NodeButton/AddInput'),
     AddOutputButton  = require('./NodeButton/AddOutput'),
@@ -5708,7 +5754,7 @@ NodeControls.prototype.detach = nodeControlsDetach
 module.exports = NodeControls
 
 
-},{"./NodeButton/AddInput":12,"./NodeButton/AddOutput":13,"./NodeButton/DeleteNode":14}],16:[function(require,module,exports){
+},{"./NodeButton/AddInput":13,"./NodeButton/AddOutput":14,"./NodeButton/DeleteNode":15}],17:[function(require,module,exports){
 
 /**
  * Create new nodes.
@@ -5857,7 +5903,7 @@ NodeSelector.prototype.show = show
 module.exports = NodeSelector
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 var inherits = require('inherits'),
     Pin      = require('./Pin'),
@@ -5904,7 +5950,7 @@ Output.prototype.render = render
 module.exports = Output
 
 
-},{"./Pin":18,"./PreLink":19,"inherits":2}],18:[function(require,module,exports){
+},{"./Pin":19,"./PreLink":20,"inherits":2}],19:[function(require,module,exports){
 
 function Pin (type, node, position) {
   var self = this
@@ -5999,7 +6045,7 @@ Pin.prototype.toJSON = toJSON
 module.exports = Pin
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 /**
  * A link that is not already attached
@@ -6126,11 +6172,10 @@ function PreLink (canvas, output) {
 module.exports = PreLink
 
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports={
-  "fillCircle": "#fff",
   "fillLabel": "#333",
-    "fillPin": "#333",
+  "fillPin": "#333",
   "fillPinHighlighted": "#d63518",
   "fillRect": "#ccc",
   "halfPinSize": 5,
@@ -6152,18 +6197,18 @@ module.exports={
   "unitWidth": 10
 }
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "node": {},
   "link": {}
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 exports.Canvas = require('./Canvas')
 
 
-},{"./Canvas":7}],23:[function(require,module,exports){
+},{"./Canvas":8}],24:[function(require,module,exports){
 
 function validate (view) {
   if (typeof view !== 'object')
@@ -6179,7 +6224,7 @@ function validate (view) {
 module.exports = validate
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
 // Consider this module will be browserified.
 
@@ -6200,9 +6245,9 @@ require('svg.foreignobject.js')
 module.exports = SVG
 
 
-},{"svg.draggable.js":3,"svg.foreignobject.js":4,"svg.js":5}],"flow-view":[function(require,module,exports){
+},{"svg.draggable.js":4,"svg.foreignobject.js":5,"svg.js":6}],"flow-view":[function(require,module,exports){
 
 module.exports = require('./src')
 
 
-},{"./src":22}]},{},[]);
+},{"./src":23}]},{},[]);

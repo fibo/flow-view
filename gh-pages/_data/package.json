@@ -10,7 +10,7 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "_build": "npm run browserify && npm run minify && npm run jekyll; git status",
+    "_build": "npm run cp; npm run browserify && npm run minify && npm run jekyll; git status",
     "_push": "git push origin master && npm run gh-pages:push",
     "_pull": "git pull origin master && npm run gh-pages:pull",
     "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
@@ -46,6 +46,7 @@
   "dependencies": {
     "events": "^1.0.2",
     "inherits": "^2.0.1",
+    "object-assign": "^4.0.1",
     "svg.draggable.js": "fibo/svg.draggable.js",
     "svg.foreignobject.js": "fibo/svg.foreignobject.js",
     "svg.js": "fibo/svg.js#custom-build"

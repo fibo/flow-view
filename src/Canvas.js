@@ -1,4 +1,6 @@
 
+var objectAssign = require('object-assign')
+
 var SVG = require('./SVG')
 
 var Broker        = require('./Broker'),
@@ -20,6 +22,7 @@ var defaultTheme = require('./default/theme.json'),
  * @param {Number} arg.height
  * @param {Number} arg.width
  * @param {Object} arg.eventHooks
+ * @param {Object} arg.theme
  * @param {Object} arg.nodeSelector
  */
 
@@ -35,8 +38,10 @@ function Canvas (id, arg) {
   broker.init(eventHooks)
   this.broker = broker
 
-  var theme = defaultTheme
-  this.theme = theme
+  if (typeof arg.theme === 'undefined')
+    arg.theme = {}
+
+  var theme = this.theme = objectAssign(defaultTheme, arg.theme)
 
   this.node = {}
   this.link = {}

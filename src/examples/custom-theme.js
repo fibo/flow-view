@@ -23,6 +23,20 @@ var view = {
   }
 }
 
-var canvas = new Canvas('drawing')
+var canvas = new Canvas('drawing', {
+  theme: {
+    fillPin: '#0288d1',
+    fillPinHighlighted: '#ffc107',
+    fillRect: '#03a9f4',
+    strokeLine: {
+      color: '#727272',
+      width: 3
+    },
+    strokeLineHighlighted: {
+      color: '#e64a19',
+      width: 5
+    }
+  }
+})
 
 canvas.render(view)

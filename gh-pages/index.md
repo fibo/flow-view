@@ -53,13 +53,13 @@ Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html
         node: {
           a: {
             x: 80, y: 100,
-            text: "Drag me",
-            outs: [{name: "out0"}]
+            text: 'Drag me',
+            outs: [{name: 'out0'}]
           },
           b: {
             x: 180, y: 200,
-            text: "Hello",
-            ins: [{name: "in0"}, {name: "in1"}]
+            text: 'Hello',
+            ins: [{name: 'in0'}, {name: 'in1'}]
           }
        },
        link: {
@@ -91,13 +91,13 @@ var view = {
       node: {
         a: {
           x: 80, y: 100,
-          text: "Drag me",
-          outs: [{name: "out0"}]
+          text: 'Drag me',
+          outs: [{name: 'out0'}]
         },
         b: {
           x: 180, y: 100,
-          text: "Hello",
-          ins: [{name: "in0"}, {name: "in1"}]
+          text: 'Hello',
+          ins: [{name: 'in0'}, {name: 'in1'}]
         }
      },
      link: {
@@ -203,10 +203,13 @@ For example, I used events in [dflow][2] editor to save the view server side, us
 Follows an example that uses events to log their data.
 
 ```
-var eventNames = ['addLink' , 'addNode',
-                  'addInput', 'addOutput',
-                  'delLink' , 'delNode'  ,
-                  'moveNode', 'renameNode', 'selectNode']
+var eventNames = [
+  'addLink' , 'addNode',
+  'addInput', 'addOutput',
+  'delLink' , 'delNode',
+  'moveNode', 'renameNode',
+  'clickNode', 'dblclickNode'
+]
 
 eventNames.forEach(function (eventName) {
   canvas.broker.on(eventName, function (ev) {
@@ -216,6 +219,34 @@ eventNames.forEach(function (eventName) {
 ```
 
 Go to [examples/event-log.html](http://g14n.info/flow-view/examples/event-log.html) to see results.
+
+## Theme
+
+Look&feel can be customized by passing a *theme* object to the [Canvas](#canvas) constructor.
+
+Missing props will be filled with [default theme.json](https://github.com/fibo/flow-view/blob/master/src/default/theme.json) definition.
+
+For example, create a canvas and overwrite few colors
+
+```
+var canvas = new Canvas('drawing', {
+  theme: {
+    fillPin: '#0288d1',
+    fillPinHighlighted: '#ffc107',
+    fillRect: '#03a9f4',
+    strokeLine: {
+      color: '#727272',
+      width: 3
+    },
+    strokeLineHighlighted: {
+      color: '#e64a19',
+      width: 5
+    }
+  }
+})
+```
+
+See [examples/custom-theme.html](http://g14n.info/flow-view/examples/custom-theme.html) to see result.
 
 ## NodeSelector
 

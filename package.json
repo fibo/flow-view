@@ -25,7 +25,7 @@
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "lint": "jshint -c .jshintrc src/**.js test/*js",
     "minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
-    "postversion": "git push origin v${npm_package_version}; npm publish",
+    "postversion": "git push origin v${npm_package_version}; npm publish; npm run _push",
     "test": "mocha --bail --require should --reporter min --recursive"
   },
   "pre-commit": [

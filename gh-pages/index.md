@@ -8,8 +8,8 @@ flow: /empty.json
 
 **Table Of Contents:**
 
+* [Description](#description)
 * [Installation](#installation)
-* [Synopsis](#synopsis)
 * [Canvas](#canvas)
 * [Events](#events)
 * [Theme](#theme)

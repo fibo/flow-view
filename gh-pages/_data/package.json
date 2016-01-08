@@ -14,6 +14,7 @@
     "_push": "git push origin master && npm run gh-pages:push",
     "_pull": "git pull origin master && npm run gh-pages:pull",
     "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
+    "check-deps": "npm outdated",
     "cp": "npm run cp:dist; npm run cp:examples; npm run cp:package.json",
     "cp:dist": "cp -r dist/ gh-pages/",
     "cp:examples": "cp src/examples/*.js gh-pages/_includes/jscode/",
@@ -22,17 +23,22 @@
     "gh-pages:pull": "git subtree --prefix gh-pages pull origin gh-pages",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
-    "jshint": "jshint -c .jshintrc src/**.js",
+    "lint": "jshint -c .jshintrc src/**.js",
     "minify": "uglifyjs dist/${npm_package_name}.js --output dist/${npm_package_name}.min.js --compress --mangle",
     "postversion": "git push origin v${npm_package_version}; npm publish",
     "test": "mocha --bail --require should --reporter min --recursive"
   },
+  "pre-commit": [
+    "check-deps",
+    "lint",
+    "test"
+  ],
   "browser": {
     "./src/SVG.js": "./src/window.SVG.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fibo/flow-view.git"
+    "url": "git://github.com/fibo/flow-view.git"
   },
   "keywords": [
     "dataflow",
@@ -52,10 +58,11 @@
     "svg.js": "fibo/svg.js#custom-build"
   },
   "devDependencies": {
-    "browserify": "^10.2.4",
+    "browserify": "^12.0.1",
     "jsdom": "^7.0.2",
     "mocha": "^2.2.5",
-    "should": "^7.0.1",
+    "pre-commit": "^1.1.2",
+    "should": "^8.0.2",
     "uglify-js": "^2.4.24"
   }
 }

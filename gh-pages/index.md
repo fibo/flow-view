@@ -6,11 +6,29 @@ flow: /empty.json
 
 > Visual editor for dataflow programming, powered by [svg.js][1]
 
-[![Project Status](https://stillmaintained.com/fibo/flow-view.png)](https://stillmaintained.com/fibo/flow-view) [![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
+**Table Of Contents:**
+
+* [Installation](#installation)
+* [Synopsis](#synopsis)
+* [Canvas](#canvas)
+* [Events](#events)
+* [Theme](#theme)
+* [NodeSelector](#nodeselector)
+* [Support and license](#support-and-license)
+
+**Examples**
+
+* [Synopsis][example-synopsis]
+* [Event log][example-event-log]
+* [Custom theme][example-custom-theme]
+* [Autocompletion from URL][example-autocompletion-from-url]
+
+[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
 [![Throughput Graph](https://graphs.waffle.io/fibo/flow-view/throughput.svg)](https://waffle.io/fibo/flow-view)
+* [Description](#description)
 
 ## Description
 
@@ -120,12 +138,10 @@ and render a view graph
   canvas.render(view)
 ```
 
-### view
+where the *view* object contains two collections:
 
-The *view* object contains two collections:
-
-  * [node]{view-node}
-  * [link]{view-link}
+  * [node](#view-node)
+  * [link](#view-link)
 
 Any other property of the *view* object will be just ignored.
 
@@ -264,4 +280,9 @@ See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/
 
   [1]: http://svgjs.com/ "SVG.js"
   [2]: http://g14n.info/dflow "dflow"
+  [example-synopsis]: http://g14n.info/flow-view/examples/synopsis.html
+  [example-event-log]: http://g14n.info/flow-view/examples/event-log.html
+  [example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme.html
+  [example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url.html
+
 

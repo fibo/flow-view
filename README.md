@@ -24,7 +24,6 @@
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
 [![Throughput Graph](https://graphs.waffle.io/fibo/flow-view/throughput.svg)](https://waffle.io/fibo/flow-view)
-* [Description](#description)
 
 ## Description
 

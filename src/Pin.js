@@ -80,11 +80,8 @@ function set (id, data) {
 Pin.prototype.set = set
 
 function toJSON () {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position]
+  // TODO pin name not yet supported.
+  return {}
 }
 
 Pin.prototype.toJSON = toJSON

@@ -5553,12 +5553,12 @@ function toJSON () {
 
   view.text = this.text
 
-  ins.forEach(function (position) {
-    view.ins[position] = ins[position].toJSON()
+  ins.forEach(function (pin) {
+    view.ins[pin.position] = pin.toJSON()
   })
 
-  outs.forEach(function (position) {
-    view.outs[position] = outs[position].toJSON()
+  outs.forEach(function (pin) {
+    view.outs[pin.position] = pin.toJSON()
   })
 
   return view
@@ -6249,11 +6249,8 @@ function set (id, data) {
 Pin.prototype.set = set
 
 function toJSON () {
-  var node     = this.node,
-      position = this.position,
-      type     = this.type
-
-  return node[type][position]
+  // TODO pin name not yet supported.
+  return {}
 }
 
 Pin.prototype.toJSON = toJSON

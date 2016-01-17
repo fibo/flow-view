@@ -4,17 +4,19 @@ flow: /empty.json
 ---
 # flow-view
 
-> is a visual editor for [Dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming)
+> is a visual editor for [Dataflow programming][3]
 
 **Table Of Contents:**
 
 * [Description](#description)
+* [Status](#status)
 * [Installation](#installation)
 * [Canvas](#canvas)
 * [Events](#events)
 * [Theme](#theme)
 * [NodeSelector](#nodeselector)
-* [Support and license](#support-and-license)
+* [Export](#export)
+* [License](#license)
 
 See also [Examples](http://g14n.info/flow-view/examples) list.
 
@@ -34,8 +36,21 @@ Any feedback is welcome!
 
 ### Status
 
-The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
-I am adding [events](#events) to let integrate with other libs.
+Current version **1.x** makes *flow-view* a minimal and (pretty much :)) extendible [Dataflow programming][3] visual editor.
+
+Next version will drop [svg.js][1] dependency and will implement items as reusable React components.
+
+Backward compatibility with the [view](#view) object data structure is **guaranteed**,
+so you can start using *flow-view* right now, edit and save your data flows in JSON format,
+and open them in the future with next *flow-view* versions.
+
+The [theme format](#theme) does not satisfy me and will probably be changed for inline style inside components. Do not rely on it.
+Try to use the default theme, if possible. By the way, it is a poor version of the mythic [vvvv](http://vvvv.org) *look&feel*.
+
+Version **2.x** will give access to many possibilities, like server side SVG rendering,
+nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
+
+From now on, *flow-view* is considered stable: only bug fixes or important updated will be published on npm.
 
 ## Installation
 
@@ -283,17 +298,23 @@ you can use it to create new nodes.
 The [NodeSelector](https://github.com/fibo/flow-view/blob/master/src/NodeSelector.js) supports autocompletion via [datalist](https://developer.mozilla.org/it/docs/Web/HTML/Element/datalist).
 
 
-See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/autocompletion-from-url.html).
+See [examples/autocompletion-from-url.html][example-autocompletion-from-url]
 
-## Support and License
+## Export
 
-*flow-view* is [MIT](http://g14n.info/mit-license) licensed.
+[Canvas](#canvas) has a `toJSON()` method that let you export its state.
+
+See [examples/download-graph.html][example-download-graph] for a demo.
+
+## License
+
+[MIT](http://g14n.info/mit-license)
 
   [1]: http://svgjs.com/ "SVG.js"
   [2]: http://g14n.info/dflow "dflow"
+  [3]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
   [example-synopsis]: http://g14n.info/flow-view/examples/synopsis.html
   [example-event-log]: http://g14n.info/flow-view/examples/event-log.html
   [example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme.html
   [example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url.html
-
-
+  [example-download-graph]: http://g14n.info/flow-view/examples/download-graph.html

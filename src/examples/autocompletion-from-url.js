@@ -3,7 +3,7 @@ var view = {
    node: {
      a: {
        x: 80, y: 100,
-       text: 'Drag me',
+       text: 'red',
        outs: [{name: 'out0'}]
      },
      b: {
@@ -11,8 +11,7 @@ var view = {
        y: 200,
        w: 10,
        h: 1,
-       link: 'http://g14n.info/flow-view',
-       text: 'Click me',
+       text: 'white',
        ins: [{name: 'in0'}, {name: 'in1'}]
      }
   },

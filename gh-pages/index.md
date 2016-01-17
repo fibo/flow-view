@@ -4,7 +4,7 @@ flow: /empty.json
 ---
 # flow-view
 
-> Visual editor for dataflow programming, powered by [svg.js][1]
+> is a visual editor for [Dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming)
 
 **Table Of Contents:**
 
@@ -16,12 +16,7 @@ flow: /empty.json
 * [NodeSelector](#nodeselector)
 * [Support and license](#support-and-license)
 
-**Examples**
-
-* [Synopsis][example-synopsis]
-* [Event log][example-event-log]
-* [Custom theme][example-custom-theme]
-* [Autocompletion from URL][example-autocompletion-from-url]
+See also [Examples](http://g14n.info/flow-view/examples) list.
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view)
 

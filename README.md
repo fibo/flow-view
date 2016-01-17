@@ -1,10 +1,11 @@
 # flow-view
 
-> Visual editor for dataflow programming, powered by [svg.js][1]
+> is a visual editor for [Dataflow programming][3]
 
 **Table Of Contents:**
 
 * [Description](#description)
+* [Status](#status)
 * [Installation](#installation)
 * [Canvas](#canvas)
 * [Events](#events)
@@ -12,12 +13,7 @@
 * [NodeSelector](#nodeselector)
 * [Support and license](#support-and-license)
 
-**Examples**
-
-* [Synopsis][example-synopsis]
-* [Event log][example-event-log]
-* [Custom theme][example-custom-theme]
-* [Autocompletion from URL][example-autocompletion-from-url]
+See also [Examples](http://g14n.info/flow-view/examples) list.
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view)
 
@@ -35,8 +31,18 @@ Any feedback is welcome!
 
 ### Status
 
-The goal to achieve with version **1.0** is to let *flow-view* be a minimal visual editor but extensible.
-I am adding [events](#events) to let integrate with other libs.
+Current version **1.x** makes *flow-view* a minimal and (pretty much :)) extendible [Dataflow programming][3] visual editor.
+
+Next version will drop [svg.js][1] dependency and will implement items as reusable React components.
+
+Backward compatibility with the [view](#view) object data structure is **guaranteed**,
+so you can start using *flow-view* right now, edit and save your data flows in JSON format,
+and open them in the future with next *flow-view* versions.
+
+Version **2.x** will give access to many possibilities, like server side SVG rendering,
+nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
+
+From now on, *flow-view* is considered stable: only bug fixes will be published on npm.
 
 ## Installation
 
@@ -292,6 +298,7 @@ See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/
 
   [1]: http://svgjs.com/ "SVG.js"
   [2]: http://g14n.info/dflow "dflow"
+  [3]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
   [example-synopsis]: http://g14n.info/flow-view/examples/synopsis.html
   [example-event-log]: http://g14n.info/flow-view/examples/event-log.html
   [example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme.html

@@ -19,7 +19,7 @@
 * [Custom theme][example-custom-theme]
 * [Autocompletion from URL][example-autocompletion-from-url]
 
-[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
+[![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 

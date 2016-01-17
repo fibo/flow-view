@@ -4945,10 +4945,10 @@ var defaultTheme = require('./default/theme.json'),
     defaultView  = require('./default/view.json')
 
 /**
- * Create a flow-view canvas
+ * Create a flow-view canvas.
  *
  * @constructor
- * @param {String} id of div
+ * @param {String} id of div element
  * @param {Object} arg
  * @param {Number} arg.height
  * @param {Number} arg.width

@@ -24,8 +24,6 @@ See also [Examples](http://g14n.info/flow-view/examples) list.
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
-[![Throughput Graph](https://graphs.waffle.io/fibo/flow-view/throughput.svg)](https://waffle.io/fibo/flow-view)
-
 ## Description
 
 *flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project. I am using it for [dflow][2], but, I would like it'd be used by other node projects, like [graft](https://github.com/GraftJS/graft).
@@ -50,7 +48,7 @@ Try to use the default theme, if possible. By the way, it is a poor version of t
 Version **2.x** will give access to many possibilities, like server side SVG rendering,
 nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
 
-From now on, *flow-view* is considered stable: only bug fixes or important updated will be published on npm.
+From now on, *flow-view* is considered stable: only bug fixes or important updates will be published on npm.
 
 ## Installation
 

@@ -11,7 +11,8 @@
 * [Events](#events)
 * [Theme](#theme)
 * [NodeSelector](#nodeselector)
-* [Support and license](#support-and-license)
+* [Export](#export)
+* [License](#license)
 
 See also [Examples](http://g14n.info/flow-view/examples) list.
 
@@ -39,10 +40,13 @@ Backward compatibility with the [view](#view) object data structure is **guarant
 so you can start using *flow-view* right now, edit and save your data flows in JSON format,
 and open them in the future with next *flow-view* versions.
 
+The [theme format](#theme) does not satisfy me and will probably be changed for inline style inside components. Do not rely on it.
+Try to use the default theme, if possible. By the way, it is a poor version of the mythic [vvvv](http://vvvv.org) *look&feel*.
+
 Version **2.x** will give access to many possibilities, like server side SVG rendering,
 nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
 
-From now on, *flow-view* is considered stable: only bug fixes will be published on npm.
+From now on, *flow-view* is considered stable: only bug fixes or important updated will be published on npm.
 
 ## Installation
 
@@ -290,11 +294,17 @@ you can use it to create new nodes.
 The [NodeSelector](https://github.com/fibo/flow-view/blob/master/src/NodeSelector.js) supports autocompletion via [datalist](https://developer.mozilla.org/it/docs/Web/HTML/Element/datalist).
 
 
-See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/autocompletion-from-url.html).
+See [examples/autocompletion-from-url.html][example-autocompletion-from-url]
 
-## Support and License
+## Export
 
-*flow-view* is [MIT](http://g14n.info/mit-license) licensed.
+[Canvas](#canvas) has a `toJSON()` method that let you export its state.
+
+See [examples/download-graph.html][example-download-graph] for a demo.
+
+## License
+
+[MIT](http://g14n.info/mit-license)
 
   [1]: http://svgjs.com/ "SVG.js"
   [2]: http://g14n.info/dflow "dflow"
@@ -303,5 +313,4 @@ See [examples/autocompletion-from-url.html](http://g14n.info/flow-view/examples/
   [example-event-log]: http://g14n.info/flow-view/examples/event-log.html
   [example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme.html
   [example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url.html
-
-
+  [example-download-graph]: http://g14n.info/flow-view/examples/download-graph.html

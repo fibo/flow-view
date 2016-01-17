@@ -140,6 +140,23 @@ where the *view* object contains two collections:
 
 Any other property of the *view* object will be just ignored.
 
+Optional object can be passed as second argument, actually the *Canvas* contructor summary is the following
+
+```
+/**
+ * Create a flow-view canvas.
+ *
+ * @constructor
+ * @param {String} id of div element
+ * @param {Object} arg
+ * @param {Number} arg.height
+ * @param {Number} arg.width
+ * @param {Object} arg.eventHooks
+ * @param {Object} arg.theme
+ * @param {Object} arg.nodeSelector
+ */
+```
+
 ### view.node
 
 The *view.node* collection contains the canvas nodes, that are objects with the following attributes

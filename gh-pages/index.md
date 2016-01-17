@@ -23,12 +23,11 @@ flow: /empty.json
 * [Custom theme][example-custom-theme]
 * [Autocompletion from URL][example-autocompletion-from-url]
 
-[![NPM version](https://badge.fury.io/js/flow-view.png)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.png)](https://gemnasium.com/fibo/flow-view)
+[![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
 [![Throughput Graph](https://graphs.waffle.io/fibo/flow-view/throughput.svg)](https://waffle.io/fibo/flow-view)
-* [Description](#description)
 
 ## Description
 
@@ -144,6 +143,23 @@ where the *view* object contains two collections:
   * [link](#view-link)
 
 Any other property of the *view* object will be just ignored.
+
+Optional object can be passed as second argument, actually the *Canvas* contructor summary is the following
+
+```
+/**
+ * Create a flow-view canvas.
+ *
+ * @constructor
+ * @param {String} id of div element
+ * @param {Object} arg
+ * @param {Number} arg.height
+ * @param {Number} arg.width
+ * @param {Object} arg.eventHooks
+ * @param {Object} arg.theme
+ * @param {Object} arg.nodeSelector
+ */
+```
 
 ### view.node
 

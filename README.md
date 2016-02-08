@@ -16,3 +16,9 @@ The use the includes as usual, for example in *gh-pages/_layouts/page.html*
 ```
 {% include common/analytics.html %}
 ```
+
+## Update
+
+```
+git subtree --prefix=gh-pages/_includes/common/ pull common_includes master
+```

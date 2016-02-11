@@ -1,6 +1,8 @@
 
 domain: g14n.info
 
+permalink: ./:year/:month/:title/
+
 gems:
   - jekyll-sitemap
 

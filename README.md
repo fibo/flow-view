@@ -7,6 +7,7 @@ The following g14n.info microsites are involved:
 * [algebra](http://g14n.info/algebra)
 * [dflow](http://g14n.info/dflow)
 * [flow-view](http://g14n.info/flow-view)
+* [geohash-neighbours](http://g14n.info/geohash-neighbours)
 
 ## Setup
 

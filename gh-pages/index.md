@@ -75,7 +75,7 @@ $ npm install flow-view
 
 ## Synopsis
 
-Go to [examples/synopsis.html](http://g14n.info/flow-view/examples/synopsis.html) to see results.
+Go to [examples/synopsis][example-synopsis] to see results.
 
 ```html
 <div id="drawing"></div>
@@ -266,7 +266,7 @@ eventNames.forEach(function (eventName) {
 })
 ```
 
-Go to [examples/event-log.html](http://g14n.info/flow-view/examples/event-log.html) to see results.
+Go to [examples/event-log][example-event-log] to see results.
 
 ## Theme
 
@@ -294,7 +294,7 @@ var canvas = new Canvas('drawing', {
 })
 ```
 
-See [examples/custom-theme.html](http://g14n.info/flow-view/examples/custom-theme.html) to see result.
+See [examples/custom-theme][example-custom-theme] to see result.
 
 ## NodeSelector
 
@@ -304,23 +304,23 @@ you can use it to create new nodes.
 The [NodeSelector](https://github.com/fibo/flow-view/blob/master/src/NodeSelector.js) supports autocompletion via [datalist](https://developer.mozilla.org/it/docs/Web/HTML/Element/datalist).
 
 
-See [examples/autocompletion-from-url.html][example-autocompletion-from-url]
+See [examples/autocompletion-from-url][example-autocompletion-from-url]
 
 ## Export
 
 [Canvas](#canvas) has a `toJSON()` method that let you export its state.
 
-See [examples/download-graph.html][example-download-graph] for a demo.
+See [examples/download-graph][example-download-graph] for a demo.
 
 ## License
 
 [MIT](http://g14n.info/mit-license)
 
-  [1]: http://svgjs.com/ "SVG.js"
-  [2]: http://g14n.info/dflow "dflow"
-  [3]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-  [example-synopsis]: http://g14n.info/flow-view/examples/synopsis.html
-  [example-event-log]: http://g14n.info/flow-view/examples/event-log.html
-  [example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme.html
-  [example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url.html
-  [example-download-graph]: http://g14n.info/flow-view/examples/download-graph.html
+[1]: http://svgjs.com/ "SVG.js"
+[2]: http://g14n.info/dflow "dflow"
+[3]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
+[example-synopsis]: http://g14n.info/flow-view/examples/synopsis
+[example-event-log]: http://g14n.info/flow-view/examples/event-log
+[example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme
+[example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url
+[example-download-graph]: http://g14n.info/flow-view/examples/download-graph

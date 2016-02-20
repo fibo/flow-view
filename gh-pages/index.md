@@ -22,6 +22,8 @@ See also [Examples](http://g14n.info/flow-view/examples) list.
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view)
 
+[![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
+
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
 ## Description
@@ -56,6 +58,12 @@ With [bower](http://bower.io/) do
 
 ```bash
 $ bower install flow-view
+```
+
+or use a CDN adding this to your HTML page
+
+```
+<script src="https://cdn.rawgit.com/fibo/flow-view/master/dist/flow-view.min.js"></script>
 ```
 
 Note that *flow-view* should be used client side. However, if you want to import it in your Node package

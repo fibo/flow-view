@@ -1,7 +1,9 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
-<sub>Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
+
+<sub>This project adheres to [Semantic Versioning](http://semver.org/).
+Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## [1.0.1] - 2016-02-20
 ### Added

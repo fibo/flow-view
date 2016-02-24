@@ -8,8 +8,6 @@ gems:
 
 markdown: kramdown
 
-highlighter: rouge
-
 # Defaults
 
 defaults:

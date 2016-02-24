@@ -5,6 +5,12 @@ layout: page
 
 # flow-view examples
 
+<div>
+  <a href="http://codepen.io/collection/DojWVW/">
+    {% include try-it-on-codepen-img.html %}
+  </a>
+</div>
+
 * [Synopsis][example-synopsis]
 * [Event log][example-event-log]
 * [Custom theme][example-custom-theme]

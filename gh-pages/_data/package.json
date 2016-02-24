@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "homepage": "https://github.com/fibo/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -15,8 +15,7 @@
     "_pull": "git pull origin master && npm run gh-pages:pull",
     "browserify": "browserify -r ./index.js:${npm_package_name} -o dist/${npm_package_name}.js",
     "check-deps": "npm outdated",
-    "cp": "npm run cp_dist; npm run cp_examples; npm run cp_package.json",
-    "cp_dist": "cp -r dist/ gh-pages/",
+    "cp": "npm run cp_examples; npm run cp_package.json",
     "cp_examples": "cp src/examples/*.js gh-pages/_includes/jscode/",
     "cp_package.json": "cp package.json gh-pages/_data/",
     "gh-pages:push": "git subtree --prefix gh-pages push origin gh-pages",

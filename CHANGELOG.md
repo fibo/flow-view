@@ -8,6 +8,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ## [Unreleased]
 ### Added
 - [Codepen collection](http://codepen.io/collection/DojWVW/) of examples
+- source map
 
 ## [1.0.2] - 2016-02-20
 ### Added

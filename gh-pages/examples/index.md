@@ -11,6 +11,8 @@ layout: page
   </a>
 </div>
 
+Every example in this list is also available on **CODEPEN**.
+
 * [Synopsis][example-synopsis]
 * [Event log][example-event-log]
 * [Custom theme][example-custom-theme]

@@ -8,6 +8,8 @@ The following g14n.info microsites are involved:
 * [dflow](http://g14n.info/dflow)
 * [flow-view](http://g14n.info/flow-view)
 * [geohash-neighbours](http://g14n.info/geohash-neighbours)
+* [iper](http://g14n.info/iper)
+* [tris3d-canvas](http://g14n.info/tris3d-canvas)
 
 ## Setup
 
@@ -31,3 +33,15 @@ In a working tree with all modifications committed, launch
 ```
 git subtree --prefix=gh-pages/_includes/common/ pull common_includes master
 ```
+
+## Content
+
+### analytics.html
+
+Add to your *_config.yml*
+
+```
+google-analytics:
+  id: UA-12635045-12
+```
+

@@ -13,15 +13,9 @@ layout: page
 
 Every example in this list is also available on **CODEPEN**.
 
-* [Synopsis][example-synopsis]
-* [Event log][example-event-log]
-* [Custom theme][example-custom-theme]
-* [Autocompletion from URL][example-autocompletion-from-url]
-* [Download graph][example-download-graph]
-
-[example-synopsis]: http://g14n.info/flow-view/examples/synopsis/
-[example-event-log]: http://g14n.info/flow-view/examples/event-log/
-[example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme/
-[example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url/
-[example-download-graph]: http://g14n.info/flow-view/examples/download-graph/
+* [Synopsis](./synopsis)
+* [Event log](./event-log)
+* [Custom theme](./custom-theme)
+* [Autocompletion from URL](./autocompletion-from-url)
+* [Download graph](./download-graph)
 

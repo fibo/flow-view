@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "homepage": "https://github.com/fibo/flow-view",
   "author": {
     "name": "Gianluca Casati",

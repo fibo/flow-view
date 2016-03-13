@@ -1,614 +1,3 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      }
-      throw TypeError('Uncaught, unspecified "error" event.');
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],2:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],3:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
-'use strict';
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-},{}],4:[function(require,module,exports){
-/*! svg.draggable.js - v2.1.3 - 2016-03-13
-* https://github.com/wout/svg.draggable.js
-* Copyright (c) 2016 Wout Fierens; Licensed MIT */
-;(function() {
-
-  // creates handler, saves it
-  function DragHandler(el){
-    el.remember('_draggable', this)
-    this.el = el
-  }
-
-
-  // Sets new parameter, starts dragging
-  DragHandler.prototype.init = function(constraint, val){
-    var _this = this
-    this.constraint = constraint
-    this.value = val
-    this.el.on('mousedown.drag', function(e){ _this.start(e) })
-    this.el.on('touchstart.drag', function(e){ _this.start(e) })
-  }
-
-  // transforms one point from screen to user coords
-  DragHandler.prototype.transformPoint = function(event, offset){
-      event = event || window.event
-      var touches = event.changedTouches && event.changedTouches[0] || event
-      this.p.x = touches.pageX - (offset || 0)
-      this.p.y = touches.pageY
-      return this.p.matrixTransform(this.m)
-  }
-
-  // gets elements bounding box with special handling of groups, nested and use
-  DragHandler.prototype.getBBox = function(){
-
-    var box = this.el.bbox()
-
-    //if(this.el instanceof SVG.Nested) box = this.el.rbox()
-
-    if (this.el instanceof SVG.G /*|| this.el instanceof SVG.Use || this.el instanceof SVG.Nested */) {
-      box.x = this.el.x()
-      box.y = this.el.y()
-    }
-
-    return box
-  }
-
-  // start dragging
-  DragHandler.prototype.start = function(e){
-
-    // check for left button
-    if(e.type == 'click'|| e.type == 'mousedown' || e.type == 'mousemove'){
-      if((e.which || e.buttons) != 1){
-          return
-      }
-    }
-
-    var _this = this
-
-    // fire beforedrag event
-    this.el.fire('beforedrag', { event: e, handler: this })
-
-    // search for parent on the fly to make sure we can call
-    // draggable() even when element is not in the dom currently
-    this.parent = this.parent /*|| this.el.parent(SVG.Nested)*/ || this.el.parent(SVG.Doc)
-    this.p = this.parent.node.createSVGPoint()
-
-    // save current transformation matrix
-    this.m = this.el.node.getScreenCTM().inverse()
-
-    var box = this.getBBox()
-
-    var anchorOffset;
-
-    // fix text-anchor in text-element (#37)
-    if(this.el instanceof SVG.Text){
-      anchorOffset = this.el.node.getComputedTextLength();
-
-      switch(this.el.attr('text-anchor')){
-        case 'middle':
-          anchorOffset /= 2;
-          break
-        case 'start':
-          anchorOffset = 0;
-          break;
-      }
-    }
-
-    this.startPoints = {
-      // We take absolute coordinates since we are just using a delta here
-      point: this.transformPoint(e, anchorOffset),
-      box:   box
-    }
-
-    // add drag and end events to window
-    SVG.on(window, 'mousemove.drag', function(e){ _this.drag(e) })
-    SVG.on(window, 'touchmove.drag', function(e){ _this.drag(e) })
-    SVG.on(window, 'mouseup.drag', function(e){ _this.end(e) })
-    SVG.on(window, 'touchend.drag', function(e){ _this.end(e) })
-
-    // fire dragstart event
-    this.el.fire('dragstart', {event: e, p: this.startPoints.point, m: this.m, handler: this})
-
-    // prevent browser drag behavior
-    e.preventDefault()
-
-    // prevent propagation to a parent that might also have dragging enabled
-    e.stopPropagation();
-  }
-
-  // while dragging
-  DragHandler.prototype.drag = function(e){
-
-    var box = this.getBBox()
-      , p   = this.transformPoint(e)
-      , x   = this.startPoints.box.x + p.x - this.startPoints.point.x
-      , y   = this.startPoints.box.y + p.y - this.startPoints.point.y
-      , c   = this.constraint
-
-    this.el.fire('dragmove', { event: e, p: p, m: this.m, handler: this })
-
-    // move the element to its new position, if possible by constraint
-    if (typeof c == 'function') {
-
-      var coord = c.call(this.el, x, y, this.m)
-
-      // bool, just show us if movement is allowed or not
-      if (typeof coord == 'boolean') {
-        coord = {
-          x: coord,
-          y: coord
-        }
-      }
-
-      // if true, we just move. If !false its a number and we move it there
-      if (coord.x === true) {
-        this.el.x(x)
-      } else if (coord.x !== false) {
-        this.el.x(coord.x)
-      }
-
-      if (coord.y === true) {
-        this.el.y(y)
-      } else if (coord.y !== false) {
-        this.el.y(coord.y)
-      }
-
-    } else if (typeof c == 'object') {
-
-      // keep element within constrained box
-      if (c.minX != null && x < c.minX)
-        x = c.minX
-      else if (c.maxX != null && x > c.maxX - box.width){
-        x = c.maxX - box.width
-      }if (c.minY != null && y < c.minY)
-        y = c.minY
-      else if (c.maxY != null && y > c.maxY - box.height)
-        y = c.maxY - box.height
-
-      this.el.move(x, y)
-    }
-
-    // so we can use it in the end-method, too
-    return p
-  }
-
-  DragHandler.prototype.end = function(e){
-
-    // final drag
-    var p = this.drag(e);
-
-    // fire dragend event
-    this.el.fire('dragend', { event: e, p: p, m: this.m, handler: this })
-
-    // unbind events
-    SVG.off(window, 'mousemove.drag')
-    SVG.off(window, 'touchmove.drag')
-    SVG.off(window, 'mouseup.drag')
-    SVG.off(window, 'touchend.drag')
-
-  }
-
-  SVG.extend(SVG.Element, {
-    // Make element draggable
-    // Constraint might be an object (as described in readme.md) or a function in the form "function (x, y)" that gets called before every move.
-    // The function can return a boolean or an object of the form {x, y}, to which the element will be moved. "False" skips moving, true moves to raw x, y.
-    draggable: function(value, constraint) {
-
-      // Check the parameters and reassign if needed
-      if (typeof value == 'function' || typeof value == 'object') {
-        constraint = value
-        value = true
-      }
-
-      var dragHandler = this.remember('_draggable') || new DragHandler(this)
-
-      // When no parameter is given, value is true
-      value = typeof value === 'undefined' ? true : value
-
-      if(value) dragHandler.init(constraint || {}, value)
-      else {
-        this.off('mousedown.drag')
-        this.off('touchstart.drag')
-      }
-
-      return this
-    }
-
-  })
-
-}).call(this);
-
-},{}],5:[function(require,module,exports){
-/*! svg.foreignobject.js - v1.0.0 - 2015-06-14
-* https://github.com/fibo/svg.foreignobject.js
-* Copyright (c) 2015 Wout Fierens; Licensed MIT */
-SVG.ForiegnObject = function() {
-  this.constructor.call(this, SVG.create('foreignObject'))
-
-  /* store type */
-  this.type = 'foreignObject'
-}
-
-SVG.ForiegnObject.prototype = new SVG.Shape()
-
-SVG.extend(SVG.ForiegnObject, {
-  appendChild: function (child, attrs) {
-    var newChild = typeof(child)=='string' ? document.createElement(child) : child
-    if (typeof(attrs)=='object'){
-      for(var a in attrs) newChild[a] = attrs[a]
-    }
-    this.node.appendChild(newChild)
-    return this
-  },
-  getChild: function (index) {
-    return this.node.childNodes[index]
-  }
-})
-
-SVG.extend(SVG.Container, {
-  foreignObject: function(width, height) {
-    return this.put(new SVG.ForiegnObject()).size(width === null ? 100 : width, height === null ? 100 : height)
-  }
-})
-
-},{}],6:[function(require,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.2.5
@@ -617,7 +6,7 @@ SVG.extend(SVG.Container, {
 * @copyright Wout Fierens <wout@impinc.co.uk>
 * @license MIT
 *
-* BUILT: Sun Mar 13 2016 18:56:22 GMT-0400 (EDT)
+* BUILT: Sun Mar 13 2016 18:26:56 GMT-0400 (EDT)
 */;
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -1187,6 +576,249 @@ SVG.extend(SVG.PointArray, {
   }
 
 })
+// Path points array
+SVG.PathArray = function(array, fallback) {
+  this.constructor.call(this, array, fallback || [['M', 0, 0]])
+}
+
+// Inherit from SVG.Array
+SVG.PathArray.prototype = new SVG.Array
+
+SVG.extend(SVG.PathArray, {
+  // Convert array to string
+  toString: function() {
+    return arrayToString(this.value)
+  }
+  // Move path string
+, move: function(x, y) {
+    // get bounding box of current situation
+    var box = this.bbox()
+
+    // get relative offset
+    x -= box.x
+    y -= box.y
+
+    if (!isNaN(x) && !isNaN(y)) {
+      // move every point
+      for (var l, i = this.value.length - 1; i >= 0; i--) {
+        l = this.value[i][0]
+
+        if (l == 'M' || l == 'L' || l == 'T')  {
+          this.value[i][1] += x
+          this.value[i][2] += y
+
+        } else if (l == 'H')  {
+          this.value[i][1] += x
+
+        } else if (l == 'V')  {
+          this.value[i][1] += y
+
+        } else if (l == 'C' || l == 'S' || l == 'Q')  {
+          this.value[i][1] += x
+          this.value[i][2] += y
+          this.value[i][3] += x
+          this.value[i][4] += y
+
+          if (l == 'C')  {
+            this.value[i][5] += x
+            this.value[i][6] += y
+          }
+
+        } else if (l == 'A')  {
+          this.value[i][6] += x
+          this.value[i][7] += y
+        }
+
+      }
+    }
+
+    return this
+  }
+  // Resize path string
+, size: function(width, height) {
+    // get bounding box of current situation
+    var i, l, box = this.bbox()
+
+    // recalculate position of all points according to new size
+    for (i = this.value.length - 1; i >= 0; i--) {
+      l = this.value[i][0]
+
+      if (l == 'M' || l == 'L' || l == 'T')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+        this.value[i][2] = ((this.value[i][2] - box.y) * height) / box.height + box.y
+
+      } else if (l == 'H')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+
+      } else if (l == 'V')  {
+        this.value[i][1] = ((this.value[i][1] - box.y) * height) / box.height + box.y
+
+      } else if (l == 'C' || l == 'S' || l == 'Q')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+        this.value[i][2] = ((this.value[i][2] - box.y) * height) / box.height + box.y
+        this.value[i][3] = ((this.value[i][3] - box.x) * width)  / box.width  + box.x
+        this.value[i][4] = ((this.value[i][4] - box.y) * height) / box.height + box.y
+
+        if (l == 'C')  {
+          this.value[i][5] = ((this.value[i][5] - box.x) * width)  / box.width  + box.x
+          this.value[i][6] = ((this.value[i][6] - box.y) * height) / box.height + box.y
+        }
+
+      } else if (l == 'A')  {
+        // resize radii
+        this.value[i][1] = (this.value[i][1] * width)  / box.width
+        this.value[i][2] = (this.value[i][2] * height) / box.height
+
+        // move position values
+        this.value[i][6] = ((this.value[i][6] - box.x) * width)  / box.width  + box.x
+        this.value[i][7] = ((this.value[i][7] - box.y) * height) / box.height + box.y
+      }
+
+    }
+
+    return this
+  }
+  // Absolutize and parse path to array
+, parse: function(array) {
+    // if it's already a patharray, no need to parse it
+    if (array instanceof SVG.PathArray) return array.valueOf()
+
+    // prepare for parsing
+    var i, x0, y0, s, seg, arr
+      , x = 0
+      , y = 0
+      , paramCnt = { 'M':2, 'L':2, 'H':1, 'V':1, 'C':6, 'S':4, 'Q':4, 'T':2, 'A':7 }
+
+    if(typeof array == 'string'){
+
+      array = array
+        .replace(SVG.regex.negExp, 'X')         // replace all negative exponents with certain char
+        .replace(SVG.regex.pathLetters, ' $& ') // put some room between letters and numbers
+        .replace(SVG.regex.hyphen, ' -')        // add space before hyphen
+        .replace(SVG.regex.comma, ' ')          // unify all spaces
+        .replace(SVG.regex.X, 'e-')             // add back the expoent
+        .trim()                                 // trim
+        .split(SVG.regex.whitespaces)           // split into array
+
+      // at this place there could be parts like ['3.124.854.32'] because we could not determine the point as seperator till now
+      // we fix this elements in the next loop
+      for(i = array.length; --i;){
+        if(array[i].indexOf('.') != array[i].lastIndexOf('.')){
+          var split = array[i].split('.') // split at the point
+          var first = [split.shift(), split.shift()].join('.') // join the first number together
+          array.splice.apply(array, [i, 1].concat(first, split.map(function(el){ return '.'+el }))) // add first and all other entries back to array
+        }
+      }
+
+    }else{
+      array = array.reduce(function(prev, curr){
+        return [].concat.apply(prev, curr)
+      }, [])
+    }
+
+    // array now is an array containing all parts of a path e.g. ['M', '0', '0', 'L', '30', '30' ...]
+
+    var arr = []
+
+    do{
+
+      // Test if we have a path letter
+      if(SVG.regex.isPathLetter.test(array[0])){
+        s = array[0]
+        array.shift()
+      // If last letter was a move command and we got no new, it defaults to [L]ine
+      }else if(s == 'M'){
+        s = 'L'
+      }else if(s == 'm'){
+        s = 'l'
+      }
+
+      // add path letter as first element
+      seg = [s.toUpperCase()]
+
+      // push all necessary parameters to segment
+      for(i = 0; i < paramCnt[seg[0]]; ++i){
+        seg.push(parseFloat(array.shift()))
+      }
+
+      // upper case
+      if(s == seg[0]){
+
+        if(s == 'M' || s == 'L' || s == 'C' || s == 'Q'){
+          x = seg[paramCnt[seg[0]]-1]
+          y = seg[paramCnt[seg[0]]]
+        }else if(s == 'V'){
+          y = seg[1]
+        }else if(s == 'H'){
+          x = seg[1]
+        }else if(s == 'A'){
+          x = seg[6]
+          y = seg[7]
+        }
+
+      // lower case
+      }else{
+
+        // convert relative to absolute values
+        if(s == 'm' || s == 'l' || s == 'c' || s == 's' || s == 'q' || s == 't'){
+
+          seg[1] += x
+          seg[2] += y
+
+          if(seg[3] != null){
+            seg[3] += x
+            seg[4] += y
+          }
+
+          if(seg[5] != null){
+            seg[5] += x
+            seg[6] += y
+          }
+
+          // move pointer
+          x = seg[paramCnt[seg[0]]-1]
+          y = seg[paramCnt[seg[0]]]
+
+        }else if(s == 'v'){
+          seg[1] += y
+          y = seg[1]
+        }else if(s == 'h'){
+          seg[1] += x
+          x = seg[1]
+        }else if(s == 'a'){
+          seg[6] += x
+          seg[7] += y
+          x = seg[6]
+          y = seg[7]
+        }
+
+      }
+
+      if(seg[0] == 'M'){
+        x0 = x
+        y0 = y
+      }
+
+      if(seg[0] == 'Z'){
+        x = x0
+        y = y0
+      }
+
+      arr.push(seg)
+
+    }while(array.length)
+
+    return arr
+
+  }
+  // Get bounding box of path
+, bbox: function() {
+    SVG.parser.path.setAttribute('d', this.toString())
+
+    return SVG.parser.path.getBBox()
+  }
+
+})
 // Module for unit convertions
 SVG.Number = SVG.invent({
   // Initialize
@@ -1610,6 +1242,467 @@ SVG.Element = SVG.invent({
       this.dom = o
       return this
     }
+  }
+})
+
+SVG.FX = SVG.invent({
+  // Initialize FX object
+  create: function(element) {
+    // store target element
+    this.target = element
+  }
+
+  // Add class methods
+, extend: {
+    // Add animation parameters and start animation
+    animate: function(d, ease, delay) {
+      var akeys, skeys, key
+        , element = this.target
+        , fx = this
+
+      // dissect object if one is passed
+      if (typeof d == 'object') {
+        delay = d.delay
+        ease = d.ease
+        d = d.duration
+      }
+
+      // ensure default duration and easing
+      d = d == '=' ? d : d == null ? 1000 : new SVG.Number(d).valueOf()
+      ease = ease || '<>'
+
+      // process values
+      fx.at = function(pos) {
+        var i
+
+        // normalise pos
+        pos = pos < 0 ? 0 : pos > 1 ? 1 : pos
+
+        // collect attribute keys
+        if (akeys == null) {
+          akeys = []
+          for (key in fx.attrs)
+            akeys.push(key)
+
+          // make sure morphable elements are scaled, translated and morphed all together
+          if (element.morphArray && (fx.destination.plot || akeys.indexOf('points') > -1)) {
+            // get destination
+            var box
+              , p = new element.morphArray(fx.destination.plot || fx.attrs.points || element.array())
+
+            // add size
+            if (fx.destination.size)
+              p.size(fx.destination.size.width.to, fx.destination.size.height.to)
+
+            // add movement
+            box = p.bbox()
+            if (fx.destination.x)
+              p.move(fx.destination.x.to, box.y)
+            else if (fx.destination.cx)
+              p.move(fx.destination.cx.to - box.width / 2, box.y)
+
+            box = p.bbox()
+            if (fx.destination.y)
+              p.move(box.x, fx.destination.y.to)
+            else if (fx.destination.cy)
+              p.move(box.x, fx.destination.cy.to - box.height / 2)
+
+            // reset destination values
+            fx.destination = {
+              plot: element.array().morph(p)
+            }
+          }
+        }
+
+        // collect style keys
+        if (skeys == null) {
+          skeys = []
+          for (key in fx.styles)
+            skeys.push(key)
+        }
+
+        // apply easing
+        pos = ease == '<>' ?
+          (-Math.cos(pos * Math.PI) / 2) + 0.5 :
+        ease == '>' ?
+          Math.sin(pos * Math.PI / 2) :
+        ease == '<' ?
+          -Math.cos(pos * Math.PI / 2) + 1 :
+        ease == '-' ?
+          pos :
+        typeof ease == 'function' ?
+          ease(pos) :
+          pos
+
+        // run plot function
+        if (fx.destination.plot) {
+          element.plot(fx.destination.plot.at(pos))
+
+        } else {
+          // run all x-position properties
+          if (fx.destination.x)
+            element.x(fx.destination.x.at(pos))
+          else if (fx.destination.cx)
+            element.cx(fx.destination.cx.at(pos))
+
+          // run all y-position properties
+          if (fx.destination.y)
+            element.y(fx.destination.y.at(pos))
+          else if (fx.destination.cy)
+            element.cy(fx.destination.cy.at(pos))
+
+          // run all size properties
+          if (fx.destination.size)
+            element.size(fx.destination.size.width.at(pos), fx.destination.size.height.at(pos))
+        }
+
+        // run all viewbox properties
+        if (fx.destination.viewbox)
+          element.viewbox(
+            fx.destination.viewbox.x.at(pos)
+          , fx.destination.viewbox.y.at(pos)
+          , fx.destination.viewbox.width.at(pos)
+          , fx.destination.viewbox.height.at(pos)
+          )
+
+        // run leading property
+        if (fx.destination.leading)
+          element.leading(fx.destination.leading.at(pos))
+
+        // animate attributes
+        for (i = akeys.length - 1; i >= 0; i--)
+          element.attr(akeys[i], at(fx.attrs[akeys[i]], pos))
+
+        // animate styles
+        for (i = skeys.length - 1; i >= 0; i--)
+          element.style(skeys[i], at(fx.styles[skeys[i]], pos))
+
+        // callback for each keyframe
+        if (fx.situation.during)
+          fx.situation.during.call(element, pos, function(from, to) {
+            return at({ from: from, to: to }, pos)
+          })
+      }
+
+      if (typeof d === 'number') {
+        // delay animation
+        this.timeout = setTimeout(function() {
+          var start = new Date().getTime()
+
+          // initialize situation object
+          fx.situation.start    = start
+          fx.situation.play     = true
+          fx.situation.finish   = start + d
+          fx.situation.duration = d
+          fx.situation.ease     = ease
+
+          // render function
+          fx.render = function() {
+
+            if (fx.situation.play === true) {
+              // calculate pos
+              var time = new Date().getTime()
+                , pos = time > fx.situation.finish ? 1 : (time - fx.situation.start) / d
+
+              // reverse pos if animation is reversed
+              if (fx.situation.reversing)
+                pos = -pos + 1
+
+              // process values
+              fx.at(pos)
+
+              // finish off animation
+              if (time > fx.situation.finish) {
+                if (fx.destination.plot)
+                  element.plot(new SVG.PointArray(fx.destination.plot.destination).settle())
+
+                if (fx.situation.loop === true || (typeof fx.situation.loop == 'number' && fx.situation.loop > 0)) {
+                  // register reverse
+                  if (fx.situation.reverse)
+                    fx.situation.reversing = !fx.situation.reversing
+
+                  if (typeof fx.situation.loop == 'number') {
+                    // reduce loop count
+                    if (!fx.situation.reverse || fx.situation.reversing)
+                      --fx.situation.loop
+
+                    // remove last loop if reverse is disabled
+                    if (!fx.situation.reverse && fx.situation.loop == 1)
+                      --fx.situation.loop
+                  }
+
+                  fx.animate(d, ease, delay)
+                } else {
+                  fx.situation.after ? fx.situation.after.apply(element, [fx]) : fx.stop()
+                }
+
+              } else {
+                fx.animationFrame = requestAnimationFrame(fx.render)
+              }
+            } else {
+              fx.animationFrame = requestAnimationFrame(fx.render)
+            }
+
+          }
+
+          // start animation
+          fx.render()
+
+        }, new SVG.Number(delay).valueOf())
+      }
+
+      return this
+    }
+    // Get bounding box of target element
+  , bbox: function() {
+      return this.target.bbox()
+    }
+    // Add animatable attributes
+  , attr: function(a, v) {
+      // apply attributes individually
+      if (typeof a == 'object') {
+        for (var key in a)
+          this.attr(key, a[key])
+
+      } else {
+        // get the current state
+        var from = this.target.attr(a)
+
+        // detect format
+        if (a == 'transform') {
+          // merge given transformation with an existing one
+          if (this.attrs[a])
+            v = this.attrs[a].destination.multiply(v)
+
+          // prepare matrix for morphing
+          this.attrs[a] = (new SVG.Matrix(this.target)).morph(v)
+
+          // add parametric rotation values
+          if (this.param) {
+            // get initial rotation
+            v = this.target.transform('rotation')
+
+            // add param
+            this.attrs[a].param = {
+              from: this.target.param || { rotation: v, cx: this.param.cx, cy: this.param.cy }
+            , to:   this.param
+            }
+          }
+
+        } else {
+          this.attrs[a] = SVG.Color.isColor(v) ?
+            // prepare color for morphing
+            new SVG.Color(from).morph(v) :
+          SVG.regex.numberAndUnit.test(v) ?
+            // prepare number for morphing
+            new SVG.Number(from).morph(v) :
+            // prepare for plain morphing
+            { from: from, to: v }
+        }
+      }
+
+      return this
+    }
+    // Add animatable styles
+  , style: function(s, v) {
+      if (typeof s == 'object')
+        for (var key in s)
+          this.style(key, s[key])
+
+      else
+        this.styles[s] = { from: this.target.style(s), to: v }
+
+      return this
+    }
+    // Animatable x-axis
+  , x: function(x) {
+      this.destination.x = new SVG.Number(this.target.x()).morph(x)
+
+      return this
+    }
+    // Animatable y-axis
+  , y: function(y) {
+      this.destination.y = new SVG.Number(this.target.y()).morph(y)
+
+      return this
+    }
+    // Animatable center x-axis
+  , cx: function(x) {
+      this.destination.cx = new SVG.Number(this.target.cx()).morph(x)
+
+      return this
+    }
+    // Animatable center y-axis
+  , cy: function(y) {
+      this.destination.cy = new SVG.Number(this.target.cy()).morph(y)
+
+      return this
+    }
+    // Add animatable move
+  , move: function(x, y) {
+      return this.x(x).y(y)
+    }
+    // Add animatable center
+  , center: function(x, y) {
+      return this.cx(x).cy(y)
+    }
+    // Add animatable size
+  , size: function(width, height) {
+      if (this.target instanceof SVG.Text) {
+        // animate font size for Text elements
+        this.attr('font-size', width)
+
+      } else {
+        // animate bbox based size for all other elements
+        var box = this.target.bbox()
+
+        this.destination.size = {
+          width:  new SVG.Number(box.width).morph(width)
+        , height: new SVG.Number(box.height).morph(height)
+        }
+      }
+
+      return this
+    }
+    // Add animatable plot
+  , plot: function(p) {
+      this.destination.plot = p
+
+      return this
+    }
+    // Add leading method
+  , leading: function(value) {
+      if (this.target.destination.leading)
+        this.destination.leading = new SVG.Number(this.target.destination.leading).morph(value)
+
+      return this
+    }
+    // Add animatable viewbox
+  , viewbox: function(x, y, width, height) {
+      if (this.target instanceof SVG.Container) {
+        var box = this.target.viewbox()
+
+        this.destination.viewbox = {
+          x:      new SVG.Number(box.x).morph(x)
+        , y:      new SVG.Number(box.y).morph(y)
+        , width:  new SVG.Number(box.width).morph(width)
+        , height: new SVG.Number(box.height).morph(height)
+        }
+      }
+
+      return this
+    }
+    // Add animateable gradient update
+  , update: function(o) {
+      if (this.target instanceof SVG.Stop) {
+        if (o.opacity != null) this.attr('stop-opacity', o.opacity)
+        if (o.color   != null) this.attr('stop-color', o.color)
+        if (o.offset  != null) this.attr('offset', new SVG.Number(o.offset))
+      }
+
+      return this
+    }
+    // Add callback for each keyframe
+  , during: function(during) {
+      this.situation.during = during
+
+      return this
+    }
+    // Callback after animation
+  , after: function(after) {
+      this.situation.after = after
+
+      return this
+    }
+    // Make loopable
+  , loop: function(times, reverse) {
+      // store current loop and total loops
+      this.situation.loop = this.situation.loops = times || true
+
+      // make reversable
+      this.situation.reverse = !!reverse
+
+      return this
+    }
+    // Stop running animation
+  , stop: function(fulfill) {
+      // fulfill animation
+      if (fulfill === true) {
+
+        this.animate(0)
+
+        if (this.situation.after)
+          this.situation.after.apply(this.target, [this])
+
+      } else {
+        // stop current animation
+        clearTimeout(this.timeout)
+        cancelAnimationFrame(this.animationFrame);
+
+        // reset storage for properties
+        this.attrs       = {}
+        this.styles      = {}
+        this.situation   = {}
+        this.destination = {}
+      }
+
+      return this
+    }
+    // Pause running animation
+  , pause: function() {
+      if (this.situation.play === true) {
+        this.situation.play  = false
+        this.situation.pause = new Date().getTime()
+      }
+
+      return this
+    }
+    // Play running animation
+  , play: function() {
+      if (this.situation.play === false) {
+        var pause = new Date().getTime() - this.situation.pause
+
+        this.situation.finish += pause
+        this.situation.start  += pause
+        this.situation.play    = true
+      }
+
+      return this
+    }
+
+  }
+
+  // Define parent class
+, parent: SVG.Element
+
+  // Add method to parent elements
+, construct: {
+    // Get fx module or create a new one, then animate with given duration and ease
+    animate: function(d, ease, delay) {
+      return (this.fx || (this.fx = new SVG.FX(this))).stop().animate(d, ease, delay)
+    }
+    // Stop current animation; this is an alias to the fx instance
+  , stop: function(fulfill) {
+      if (this.fx)
+        this.fx.stop(fulfill)
+
+      return this
+    }
+    // Pause current animation
+  , pause: function() {
+      if (this.fx)
+        this.fx.pause()
+
+      return this
+    }
+    // Play paused current animation
+  , play: function() {
+      if (this.fx)
+        this.fx.play()
+
+      return this
+    }
+
   }
 })
 
@@ -2051,7 +2144,7 @@ SVG.extend(SVG.Element, {
   }
 })
 
-SVG.extend(SVG.Element, /*SVG.FX,*/ {
+SVG.extend(SVG.Element, SVG.FX, {
   // Add transformations
   transform: function(o, relative) {
     // get target in case of the fx module, otherwise reference this
@@ -2074,9 +2167,9 @@ SVG.extend(SVG.Element, /*SVG.FX,*/ {
     }
 
     // get current matrix
-    /*matrix = this instanceof SVG.FX && this.attrs.transform ?
-      this.attrs.transform : */
-    matrix =  new SVG.Matrix(target)
+    matrix = this instanceof SVG.FX && this.attrs.transform ?
+      this.attrs.transform :
+      new SVG.Matrix(target)
 
     // ensure relative flag
     relative = !!relative || !!o.relative
@@ -2741,6 +2834,30 @@ SVG.Shape = SVG.invent({
 , inherit: SVG.Element
 
 })
+SVG.Use = SVG.invent({
+  // Initialize node
+  create: 'use'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Use element as a reference
+    element: function(element, file) {
+      // Set lined element
+      return this.attr('href', (file || '') + '#' + element, SVG.xlink)
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a use element
+    use: function(element, file) {
+      return this.put(new SVG.Use).element(element, file)
+    }
+  }
+})
 SVG.Rect = SVG.invent({
   // Initialize node
   create: 'rect'
@@ -3090,11 +3207,11 @@ var sugar = {
     return this
   }
 
-  SVG.extend(SVG.Element, /*SVG.FX,*/ extension)
+  SVG.extend(SVG.Element, SVG.FX, extension)
 
 })
 
-SVG.extend(SVG.Element, /*SVG.FX,*/ {
+SVG.extend(SVG.Element, SVG.FX, {
   // Map rotation to transform
   rotate: function(d, cx, cy) {
     return this.transform({ rotation: d, cx: cx, cy: cy })
@@ -3139,7 +3256,7 @@ SVG.extend(SVG.Element, /*SVG.FX,*/ {
   }
 })
 
-SVG.extend(SVG.Rect, SVG.Ellipse, SVG.Circle, SVG.Gradient, /*SVG.FX,*/ {
+SVG.extend(SVG.Rect, SVG.Ellipse, SVG.Circle, SVG.Gradient, SVG.FX, {
   // Add x and y radius
   radius: function(x, y) {
     var type = (this.target || this).type;
@@ -3160,7 +3277,7 @@ SVG.extend(SVG.Path, {
   }
 })
 
-SVG.extend(SVG.Parent, SVG.Text, /*SVG.FX,*/ {
+SVG.extend(SVG.Parent, SVG.Text, SVG.FX, {
   // Set font
   font: function(o) {
     for (var k in o)
@@ -3280,7 +3397,6 @@ SVG.Set = SVG.invent({
   }
 })
 
-/*
 SVG.FX.Set = SVG.invent({
   // Initialize node
   create: function(set) {
@@ -3289,7 +3405,6 @@ SVG.FX.Set = SVG.invent({
   }
 
 })
-*/
 
 // Alias methods
 SVG.Set.inherit = function() {
@@ -3308,7 +3423,7 @@ SVG.Set.inherit = function() {
         if (this.members[i] && typeof this.members[i][method] == 'function')
           this.members[i][method].apply(this.members[i], arguments)
 
-      return /*method == 'animate' ? (this.fx || (this.fx = new SVG.FX.Set(this))) :*/ this
+      return method == 'animate' ? (this.fx || (this.fx = new SVG.FX.Set(this))) : this
     }
   })
 
@@ -3316,7 +3431,6 @@ SVG.Set.inherit = function() {
   methods = []
 
   // gather fx methods
-  /*
   for(var m in SVG.FX.prototype)
     if (typeof SVG.FX.prototype[m] == 'function' && typeof SVG.FX.Set.prototype[m] != 'function')
       methods.push(m)
@@ -3330,7 +3444,6 @@ SVG.Set.inherit = function() {
       return this
     }
   })
-  */
 }
 
 
@@ -3581,1670 +3694,3 @@ var abcdef = 'abcdef'.split('')
 return SVG
 
 }));
-},{}],7:[function(require,module,exports){
-
-var EventEmitter = require('events').EventEmitter,
-    inherits     = require('inherits')
-
-function Broker (canvas) {
-  this.canvas = canvas
-}
-
-inherits(Broker, EventEmitter)
-
-function init (eventHook) {
-  var canvas = this.canvas
-
-  /**
-   * On addLink event.
-   *
-   * @api private
-   */
-
-  function addLink (eventData) {
-    canvas.addLink(eventData)
-  }
-
-  this.on('addLink', addLink)
-
-  /**
-   * Generate addInput or addOutput event callback
-   *
-   * @api private
-   *
-   * @param {String} type can be In or Out
-   *
-   * @returns {Function} anonymous
-   */
-
-  function addPin (type) {
-    return function (eventData) {
-      // Can be addInput or addOutput.
-      var action = 'add' + type + 'put'
-
-      var id       = eventData.nodeid,
-          position = eventData.position
-
-      var node = canvas.node[id]
-
-      node[action](position)
-    }
-  }
-
-  this.on('addInput', addPin('In'))
-  this.on('addOutput', addPin('Out'))
-
-  /**
-   * On addNode event.
-   *
-   * @api private
-   */
-
-  function addNode (eventData) {
-    canvas.addNode(eventData)
-  }
-
-  this.on('addNode', addNode)
-
-  /**
-   * On delNode event.
-   *
-   * @api private
-   */
-
-  function delNode (eventData) {
-    canvas.delNode(eventData)
-  }
-
-  this.on('delNode', delNode)
-
-  /**
-   * On delLink event.
-   *
-   * @api private
-   */
-
-  function delLink (eventData) {
-    canvas.delLink(eventData)
-  }
-
-  this.on('delLink', delLink)
-
-  /**
-   * On moveNode event.
-   *
-   * @api private
-   */
-
-  function moveNode (eventData) {
-    canvas.moveNode(eventData)
-  }
-
-  this.on('moveNode', moveNode)
-
-  /**
-   * On clickNode event.
-   *
-   * @api private
-   */
-
-  function clickNode (eventData) {
-    canvas.selectNode(eventData)
-  }
-
-  this.on('clickNode', clickNode)
-
-  /**
-   * On dblclickNode event.
-   *
-   * @api private
-   */
-
-  function dblclickNode (eventData) {
-    // Do nothing by default.
-  }
-
-  this.on('dblclickNode', dblclickNode)
-}
-
-Broker.prototype.init = init
-
-module.exports = Broker
-
-
-},{"events":1,"inherits":2}],8:[function(require,module,exports){
-
-var objectAssign = require('object-assign')
-
-var SVG = require('./SVG')
-
-var Broker        = require('./Broker'),
-    Link          = require('./Link'),
-    Node          = require('./Node'),
-    NodeControls  = require('./NodeControls'),
-    NodeSelector  = require('./NodeSelector'),
-    validate      = require('./validate')
-
-var defaultTheme = require('./default/theme.json'),
-    defaultView  = require('./default/view.json')
-
-/**
- * Create a flow-view canvas.
- *
- * @constructor
- * @param {String} id of div element
- * @param {Object} arg
- * @param {Number} arg.height
- * @param {Number} arg.width
- * @param {Object} arg.eventHooks
- * @param {Object} arg.theme
- * @param {Object} arg.nodeSelector
- */
-
-function Canvas (id, arg) {
-  var self = this
-
-  if (typeof arg === 'undefined')
-    arg = {}
-
-  var eventHooks = arg.eventHooks || {}
-
-  var broker = new Broker(this)
-  broker.init(eventHooks)
-  this.broker = broker
-
-  if (typeof arg.theme === 'undefined')
-    arg.theme = {}
-
-  var theme = this.theme = objectAssign(defaultTheme, arg.theme)
-
-  this.node = {}
-  this.link = {}
-
-  var svg = this.svg = SVG(id).spof()
-
-  var element = document.getElementById(id)
-
-  var height = arg.height || element.clientHeight,
-      width  = arg.width  || element.clientWidth
-
-  svg.size(width, height)
-
-  function getHeight () { return height }
-
-  function setHeight (value) {
-    height = value
-    svg.size(height, width).spof()
-  }
-
-  Object.defineProperty(this, 'height', {get: getHeight, set: setHeight});
-
-  function getWidth () { return width }
-
-  function setWidth (value) {
-    width = value
-    svg.size(height, width).spof()
-  }
-
-  Object.defineProperty(this, 'width', {get: getWidth, set: setWidth});
-
-  var nextId = 0
-
-  function getNextId () {
-    var currentId = ++nextId + ''
-
-    // Make next id unique.
-    if (self.node[currentId])
-      return getNextId()
-
-    if (self.link[currentId])
-      return getNextId()
-
-    return currentId
-  }
-
-  Object.defineProperty(this, 'nextId', { get: getNextId })
-
-  var nodeSelector  = new NodeSelector(this, arg.nodeSelector)
-  this.nodeSelector = nodeSelector
-
-  var nodeControls = new NodeControls(this)
-  this.nodeControls = nodeControls
-
-  var hideNodeSelector = nodeSelector.hide.bind(nodeSelector),
-      showNodeSelector = nodeSelector.show.bind(nodeSelector)
-
-  SVG.on(element, 'click',    hideNodeSelector)
-  SVG.on(element, 'dblclick', showNodeSelector)
-}
-
-function render (view) {
-  validate(view)
-
-  var self = this
-
-  function createNode (id) {
-    var data = view.node[id]
-    data.nodeid = id
-
-    self.addNode(data)
-  }
-
-  Object.keys(view.node)
-        .forEach(createNode)
-
-  function createLink (id) {
-    var data = view.link[id]
-    data.linkid = id
-
-    self.addLink(data)
-  }
-
-  Object.keys(view.link)
-        .forEach(createLink)
-}
-
-Canvas.prototype.render = render
-
-function deleteView () {
-
-  var link = this.link,
-      node = this.node
-
-  Object.keys(node).forEach(function (id) { node[id].deleteView() })
-  Object.keys(link).forEach(function (id) { link[id].deleteView() })
-}
-
-Canvas.prototype.deleteView = deleteView
-
-/**
- * Get model.
- *
- * @returns {Object} json
- */
-
-function toJSON () {
-  var view = { link: {}, node: {} }
-
-  var link = this.link,
-      node = this.node
-
-  Object.keys(link).forEach(function (id) {
-    view.link[id] = link[id].toJSON()
-  })
-
-  Object.keys(node).forEach(function (id) {
-    view.node[id] = node[id].toJSON()
-  })
-
-  return view
-}
-
-Canvas.prototype.toJSON = toJSON
-
-/**
- * Add a link.
- */
-
-function addLink (data) {
-  var id = data.linkid
-
-  if (typeof id === 'undefined')
-     id = this.nextId
-
-  var link = new Link(this, id)
-
-  link.render(data)
-
-  this.link[id] = link
-}
-
-Canvas.prototype.addLink = addLink
-
-/**
- * Add a node.
- */
-
-function addNode (data) {
-  var id = data.nodeid
-
-  if (typeof id === 'undefined')
-     id = this.nextId
-
-  var node = new Node(this, id)
-
-  node.render(data)
-
-  this.node[id] = node
-}
-
-Canvas.prototype.addNode = addNode
-
-/**
- * Delete a node.
- */
-
-function delNode (data) {
-  var id = data.nodeid
-
-  var link = this.link,
-      node = this.node[id]
-
-  // First remove links connected to node.
-  for (var i in link) {
-    var nodeIsSource = link[i].from.id === id,
-        nodeIsTarget = link[i].to.id   === id
-
-    if (nodeIsSource || nodeIsTarget)
-      this.broker.emit('delLink', { linkid: i })
-  }
-
-  // Then remove node.
-  node.deleteView()
-}
-
-Canvas.prototype.delNode = delNode
-
-/**
- * Delete a link.
- */
-
-function delLink (data) {
-  var id = data.linkid
-
-  var link = this.link[id]
-
-  link.deleteView()
-}
-
-Canvas.prototype.delLink = delLink
-
-/**
- * Move a node.
- */
-
-function moveNode (data) {
-  var id = data.nodeid,
-      x   = data.x,
-      y   = data.y
-
-  this.node[id].x = x
-  this.node[id].y = y
-}
-
-Canvas.prototype.moveNode = moveNode
-
-/**
- * Rename a node.
- */
-
-function renameNode (data) {
-  // TODO add renameNode event to Broker
-  var id   = data.id,
-      text = data.text
-
-  this.node[id].text = text
-}
-
-Canvas.prototype.renameNode = renameNode
-
-/**
- * Select a node.
- */
-
-function selectNode (data) {
-  var id = data.nodeid
-
-  var node = this.node[id]
-
-  this.nodeControls.attachTo(node)
-}
-
-Canvas.prototype.selectNode = selectNode
-
-module.exports = Canvas
-
-
-},{"./Broker":7,"./Link":10,"./Node":11,"./NodeControls":16,"./NodeSelector":17,"./SVG":25,"./default/theme.json":21,"./default/view.json":22,"./validate":24,"object-assign":3}],9:[function(require,module,exports){
-
-var inherits = require('inherits'),
-    Pin      = require('./Pin')
-
-function Input (node, position) {
-  Pin.call(this, 'ins', node, position)
-
-  this.link = null
-}
-
-inherits(Input, Pin)
-
-function render () {
-  var fill   = this.fill,
-      node   = this.node,
-      size   = this.size,
-      vertex = this.vertex.relative
-
-  var svg = node.canvas.svg
-
-  var rect = svg.rect(size, size)
-                .move(vertex.x, vertex.y)
-                .fill(fill)
-
-  this.rect = rect
-
-  node.group.add(rect)
-}
-
-Input.prototype.render = render
-
-module.exports = Input
-
-
-},{"./Pin":19,"inherits":2}],10:[function(require,module,exports){
-
-/**
- * Connect an output to an input
- *
- * @param {Object} canvas
- * @param {String} id
- */
-
-function Link (canvas, id) {
-  this.canvas = canvas
-  this.id     = id
-}
-
-function render (view) {
-  var canvas = this.canvas,
-      id     = this.id
-
-  var broker = canvas.broker,
-      node   = canvas.node,
-      svg    = canvas.svg,
-      theme  = canvas.theme
-
-  var strokeLine            = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted
-
-  var from = node[view.from[0]],
-      to   = node[view.to[0]]
-
-  var start = from.outs[view.from[1]],
-      end   = to.ins[view.to[1]]
-
-  Object.defineProperties(this, {
-    'from' : { value: from  },
-    'to'   : { value: to    },
-    'start': { value: start },
-    'end'  : { value: end   }
-  })
-
-  Object.defineProperties(this, {
-    'x1': { get: function () { return start.center.absolute.x } },
-    'y1': { get: function () { return start.center.absolute.y } },
-    'x2': { get: function () { return end.center.absolute.x   } },
-    'y2': { get: function () { return end.center.absolute.y   } }
-  })
-
-  var line = svg.line(this.x1, this.y1, this.x2, this.y2)
-                .stroke(strokeLine)
-
-  this.line = line
-
-  end.link = this
-  start.link[id] = this
-
-  function remove () {
-    broker.emit('delLink', { linkid: id })
-  }
-
-  function deselectLine () {
-    line.off('click')
-        .stroke(strokeLine)
-  }
-
-  line.on('mouseout', deselectLine)
-
-  function selectLine () {
-    line.on('click', remove)
-        .stroke(strokeLineHighlighted)
-  }
-
-  line.on('mouseover', selectLine)
-}
-
-Link.prototype.render = render
-
-function deleteView () {
-  var canvas = this.canvas,
-      end    = this.end,
-      id     = this.id,
-      line   = this.line,
-      start  = this.start
-
-  line.remove()
-
-  end.link = null
-
-  delete start.link[id]
-
-  delete canvas.link[id]
-}
-
-Link.prototype.deleteView = deleteView
-
-function toJSON () {
-  var view = { from: [], to: [] }
-
-  view.from[0] = this.from.id
-  view.from[1] = this.start.position
-
-  view.to[0] = this.to.id
-  view.to[1] = this.end.position
-
-  return view
-}
-
-Link.prototype.toJSON = toJSON
-
-function linePlot () {
-  var line = this.line,
-      x1   = this.x1,
-      y1   = this.y1,
-      x2   = this.x2,
-      y2   = this.y2
-
-  line.plot(x1, y1, x2, y2)
-}
-
-Link.prototype.linePlot = linePlot
-
-module.exports = Link
-
-
-},{}],11:[function(require,module,exports){
-
-var Input   = require('./Input'),
-    Output  = require('./Output')
-
-function Node (canvas, id) {
-  this.canvas = canvas
-  this.id     = id
-
-  this.group = canvas.svg.group()
-
-  this.ins  = []
-  this.outs = []
-
-  this.text = 'callmename'
-}
-
-function render (view) {
-  var self = this
-
-  var canvas = this.canvas,
-      group  = this.group,
-      id     = this.id
-
-  var svg   = canvas.svg,
-      theme = canvas.theme
-
-  var fillLabel = theme.fillLabel,
-      fillRect  = theme.fillRect,
-      labelFont = theme.labeFont
-
-  this.text = view.text
-
-  if (typeof view.h === 'undefined')
-    view.h = 1
-
-  if (typeof view.w === 'undefined')
-    view.w = view.text.length + 2
-
-  var h = view.h * theme.unitHeight,
-      w = view.w * theme.unitWidth
-
-  var ins  = view.ins  || [],
-      outs = view.outs || []
-
-  var rect = svg.rect(w, h)
-                .fill(fillRect)
-
-  var text = svg.text(view.text)
-                .fill(fillLabel)
-                .back()
-                .move(10, 10)
-                .font(labelFont)
-
-  group.add(rect)
-       .add(text)
-
-  Object.defineProperties(self, {
-    'x': { get: function () { return group.x()     } },
-    'y': { get: function () { return group.y()     } },
-    'w': { get: function () { return rect.width()  } },
-    'h': { get: function () { return rect.height() } }
-  })
-
-  function createInput (inputView, position) {
-    self.addInput(position, inputView)
-  }
-
-  ins.forEach(createInput)
-
-  function createOutput (outputView, position) {
-    self.addOutput(position, outputView)
-  }
-
-  outs.forEach(createOutput)
-
-  function dynamicConstraint (x, y) {
-    var horyzontalContraint = (x > 0) && (x < canvas.width  - self.w),
-        verticalContraint   = (y > 0) && (y < canvas.height - self.h)
-
-    return { x: horyzontalContraint, y: verticalContraint }
-  }
-
-  group.move(view.x, view.y)
-       .draggable(dynamicConstraint)
-
-  // Click on a node, without dragging it, actually fires dragstart, dragmove (once)
-  // and dragend. It is necessary to keep track of how many dragMoves were to realize if
-  // node was really dragged.
-  var dragMoves = -1
-
-  function dragend () {
-    var eventData = {
-      nodeid: id,
-      x: self.x,
-      y: self.y
-    }
-
-    if (dragMoves > 0)
-      canvas.broker.emit('moveNode', eventData)
-  }
-
-  group.on('dragend', dragend)
-
-  function dragmove () {
-    // First time node is clicked, dragMoves will be equal to zero.
-    dragMoves++
-
-    self.outs.forEach(function (output) {
-      Object.keys(output.link).forEach(function (id) {
-        var link = output.link[id]
-
-        if (link)
-          link.linePlot()
-      })
-    })
-
-    self.ins.forEach(function (input) {
-      var link = input.link
-
-      if (link)
-        link.linePlot()
-    })
-  }
-
-  group.on('dragmove', dragmove)
-
-  function dragstart () {
-    dragMoves = -1
-    canvas.nodeControls.detach()
-  }
-
-  group.on('dragstart', dragstart)
-
-  function clickNode (ev) {
-    ev.stopPropagation()
-
-    var eventData = {
-      nodeid: id,
-    }
-
-    canvas.broker.emit('clickNode', eventData)
-  }
-
-  group.on('click', clickNode)
-
-  function dblclickNode (ev) {
-    ev.stopPropagation()
-
-    var eventData = {
-      nodeid: id,
-    }
-
-    canvas.broker.emit('dblclickNode', eventData)
-  }
-
-  group.on('dblclick', dblclickNode)
-}
-
-Node.prototype.render = render
-
-/**
- * Get model.
- *
- * @returns {Object} json
- */
-
-function toJSON () {
-  var view = { ins: [], outs: [] }
-
-  var ins  = this.ins,
-      outs = this.outs
-
-  view.text = this.text
-
-  ins.forEach(function (pin) {
-    view.ins[pin.position] = pin.toJSON()
-  })
-
-  outs.forEach(function (pin) {
-    view.outs[pin.position] = pin.toJSON()
-  })
-
-  return view
-}
-
-Node.prototype.toJSON = toJSON
-
-function deleteView () {
-  this.group.remove()
-
-  delete this.canvas.node[this.id]
-}
-
-Node.prototype.deleteView = deleteView
-
-function xCoordinateOf (pin) {
-  var position = pin.position
-
-  if (position === 0)
-    return 0
-
-  var size = pin.size,
-      type = pin.type,
-      w    = this.w
-
-  var numPins = this[type].length
-
-  if (numPins > 1)
-    return position * ((w - size) / (numPins - 1))
-}
-
-Node.prototype.xCoordinateOf = xCoordinateOf
-
-function addPin (type, position) {
-  var newPin,
-      numPins = this[type].length
-
-  if (typeof position === 'undefined')
-    position = numPins
-
-  if (type === 'ins')
-    newPin = new Input(this, position)
-
-  if (type === 'outs')
-    newPin = new Output(this, position)
-
-  this[type].splice(position, 0, newPin)
-
-  newPin.render()
-
-  // Nothing more to do it there is no pin yet.
-  if (numPins === 0)
-    return
-
-  // Update link view for outputs.
-  function updateLinkViews (pin, id) {
-    pin.link[id].linePlot()
-  }
-
-  // Move existing pins to new position.
-  // Start loop on i = 1, the second position. The first pin is not moved.
-  // The loop ends at numPins + 1 cause one pin was added.
-  for (var i = 1; i < numPins + 1; i++) {
-    // Nothing to do for input added right now.
-    if (i === position)
-      continue
-
-    var pin
-
-    if (i < position)
-      pin = this[type][i]
-
-    // After new pin position, it is necessary to use i + 1 as index.
-    if (i > position)
-      pin = this[type][i + 1]
-
-    var rect   = pin.rect,
-        vertex = pin.vertex.relative
-
-    rect.move(vertex.x, vertex.y)
-
-    // Move also any link connected to pin.
-    if (type === 'ins')
-      if (pin.link)
-        pin.link.linePlot()
-
-    if (type === 'outs')
-      Object.keys(pin.link)
-            .forEach(updateLinkViews.bind(null, pin))
-  }
-}
-
-function addInput (position) {
-  addPin.bind(this)('ins', position)
-}
-
-Node.prototype.addInput = addInput
-
-function addOutput (position) {
-  addPin.bind(this)('outs', position)
-}
-
-Node.prototype.addOutput = addOutput
-
-module.exports = Node
-
-
-},{"./Input":9,"./Output":18}],12:[function(require,module,exports){
-
-function NodeButton (canvas, relativeCoordinate) {
-  this.relativeCoordinate = relativeCoordinate
-
-  this.node = null
-
-  this.canvas = canvas
-
-  this.size = canvas.theme.halfPinSize * 2
-  this.group = canvas.svg.group()
-}
-
-/**
- * Remove button from currently selected node
- */
-
-function detachNodeButton () {
-  this.group.hide()
-
-  this.node = null
-}
-
-NodeButton.prototype.detach = detachNodeButton
-
-module.exports = NodeButton
-
-
-},{}],13:[function(require,module,exports){
-
-var inherits   = require('inherits'),
-    NodeButton = require('../NodeButton')
-
-function AddInput (canvas) {
-  NodeButton.call(this, canvas)
-
-  var svg   = canvas.svg,
-      theme = canvas.theme
-
-  var halfPinSize           = theme.halfPinSize,
-      strokeLine            = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted
-
-  var size = halfPinSize * 2
-  this.size = size
-
-  var group = svg.group()
-
-  var line1 = svg.line(0, halfPinSize, size, halfPinSize)
-                 .stroke(strokeLine)
-
-  var line2 = svg.line(halfPinSize, 0, halfPinSize, size)
-                 .stroke(strokeLine)
-
-  group.add(line1)
-       .add(line2)
-       .hide()
-
-  this.group = group
-
-  function addInput (ev) {
-    var node = this.node
-
-    var eventData = {
-      nodeid: node.id,
-      position: node.ins.length
-    }
-
-    canvas.broker.emit('addInput', eventData)
-  }
-
-  function deselectButton () {
-    group.off('click')
-
-    line1.stroke(strokeLine)
-    line2.stroke(strokeLine)
-  }
-
-  group.on('mouseout', deselectButton.bind(this))
-
-  function selectButton () {
-    group.on('click', addInput.bind(this))
-
-    line1.stroke(strokeLineHighlighted)
-    line2.stroke(strokeLineHighlighted)
-  }
-
-  group.on('mouseover', selectButton.bind(this))
-}
-
-inherits(AddInput, NodeButton)
-
-function attachTo (node) {
-  var group = this.group,
-      size  = this.size
-
-  group.move(node.x - size, node.y)
-       .show()
-
-  this.node = node
-}
-
-AddInput.prototype.attachTo = attachTo
-
-module.exports = AddInput
-
-
-},{"../NodeButton":12,"inherits":2}],14:[function(require,module,exports){
-
-var inherits   = require('inherits'),
-    NodeButton = require('../NodeButton')
-
-function AddOutput (canvas) {
-  NodeButton.call(this, canvas)
-
-  var svg   = canvas.svg,
-      theme = canvas.theme
-
-  var halfPinSize           = theme.halfPinSize,
-      strokeLine            = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted
-
-  var size = halfPinSize * 2
-  this.size = size
-
-  var group = svg.group()
-
-  var line1 = svg.line(0, halfPinSize, size, halfPinSize)
-                 .stroke(strokeLine)
-
-  var line2 = svg.line(halfPinSize, 0, halfPinSize, size)
-                 .stroke(strokeLine)
-
-  group.add(line1)
-       .add(line2)
-       .hide()
-
-  this.group = group
-
-  function addOutput (ev) {
-    var node = this.node
-
-    var eventData = {
-      nodeid: node.id,
-      position: node.outs.length
-    }
-
-    canvas.broker.emit('addOutput', eventData)
-  }
-
-  function deselectButton () {
-    group.off('click')
-
-    line1.stroke(strokeLine)
-    line2.stroke(strokeLine)
-  }
-
-  group.on('mouseout', deselectButton.bind(this))
-
-  function selectButton () {
-    group.on('click', addOutput.bind(this))
-
-    line1.stroke(strokeLineHighlighted)
-    line2.stroke(strokeLineHighlighted)
-  }
-
-  group.on('mouseover', selectButton.bind(this))
-}
-
-inherits(AddOutput, NodeButton)
-
-function attachTo (node) {
-  var group = this.group,
-      size  = this.size
-
-  group.move(node.x - size, node.y + node.h - size)
-       .show()
-
-  this.node = node
-}
-
-AddOutput.prototype.attachTo = attachTo
-
-module.exports = AddOutput
-
-
-
-},{"../NodeButton":12,"inherits":2}],15:[function(require,module,exports){
-
-var inherits   = require('inherits'),
-    NodeButton = require('../NodeButton')
-
-function DeleteNode (canvas) {
-  NodeButton.call(this, canvas)
-
-  var svg   = canvas.svg,
-      theme = canvas.theme
-
-  var halfPinSize           = theme.halfPinSize,
-      strokeLine            = theme.strokeLine,
-      strokeLineHighlighted = theme.strokeLineHighlighted
-
-  var size = halfPinSize * 2
-  this.size = size
-
-  var group = svg.group()
-
-  var diag1 = svg.line(0, 0, size, size)
-                 .stroke(strokeLine)
-
-  var diag2 = svg.line(0, size, size, 0)
-                 .stroke(strokeLine)
-
-  group.add(diag1)
-       .add(diag2)
-       .hide()
-
-  this.group = group
-
-  function delNode () {
-    var canvas = this.canvas
-
-    var eventData = { nodeid: this.node.id }
-
-    canvas.nodeControls.detach()
-
-    canvas.broker.emit('delNode', eventData)
-  }
-
-  function deselectButton () {
-    group.off('click')
-
-    diag1.stroke(strokeLine)
-    diag2.stroke(strokeLine)
-  }
-
-  group.on('mouseout', deselectButton.bind(this))
-
-  function selectButton () {
-    group.on('click', delNode.bind(this))
-
-    diag1.stroke(strokeLineHighlighted)
-    diag2.stroke(strokeLineHighlighted)
-  }
-
-  group.on('mouseover', selectButton.bind(this))
-}
-
-inherits(DeleteNode, NodeButton)
-
-function attachTo (node) {
-  var group = this.group,
-      size  = this.size
-
-  group.move(node.x + node.w, node.y - size)
-       .show()
-
-  this.node = node
-}
-
-DeleteNode.prototype.attachTo = attachTo
-
-module.exports = DeleteNode
-
-
-},{"../NodeButton":12,"inherits":2}],16:[function(require,module,exports){
-
-var AddInputButton   = require('./NodeButton/AddInput'),
-    AddOutputButton  = require('./NodeButton/AddOutput'),
-    DeleteNodeButton = require('./NodeButton/DeleteNode')
-
-function NodeControls (canvas) {
-  this.canvas = canvas
-
-  this.node = null
-
-  var addInputButton   = new AddInputButton(canvas),
-      addOutputButton  = new AddOutputButton(canvas),
-      deleteNodeButton = new DeleteNodeButton(canvas)
-
-  this.addInputButton   = addInputButton
-  this.addOutputButton  = addOutputButton
-  this.deleteNodeButton = deleteNodeButton
-}
-
-function nodeControlsAttachTo (node) {
-  this.addInputButton.attachTo(node)
-  this.addOutputButton.attachTo(node)
-  this.deleteNodeButton.attachTo(node)
-}
-
-NodeControls.prototype.attachTo = nodeControlsAttachTo
-
-function nodeControlsDetach () {
-  this.addInputButton.detach()
-  this.addOutputButton.detach()
-  this.deleteNodeButton.detach()
-}
-
-NodeControls.prototype.detach = nodeControlsDetach
-
-module.exports = NodeControls
-
-
-},{"./NodeButton/AddInput":13,"./NodeButton/AddOutput":14,"./NodeButton/DeleteNode":15}],17:[function(require,module,exports){
-
-/**
- * Create new nodes.
- *
- * Datalist feature stolen from article: http://blog.teamtreehouse.com/creating-autocomplete-dropdowns-datalist-element
- * and this codepen: http://codepen.io/matt-west/pen/jKnzG
- *
- * @param {Object} canvas
- * @param {Object} arg
- * @param {String} dataListUrl containing datalist entries
- */
-
-function NodeSelector (canvas, arg) {
-  var x = this.x = 0,
-      y = this.y = 0
-
-  if (typeof arg === 'undefined')
-    arg = {}
-
-  var foreignObject = canvas.svg.foreignObject(100, 100)
-                            .attr({id: 'flow-view-selector'})
-
-  foreignObject.appendChild('form', {
-    id: 'flow-view-selector-form',
-    name: 'nodeselector'
-  })
-
-  var form = foreignObject.getChild(0)
-
-  var selectorInput = document.createElement('input')
-
-  selectorInput.id = 'flow-view-selector-input'
-  selectorInput.name = 'selectnode'
-  selectorInput.type = 'text'
-
-  var dataList      = null,
-      dataListItems = null,
-      dataListURL   = null
-
-  if (typeof arg.dataList === 'object') {
-    dataListItems = arg.dataList.items
-    dataListURL     = arg.dataList.URL
-    dataList = document.createElement('datalist')
-
-    dataList.id = 'flow-view-selector-list'
-
-    selectorInput.setAttribute('list', dataList.id)
-    selectorInput.appendChild(dataList)
-  }
-
-  function addToDataList (item) {
-    var option = document.createElement('option')
-
-    option.value = item
-
-    dataList.appendChild(option)
-  }
-
-  if (typeof dataListURL === 'string') {
-    var request = new XMLHttpRequest()
-
-    selectorInput.placeholder = 'Loading ...'
-
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          var jsonOptions = JSON.parse(request.responseText)
-
-            jsonOptions.forEach(addToDataList)
-
-          selectorInput.placeholder = ''
-        }
-        else {
-          // On error, notify in placeholder.
-          input.placeholder = 'Could not load datalist :(';
-        }
-      }
-    }
-
-    request.open('GET', dataListURL, true)
-    request.send()
-  }
-
-  form.appendChild(selectorInput)
-
-  function createNode () {
-    foreignObject.hide()
-
-    var inputText = document.getElementById('flow-view-selector-input')
-
-    var nodeName = inputText.value
-
-    var nodeView = {
-      text: nodeName,
-      x: this.x,
-      y: this.y
-    }
-
-    canvas.broker.emit('addNode', nodeView)
-
-    // Remove input text, so next time node selector is shown empty again.
-    inputText.value = ''
-
-    // It is required to return false to have a form with no action.
-    return false
-  }
-
-  form.onsubmit = createNode.bind(this)
-
-  // Start hidden.
-  foreignObject.attr({width: 200, height: 100})
-               .move(x, y)
-               .hide()
-
-  foreignObject.on('click', function (ev) {
-    ev.stopPropagation()
-  })
-
-  this.foreignObject = foreignObject
-}
-
-function hide (ev) {
-  this.foreignObject.hide()
-}
-
-NodeSelector.prototype.hide = hide
-
-function show (ev) {
-  var x = ev.offsetX,
-      y = ev.offsetY
-
-  var foreignObject = this.foreignObject
-
-  this.x = x
-  this.y = y
-
-  foreignObject.move(x, y)
-               .show()
-
-  var form = foreignObject.getChild(0)
-  form.selectnode.focus()
-}
-
-NodeSelector.prototype.show = show
-
-module.exports = NodeSelector
-
-
-},{}],18:[function(require,module,exports){
-
-var inherits = require('inherits'),
-    Pin      = require('./Pin'),
-    PreLink  = require('./PreLink')
-
-function Output (node, position) {
-  Pin.call(this, 'outs', node, position)
-
-  this.link = {}
-}
-
-inherits(Output, Pin)
-
-function render () {
-  // TODO for var i in view this.set(i, view[i])
-  var self = this
-
-  var fill   = this.fill,
-      node   = this.node,
-      size   = this.size,
-      vertex = this.vertex.relative
-
-  var canvas = node.canvas
-
-  var rect = canvas.svg.rect(size, size)
-                   .move(vertex.x, vertex.y)
-                   .fill(fill)
-
-  this.rect = rect
-
-  node.group.add(rect)
-
-  var preLink = null
-
-  function mouseoverOutput () {
-    preLink = new PreLink(canvas, self)
-  }
-
-  rect.on('mouseover', mouseoverOutput)
-}
-
-Output.prototype.render = render
-
-module.exports = Output
-
-
-},{"./Pin":19,"./PreLink":20,"inherits":2}],19:[function(require,module,exports){
-
-function Pin (type, node, position) {
-  var self = this
-
-  this.type     = type
-  this.node     = node
-  this.position = position
-
-  var canvas = node.canvas
-
-  var theme = canvas.theme
-
-  var fill     = theme.fillPin,
-      halfSize = theme.halfPinSize
-
-  this.fill = fill
-
-  this.halfSize = halfSize
-
-  var size = halfSize * 2
-  this.size = size
-
-  function getVertex () {
-    var vertex = {
-          absolute: {},
-          relative: {}
-        }
-
-    vertex.relative.x = node.xCoordinateOf(self)
-
-    if (type === 'ins')
-      vertex.relative.y = 0
-    if (type === 'outs')
-      vertex.relative.y = node.h - size
-
-    vertex.absolute.x = vertex.relative.x + node.x
-    vertex.absolute.y = vertex.relative.y + node.y
-
-    return vertex
-  }
-
-  Object.defineProperty(this, 'vertex', { get: getVertex })
-
-  function getCenter () {
-    var center = {
-          absolute: {},
-          relative: {}
-        }
-
-    var vertex = this.vertex
-
-    center.relative.x = vertex.relative.x + halfSize
-    center.relative.y = vertex.relative.y + halfSize
-    center.absolute.x = center.relative.x + node.x
-    center.absolute.y = center.relative.y + node.y
-
-    return center
-  }
-
-  Object.defineProperty(this, 'center', { get: getCenter })
-
-}
-
-function get (id) {
-  return this.node[this.type][this.position][id]
-}
-
-Pin.prototype.get = get
-
-function has (id) {
-  return typeof this.node[this.type][this.position][id] !== 'undefined'
-}
-
-Pin.prototype.has = has
-
-function set (id, data) {
-  this.node[this.type][this.position][id] = data
-}
-
-Pin.prototype.set = set
-
-function toJSON () {
-  // TODO pin name not yet supported.
-  return {}
-}
-
-Pin.prototype.toJSON = toJSON
-
-module.exports = Pin
-
-
-},{}],20:[function(require,module,exports){
-
-/**
- * A link that is not already attached
- *
- * @param {Object} canvas
- * @param {Object} output
- */
-
-function PreLink (canvas, output) {
-  var svg   = canvas.svg,
-      theme = canvas.theme
-
-  var fillPinHighlighted = theme.fillPinHighlighted,
-      halfPinSize        = theme.halfPinSize,
-      strokeLine         = theme.strokeLine,
-      strokeDasharray    = theme.strokeDasharray
-
-  var pinSize = halfPinSize * 2
-
-  var rect = svg.rect(pinSize, pinSize)
-                .fill(fillPinHighlighted)
-                .move(output.vertex.absolute.x, output.vertex.absolute.y)
-                .draggable()
-
-  Object.defineProperty(this, 'x1', { get: function () { return output.center.absolute.x } })
-  Object.defineProperty(this, 'y1', { get: function () { return output.center.absolute.y } })
-  Object.defineProperty(this, 'x2', { get: function () { return rect.x() + halfPinSize } })
-  Object.defineProperty(this, 'y2', { get: function () { return rect.y() + halfPinSize } })
-
-  var line = svg.line(this.x1, this.y1, this.x2, this.y2)
-                .stroke(strokeLine)
-                .attr('stroke-dasharray', strokeDasharray)
-
-  function remove () {
-    output.preLink = null
-    rect.remove()
-    line.remove()
-  }
-
-  rect.on('mouseout', remove)
-
-  function beforedrag () {
-    rect.off('mouseout')
-  }
-
-  rect.on('beforedrag', beforedrag)
-
-  function dragmove () {
-    line.plot(this.x1, this.y1, this.x2, this.y2)
-  }
-
-  rect.on('dragmove', dragmove.bind(this))
-
-  function dragend () {
-    // After dragging, the preLink is no longer necessary.
-    remove()
-
-    var center = {}
-
-    //center.x = rect.x() + halfPinSize
-    center.x = this.x2
-    //center.y = rect.y() + halfPinSize
-    center.y = this.y2
-
-    function isInside (center) {
-      function centerIsInside (bbox, x, y) {
-        var centerIsInsideX = ((center.x >= bbox.x + x) && (center.x <= bbox.x2 + x)),
-            centerIsInsideY = ((center.y >= bbox.y + y) && (center.y <= bbox.y2 + y))
-
-        return centerIsInsideX && centerIsInsideY
-      }
-
-      return centerIsInside
-    }
-
-    var centerIsInside = isInside(center)
-
-    /**
-     * Given a node, loop over its ins.
-     * If center is inside input, create a Link.
-     */
-
-    function dropOn (node) {
-      node.ins.forEach(function (input) {
-        if (input.link !== null)
-          return
-
-        var bbox = input.rect.bbox(),
-            x    = input.node.group.x(),
-            y    = input.node.group.y()
-
-        var centerIsInsideInput = centerIsInside(bbox, x, y)
-
-        if (centerIsInsideInput) {
-          var view = {
-            from: [output.node.id, output.position],
-            to: [node.id, input.position]
-          }
-
-          //canvas.addLink(view)
-          canvas.broker.emit('addLink', view)
-        }
-      })
-    }
-
-    // Loop over all nodes. If center is inside node, drop on it.
-    Object.keys(canvas.node).forEach(function (id) {
-      var node = canvas.node[id]
-
-      var bbox = node.group.bbox(),
-            x  = node.x,
-            y  = node.y
-
-        var centerIsInsideBox = centerIsInside(bbox, x, y)
-
-      if (centerIsInsideBox)
-        dropOn(node)
-    })
-  }
-
-  rect.on('dragend', dragend.bind(this))
-}
-
-module.exports = PreLink
-
-
-},{}],21:[function(require,module,exports){
-module.exports={
-  "fillLabel": "#333",
-  "fillPin": "#333",
-  "fillPinHighlighted": "#d63518",
-  "fillRect": "#ccc",
-  "halfPinSize": 5,
-  "labelFont": {
-    "family": "Consolas",
-    "size": 17,
-    "anchor": "start"
-  },
-  "strokeDasharray": "5, 5",
-  "strokeLine": {
-    "color": "#333",
-    "width": 3
-  },
-  "strokeLineHighlighted": {
-    "color": "#d63518",
-    "width": 4
-  },
-  "unitHeight": 40,
-  "unitWidth": 10
-}
-
-},{}],22:[function(require,module,exports){
-module.exports={
-  "node": {},
-  "link": {}
-}
-
-},{}],23:[function(require,module,exports){
-
-exports.Canvas = require('./Canvas')
-
-
-},{"./Canvas":8}],24:[function(require,module,exports){
-
-function validate (view) {
-  if (typeof view !== 'object')
-    throw new TypeError()
-
-  if (typeof view.node !== 'object')
-    throw new TypeError()
-
-  if (typeof view.link !== 'object')
-    throw new TypeError()
-}
-
-module.exports = validate
-
-
-},{}],25:[function(require,module,exports){
-
-// Consider this module will be browserified.
-
-// Load svg.js first ...
-var SVG = require('svg.js')
-
-// ... then load plugins: since plugins do not use *module.exports*, they are
-// loaded as plain text, and when browserified they will be included in the bundle.
-require('svg.draggable.js')
-require('svg.foreignobject.js')
-
-// Note that, in order to be included as expected by browserify, dynamic imports
-// do not work: for instance a code like the following won't work client-side
-//
-//    ['svg.draggable.js', 'svg.foreignobject.js'].forEach(require)
-//
-
-module.exports = SVG
-
-
-},{"svg.draggable.js":4,"svg.foreignobject.js":5,"svg.js":6}],"flow-view":[function(require,module,exports){
-
-module.exports = require('./src')
-
-
-},{"./src":23}]},{},[]);

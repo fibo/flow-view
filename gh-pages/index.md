@@ -21,7 +21,7 @@ flow: /empty.json
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
 
-[![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view) [![Change log](https://img.shields.io/badge/change-log-blue.svg)](https://github.com/fibo/flow-view/blob/master/CHANGELOG.md)
+[![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Dependency Status](https://gemnasium.com/fibo/flow-view.svg)](https://gemnasium.com/fibo/flow-view) [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
 <p><a href="http://codepen.io/collection/DojWVW/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
@@ -34,24 +34,6 @@ flow: /empty.json
 > Please, help me give Node a common visual interface. Use *flow-view*!
 
 Any feedback is welcome!
-
-### Status
-
-Current version **1.x** makes *flow-view* a minimal and (pretty much :)) extendible [Dataflow programming][3] visual editor.
-
-Next version will drop [svg.js][1] dependency and will implement items as reusable React components.
-
-Backward compatibility with the [view](#view) object data structure is **guaranteed**,
-so you can start using *flow-view* right now, edit and save your data flows in JSON format,
-and open them in the future with next *flow-view* versions.
-
-The [theme format](#theme) does not satisfy me and will probably be changed for inline style inside components. Do not rely on it.
-Try to use the default theme, if possible. By the way, it is a poor version of the mythic [vvvv](http://vvvv.org) *look&feel*.
-
-Version **2.x** will give access to many possibilities, like server side SVG rendering,
-nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
-
-From now on, *flow-view* is considered stable: only bug fixes or important updates will be published on npm.
 
 ## Installation
 

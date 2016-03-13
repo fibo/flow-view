@@ -23,16 +23,11 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jekyll_serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
-    "lint": "jshint -c .jshintrc src/**.js test/*js",
+    "lint": "jshint -c .jshintrc src/**.js",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// ${npm_package_name}.js ${npm_package_homepage} \n// license ${npm_package_license}\"; cd -",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run _push",
-    "test": "mocha --bail --require should --reporter min --recursive"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "pre-commit": [
-    "check-deps",
-    "lint",
-    "test"
-  ],
   "browser": {
     "./src/SVG.js": "./src/window.SVG.js"
   },
@@ -57,13 +52,5 @@
     "svg.foreignobject.js": "fibo/svg.foreignobject.js",
     "svg.js": "fibo/svg.js#custom-build"
   },
-  "devDependencies": {
-    "browserify": "^13.0.0",
-    "jsdom": "^7.0.2",
-    "jshint": "^2.8.0",
-    "mocha": "^2.2.5",
-    "pre-commit": "^1.1.2",
-    "should": "^8.0.2",
-    "uglify-js": "^2.4.24"
-  }
+  "devDependencies": {}
 }

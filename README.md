@@ -31,24 +31,6 @@
 
 Any feedback is welcome!
 
-### Status
-
-Current version **1.x** makes *flow-view* a minimal and (pretty much :)) extendible [Dataflow programming][3] visual editor.
-
-Next version will drop [svg.js][1] dependency and will implement items as reusable React components.
-
-Backward compatibility with the [view](#view) object data structure is **guaranteed**,
-so you can start using *flow-view* right now, edit and save your data flows in JSON format,
-and open them in the future with next *flow-view* versions.
-
-The [theme format](#theme) does not satisfy me and will probably be changed for inline style inside components. Do not rely on it.
-Try to use the default theme, if possible. By the way, it is a poor version of the mythic [vvvv](http://vvvv.org) *look&feel*.
-
-Version **2.x** will give access to many possibilities, like server side SVG rendering,
-nodes and links with custom shapes and behaviours, and all the goodies coming from the React world.
-
-From now on, *flow-view* is considered stable: only bug fixes or important updates will be published on npm.
-
 ## Installation
 
 With [bower](http://bower.io/) do

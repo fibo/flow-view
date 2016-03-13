@@ -18,6 +18,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Added
 - CHANGELOG to gh-pages
 - smaller build, less svg.js code
+- removed dev deps and unnecessary server side tests
 
 ## [1.1.0] - 2016-03-02
 ### Added

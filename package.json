@@ -26,7 +26,7 @@
     "lint": "jshint -c .jshintrc src/**.js",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// ${npm_package_name}.js ${npm_package_homepage} \n// license ${npm_package_license}\"; cd -",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run _push",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_PATH=src babel-node test/components/*js"
   },
   "browser": {
     "./src/SVG.js": "./src/window.SVG.js"
@@ -48,9 +48,19 @@
     "events": "^1.0.2",
     "inherits": "^2.0.1",
     "object-assign": "^4.0.1",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
     "svg.draggable.js": "fibo/svg.draggable.js",
     "svg.foreignobject.js": "fibo/svg.foreignobject.js",
-    "svg.js": "fibo/svg.js#custom-build"
+    "svg.js": "fibo/svg.js#custom-build",
+    "svgx": "^0.2.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-cli": "^6.7.7",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "cheerio": "^0.20.0",
+    "standard": "^6.0.8",
+    "tape": "^4.5.1"
+  }
 }

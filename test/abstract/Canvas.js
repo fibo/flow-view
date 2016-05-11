@@ -3,7 +3,10 @@ var test = require('tape')
 import Canvas from 'abstract/Canvas'
 
 test('Abstract Canvas', (t) => {
-  const canvas = new Canvas()
+  let canvas = new Canvas()
 
-  t.ok(canvas)
+  t.deepEqual(canvas.link, {}, 'link defaults to {}')
+  t.deepEqual(canvas.node, {}, 'node defaults to {}')
+
+  t.end()
 })

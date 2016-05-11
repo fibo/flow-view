@@ -10,7 +10,7 @@ test('Component Canvas', (t) => {
   const height = 100
   const width = 100
 
-  const el = <Canvas width={width} height={height}/>
+  const el = <Canvas width={width} height={height} />
 
   const $ = dom.load(render(el), { xmlMode: true })
 

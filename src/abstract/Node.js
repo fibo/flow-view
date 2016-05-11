@@ -1,4 +1,4 @@
-import from './CanvasItem'
+import CanvasItem from './CanvasItem'
 import enumerableProps from './enumerableProps'
 
 class FlowViewNode extends CanvasItem {

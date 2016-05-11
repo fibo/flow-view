@@ -22,7 +22,10 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jekyll_serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
-    "lint": "jshint -c .jshintrc src/**.js",
+    "lint": "for x in abstract components test; do npm run lint_$x; done",
+    "lint_abstract": "cd src/abstract/; standard; cd -",
+    "lint_components": "cd src/components/; standard; cd -",
+    "lint_test": "cd test/; standard; cd -",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// ${npm_package_name}.js ${npm_package_homepage} \n// license ${npm_package_license}\"; cd -",
     "preversion": "npm run build; npm run git_add-f",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run _push",
@@ -32,6 +35,11 @@
     "test_abstract": "NODE_PATH=src babel-tape-runner test/abstract/*js",
     "test_components": "NODE_PATH=src babel-tape-runner test/components/*js"
   },
+  "pre-commit": [
+    "lint",
+    "test",
+    "check-deps"
+  ],
   "browser": {
     "./src/SVG.js": "./src/window.SVG.js"
   },
@@ -66,6 +74,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-tape-runner": "^2.0.1",
     "cheerio": "^0.20.0",
+    "pre-commit": "^1.1.3",
     "standard": "^6.0.8",
     "tape": "^4.5.1"
   }

@@ -1,5 +1,5 @@
 import React from 'react'
-import Svg from 'svgx'
+import { Svg } from 'svgx'
 import Links from './Links'
 import Nodes from './Nodes'
 

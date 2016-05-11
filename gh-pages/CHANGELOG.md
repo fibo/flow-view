@@ -24,6 +24,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - React components
 - standard js
 - ES6 code and babel transpiling
+- pre-commit hooks
 
 ## [1.1.1] - 2016-03-14
 

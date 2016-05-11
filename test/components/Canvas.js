@@ -6,7 +6,7 @@ import test from 'tape'
 
 const render = reactDom.renderToStaticMarkup
 
-test('Canvas', (t) => {
+test('Component Canvas', (t) => {
   const height = 100
   const width = 100
 

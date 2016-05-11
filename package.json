@@ -26,7 +26,9 @@
     "lint": "jshint -c .jshintrc src/**.js",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// ${npm_package_name}.js ${npm_package_homepage} \n// license ${npm_package_license}\"; cd -",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run _push",
-    "test": "NODE_PATH=src babel-node test/components/*js"
+    "test": "npm run test_components; npm run test_abstract",
+    "test_abstract": "NODE_PATH=src tape test/abstract/*js",
+    "test_components": "NODE_PATH=src babel-node test/components/*js"
   },
   "browser": {
     "./src/SVG.js": "./src/window.SVG.js"

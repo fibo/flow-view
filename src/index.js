@@ -1,3 +1,3 @@
-
-exports.Canvas = require('./Canvas')
-
+import Canvas from './Canvas'
+import components from './components'
+import model from './model'

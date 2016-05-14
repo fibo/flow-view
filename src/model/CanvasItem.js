@@ -1,7 +1,10 @@
+import FlowViewItem from './Item'
 import staticProps from 'static-props'
 
-class FlowViewCanvasItem {
+class FlowViewCanvasItem extends FlowViewItem {
   constructor (canvas) {
+    super()
+
     staticProps(this)({ canvas })
   }
 }

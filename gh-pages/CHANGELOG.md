@@ -12,6 +12,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## [Unreleased]
 
+### Added
+
+- build dir
+- renamed abstract to model
+
 ## [1.2.0] - 2016-05-11
 
 ### Added

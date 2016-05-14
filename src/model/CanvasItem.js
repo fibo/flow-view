@@ -1,6 +1,8 @@
+import staticProps from 'static-props'
+
 class FlowViewCanvasItem {
   constructor (canvas) {
-    this.canvas = canvas
+    staticProps(this)({ canvas })
   }
 }
 

@@ -10,8 +10,8 @@ var Broker        = require('./Broker'),
     NodeSelector  = require('./NodeSelector'),
     validate      = require('./validate')
 
-var defaultTheme = require('./default/theme.json'),
-    defaultView  = require('./default/view.json')
+var defaultTheme = require('./default/theme'),
+    defaultView  = require('./default/state')
 
 /**
  * Create a flow-view canvas.

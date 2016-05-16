@@ -27,7 +27,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var FlowViewLink = function (_Item) {
   _inherits(FlowViewLink, _Item);
 
-  function FlowViewLink(data) {
+  function FlowViewLink(data, id) {
     _classCallCheck(this, FlowViewLink);
 
     _validate2.default.Link(data);

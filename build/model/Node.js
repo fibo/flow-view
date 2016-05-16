@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _Item2 = require('./Item');
 
 var _Item3 = _interopRequireDefault(_Item2);
@@ -37,6 +39,18 @@ var FlowViewNode = function (_Item) {
     (0, _enumerableProps2.default)(_this, data);
     return _this;
   }
+
+  _createClass(FlowViewNode, [{
+    key: 'numIns',
+    value: function numIns() {
+      return this.data.ins.length;
+    }
+  }, {
+    key: 'numOuts',
+    value: function numOuts() {
+      return this.data.outs.length;
+    }
+  }]);
 
   return FlowViewNode;
 }(_Item3.default);

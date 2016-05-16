@@ -10,6 +10,14 @@ class FlowViewNode extends Item {
 
     enumerableProps(this, data)
   }
+
+  numIns () {
+    return this.data.ins.length
+  }
+
+  numOuts () {
+    return this.data.outs.length
+  }
 }
 
 export default FlowViewNode

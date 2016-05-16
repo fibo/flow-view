@@ -6,7 +6,11 @@ test('Model Node', (t) => {
   var data = {
     ins: [],
     outs: [],
-    text: 'new node'
+    text: 'new node',
+    x: 10,
+    y: 20,
+    w: 100,
+    h: 10
   }
 
   var node = new Node(data)

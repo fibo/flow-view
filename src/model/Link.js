@@ -3,7 +3,7 @@ import enumerableProps from './enumerableProps'
 import validate from './validate'
 
 class FlowViewLink extends Item {
-  constructor (data) {
+  constructor (data, id) {
     validate.Link(data)
 
     super(id)

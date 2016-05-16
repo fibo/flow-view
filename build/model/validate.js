@@ -15,8 +15,11 @@ var invalid = function invalid(data) {
 };
 
 var Node = function Node(data) {
-  if ((0, _notDefined2.default)(data.ins)) invalid(data);
-  if ((0, _notDefined2.default)(data.outs)) invalid(data);
+  var requiredProps = ['ins', 'outs', 'x', 'y', 'w', 'h'];
+
+  requiredProps.forEach(function (prop) {
+    if ((0, _notDefined2.default)(data[prop])) invalid(data);
+  });
 };
 
 var Link = function Link(data) {

@@ -1,14 +1,17 @@
 var test = require('tape')
 
-var Canvas = require('model/Canvas')
-var Node = require('model/Node')
+var Node = require('flow-view').model.Node
 
-test('Abstract Node', (t) => {
-  var canvas = new Canvas()
-  var node = new Node(canvas)
+test('Model Node', (t) => {
+  var data = {
+    ins: [],
+    outs: [],
+    text: 'new node'
+  }
 
-  t.deepEqual(node.ins, [], 'ins defaults to []')
-  t.deepEqual(node.outs, [], 'outs defaults to []')
+  var node = new Node(data)
+
+  t.deepEqual(node.getData(), data, 'getData()')
 
   t.end()
 })

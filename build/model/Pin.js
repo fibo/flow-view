@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _NodeItem2 = require('./NodeItem');
+var _Item2 = require('./Item');
 
-var _NodeItem3 = _interopRequireDefault(_NodeItem2);
+var _Item3 = _interopRequireDefault(_Item2);
 
 var _enumerableProps = require('./enumerableProps');
 
@@ -20,19 +20,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var FlowViewPin = function (_NodeItem) {
-  _inherits(FlowViewPin, _NodeItem);
+var FlowViewPin = function (_Item) {
+  _inherits(FlowViewPin, _Item);
 
-  function FlowViewPin(node, props) {
+  function FlowViewPin(id) {
     _classCallCheck(this, FlowViewPin);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FlowViewPin).call(this, node));
-
-    (0, _enumerableProps2.default)(_this, props);
-    return _this;
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(FlowViewPin).call(this, id));
   }
 
   return FlowViewPin;
-}(_NodeItem3.default);
+}(_Item3.default);
 
 exports.default = FlowViewPin;

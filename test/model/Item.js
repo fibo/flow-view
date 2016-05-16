@@ -1,8 +1,8 @@
 var test = require('tape')
 
-var Item = require('model/Item')
+var Item = require('flow-view').model.Item
 
-test('Abstract Item', (t) => {
+test('Model Item', (t) => {
   var item = new Item()
 
   t.ok(item.id, 'has an id')

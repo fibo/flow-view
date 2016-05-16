@@ -8,9 +8,9 @@
     "url": "http://g14n.info"
   },
   "license": "MIT",
-  "main": "build/index.js",
+  "main": "build/flow-view.js",
   "scripts": {
-    "browserify": "browserify -r ./build/index.js:${npm_package_name} -o dist/${npm_package_name}.js",
+    "browserify": "browserify -r ./build/${npm_package_name}.js:${npm_package_name} -o dist/${npm_package_name}.js",
     "build": "babel src -d build/",
     "check-deps": "npm outdated",
     "cp": "npm run cp_examples; npm run cp_package.json",
@@ -32,9 +32,10 @@
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",
     "push": "git push origin master && npm run gh-pages:push",
-    "test": "npm run test_components; npm run test_abstract",
-    "test_abstract": "NODE_PATH=build tape test/abstract/*js",
-    "test_components": "NODE_PATH=src babel-tape-runner test/components/*js"
+    "test": "for x in components model reducers; do npm run test_$x; done",
+    "test_model": "NODE_PATH=build tape test/model/*js",
+    "test_components": "NODE_PATH=src babel-tape-runner test/components/*js",
+    "test_reducers": "NODE_PATH=src babel-tape-runner test/reducers/*js"
   },
   "pre-commit": [
     "lint",
@@ -74,6 +75,7 @@
     "babel-tape-runner": "^2.0.1",
     "browserify": "^13.0.1",
     "cheerio": "^0.20.0",
+    "deep-freeze": "0.0.1",
     "pre-commit": "^1.1.3",
     "standard": "^7.0.1",
     "svg.draggable.js": "fibo/svg.draggable.js",

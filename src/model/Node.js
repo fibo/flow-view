@@ -1,11 +1,14 @@
-import CanvasItem from './CanvasItem'
+import Item from './Item'
 import enumerableProps from './enumerableProps'
+import validate from './validate'
 
-class FlowViewNode extends CanvasItem {
-  constructor (canvas, props = {ins: [], outs: []}) {
-    super(canvas)
+class FlowViewNode extends Item {
+  constructor (data, id) {
+    validate.Node(data)
 
-    enumerableProps(this, props)
+    super(id)
+
+    enumerableProps(this, data)
   }
 }
 

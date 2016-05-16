@@ -1,8 +1,8 @@
 var test = require('tape')
 
-var Canvas = require('model/Canvas')
+var Canvas = require('flow-view').model.Canvas
 
-test('Abstract Canvas', (t) => {
+test('Model Canvas', (t) => {
   var canvas = new Canvas()
 
   t.deepEqual(canvas.link, {}, 'link defaults to {}')

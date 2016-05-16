@@ -1,10 +1,9 @@
 import enumerableProps from './enumerableProps'
+import defaultState from '../default/state'
 
 class FlowViewCanvas {
-  constructor (node = {}, link = {}) {
-    enumerableProps(this, {
-      node, link
-    })
+  constructor (data = defaultState) {
+    enumerableProps(this, data)
   }
 }
 

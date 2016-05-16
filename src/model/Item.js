@@ -1,10 +1,27 @@
 import staticProps from 'static-props'
 
-let nextid = 0
+let nextId = 0
+
+const generateId = () => {
+  nextId++
+  return `id${nextId}`
+}
 
 class FlowViewItem {
-  constructor () {
-    staticProps(this)({ id: nextid++ })
+  constructor (id = generateId()) {
+    staticProps(this)({ id })
+  }
+
+  getData () {
+    const enumerableProps = Object.keys(this)
+
+    let data = {}
+
+    for (let prop of enumerableProps) {
+      data[prop] = this[prop]
+    }
+
+    return data
   }
 }
 

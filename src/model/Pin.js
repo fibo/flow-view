@@ -1,11 +1,9 @@
-import NodeItem from './NodeItem'
+import Item from './Item'
 import enumerableProps from './enumerableProps'
 
-class FlowViewPin extends NodeItem {
-  constructor (node, props) {
-    super(node)
-
-    enumerableProps(this, props)
+class FlowViewPin extends Item {
+  constructor (id) {
+    super(id)
   }
 }
 

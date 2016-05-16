@@ -5,8 +5,11 @@ const invalid = (data) => {
 }
 
 const Node = (data) => {
-  if (no(data.ins)) invalid(data)
-  if (no(data.outs)) invalid(data)
+  const requiredProps = ['ins', 'outs', 'x', 'y', 'w', 'h']
+
+  requiredProps.forEach((prop) => {
+    if (no(data[prop])) invalid(data)
+  })
 }
 
 const Link = (data) => {

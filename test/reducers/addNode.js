@@ -11,14 +11,17 @@ test('add node', (t) => {
     data: {
       ins: [],
       outs: [],
-      text: 'new node'
+      text: 'new node',
+      x: 10,
+      y: 20,
+      w: 100,
+      h: 20
     }
   }
 
   const stateAfter = nodes(stateBefore, action)
 
   deepFreeze(stateBefore)
-
   const id = Object.keys(stateAfter.node)[0]
 
   t.deepEqual(stateAfter.node[id], action.data)

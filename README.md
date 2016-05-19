@@ -19,6 +19,8 @@
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.svg?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master) [![Dependency Status](https://david-dm.org/fibo/flow-view.svg)](https://david-dm.org/fibo/flow-view) [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+
 <p><a href="http://codepen.io/collection/DojWVW/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
@@ -60,27 +62,28 @@ Go to [examples/synopsis][example-synopsis] to see results.
 <div id="drawing"></div>
 <script type="text/javascript" src="path/to/flowView.js"></script>
 <script type="text/javascript">
-  var Canvas = require(flow-view).Canvas,
-      view = {
-        node: {
-          a: {
-            x: 80, y: 100,
-            text: 'Drag me',
-            outs: [{name: 'out0'}]
-          },
-          b: {
-            x: 180, y: 200,
-            text: 'Hello',
-            ins: [{name: 'in0'}, {name: 'in1'}]
-          }
-       },
-       link: {
-         1: {
-           from: ['a', 0],
-           to: ['b', 1]
-         }
-       }
-     }
+  var Canvas = require(flow-view).Canvas
+  var view = {
+    width: 400, height: 300
+    node: {
+      a: {
+        x: 80, y: 100,
+        text: 'Drag me',
+        outs: [{name: 'out0'}]
+      },
+      b: {
+        x: 180, y: 200,
+        text: 'Hello',
+        ins: [{name: 'in0'}, {name: 'in1'}]
+      }
+    },
+    link: {
+      c: {
+        from: ['a', 0],
+        to: ['b', 1]
+      }
+    }
+  }
 
   var canvas = new Canvas('drawing')
 
@@ -90,7 +93,10 @@ Go to [examples/synopsis][example-synopsis] to see results.
 
 ## Canvas
 
-A *Canvas* need to know its *div* id which will be passed to [svg.js][1]. In your HTML file, put a *div* like this
+A *Canvas* need to know its *div* id. If the div does not exists it will
+be created and appended to body.
+
+In your HTML file, put a *div* like this
 
 ```
 <div id="drawing"></div>
@@ -100,65 +106,58 @@ Create a [view object](#view)
 
 ```
 var view = {
-      node: {
-        a: {
-          x: 80, y: 100,
-          text: 'Drag me',
-          outs: [{name: 'out0'}]
-        },
-        b: {
-          x: 180, y: 100,
-          text: 'Hello',
-          ins: [{name: 'in0'}, {name: 'in1'}]
-        }
-     },
-     link: {
-        1: {
-         from: ['a', 0],
-         to: ['b', 1]
-     }
-   }
+  width: 400, height: 300
+  node: {
+    a: {
+      x: 80, y: 100,
+      text: 'Drag me',
+      outs: [{name: 'out0'}]
+    },
+    b: {
+      x: 180, y: 100,
+      text: 'Hello',
+      ins: [{name: 'in0'}, {name: 'in1'}]
+    }
+  },
+  link: {
+    c: {
+      from: ['a', 0],
+      to: ['b', 1]
+    }
+  }
+}
 ```
 
 Create a *canvas* instance
 
 ```js
-  var canvas = new Canvas('drawing')
+var canvas = new Canvas('drawing')
 ```
 
 and render a view graph
 
 ```js
-  canvas.render(view)
+canvas.render(view)
 ```
 
-where the *view* object contains two collections:
+where the *view* object contains:
 
-  * [node](#view-node)
-  * [link](#view-link)
+  * `{Number}` [height](#viewheight)
+  * `{Number}` [width](#viewwidth)
+  * `{Object}` [node](#viewnode)
+  * `{Object}` [link](#viewlink)
 
-Any other property of the *view* object will be just ignored.
+### view.height
 
-Optional object can be passed as second argument, actually the *Canvas* contructor summary is the following
+The canvas height expressed in pixels.
 
-```
-/**
- * Create a flow-view canvas.
- *
- * @constructor
- * @param {String} id of div element
- * @param {Object} arg
- * @param {Number} arg.height
- * @param {Number} arg.width
- * @param {Object} arg.eventHooks
- * @param {Object} arg.theme
- * @param {Object} arg.nodeSelector
- */
-```
+### view.width
+
+The canvas width expressed in pixels.
 
 ### view.node
 
-The *view.node* collection contains the canvas nodes, that are objects with the following attributes
+The *node* collection contains the canvas nodes, that are objects with the following attributes
 
 #### x
 
@@ -192,7 +191,7 @@ An optional list of *node outputs*, which are objects that can contain anything 
 
 ### view.link
 
-The *view.link* collection contains the canvas links, that are objects with the following attributes
+The *link* collection contains the canvas links, that are objects with the following attributes
 
 #### from
 

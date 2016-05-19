@@ -31,7 +31,7 @@
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",
     "push": "git push origin master && npm run gh-pages:push",
-    "start": "NODE_PATH=src node src/dev/server.js",
+    "start": "NODE_PATH=src node server.js",
     "test": "for x in components model reducers; do npm run test_$x; done",
     "test_model": "NODE_PATH=build tape test/model/*js",
     "test_components": "NODE_PATH=src babel-tape-runner test/components/*js",
@@ -42,9 +42,6 @@
     "test",
     "check-deps"
   ],
-  "browser": {
-    "./src/SVG.js": "./src/window.SVG.js"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/fibo/flow-view.git"
@@ -59,12 +56,15 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
     "events": "^1.0.2",
-    "inherits": "^2.0.1",
     "not-defined": "^1.0.0",
-    "object-assign": "^4.0.1",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "standard": "^7.1.0",
     "static-props": "^1.0.0",
     "svgx": "^0.4.2"
   },
@@ -80,9 +80,6 @@
     "deep-freeze": "0.0.1",
     "pre-commit": "^1.1.3",
     "standard": "^7.0.1",
-    "svg.draggable.js": "fibo/svg.draggable.js",
-    "svg.foreignobject.js": "fibo/svg.foreignobject.js",
-    "svg.js": "fibo/svg.js#custom-build",
     "tape": "^4.5.1"
   }
 }

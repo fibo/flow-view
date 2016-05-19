@@ -1,16 +1,16 @@
 import dom from 'cheerio'
 import React from 'react'
 import reactDom from 'react-dom/server'
-import Canvas from 'components/Canvas'
+import App from 'components/App'
 import test from 'tape'
 
 const render = reactDom.renderToStaticMarkup
 
-test('Component Canvas', (t) => {
+test('App component', (t) => {
   const height = 100
   const width = 100
 
-  const el = <Canvas width={width} height={height} />
+  const el = <App width={width} height={height} />
 
   const $ = dom.load(render(el), { xmlMode: true })
 

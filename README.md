@@ -43,12 +43,11 @@ $ bower install flow-view
 
 or use a CDN adding this to your HTML page
 
-```
+```html
 <script src="https://cdn.rawgit.com/fibo/flow-view/master/dist/flow-view.min.js"></script>
 ```
 
-Note that *flow-view* should be used client side. However, if you want to import it in your Node package
-and bundle it with browserify, or whatever, you can install it with [npm](https://npmjs.org/) doing
+Note that *flow-view* is universal, you can install it with [npm](https://npmjs.org/) as usual
 
 ```bash
 $ npm install flow-view
@@ -58,7 +57,7 @@ $ npm install flow-view
 
 Go to [examples/synopsis][example-synopsis] to see results.
 
-```
+```html
 <div id="drawing"></div>
 <script type="text/javascript" src="path/to/flowView.js"></script>
 <script type="text/javascript">
@@ -68,11 +67,13 @@ Go to [examples/synopsis][example-synopsis] to see results.
     node: {
       a: {
         x: 80, y: 100,
+        w: 100, h: 100,
         text: 'Drag me',
         outs: [{name: 'out0'}]
       },
       b: {
         x: 180, y: 200,
+        w: 100, h: 100,
         text: 'Hello',
         ins: [{name: 'in0'}, {name: 'in1'}]
       }
@@ -104,12 +105,13 @@ In your HTML file, put a *div* like this
 
 Create a [view object](#view)
 
-```
+```javascript
 var view = {
   width: 400, height: 300
   node: {
     a: {
       x: 80, y: 100,
+      w: 100, h: 100,
       text: 'Drag me',
       outs: [{name: 'out0'}]
     },
@@ -130,22 +132,22 @@ var view = {
 
 Create a *canvas* instance
 
-```js
+```javascript
 var canvas = new Canvas('drawing')
 ```
 
 and render a view graph
 
-```js
+```javascript
 canvas.render(view)
 ```
 
 where the *view* object contains:
 
-  * `{Number}` [height](#viewheight)
-  * `{Number}` [width](#viewwidth)
-  * `{Object}` [node](#viewnode)
-  * `{Object}` [link](#viewlink)
+* `{Number}` [height](#viewheight)
+* `{Number}` [width](#viewwidth)
+* `{Object}` [node](#viewnode)
+* `{Object}` [link](#viewlink)
 
 ### view.height
 
@@ -157,55 +159,33 @@ The canvas width expressed in pixels.
 
 ### view.node
 
-The *node* collection contains the canvas nodes, that are objects with the following attributes
+The *node* collection contains the canvas nodes, that are objects with the following attributes:
 
-#### x
-
-The *x* coord of the top left vertex of the node.
-
-#### y
-
-The *y* coord of the top left vertex of the node.
-
-#### w
-
-The *width* of the rect containing the node. It is expressed in width units.
-It defaults to a value enough to contain node text.
-
-#### h
-
-The *height* of the rect containing the node. It is expressed in height units.
-It defaults to 1.
-
-#### text
-
-The *text* label displayed in the node.
-
-#### ins
-
-An optional list of *node inputs*, which are objects that can contain anything accepted by JSON.
-
-#### outs
-
-An optional list of *node outputs*, which are objects that can contain anything accepted by JSON.
+* x: the *x* coord of the top left vertex of the node.
+* y: the *y* coord of the top left vertex of the node.
+* w: the *width* of the rect containing the node.
+* h: the *height* of the rect containing the node.
+* text: the *text* label displayed in the node.
+* ins: a list of *node inputs*.
+* outs: a list of *node outputs*.
 
 ### view.link
 
-The *link* collection contains the canvas links, that are objects with the following attributes
+The *link* collection contains the canvas links, that are objects with the following attributes:
 
 #### from
 
 An array with two entries:
 
-  0. The key of the source node.
-  1. The position of the output.
+0. The key of the source node.
+1. The position of the output.
 
 #### to
 
 An array with two entries:
 
-  0. The key of the target node.
-  1. The position of the input.
+0. The key of the target node.
+1. The position of the input.
 
 ## Events
 
@@ -228,9 +208,9 @@ For example, I used events in [dflow][2] editor to save the view server side, us
 
 Follows an example that uses events to log their data.
 
-```
+```javascript
 var eventNames = [
-  'addLink' , 'addNode',
+  'addLink', 'addNode',
   'addInput', 'addOutput',
   'delLink' , 'delNode',
   'moveNode', 'renameNode',
@@ -245,34 +225,6 @@ eventNames.forEach(function (eventName) {
 ```
 
 Go to [examples/event-log][example-event-log] to see results.
-
-## Theme
-
-Look&feel can be customized by passing a *theme* object to the [Canvas](#canvas) constructor.
-
-Missing props will be filled with [default theme.json](https://github.com/fibo/flow-view/blob/master/src/default/theme.json) definition.
-
-For example, create a canvas and overwrite few colors
-
-```
-var canvas = new Canvas('drawing', {
-  theme: {
-    fillPin: '#0288d1',
-    fillPinHighlighted: '#ffc107',
-    fillRect: '#03a9f4',
-    strokeLine: {
-      color: '#727272',
-      width: 3
-    },
-    strokeLineHighlighted: {
-      color: '#e64a19',
-      width: 5
-    }
-  }
-})
-```
-
-See [examples/custom-theme][example-custom-theme] to see result.
 
 ## NodeSelector
 

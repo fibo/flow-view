@@ -4,14 +4,13 @@ var view = {
   node: {
     a: {
       x: 80, y: 100,
+      w: 100, h: 100,
       text: 'Drag me',
       outs: [{ name: 'out0' }]
     },
     b: {
-      x: 180,
-      y: 200,
-      w: 10,
-      h: 1,
+      x: 180, y: 200,
+      w: 100, h: 100,
       text: 'Click me',
       ins: [{ name: 'in0' }, { name: 'in1' }]
     }

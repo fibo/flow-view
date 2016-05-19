@@ -1,11 +1,12 @@
 import React from 'react'
 
-const Node = () => {
-  const transform = 'matrix(1,0,0,1,180,200)'
+const Node = ({x, y, w, h, text, ins, outs}) => {
+  const transform = `matrix(1,0,0,1,${x},${y})`
 
   return (
     <g transform={transform}>
-      <rect width={100} height={100} fill={'#cccccc'}>
+      <rect width={w} height={h} fill={'#cccccc'}>
+        <text><tspan>Hello</tspan></text>
       </rect>
     </g>
   )

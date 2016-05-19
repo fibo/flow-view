@@ -7,10 +7,13 @@ import { addNode } from './nodes'
 //
 // cause DEL_NODE need to access to whole state.
 
-export default flowViewApp = (state, action) => {
+const flowViewApp = (state, action) => {
   switch (action.type) {
     case ADD_NODE:
       return addNode(state, action)
     default:
       return state
+  }
 }
+
+export default flowViewApp

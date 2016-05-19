@@ -1,3 +1,3 @@
-import Canvas from './Canvas'
+import App from './App'
 
-export default { Canvas }
+export default { App }

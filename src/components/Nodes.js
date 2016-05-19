@@ -1,5 +1,10 @@
 import React from 'react'
+import Node from './Node'
 
-const Nodes = () => <g></g>
+const Nodes = () => {
+  return (
+    <Node />
+  )
+}
 
 export default Nodes

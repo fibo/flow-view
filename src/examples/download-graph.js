@@ -1,3 +1,5 @@
+var $ = window.$
+
 var Canvas = require('flow-view').Canvas
 var view = {
   node: {

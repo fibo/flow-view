@@ -1,20 +1,44 @@
-import { ADD_NODE } from '../actions'
-import defaultState from '../default/state.js'
+import defaultState from '../default/state'
 import Node from '../model/Node'
+import {
+  ADD_NODE, DEL_NODE
+} from '../actions'
 
-const nodes = (state = defaultState, action) => {
-  switch (action.type) {
-    case ADD_NODE:
-      const nextState = Object.assign({}, state)
+const addNode = (state = defaultState, action) => {
+  if (action.type === ADD_NODE) {
+    const nextState = Object.assign({}, state)
 
-      var node = new Node(action.data)
+    const node = new Node(action.data)
 
-      nextState.node[node.id] = node.getData()
+    nextState.node[node.id] = node.getData()
 
-      return nextState
-    default:
-      return state
+    return nextState
+  } else {
+    return state
   }
 }
 
-export default nodes
+const delNode = (state = defaultState, action) => {
+  if (action.type === DEL_NODE) {
+    const nextState = Object.assign({}, state)
+
+    const nodeid = action.data.id
+
+    delete nextState.node[nodeid]
+
+    for (let linkid in nextState.link) {
+      const isSource = nextState.link[linkid].from[0] === nodeid
+      const isTarget = nextState.link[linkid].to[0] === nodeid
+
+      if (isSource || isTarget) delete nextState.link[linkid]
+    }
+
+    return nextState
+  } else {
+    return state
+  }
+}
+
+export {
+  addNode, delNode
+}

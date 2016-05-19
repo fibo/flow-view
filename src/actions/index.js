@@ -3,30 +3,30 @@ export const ADD_NODE = 'ADD_NODE'
 export const DEL_LINK = 'DEL_LINK'
 export const DEL_NODE = 'DEL_NODE'
 
-export const addNode = (node) => {
+export const addNode = (data) => {
   return {
     type: ADD_NODE,
-    node
+    data
   }
 }
 
-export const addLink = (link) => {
+export const addLink = (data) => {
   return {
     type: ADD_LINK,
-    link
+    data
   }
 }
 
-export const delNode = (nodeid) => {
+export const delNode = (id) => {
   return {
     type: DEL_NODE,
-    nodeid
+    data: { id }
   }
 }
 
-export const delLink = (linkid) => {
+export const delLink = (id) => {
   return {
     type: DEL_LINK,
-    linkid
+    data: { id }
   }
 }

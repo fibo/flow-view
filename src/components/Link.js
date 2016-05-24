@@ -7,4 +7,7 @@ const Link = () => {
   )
 }
 
+Link.propTypes = {
+}
+
 export default Link

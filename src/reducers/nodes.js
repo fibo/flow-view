@@ -1,16 +1,23 @@
 import defaultState from '../default/state'
-import Node from '../model/Node'
+
 import {
   ADD_NODE, DEL_NODE
 } from '../actions'
+
+let nextId = 0
+
+const generateId = () => {
+  nextId++
+  return `id${nextId}`
+}
 
 const addNode = (state = defaultState, action) => {
   if (action.type === ADD_NODE) {
     const nextState = Object.assign({}, state)
 
-    const node = new Node(action.data)
+    const nodeid = generateId()
 
-    nextState.node[node.id] = node.getData()
+    nextState.node[nodeid] = action.data
 
     return nextState
   } else {

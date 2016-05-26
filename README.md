@@ -2,18 +2,15 @@
 
 > is a visual editor for [Dataflow programming][3]
 
-**Table Of Contents:**
-
-* [Examples](http://g14n.info/flow-view/examples)
-* [Description](#description)
-* [Status](#status)
-* [Installation](#installation)
-* [Canvas](#canvas)
-* [Events](#events)
-* [Theme](#theme)
-* [NodeSelector](#nodeselector)
-* [Export](#export)
-* [License](#license)
+[Examples](http://g14n.info/flow-view/examples) |
+[Description](#description) |
+[Status](#status) |
+[Installation](#installation) |
+[Canvas](#canvas) |
+[Events](#events) |
+[NodeSelector](#nodeselector) |
+[Export](#export) |
+[License](#license)
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
 

@@ -64,7 +64,6 @@
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
-    "standard": "^7.1.1",
     "static-props": "^1.0.0",
     "svgx": "^0.4.3"
   },

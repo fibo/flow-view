@@ -58,6 +58,7 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
+    "budo": "^8.3.0",
     "events": "^1.0.2",
     "not-defined": "^1.0.0",
     "react": "^15.1.0",

@@ -1,32 +1,35 @@
-export const ADD_LINK = 'ADD_LINK'
 export const ADD_NODE = 'ADD_NODE'
-export const DEL_LINK = 'DEL_LINK'
-export const DEL_NODE = 'DEL_NODE'
 
-export const addNode = (data) => {
+export const addNode = (node) => {
   return {
     type: ADD_NODE,
-    data
+    node
   }
 }
 
-export const addLink = (data) => {
+export const ADD_LINK = 'ADD_LINK'
+
+export const addLink = (link) => {
   return {
     type: ADD_LINK,
-    data
+    link
   }
 }
+
+export const DEL_NODE = 'DEL_NODE'
 
 export const delNode = (id) => {
   return {
     type: DEL_NODE,
-    data: { id }
+    id
   }
 }
+
+export const DEL_LINK = 'DEL_LINK'
 
 export const delLink = (id) => {
   return {
     type: DEL_LINK,
-    data: { id }
+    id
   }
 }

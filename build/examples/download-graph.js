@@ -1,5 +1,7 @@
 'use strict';
 
+var $ = window.$;
+
 var Canvas = require('flow-view').Canvas;
 var view = {
   node: {
@@ -30,7 +32,7 @@ var canvas = new Canvas('drawing');
 canvas.render(view);
 
 var graph = canvas.toJSON();
-var data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(graph));
+var data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(graph));
 $('#download').attr('href', data);
 
 var eventNames = ['addLink', 'addNode', 'addInput', 'addOutput', 'delLink', 'delNode', 'moveNode', 'renameNode'];
@@ -38,7 +40,7 @@ var eventNames = ['addLink', 'addNode', 'addInput', 'addOutput', 'delLink', 'del
 eventNames.forEach(function (eventName) {
   canvas.broker.on(eventName, function (ev) {
     graph = canvas.toJSON();
-    data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(graph));
+    data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(graph));
     $('#download').attr('href', data);
   });
 });

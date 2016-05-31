@@ -3,6 +3,7 @@ import { render } from 'react-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import App from './containers/App'
+import initialState from './initialState'
 import reducers from './reducers'
 import staticProps from 'static-props'
 
@@ -29,7 +30,11 @@ class Canvas {
   render (view) {
     const element = this.element
 
-    let store = createStore(reducers, view)
+    let store = createStore(
+      reducers,
+      Object.assign(initialState, view),
+      window.devToolsExtension && window.devToolsExtension()
+    )
 
     render(
       <Provider store={store}>

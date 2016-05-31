@@ -1,290 +1,79 @@
 'use strict';
 
-var objectAssign = require('object-assign');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var SVG = require('./SVG');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var Broker = require('./Broker'),
-    Link = require('./Link'),
-    Node = require('./Node'),
-    NodeControls = require('./NodeControls'),
-    NodeSelector = require('./NodeSelector'),
-    validate = require('./validate');
+var _react = require('react');
 
-var defaultTheme = require('./default/theme'),
-    defaultView = require('./default/state');
+var _react2 = _interopRequireDefault(_react);
 
-/**
- * Create a flow-view canvas.
- *
- * @constructor
- * @param {String} id of div element
- * @param {Object} arg
- * @param {Number} arg.height
- * @param {Number} arg.width
- * @param {Object} arg.eventHooks
- * @param {Object} arg.theme
- * @param {Object} arg.nodeSelector
- */
+var _reactDom = require('react-dom');
 
-function Canvas(id, arg) {
-  var self = this;
+var _redux = require('redux');
 
-  if (typeof arg === 'undefined') arg = {};
+var _reactRedux = require('react-redux');
 
-  var eventHooks = arg.eventHooks || {};
+var _App = require('./containers/App');
 
-  var broker = new Broker(this);
-  broker.init(eventHooks);
-  this.broker = broker;
+var _App2 = _interopRequireDefault(_App);
 
-  if (typeof arg.theme === 'undefined') arg.theme = {};
+var _initialState = require('./initialState');
 
-  var theme = this.theme = objectAssign(defaultTheme, arg.theme);
+var _initialState2 = _interopRequireDefault(_initialState);
 
-  this.node = {};
-  this.link = {};
+var _reducers = require('./reducers');
 
-  var svg = this.svg = SVG(id).spof();
+var _reducers2 = _interopRequireDefault(_reducers);
 
-  var element = document.getElementById(id);
+var _staticProps = require('static-props');
 
-  var height = arg.height || element.clientHeight,
-      width = arg.width || element.clientWidth;
+var _staticProps2 = _interopRequireDefault(_staticProps);
 
-  svg.size(width, height);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-  function getHeight() {
-    return height;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Canvas = function () {
+  function Canvas(elementId) {
+    _classCallCheck(this, Canvas);
+
+    if (typeof elementId !== 'string') {
+      throw new TypeError('elementId must be a string', elementId);
+    }
+
+    // Create element and append it to body if it does not exist already.
+    var element = document.getElementById(elementId);
+
+    if (element === null) {
+      element = document.createElement('div');
+      element.id = elementId;
+      document.body.appendChild(element);
+    }
+
+    (0, _staticProps2.default)(this)({
+      element: element
+    });
   }
 
-  function setHeight(value) {
-    height = value;
-    svg.size(height, width).spof();
-  }
-
-  Object.defineProperty(this, 'height', { get: getHeight, set: setHeight });
-
-  function getWidth() {
-    return width;
-  }
-
-  function setWidth(value) {
-    width = value;
-    svg.size(height, width).spof();
-  }
-
-  Object.defineProperty(this, 'width', { get: getWidth, set: setWidth });
-
-  var nextId = 0;
-
-  function getNextId() {
-    var currentId = ++nextId + '';
-
-    // Make next id unique.
-    if (self.node[currentId]) return getNextId();
-
-    if (self.link[currentId]) return getNextId();
-
-    return currentId;
-  }
-
-  Object.defineProperty(this, 'nextId', { get: getNextId });
-
-  var nodeSelector = new NodeSelector(this, arg.nodeSelector);
-  this.nodeSelector = nodeSelector;
-
-  var nodeControls = new NodeControls(this);
-  this.nodeControls = nodeControls;
-
-  var hideNodeSelector = nodeSelector.hide.bind(nodeSelector),
-      showNodeSelector = nodeSelector.show.bind(nodeSelector);
-
-  SVG.on(element, 'click', hideNodeSelector);
-  SVG.on(element, 'dblclick', showNodeSelector);
-}
-
-function render(view) {
-  validate(view);
-
-  var self = this;
-
-  function createNode(id) {
-    var data = view.node[id];
-    data.nodeid = id;
-
-    self.addNode(data);
-  }
-
-  Object.keys(view.node).forEach(createNode);
-
-  function createLink(id) {
-    var data = view.link[id];
-    data.linkid = id;
-
-    self.addLink(data);
-  }
-
-  Object.keys(view.link).forEach(createLink);
-}
-
-Canvas.prototype.render = render;
-
-function deleteView() {
-
-  var link = this.link,
-      node = this.node;
-
-  Object.keys(node).forEach(function (id) {
-    node[id].deleteView();
-  });
-  Object.keys(link).forEach(function (id) {
-    link[id].deleteView();
-  });
-}
-
-Canvas.prototype.deleteView = deleteView;
-
-/**
- * Get model.
- *
- * @returns {Object} json
- */
-
-function toJSON() {
-  var view = { link: {}, node: {} };
-
-  var link = this.link,
-      node = this.node;
-
-  Object.keys(link).forEach(function (id) {
-    view.link[id] = link[id].toJSON();
-  });
-
-  Object.keys(node).forEach(function (id) {
-    view.node[id] = node[id].toJSON();
-  });
-
-  return view;
-}
-
-Canvas.prototype.toJSON = toJSON;
-
-/**
- * Add a link.
- */
-
-function addLink(data) {
-  var id = data.linkid;
-
-  if (typeof id === 'undefined') id = this.nextId;
-
-  var link = new Link(this, id);
-
-  link.render(data);
-
-  this.link[id] = link;
-}
-
-Canvas.prototype.addLink = addLink;
-
-/**
- * Add a node.
- */
-
-function addNode(data) {
-  var id = data.nodeid;
-
-  if (typeof id === 'undefined') id = this.nextId;
-
-  var node = new Node(this, id);
-
-  node.render(data);
-
-  this.node[id] = node;
-}
-
-Canvas.prototype.addNode = addNode;
-
-/**
- * Delete a node.
- */
-
-function delNode(data) {
-  var id = data.nodeid;
-
-  var link = this.link,
-      node = this.node[id];
-
-  // First remove links connected to node.
-  for (var i in link) {
-    var nodeIsSource = link[i].from.id === id,
-        nodeIsTarget = link[i].to.id === id;
-
-    if (nodeIsSource || nodeIsTarget) this.broker.emit('delLink', { linkid: i });
-  }
-
-  // Then remove node.
-  node.deleteView();
-}
-
-Canvas.prototype.delNode = delNode;
-
-/**
- * Delete a link.
- */
-
-function delLink(data) {
-  var id = data.linkid;
-
-  var link = this.link[id];
-
-  link.deleteView();
-}
-
-Canvas.prototype.delLink = delLink;
-
-/**
- * Move a node.
- */
-
-function moveNode(data) {
-  var id = data.nodeid,
-      x = data.x,
-      y = data.y;
-
-  this.node[id].x = x;
-  this.node[id].y = y;
-}
-
-Canvas.prototype.moveNode = moveNode;
-
-/**
- * Rename a node.
- */
-
-function renameNode(data) {
-  // TODO add renameNode event to Broker
-  var id = data.id,
-      text = data.text;
-
-  this.node[id].text = text;
-}
-
-Canvas.prototype.renameNode = renameNode;
-
-/**
- * Select a node.
- */
-
-function selectNode(data) {
-  var id = data.nodeid;
-
-  var node = this.node[id];
-
-  this.nodeControls.attachTo(node);
-}
-
-Canvas.prototype.selectNode = selectNode;
-
-module.exports = Canvas;
+  _createClass(Canvas, [{
+    key: 'render',
+    value: function render(view) {
+      var element = this.element;
+
+      var store = (0, _redux.createStore)(_reducers2.default, Object.assign(_initialState2.default, view), window.devToolsExtension && window.devToolsExtension());
+
+      (0, _reactDom.render)(_react2.default.createElement(
+        _reactRedux.Provider,
+        { store: store },
+        _react2.default.createElement(_App2.default, null)
+      ), element);
+    }
+  }]);
+
+  return Canvas;
+}();
+
+exports.default = Canvas;

@@ -4,7 +4,9 @@ const Node = ({
   x, y, width, height,
   fill, text,
   pinSize,
-  ins, outs
+  ins, outs,
+  onClick,
+  selected
 }) => {
   const transform = `matrix(1,0,0,1,${x},${y})`
 
@@ -16,35 +18,56 @@ const Node = ({
     if (numPins > 1) return position * (width - pinSize) / (numPins - 1)
   }
 
-  return (
-    <g transform={transform}>
-      <rect width={width} height={height} fill={fill.box}></rect>
-      <text x={pinSize} y={pinSize * 2} ><tspan>{text}</tspan></text>
-      {ins.map((pin, i, array) => {
-        return (
-          <rect key={i}
-            x={xCoordinateOfPin(ins, i)}
-            y={0}
-            width={pinSize}
-            height={pinSize}
-            fill={fill.pin}
-          >
-          </rect>
-        )
-      })}
+  let highlighted = {
+    stroke: 'rgb(0,0,0)',
+    strokeWidth: 1
+  }
 
-      {outs.map((pin, i) => {
-        return (
-          <rect key={i}
-            x={xCoordinateOfPin(outs, i)}
-            y={height - pinSize}
-            width={pinSize}
-            height={pinSize}
-            fill={fill.pin}
-          >
-          </rect>
+  return (
+    <g
+      onClick={onClick}
+      transform={transform}
+    >
+      <rect
+        width={width}
+        height={height}
+        fill={fill.box}
+        style={selected ? highlighted : undefined}
+      ></rect>
+      <text x={pinSize} y={pinSize * 2} ><tspan>{text}</tspan></text>
+      {
+        ins.map(
+          (pin, i, array) => {
+            return (
+              <rect key={i}
+                x={xCoordinateOfPin(ins, i)}
+                y={0}
+                width={pinSize}
+                height={pinSize}
+                fill={fill.pin}
+              >
+              </rect>
+            )
+          }
         )
-      })}
+      }
+
+      {
+        outs.map(
+          (pin, i) => {
+            return (
+              <rect key={i}
+                x={xCoordinateOfPin(outs, i)}
+                y={height - pinSize}
+                width={pinSize}
+                height={pinSize}
+                fill={fill.pin}
+              >
+              </rect>
+            )
+          }
+        )
+      }
     </g>
   )
 }
@@ -61,7 +84,9 @@ Node.propTypes = {
     pin: PropTypes.string.isRequired
   }),
   ins: PropTypes.array.isRequired,
-  outs: PropTypes.array.isRequired
+  outs: PropTypes.array.isRequired,
+  onClick: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired
 }
 
 Node.defaultProps = {
@@ -70,7 +95,8 @@ Node.defaultProps = {
     pin: '#333333'
   },
   pinSize: 10,
-  height: 40
+  height: 40,
+  selected: false
 }
 
 export default Node

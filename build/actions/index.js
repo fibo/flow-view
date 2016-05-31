@@ -3,10 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var ADD_LINK = exports.ADD_LINK = 'ADD_LINK';
 var ADD_NODE = exports.ADD_NODE = 'ADD_NODE';
-var DEL_LINK = exports.DEL_LINK = 'DEL_LINK';
-var DEL_NODE = exports.DEL_NODE = 'DEL_NODE';
 
 var addNode = exports.addNode = function addNode(node) {
   return {
@@ -15,6 +12,8 @@ var addNode = exports.addNode = function addNode(node) {
   };
 };
 
+var ADD_LINK = exports.ADD_LINK = 'ADD_LINK';
+
 var addLink = exports.addLink = function addLink(link) {
   return {
     type: ADD_LINK,
@@ -22,16 +21,29 @@ var addLink = exports.addLink = function addLink(link) {
   };
 };
 
-var delNode = exports.delNode = function delNode(nodeid) {
+var DEL_NODE = exports.DEL_NODE = 'DEL_NODE';
+
+var delNode = exports.delNode = function delNode(id) {
   return {
     type: DEL_NODE,
-    nodeid: nodeid
+    id: id
   };
 };
 
-var delLink = exports.delLink = function delLink(linkid) {
+var DEL_LINK = exports.DEL_LINK = 'DEL_LINK';
+
+var delLink = exports.delLink = function delLink(id) {
   return {
     type: DEL_LINK,
-    linkid: linkid
+    id: id
+  };
+};
+
+var SELECT_ITEM = exports.SELECT_ITEM = 'SELECT_ITEM';
+
+var selectItem = exports.selectItem = function selectItem(id) {
+  return {
+    type: SELECT_ITEM,
+    id: id
   };
 };

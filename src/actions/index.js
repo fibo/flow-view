@@ -33,3 +33,12 @@ export const delLink = (id) => {
     id
   }
 }
+
+export const SELECT_ITEM = 'SELECT_ITEM'
+
+export const selectItem = (id) => {
+  return {
+    type: SELECT_ITEM,
+    id
+  }
+}

@@ -3,16 +3,31 @@ import Link from './Link'
 import Node from './Node'
 import { Svg } from 'svgx'
 
-const toLink = (link) => <Link key={link.id} {...link} />
-const toNode = (node) => <Node key={node.id} {...node} />
-
 const Canvas = ({
   nodes, links,
-  height, width
+  height, width,
+  onClickNode
 }) => {
+  const toLink = (link) => <Link key={link.id} {...link} />
+
   return (
     <Svg height={height} width={width}>
-      {nodes.map(toNode)}
+      {
+        nodes.map(
+          (node, i) => {
+            return (
+              <Node
+                key={i}
+                onClick={onClickNode(node.id)}
+                {...node}
+              />
+
+            )
+
+          }
+        )
+      }
+
       {links.map(toLink)}
     </Svg>
   )

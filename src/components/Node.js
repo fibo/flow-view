@@ -1,15 +1,9 @@
 import React, { PropTypes } from 'react'
 
-const onMouseDown = () => console.log('onMouseDown')
-const onMouseMove = () => console.log('onMouseMove')
-const onMouseUp = () => console.log('onMouseUp')
-const onMouseDownPin = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    console.log('onMouseDownPin')
+const ignoreEvent = (e) => {
+  e.preventDefault()
+  e.stopPropagation()
 }
-const onMouseUpPin = () => console.log('onMouseUpPin')
 
 const Node = ({
   x, y, width, height,
@@ -63,8 +57,9 @@ const Node = ({
                 y={0}
                 width={pinSize}
                 height={pinSize}
-      onMouseDown={onMouseDownPin}
-      onMouseUp={onMouseUpPin}
+                onMouseDown={ignoreEvent}
+                onMouseMove={ignoreEvent}
+                onMouseUp={ignoreEvent}
                 fill={fill.pin}
               >
               </rect>
@@ -82,6 +77,9 @@ const Node = ({
                 y={height - pinSize}
                 width={pinSize}
                 height={pinSize}
+                onMouseDown={ignoreEvent}
+                onMouseMove={ignoreEvent}
+                onMouseUp={ignoreEvent}
                 fill={fill.pin}
               >
               </rect>

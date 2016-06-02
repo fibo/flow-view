@@ -1,6 +1,9 @@
 import { connect } from 'react-redux'
 import {
-  selectItem
+  dragItems,
+  endDraggingItem,
+  selectItem,
+  startDraggingItem
 } from '../actions'
 import Canvas from '../components/Canvas'
 
@@ -8,13 +11,15 @@ const mapStateToProps = (state, ownProps) => {
   let nodes = []
 
   for (let id in state.node) {
+    const selected = (state.selectedItems.indexOf(id) > -1)
     nodes.push(
       Object.assign(
         {
           ins: [],
           outs: [],
           id,
-          selected: (state.selectedItems.indexOf(id) > -1)
+          selected,
+          dragged: (selected && state.isDraggingItems)
         },
         state.node[id]
       )
@@ -40,14 +45,29 @@ const mapStateToProps = (state, ownProps) => {
     width: (ownProps.width || state.width),
     nodes,
     links,
-    selectedItems: state.selectedItems
+    selectedItems: state.selectedItems,
+    startDraggingPoint: state.startDraggingPoint
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onClickNode: (nodeid) => () => {
+    selectNode: (nodeid) => () => {
       dispatch(selectItem(nodeid))
+    },
+    dragItems: (dx, dy) => {
+      dispatch(dragItems(dx, dy))
+    },
+    endDraggingItem: () => {
+      dispatch(endDraggingItem())
+    },
+    startDraggingItem: (id) => (e) => {
+      const startingPoint = {
+        x: e.clientX,
+        y: e.clientY
+      }
+
+      dispatch(startDraggingItem(id, startingPoint))
     }
   }
 }

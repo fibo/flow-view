@@ -6,7 +6,11 @@ import { Svg } from 'svgx'
 const Canvas = ({
   nodes, links,
   height, width,
-  onClickNode
+  selectNode,
+  dragItems,
+  endDraggingItem,
+  startDraggingItem,
+  startDraggingPoint
 }) => {
   const toLink = (link) => <Link key={link.id} {...link} />
 
@@ -18,7 +22,11 @@ const Canvas = ({
             return (
               <Node
                 key={i}
-                onClick={onClickNode(node.id)}
+                selectNode={selectNode(node.id)}
+                startDragging={startDraggingItem(node.id)}
+                endDragging={endDraggingItem}
+                startDraggingPoint={startDraggingPoint}
+                dragItems={dragItems}
                 {...node}
               />
 

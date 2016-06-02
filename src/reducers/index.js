@@ -2,7 +2,10 @@ import initialState from '../initialState'
 import {
   ADD_NODE,
   DEL_NODE,
-  SELECT_ITEM
+  DRAG_ITEMS,
+  END_DRAGGING_ITEM,
+  SELECT_ITEM,
+  START_DRAGGING_ITEM
 } from '../actions'
 
 let nextId = 0
@@ -39,6 +42,30 @@ const flowViewApp = (state = initialState, action) => {
 
       return nextState
 
+    case END_DRAGGING_ITEM:
+      return Object.assign({}, state, {
+        isDraggingItems: false,
+        startDraggingPoint: null
+      })
+
+    case DRAG_ITEMS:
+      const draggedNodes = Object.assign({}, state.node)
+
+      for (let nodeid in draggedNodes) {
+
+        if (state.selectedItems.indexOf(nodeid) === -1) {
+          continue
+
+        } else {
+          draggedNodes[nodeid].x += action.dx
+          draggedNodes[nodeid].y += action.dy
+        }
+      }
+
+      return Object.assign({}, state, {
+        node: draggedNodes
+      })
+
     case SELECT_ITEM:
       let selectedItems = Object.assign([], state.selectedItems)
       let itemId = action.id
@@ -53,6 +80,12 @@ const flowViewApp = (state = initialState, action) => {
       }
 
       return Object.assign({}, state, { selectedItems })
+
+    case START_DRAGGING_ITEM:
+      return Object.assign({}, state, {
+        isDraggingItems: true,
+        startDraggingPoint: action.startingPoint
+      })
 
     default:
       return state

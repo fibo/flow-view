@@ -63,8 +63,6 @@ const flowViewApp = (state = initialState, action) => {
         }
       }
 
-      console.log(action.draggingDelta)
-      console.log(action.previousDraggingPoint)
       return Object.assign({}, state, {
         node: draggedNodes,
         previousDraggingPoint
@@ -78,11 +76,6 @@ const flowViewApp = (state = initialState, action) => {
 
     case SELECT_ITEM:
       let selectedItems = []
-
-      if (state.multipleSelection) {
-        selectedItems.concat(Object.assign([], state.selectedItems))
-      }
-
       let itemId = action.id
 
       const indexOfSelectedItem = selectedItems.indexOf(itemId)

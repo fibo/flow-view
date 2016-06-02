@@ -53,7 +53,6 @@ var flowViewApp = function flowViewApp() {
       var dx = action.draggingDelta.x;
       var dy = action.draggingDelta.y;
 
-      // TODO const draggedLinks
       var draggedNodes = Object.assign({}, state.node);
       var previousDraggingPoint = {
         x: state.previousDraggingPoint.x + dx,
@@ -71,8 +70,6 @@ var flowViewApp = function flowViewApp() {
         }
       }
 
-      console.log(action.draggingDelta);
-      console.log(action.previousDraggingPoint);
       return Object.assign({}, state, {
         node: draggedNodes,
         previousDraggingPoint: previousDraggingPoint
@@ -86,11 +83,6 @@ var flowViewApp = function flowViewApp() {
 
     case _actions.SELECT_ITEM:
       var selectedItems = [];
-
-      if (state.multipleSelection) {
-        selectedItems.concat(Object.assign([], state.selectedItems));
-      }
-
       var itemId = action.id;
 
       var indexOfSelectedItem = selectedItems.indexOf(itemId);

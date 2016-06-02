@@ -34,10 +34,8 @@
     "start": "NODE_PATH=src node server.js",
     "update-deps": "npm update --save --dev",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in components model reducers; do npm run test_$x; done",
-    "test_model": "NODE_PATH=build tape test/model/*js",
-    "test_components": "NODE_PATH=src tape -r babel-register test/components/*js",
-    "test_reducers": "NODE_PATH=src tape -r babel-register test/reducers/*js"
+    "test": "for x in components reducers; do npm run test_$x; done",
+    "test": "NODE_PATH=src tape -r babel-register test/*/**js"
   },
   "pre-commit": [
     "lint",

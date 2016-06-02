@@ -45,12 +45,11 @@ const flowViewApp = (state = initialState, action) => {
       const dx = action.draggingDelta.x
       const dy = action.draggingDelta.y
 
-      // TODO const draggedLinks
       const draggedNodes = Object.assign({}, state.node)
-        let previousDraggingPoint = {
-          x: state.previousDraggingPoint.x + dx,
-          y: state.previousDraggingPoint.y + dy
-        }
+      let previousDraggingPoint = {
+        x: state.previousDraggingPoint.x + dx,
+        y: state.previousDraggingPoint.y + dy
+      }
 
       for (let nodeid in draggedNodes) {
         const isDraggedNode = (state.selectedItems.indexOf(nodeid) === -1)

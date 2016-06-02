@@ -1,8 +1,14 @@
 import React, { PropTypes } from 'react'
+import xCoordinateOfPin from '../geometry/xCoordinateOfPin'
 
 const ignoreEvent = (e) => {
   e.preventDefault()
   e.stopPropagation()
+}
+
+const highlighted = {
+  stroke: 'rgb(0,0,0)',
+  strokeWidth: 1
 }
 
 const Node = ({
@@ -12,84 +18,62 @@ const Node = ({
   ins, outs,
   dragged,
   dragItems,
+  createLink,
   selectNode,
   selected,
   endDragging
-}) => {
-  const transform = `matrix(1,0,0,1,${x},${y})`
+}) => (
+  <g
+    onMouseDown={selectNode}
+    onMouseUp={endDragging}
+    onMouseMove={dragged ? dragItems : undefined}
+    transform={`matrix(1,0,0,1,${x},${y})`}
+  >
+    <rect
+      width={width}
+      height={height}
+      fill={fill.box}
+      style={selected ? highlighted : undefined}
+    ></rect>
+    <text x={pinSize} y={pinSize * 2} ><tspan>{text}</tspan></text>
+    {
+      ins.map(
+        (pin, i, array) => {
+          return (
+            <rect key={i}
+              onMouseDown={ignoreEvent}
+              onMouseMove={ignoreEvent}
+              onMouseUp={ignoreEvent}
+              fill={fill.pin}
+              {...pin}
+            >
+            </rect>
+          )
+        }
+      )
+    }
 
-  const xCoordinateOfPin = (pins, position) => {
-    if (position === 0) return 0
-
-    const numPins = pins.length
-
-    if (numPins > 1) return position * (width - pinSize) / (numPins - 1)
-  }
-
-  let highlighted = {
-    stroke: 'rgb(0,0,0)',
-    strokeWidth: 1
-  }
-
-
-  // TODO use SVG text node function getComputedTextLength
-
-  return (
-    <g
-      onMouseDown={selectNode}
-      onMouseUp={endDragging}
-      onMouseMove={dragged ? dragItems : undefined}
-      transform={transform}
-    >
-      <rect
-        width={width}
-        height={height}
-        fill={fill.box}
-        style={selected ? highlighted : undefined}
-      ></rect>
-      <text x={pinSize} y={pinSize * 2} ><tspan>{text}</tspan></text>
-      {
-        ins.map(
-          (pin, i, array) => {
-            return (
-              <rect key={i}
-                x={xCoordinateOfPin(ins, i)}
-                y={0}
-                width={pinSize}
-                height={pinSize}
-                onMouseDown={ignoreEvent}
-                onMouseMove={ignoreEvent}
-                onMouseUp={ignoreEvent}
-                fill={fill.pin}
-              >
-              </rect>
-            )
-          }
-        )
-      }
-
-      {
-        outs.map(
-          (pin, i) => {
-            return (
-              <rect key={i}
-                x={xCoordinateOfPin(outs, i)}
-                y={height - pinSize}
-                width={pinSize}
-                height={pinSize}
-                onMouseDown={ignoreEvent}
-                onMouseMove={ignoreEvent}
-                onMouseUp={ignoreEvent}
-                fill={fill.pin}
-              >
-              </rect>
-            )
-          }
-        )
-      }
-    </g>
-  )
-}
+    {
+      outs.map(
+        (pin, i) => {
+          return (
+            <rect
+              key={i}
+              x={xCoordinateOfPin(pinSize, width, outs.length, i)}
+              y={height - pinSize}
+              onMouseDown={ignoreEvent}
+              onMouseMove={ignoreEvent}
+              onMouseUp={ignoreEvent}
+              fill={fill.pin}
+              {...pin}
+            >
+            </rect>
+          )
+        }
+      )
+    }
+  </g>
+)
 
 Node.propTypes = {
   x: PropTypes.number.isRequired,
@@ -108,7 +92,8 @@ Node.propTypes = {
   selectNode: PropTypes.func.isRequired,
   endDragging: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
-  selected: PropTypes.bool.isRequired
+  selected: PropTypes.bool.isRequired,
+  createLink: PropTypes.func.isRequired
 }
 
 Node.defaultProps = {
@@ -116,8 +101,6 @@ Node.defaultProps = {
     box: '#cccccc',
     pin: '#333333'
   },
-  pinSize: 10,
-  height: 40,
   selected: false
 }
 

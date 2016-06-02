@@ -27,15 +27,12 @@ var Canvas = function Canvas(_ref) {
   var links = _ref.links;
   var height = _ref.height;
   var width = _ref.width;
+  var pinSize = _ref.pinSize;
   var selectNode = _ref.selectNode;
+  var createLink = _ref.createLink;
   var dragItems = _ref.dragItems;
   var endDraggingItems = _ref.endDraggingItems;
   var previousDraggingPoint = _ref.previousDraggingPoint;
-
-  var toLink = function toLink(link) {
-    return _react2.default.createElement(_Link2.default, _extends({ key: link.id }, link));
-  };
-
   return _react2.default.createElement(
     _svgx.Svg,
     {
@@ -45,22 +42,33 @@ var Canvas = function Canvas(_ref) {
     nodes.map(function (node, i) {
       return _react2.default.createElement(_Node2.default, _extends({
         key: i,
+        pinSize: pinSize,
+        createLink: createLink,
         selectNode: selectNode(node.id),
         endDragging: endDraggingItems,
         dragItems: dragItems(previousDraggingPoint)
       }, node));
     }),
-    links.map(toLink)
+    links.map(function (link) {
+      return _react2.default.createElement(_Link2.default, _extends({
+        key: link.id
+      }, link));
+    })
   );
 };
 
 Canvas.propTypes = Object.assign({
   links: _react.PropTypes.array.isRequired,
   nodes: _react.PropTypes.array.isRequired,
+  pinSize: _react.PropTypes.number.isRequired,
   previousDraggingPoint: _react.PropTypes.shape({
     x: _react.PropTypes.number.isRequired,
     y: _react.PropTypes.number.isRequired
   })
 }, _svgx.Svg.propTypes);
+
+Canvas.defaultProps = {
+  pinSize: 10
+};
 
 exports.default = Canvas;

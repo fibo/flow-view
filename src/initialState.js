@@ -5,6 +5,7 @@ const initialState = {
   link: {},
   selectedItems: [],
   isDraggingItems: false,
+  isConnectingLink: false,
   previousDraggingPoint: null
 }
 

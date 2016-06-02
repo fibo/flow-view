@@ -6,48 +6,58 @@ import { Svg } from 'svgx'
 const Canvas = ({
   nodes, links,
   height, width,
+  pinSize,
   selectNode,
+  createLink,
   dragItems,
   endDraggingItems,
   previousDraggingPoint
-}) => {
-  const toLink = (link) => <Link key={link.id} {...link} />
-
-  return (
-    <Svg
-      height={height}
-      width={width}
-    >
-      {
-        nodes.map(
-          (node, i) => {
-            return (
-              <Node
-                key={i}
-                selectNode={selectNode(node.id)}
-                endDragging={endDraggingItems}
-                dragItems={dragItems(previousDraggingPoint)}
-                {...node}
-              />
-
-            )
-
-          }
+}) => (
+  <Svg
+    height={height}
+    width={width}
+  >
+    {
+      nodes.map(
+        (node, i) => (
+          <Node
+            key={i}
+            pinSize={pinSize}
+            createLink={createLink}
+            selectNode={selectNode(node.id)}
+            endDragging={endDraggingItems}
+            dragItems={dragItems(previousDraggingPoint)}
+            {...node}
+          />
         )
-      }
+      )
+    }
 
-      {links.map(toLink)}
-    </Svg>
-  )
-}
+    {
+      links.map(
+        (link) => (
+          <Link
+            key={link.id}
+            {...link}
+          />
+        )
+      )
+    }
+  </Svg>
+)
 
 Canvas.propTypes = Object.assign({
   links: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
+  pinSize: PropTypes.number.isRequired,
   previousDraggingPoint: PropTypes.shape({
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired
   })
 }, Svg.propTypes)
+
+Canvas.defaultProps = {
+  pinSize: 10
+}
 
 export default Canvas

@@ -4,29 +4,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _xCoordinateOfPin = require('../geometry/xCoordinateOfPin');
+
+var _xCoordinateOfPin2 = _interopRequireDefault(_xCoordinateOfPin);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var onMouseDown = function onMouseDown() {
-  return console.log('onMouseDown');
-};
-var onMouseMove = function onMouseMove() {
-  return console.log('onMouseMove');
-};
-var onMouseUp = function onMouseUp() {
-  return console.log('onMouseUp');
-};
-var onMouseDownPin = function onMouseDownPin(e) {
+var ignoreEvent = function ignoreEvent(e) {
   e.preventDefault();
   e.stopPropagation();
-
-  console.log('onMouseDownPin');
 };
-var onMouseUpPin = function onMouseUpPin() {
-  return console.log('onMouseUpPin');
+
+var highlighted = {
+  stroke: 'rgb(0,0,0)',
+  strokeWidth: 1
 };
 
 var Node = function Node(_ref) {
@@ -41,34 +38,17 @@ var Node = function Node(_ref) {
   var outs = _ref.outs;
   var dragged = _ref.dragged;
   var dragItems = _ref.dragItems;
+  var createLink = _ref.createLink;
   var selectNode = _ref.selectNode;
   var selected = _ref.selected;
   var endDragging = _ref.endDragging;
-
-  var transform = 'matrix(1,0,0,1,' + x + ',' + y + ')';
-
-  var xCoordinateOfPin = function xCoordinateOfPin(pins, position) {
-    if (position === 0) return 0;
-
-    var numPins = pins.length;
-
-    if (numPins > 1) return position * (width - pinSize) / (numPins - 1);
-  };
-
-  var highlighted = {
-    stroke: 'rgb(0,0,0)',
-    strokeWidth: 1
-  };
-
-  // TODO use SVG text node function getComputedTextLength
-
   return _react2.default.createElement(
     'g',
     {
       onMouseDown: selectNode,
       onMouseUp: endDragging,
       onMouseMove: dragged ? dragItems : undefined,
-      transform: transform
+      transform: 'matrix(1,0,0,1,' + x + ',' + y + ')'
     },
     _react2.default.createElement('rect', {
       width: width,
@@ -86,24 +66,23 @@ var Node = function Node(_ref) {
       )
     ),
     ins.map(function (pin, i, array) {
-      return _react2.default.createElement('rect', { key: i,
-        x: xCoordinateOfPin(ins, i),
-        y: 0,
-        width: pinSize,
-        height: pinSize,
-        onMouseDown: onMouseDownPin,
-        onMouseUp: onMouseUpPin,
+      return _react2.default.createElement('rect', _extends({ key: i,
+        onMouseDown: ignoreEvent,
+        onMouseMove: ignoreEvent,
+        onMouseUp: ignoreEvent,
         fill: fill.pin
-      });
+      }, pin));
     }),
     outs.map(function (pin, i) {
-      return _react2.default.createElement('rect', { key: i,
-        x: xCoordinateOfPin(outs, i),
+      return _react2.default.createElement('rect', _extends({
+        key: i,
+        x: (0, _xCoordinateOfPin2.default)(pinSize, width, outs.length, i),
         y: height - pinSize,
-        width: pinSize,
-        height: pinSize,
+        onMouseDown: ignoreEvent,
+        onMouseMove: ignoreEvent,
+        onMouseUp: ignoreEvent,
         fill: fill.pin
-      });
+      }, pin));
     })
   );
 };
@@ -125,7 +104,8 @@ Node.propTypes = {
   selectNode: _react.PropTypes.func.isRequired,
   endDragging: _react.PropTypes.func.isRequired,
   dragItems: _react.PropTypes.func.isRequired,
-  selected: _react.PropTypes.bool.isRequired
+  selected: _react.PropTypes.bool.isRequired,
+  createLink: _react.PropTypes.func.isRequired
 };
 
 Node.defaultProps = {
@@ -133,8 +113,6 @@ Node.defaultProps = {
     box: '#cccccc',
     pin: '#333333'
   },
-  pinSize: 10,
-  height: 40,
   selected: false
 };
 

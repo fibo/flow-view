@@ -1,12 +1,28 @@
 import React, { PropTypes } from 'react'
 
+const onMouseDown = () => console.log('onMouseDown')
+const onMouseMove = () => console.log('onMouseMove')
+const onMouseUp = () => console.log('onMouseUp')
+const onMouseDownPin = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    console.log('onMouseDownPin')
+}
+const onMouseUpPin = () => console.log('onMouseUpPin')
+
 const Node = ({
   x, y, width, height,
   fill, text,
   pinSize,
   ins, outs,
-  onClick,
-  selected
+  dragged,
+  dragItems,
+  selectNode,
+  selected,
+  endDragging,
+  startDragging,
+  startDraggingPoint
 }) => {
   const transform = `matrix(1,0,0,1,${x},${y})`
 
@@ -23,9 +39,24 @@ const Node = ({
     strokeWidth: 1
   }
 
+  // TODO see http://www.petercollingridge.co.uk/interactive-svg-components/draggable-svg-element
+  const onMouseMove = (e) => {
+    if (dragged) {
+      const dx = e.clientX - startDraggingPoint.x
+      const dy = e.clientY - startDraggingPoint.y
+
+      dragItems(dx, dy)
+    }
+  }
+
+  // TODO use SVG text node function getComputedTextLength
+
   return (
     <g
-      onClick={onClick}
+      onClick={selectNode}
+      onMouseDown={startDragging}
+      onMouseUp={endDragging}
+      onMouseMove={onMouseMove}
       transform={transform}
     >
       <rect
@@ -44,6 +75,8 @@ const Node = ({
                 y={0}
                 width={pinSize}
                 height={pinSize}
+      onMouseDown={onMouseDownPin}
+      onMouseUp={onMouseUpPin}
                 fill={fill.pin}
               >
               </rect>
@@ -84,8 +117,13 @@ Node.propTypes = {
     pin: PropTypes.string.isRequired
   }),
   ins: PropTypes.array.isRequired,
+  dragged: PropTypes.bool.isRequired,
   outs: PropTypes.array.isRequired,
-  onClick: PropTypes.func.isRequired,
+  selectNode: PropTypes.func.isRequired,
+  endDragging: PropTypes.func.isRequired,
+  dragItems: PropTypes.func.isRequired,
+  startDraggingPoint: PropTypes.object,
+  startDragging: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired
 }
 

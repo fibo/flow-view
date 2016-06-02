@@ -3,7 +3,9 @@ const initialState = {
   width: 500,
   node: {},
   link: {},
-  selectedItems: []
+  selectedItems: [],
+  isDraggingItems: false,
+  startDraggingPoint: null
 }
 
 export default initialState

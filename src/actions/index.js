@@ -34,11 +34,39 @@ export const delLink = (id) => {
   }
 }
 
+export const DRAG_ITEMS = 'DRAG_ITEMS'
+
+export const dragItems = (dx, dy) => {
+  return {
+    type: DRAG_ITEMS,
+    dx,
+    dy
+  }
+}
+
+export const END_DRAGGING_ITEM = 'END_DRAGGING_ITEM'
+
+export const endDraggingItem = (id) => {
+  return {
+    type: END_DRAGGING_ITEM,
+    id
+  }
+}
 export const SELECT_ITEM = 'SELECT_ITEM'
 
 export const selectItem = (id) => {
   return {
     type: SELECT_ITEM,
     id
+  }
+}
+
+export const START_DRAGGING_ITEM = 'START_DRAGGING_ITEM'
+
+export const startDraggingItem = (id, startingPoint) => {
+  return {
+    type: START_DRAGGING_ITEM,
+    id,
+    startingPoint
   }
 }

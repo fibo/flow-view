@@ -2,6 +2,12 @@
 
 > is a visual editor for [Dataflow programming][3]
 
+**THIS IS LAST RELEASE OF FLOW-VIEW VERSION 1.
+VERSION 2 WILL BREAK COMPATIBILITY BUT IT WILL USE REACT SO IT IS GOING
+TO BE FAR BETTER THAN THIS ONE.
+THIS DOCUMENT HAS ALL INFORMATION NEEDED TO KEEP USING FLOW-VIEW VERSION 1,
+I.E. ALL LINKS AND INSTRUCTIONS STILL WORK, AS THEY REFER TO VERSION 1.2.1**
+
 **Table Of Contents:**
 
 * [Examples](http://g14n.info/flow-view/examples)
@@ -15,13 +21,7 @@
 * [Export](#export)
 * [License](#license)
 
-[![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
-
-[![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.svg?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master) [![Dependency Status](https://david-dm.org/fibo/flow-view.svg)](https://david-dm.org/fibo/flow-view) [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
-
 <p><a href="http://codepen.io/collection/DojWVW/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
-
-[![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
 ## Description
 
@@ -36,20 +36,20 @@ Any feedback is welcome!
 With [bower](http://bower.io/) do
 
 ```bash
-$ bower install flow-view
+$ bower install flow-view@1.2.1
 ```
 
 or use a CDN adding this to your HTML page
 
 ```
-<script src="https://cdn.rawgit.com/fibo/flow-view/master/dist/flow-view.min.js"></script>
+<script src="https://cdn.rawgit.com/fibo/flow-view/v1.2.1/dist/flow-view.min.js"></script>
 ```
 
 Note that *flow-view* should be used client side. However, if you want to import it in your Node package
 and bundle it with browserify, or whatever, you can install it with [npm](https://npmjs.org/) doing
 
 ```bash
-$ npm install flow-view
+$ npm install flow-view@1.2.1
 ```
 
 ## Synopsis
@@ -298,8 +298,8 @@ See [examples/download-graph][example-download-graph] for a demo.
 [1]: http://svgjs.com/ "SVG.js"
 [2]: http://g14n.info/dflow "dflow"
 [3]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-[example-synopsis]: http://g14n.info/flow-view/examples/synopsis
-[example-event-log]: http://g14n.info/flow-view/examples/event-log
-[example-custom-theme]: http://g14n.info/flow-view/examples/custom-theme
-[example-autocompletion-from-url]: http://g14n.info/flow-view/examples/autocompletion-from-url
-[example-download-graph]: http://g14n.info/flow-view/examples/download-graph
+[example-synopsis]: http://codepen.io/fibo/pen/EPqMZM
+[example-event-log]: http://codepen.io/fibo/pen/VeoRaw
+[example-custom-theme]: http://codepen.io/anon/pen/KzpzxP
+[example-autocompletion-from-url]: http://codepen.io/fibo/pen/YqXqRa
+[example-download-graph]: http://codepen.io/fibo/pen/pyJyGv

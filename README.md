@@ -1,8 +1,7 @@
 # flow-view
 
-> is a visual editor for [Dataflow programming][dataflow_wikipedia]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]+[Redux]
 
-[Examples](http://g14n.info/flow-view/examples) |
 [Description](#description) |
 [Installation](#installation) |
 [License](#license)
@@ -15,8 +14,6 @@ in React, yeah! Previous version is still available [here](https://github.com/fi
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view) [![Build Status](https://travis-ci.org/fibo/flow-view.svg?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master) [![Dependency Status](https://david-dm.org/fibo/flow-view.svg)](https://david-dm.org/fibo/flow-view) [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
-<p><a href="http://codepen.io/collection/DojWVW/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
 
@@ -54,3 +51,5 @@ $ npm install flow-view
 
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
+[React]: https://facebook.github.io/react/
+[Redux]: http://redux.js.org/

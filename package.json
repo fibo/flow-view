@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "description": "is a visual editor for Dataflow programming",
+  "description": "is a visual editor for Dataflow programming, powered by React+Redux",
   "version": "1.2.0",
   "homepage": "https://github.com/fibo/flow-view",
   "author": {
@@ -50,7 +50,9 @@
     "dataflow",
     "visual",
     "svg",
-    "editor"
+    "editor",
+    "react",
+    "redux"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"

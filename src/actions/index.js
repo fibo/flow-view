@@ -36,37 +36,29 @@ export const delLink = (id) => {
 
 export const DRAG_ITEMS = 'DRAG_ITEMS'
 
-export const dragItems = (dx, dy) => {
+export const dragItems = (previousDraggingPoint, draggingDelta) => {
   return {
     type: DRAG_ITEMS,
-    dx,
-    dy
+    previousDraggingPoint,
+    draggingDelta
   }
 }
 
-export const END_DRAGGING_ITEM = 'END_DRAGGING_ITEM'
+export const END_DRAGGING_ITEMS = 'END_DRAGGING_ITEMS'
 
-export const endDraggingItem = (id) => {
+export const endDraggingItems = () => {
   return {
-    type: END_DRAGGING_ITEM,
-    id
+    type: END_DRAGGING_ITEMS
   }
 }
+
 export const SELECT_ITEM = 'SELECT_ITEM'
 
-export const selectItem = (id) => {
+export const selectItem = ({id, x, y}) => {
   return {
     type: SELECT_ITEM,
-    id
-  }
-}
-
-export const START_DRAGGING_ITEM = 'START_DRAGGING_ITEM'
-
-export const startDraggingItem = (id, startingPoint) => {
-  return {
-    type: START_DRAGGING_ITEM,
     id,
-    startingPoint
+    x,
+    y
   }
 }

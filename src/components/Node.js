@@ -20,9 +20,7 @@ const Node = ({
   dragItems,
   selectNode,
   selected,
-  endDragging,
-  startDragging,
-  startDraggingPoint
+  endDragging
 }) => {
   const transform = `matrix(1,0,0,1,${x},${y})`
 
@@ -39,24 +37,14 @@ const Node = ({
     strokeWidth: 1
   }
 
-  // TODO see http://www.petercollingridge.co.uk/interactive-svg-components/draggable-svg-element
-  const onMouseMove = (e) => {
-    if (dragged) {
-      const dx = e.clientX - startDraggingPoint.x
-      const dy = e.clientY - startDraggingPoint.y
-
-      dragItems(dx, dy)
-    }
-  }
 
   // TODO use SVG text node function getComputedTextLength
 
   return (
     <g
-      onClick={selectNode}
-      onMouseDown={startDragging}
+      onMouseDown={selectNode}
       onMouseUp={endDragging}
-      onMouseMove={onMouseMove}
+      onMouseMove={dragged ? dragItems : undefined}
       transform={transform}
     >
       <rect
@@ -122,8 +110,6 @@ Node.propTypes = {
   selectNode: PropTypes.func.isRequired,
   endDragging: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
-  startDraggingPoint: PropTypes.object,
-  startDragging: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired
 }
 

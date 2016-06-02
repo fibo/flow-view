@@ -39,11 +39,35 @@ var delLink = exports.delLink = function delLink(id) {
   };
 };
 
+var DRAG_ITEMS = exports.DRAG_ITEMS = 'DRAG_ITEMS';
+
+var dragItems = exports.dragItems = function dragItems(previousDraggingPoint, draggingDelta) {
+  return {
+    type: DRAG_ITEMS,
+    previousDraggingPoint: previousDraggingPoint,
+    draggingDelta: draggingDelta
+  };
+};
+
+var END_DRAGGING_ITEMS = exports.END_DRAGGING_ITEMS = 'END_DRAGGING_ITEMS';
+
+var endDraggingItems = exports.endDraggingItems = function endDraggingItems() {
+  return {
+    type: END_DRAGGING_ITEMS
+  };
+};
+
 var SELECT_ITEM = exports.SELECT_ITEM = 'SELECT_ITEM';
 
-var selectItem = exports.selectItem = function selectItem(id) {
+var selectItem = exports.selectItem = function selectItem(_ref) {
+  var id = _ref.id;
+  var x = _ref.x;
+  var y = _ref.y;
+
   return {
     type: SELECT_ITEM,
-    id: id
+    id: id,
+    x: x,
+    y: y
   };
 };

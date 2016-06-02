@@ -10,6 +10,25 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var onMouseDown = function onMouseDown() {
+  return console.log('onMouseDown');
+};
+var onMouseMove = function onMouseMove() {
+  return console.log('onMouseMove');
+};
+var onMouseUp = function onMouseUp() {
+  return console.log('onMouseUp');
+};
+var onMouseDownPin = function onMouseDownPin(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  console.log('onMouseDownPin');
+};
+var onMouseUpPin = function onMouseUpPin() {
+  return console.log('onMouseUpPin');
+};
+
 var Node = function Node(_ref) {
   var x = _ref.x;
   var y = _ref.y;
@@ -20,8 +39,11 @@ var Node = function Node(_ref) {
   var pinSize = _ref.pinSize;
   var ins = _ref.ins;
   var outs = _ref.outs;
-  var onClick = _ref.onClick;
+  var dragged = _ref.dragged;
+  var dragItems = _ref.dragItems;
+  var selectNode = _ref.selectNode;
   var selected = _ref.selected;
+  var endDragging = _ref.endDragging;
 
   var transform = 'matrix(1,0,0,1,' + x + ',' + y + ')';
 
@@ -35,13 +57,17 @@ var Node = function Node(_ref) {
 
   var highlighted = {
     stroke: 'rgb(0,0,0)',
-    'stroke-width': 2
+    strokeWidth: 1
   };
+
+  // TODO use SVG text node function getComputedTextLength
 
   return _react2.default.createElement(
     'g',
     {
-      onClick: onClick,
+      onMouseDown: selectNode,
+      onMouseUp: endDragging,
+      onMouseMove: dragged ? dragItems : undefined,
       transform: transform
     },
     _react2.default.createElement('rect', {
@@ -65,6 +91,8 @@ var Node = function Node(_ref) {
         y: 0,
         width: pinSize,
         height: pinSize,
+        onMouseDown: onMouseDownPin,
+        onMouseUp: onMouseUpPin,
         fill: fill.pin
       });
     }),
@@ -92,8 +120,11 @@ Node.propTypes = {
     pin: _react.PropTypes.string.isRequired
   }),
   ins: _react.PropTypes.array.isRequired,
+  dragged: _react.PropTypes.bool.isRequired,
   outs: _react.PropTypes.array.isRequired,
-  onClick: _react.PropTypes.func.isRequired,
+  selectNode: _react.PropTypes.func.isRequired,
+  endDragging: _react.PropTypes.func.isRequired,
+  dragItems: _react.PropTypes.func.isRequired,
   selected: _react.PropTypes.bool.isRequired
 };
 

@@ -8,14 +8,16 @@ const Canvas = ({
   height, width,
   selectNode,
   dragItems,
-  endDraggingItem,
-  startDraggingItem,
-  startDraggingPoint
+  endDraggingItems,
+  previousDraggingPoint
 }) => {
   const toLink = (link) => <Link key={link.id} {...link} />
 
   return (
-    <Svg height={height} width={width}>
+    <Svg
+      height={height}
+      width={width}
+    >
       {
         nodes.map(
           (node, i) => {
@@ -23,10 +25,8 @@ const Canvas = ({
               <Node
                 key={i}
                 selectNode={selectNode(node.id)}
-                startDragging={startDraggingItem(node.id)}
-                endDragging={endDraggingItem}
-                startDraggingPoint={startDraggingPoint}
-                dragItems={dragItems}
+                endDragging={endDraggingItems}
+                dragItems={dragItems(previousDraggingPoint)}
                 {...node}
               />
 
@@ -43,7 +43,11 @@ const Canvas = ({
 
 Canvas.propTypes = Object.assign({
   links: PropTypes.array.isRequired,
-  nodes: PropTypes.array.isRequired
+  nodes: PropTypes.array.isRequired,
+  previousDraggingPoint: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired
+  })
 }, Svg.propTypes)
 
 export default Canvas

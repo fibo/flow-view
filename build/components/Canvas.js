@@ -27,7 +27,10 @@ var Canvas = function Canvas(_ref) {
   var links = _ref.links;
   var height = _ref.height;
   var width = _ref.width;
-  var onClickNode = _ref.onClickNode;
+  var selectNode = _ref.selectNode;
+  var dragItems = _ref.dragItems;
+  var endDraggingItems = _ref.endDraggingItems;
+  var previousDraggingPoint = _ref.previousDraggingPoint;
 
   var toLink = function toLink(link) {
     return _react2.default.createElement(_Link2.default, _extends({ key: link.id }, link));
@@ -35,11 +38,16 @@ var Canvas = function Canvas(_ref) {
 
   return _react2.default.createElement(
     _svgx.Svg,
-    { height: height, width: width },
+    {
+      height: height,
+      width: width
+    },
     nodes.map(function (node, i) {
       return _react2.default.createElement(_Node2.default, _extends({
         key: i,
-        onClick: onClickNode(node.id)
+        selectNode: selectNode(node.id),
+        endDragging: endDraggingItems,
+        dragItems: dragItems(previousDraggingPoint)
       }, node));
     }),
     links.map(toLink)
@@ -48,7 +56,11 @@ var Canvas = function Canvas(_ref) {
 
 Canvas.propTypes = Object.assign({
   links: _react.PropTypes.array.isRequired,
-  nodes: _react.PropTypes.array.isRequired
+  nodes: _react.PropTypes.array.isRequired,
+  previousDraggingPoint: _react.PropTypes.shape({
+    x: _react.PropTypes.number.isRequired,
+    y: _react.PropTypes.number.isRequired
+  })
 }, _svgx.Svg.propTypes);
 
 exports.default = Canvas;

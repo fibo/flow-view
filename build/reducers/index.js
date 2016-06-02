@@ -49,8 +49,48 @@ var flowViewApp = function flowViewApp() {
 
       return nextState;
 
+    case _actions.DRAG_ITEMS:
+      var dx = action.draggingDelta.x;
+      var dy = action.draggingDelta.y;
+
+      // TODO const draggedLinks
+      var draggedNodes = Object.assign({}, state.node);
+      var previousDraggingPoint = {
+        x: state.previousDraggingPoint.x + dx,
+        y: state.previousDraggingPoint.y + dy
+      };
+
+      for (var _nodeid in draggedNodes) {
+        var isDraggedNode = state.selectedItems.indexOf(_nodeid) === -1;
+
+        if (isDraggedNode) {
+          continue;
+        } else {
+          draggedNodes[_nodeid].x += dx;
+          draggedNodes[_nodeid].y += dy;
+        }
+      }
+
+      console.log(action.draggingDelta);
+      console.log(action.previousDraggingPoint);
+      return Object.assign({}, state, {
+        node: draggedNodes,
+        previousDraggingPoint: previousDraggingPoint
+      });
+
+    case _actions.END_DRAGGING_ITEMS:
+      return Object.assign({}, state, {
+        isDraggingItems: false,
+        previousDraggingPoint: null
+      });
+
     case _actions.SELECT_ITEM:
-      var selectedItems = Object.assign([], state.selectedItems);
+      var selectedItems = [];
+
+      if (state.multipleSelection) {
+        selectedItems.concat(Object.assign([], state.selectedItems));
+      }
+
       var itemId = action.id;
 
       var indexOfSelectedItem = selectedItems.indexOf(itemId);
@@ -62,7 +102,14 @@ var flowViewApp = function flowViewApp() {
         selectedItems.splice(indexOfSelectedItem, 1);
       }
 
-      return Object.assign({}, state, { selectedItems: selectedItems });
+      return Object.assign({}, state, {
+        isDraggingItems: true,
+        previousDraggingPoint: {
+          x: action.x,
+          y: action.y
+        },
+        selectedItems: selectedItems
+      });
 
     default:
       return state;

@@ -26,8 +26,12 @@ const Node = ({
   <g
     onMouseDown={selectNode}
     onMouseUp={endDragging}
+    onMouseLeave={endDragging}
     onMouseMove={dragged ? dragItems : undefined}
     transform={`matrix(1,0,0,1,${x},${y})`}
+    style={{
+      cursor: (selected ? 'pointer' : 'default')
+    }}
   >
     <rect
       width={width}
@@ -35,41 +39,45 @@ const Node = ({
       fill={fill.box}
       style={selected ? highlighted : undefined}
     ></rect>
-    <text x={pinSize} y={pinSize * 2} ><tspan>{text}</tspan></text>
+
+    <text
+      x={pinSize}
+      y={pinSize * 2}
+      style={{pointerEvents: 'none'}}
+    >
+      <tspan>{text}</tspan>
+    </text>
+
     {
       ins.map(
-        (pin, i, array) => {
-          return (
-            <rect key={i}
-              onMouseDown={ignoreEvent}
-              onMouseMove={ignoreEvent}
-              onMouseUp={ignoreEvent}
-              fill={fill.pin}
-              {...pin}
-            >
-            </rect>
-          )
-        }
+        (pin, i, array) => (
+          <rect key={i}
+            onMouseDown={ignoreEvent}
+            onMouseMove={ignoreEvent}
+            onMouseUp={ignoreEvent}
+            fill={fill.pin}
+            {...pin}
+          >
+          </rect>
+        )
       )
     }
 
     {
       outs.map(
-        (pin, i) => {
-          return (
-            <rect
-              key={i}
-              x={xCoordinateOfPin(pinSize, width, outs.length, i)}
-              y={height - pinSize}
-              onMouseDown={ignoreEvent}
-              onMouseMove={ignoreEvent}
-              onMouseUp={ignoreEvent}
-              fill={fill.pin}
-              {...pin}
-            >
-            </rect>
-          )
-        }
+        (pin, i) => (
+          <rect
+            key={i}
+            x={xCoordinateOfPin(pinSize, width, outs.length, i)}
+            y={height - pinSize}
+            onMouseDown={ignoreEvent}
+            onMouseMove={ignoreEvent}
+            onMouseUp={ignoreEvent}
+            fill={fill.pin}
+            {...pin}
+          >
+          </rect>
+        )
       )
     }
   </g>

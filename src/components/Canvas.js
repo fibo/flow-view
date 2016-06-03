@@ -17,32 +17,28 @@ const Canvas = ({
     height={height}
     width={width}
   >
-    {
-      nodes.map(
-        (node, i) => (
-          <Node
-            key={i}
-            pinSize={pinSize}
-            createLink={createLink}
-            selectNode={selectNode(node.id)}
-            endDragging={endDraggingItems}
-            dragItems={dragItems(previousDraggingPoint)}
-            {...node}
-          />
-        )
+    {nodes.map(
+      (node, i) => (
+        <Node
+          key={i}
+          pinSize={pinSize}
+          createLink={createLink}
+          selectNode={selectNode(node.id)}
+          endDragging={endDraggingItems}
+          dragItems={dragItems(previousDraggingPoint)}
+          {...node}
+        />
       )
-    }
+    )}
 
-    {
-      links.map(
-        (link) => (
-          <Link
-            key={link.id}
-            {...link}
-          />
-        )
+    {links.map(
+      (link) => (
+        <Link
+          key={link.id}
+          {...link}
+        />
       )
-    }
+    )}
   </Svg>
 )
 

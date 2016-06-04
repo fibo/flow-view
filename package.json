@@ -34,7 +34,6 @@
     "start": "NODE_PATH=src node server.js",
     "update-deps": "npm update --save --dev",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in components reducers; do npm run test_$x; done",
     "test": "NODE_PATH=src tape -r babel-register test/*/**js"
   },
   "pre-commit": [
@@ -65,7 +64,7 @@
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
-    "standard": "^7.1.1",
+    "standard": "^7.1.2",
     "static-props": "^1.0.0",
     "svgx": "^0.4.3"
   },

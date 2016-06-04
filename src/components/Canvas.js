@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react'
 import Link from './Link'
 import Node from './Node'
+import NodeSelector from './NodeSelector'
 import { Svg } from 'svgx'
 
 const Canvas = ({
   nodes, links,
   height, width,
   pinSize,
+  selectLink,
   selectNode,
   createLink,
   dragItems,
@@ -16,7 +18,12 @@ const Canvas = ({
   <Svg
     height={height}
     width={width}
+    style={{border: '1px solid black'}}
   >
+    <NodeSelector
+      x={10}
+      y={20}
+    />
     {nodes.map(
       (node, i) => (
         <Node
@@ -34,6 +41,7 @@ const Canvas = ({
     {links.map(
       (link) => (
         <Link
+          selectLink={selectLink(link.id)}
           key={link.id}
           {...link}
         />

@@ -12,24 +12,19 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## [Unreleased]
 
+## [1.2.1] - 
+
 ### Added
 
 - build dir
-- renamed abstract to model
-
-## [1.2.0] - 2016-05-11
-
-### Added
-
 - svgx
-- abstract classes
-- more tests
+- more tests with cheerio
 - React components
 - standard js
 - ES6 code and babel transpiling
 - pre-commit hooks
 
-## [1.1.1] - 2016-03-14
+## [1.2.1] - 2016-03-14
 
 ### Added
 
@@ -56,8 +51,9 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### First stable release
 
-[Unreleased]: https://github.com/fibo/flow-view/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/fibo/flow-view/compare/v1.1.1...v1.2.0
-[1.1.0]: https://github.com/fibo/flow-view/compare/v1.1.0...v1.1.1
+[Unreleased]: https://github.com/fibo/flow-view/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/fibo/flow-view/compare/v1.2.1...v2.0.0
+[1.2.1]: https://github.com/fibo/flow-view/compare/v1.1.1...v1.2.1
+[1.1.1]: https://github.com/fibo/flow-view/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/fibo/flow-view/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/fibo/flow-view/compare/v1.0.0...v1.0.2

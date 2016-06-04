@@ -81,6 +81,11 @@ var flowViewApp = function flowViewApp() {
         previousDraggingPoint: null
       });
 
+    case _actions.HIDE_NODE_SELECTOR:
+      return Object.assign({}, state, {
+        nodeSelector: null
+      });
+
     case _actions.SELECT_ITEM:
       var selectedItems = [];
       var itemId = action.id;
@@ -100,7 +105,23 @@ var flowViewApp = function flowViewApp() {
           x: action.x,
           y: action.y
         },
-        selectedItems: selectedItems
+        selectedItems: selectedItems,
+        nodeSelector: null
+      });
+
+    case _actions.SET_NODE_SELECTOR_TEXT:
+      return Object.assign({}, state, {
+        nodeSelector: {
+          text: action.text
+        }
+      });
+
+    case _actions.SHOW_NODE_SELECTOR:
+      return Object.assign({}, state, {
+        nodeSelector: {
+          x: action.x,
+          y: action.y
+        }
       });
 
     default:

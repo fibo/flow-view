@@ -57,6 +57,14 @@ var endDraggingItems = exports.endDraggingItems = function endDraggingItems() {
   };
 };
 
+var HIDE_NODE_SELECTOR = exports.HIDE_NODE_SELECTOR = 'HIDE_NODE_SELECTOR';
+
+var hideNodeSelector = exports.hideNodeSelector = function hideNodeSelector() {
+  return {
+    type: HIDE_NODE_SELECTOR
+  };
+};
+
 var SELECT_ITEM = exports.SELECT_ITEM = 'SELECT_ITEM';
 
 var selectItem = exports.selectItem = function selectItem(_ref) {
@@ -67,6 +75,28 @@ var selectItem = exports.selectItem = function selectItem(_ref) {
   return {
     type: SELECT_ITEM,
     id: id,
+    x: x,
+    y: y
+  };
+};
+
+var SET_NODE_SELECTOR_TEXT = exports.SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT';
+
+var setNodeSelectorText = exports.setNodeSelectorText = function setNodeSelectorText(text) {
+  return {
+    type: SET_NODE_SELECTOR_TEXT,
+    text: text
+  };
+};
+
+var SHOW_NODE_SELECTOR = exports.SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR';
+
+var showNodeSelector = exports.showNodeSelector = function showNodeSelector(_ref2) {
+  var x = _ref2.x;
+  var y = _ref2.y;
+
+  return {
+    type: SHOW_NODE_SELECTOR,
     x: x,
     y: y
   };

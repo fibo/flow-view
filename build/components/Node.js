@@ -14,12 +14,11 @@ var _xCoordinateOfPin = require('../geometry/xCoordinateOfPin');
 
 var _xCoordinateOfPin2 = _interopRequireDefault(_xCoordinateOfPin);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _ignoreEvent = require('../util/ignoreEvent');
 
-var ignoreEvent = function ignoreEvent(e) {
-  e.preventDefault();
-  e.stopPropagation();
-};
+var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var highlighted = {
   stroke: 'rgb(0,0,0)',
@@ -45,10 +44,15 @@ var Node = function Node(_ref) {
   return _react2.default.createElement(
     'g',
     {
+      onClick: _ignoreEvent2.default,
       onMouseDown: selectNode,
       onMouseUp: endDragging,
+      onMouseLeave: endDragging,
       onMouseMove: dragged ? dragItems : undefined,
-      transform: 'matrix(1,0,0,1,' + x + ',' + y + ')'
+      transform: 'matrix(1,0,0,1,' + x + ',' + y + ')',
+      style: {
+        cursor: selected ? 'pointer' : 'default'
+      }
     },
     _react2.default.createElement('rect', {
       width: width,
@@ -58,7 +62,11 @@ var Node = function Node(_ref) {
     }),
     _react2.default.createElement(
       'text',
-      { x: pinSize, y: pinSize * 2 },
+      {
+        x: pinSize,
+        y: pinSize * 2,
+        style: { pointerEvents: 'none' }
+      },
       _react2.default.createElement(
         'tspan',
         null,
@@ -67,9 +75,9 @@ var Node = function Node(_ref) {
     ),
     ins.map(function (pin, i, array) {
       return _react2.default.createElement('rect', _extends({ key: i,
-        onMouseDown: ignoreEvent,
-        onMouseMove: ignoreEvent,
-        onMouseUp: ignoreEvent,
+        onMouseDown: _ignoreEvent2.default,
+        onMouseMove: _ignoreEvent2.default,
+        onMouseUp: _ignoreEvent2.default,
         fill: fill.pin
       }, pin));
     }),
@@ -78,9 +86,9 @@ var Node = function Node(_ref) {
         key: i,
         x: (0, _xCoordinateOfPin2.default)(pinSize, width, outs.length, i),
         y: height - pinSize,
-        onMouseDown: ignoreEvent,
-        onMouseMove: ignoreEvent,
-        onMouseUp: ignoreEvent,
+        onMouseDown: _ignoreEvent2.default,
+        onMouseMove: _ignoreEvent2.default,
+        onMouseUp: _ignoreEvent2.default,
         fill: fill.pin
       }, pin));
     })

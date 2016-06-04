@@ -128,6 +128,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     endDraggingItems: () => {
       dispatch(endDraggingItems())
     },
+    selectLink: (linkid) => (e) => {
+      dispatch(selectItem({
+        id: linkid,
+        x: e.clientX,
+        y: e.clientY
+      }))
+    },
     selectNode: (nodeid) => (e) => {
       dispatch(selectItem({
         id: nodeid,

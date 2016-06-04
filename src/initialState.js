@@ -6,7 +6,8 @@ const initialState = {
   selectedItems: [],
   isDraggingItems: false,
   isConnectingLink: false,
-  previousDraggingPoint: null
+  previousDraggingPoint: null,
+  nodeSelector: null
 }
 
 export default initialState

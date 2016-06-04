@@ -4,7 +4,10 @@ import {
   addLink,
   dragItems,
   endDraggingItems,
-  selectItem
+  hideNodeSelector,
+  selectItem,
+  setNodeSelectorText,
+  showNodeSelector
 } from '../actions'
 import Canvas from '../components/Canvas'
 
@@ -100,6 +103,17 @@ const mapStateToProps = (state, ownProps) => {
     })
   }
 
+  const nodeSelectorShow = (state.nodeSelector !== null)
+  let nodeSelectorX = 0
+  let nodeSelectorY = 0
+  let nodeSelectorText = ''
+
+  if (nodeSelectorShow) {
+    nodeSelectorX = state.nodeSelector.x
+    nodeSelectorY = state.nodeSelector.y
+    nodeSelectorText = state.nodeSelector.text
+  }
+
   return {
     height: (ownProps.height || state.height),
     width: (ownProps.width || state.width),
@@ -108,7 +122,11 @@ const mapStateToProps = (state, ownProps) => {
     pinSize,
     selectedItems: state.selectedItems,
     previousDraggingPoint: state.previousDraggingPoint,
-    isConnectingLink: state.isConnectingLink
+    isConnectingLink: state.isConnectingLink,
+    nodeSelectorX,
+    nodeSelectorY,
+    nodeSelectorShow,
+    nodeSelectorText: nodeSelectorText
   }
 }
 
@@ -128,6 +146,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     endDraggingItems: () => {
       dispatch(endDraggingItems())
     },
+    hideNodeSelector: () => {
+      dispatch(hideNodeSelector())
+    },
     selectLink: (linkid) => (e) => {
       dispatch(selectItem({
         id: linkid,
@@ -140,6 +161,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         id: nodeid,
         x: e.clientX,
         y: e.clientY
+      }))
+    },
+    setNodeSelectorText: (e) => {
+      setNodeSelectorText({
+        text: e.target.value
+      })
+    },
+    showNodeSelector: (e) => {
+      dispatch(showNodeSelector({
+        x: e.clientX - 10,
+        y: e.clientY - 10
       }))
     }
   }

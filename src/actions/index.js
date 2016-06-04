@@ -52,12 +52,39 @@ export const endDraggingItems = () => {
   }
 }
 
+export const HIDE_NODE_SELECTOR = 'HIDE_NODE_SELECTOR'
+
+export const hideNodeSelector = () => {
+  return {
+    type: HIDE_NODE_SELECTOR
+  }
+}
+
 export const SELECT_ITEM = 'SELECT_ITEM'
 
 export const selectItem = ({id, x, y}) => {
   return {
     type: SELECT_ITEM,
     id,
+    x,
+    y
+  }
+}
+
+export const SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT'
+
+export const setNodeSelectorText = (text) => {
+  return {
+    type: SET_NODE_SELECTOR_TEXT,
+    text
+  }
+}
+
+export const SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR'
+
+export const showNodeSelector = ({x, y}) => {
+  return {
+    type: SHOW_NODE_SELECTOR,
     x,
     y
   }

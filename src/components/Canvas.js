@@ -7,22 +7,34 @@ import { Svg } from 'svgx'
 const Canvas = ({
   nodes, links,
   height, width,
+  hideNodeSelector,
   pinSize,
   selectLink,
   selectNode,
   createLink,
   dragItems,
   endDraggingItems,
+  showNodeSelector,
+  nodeSelectorX,
+  nodeSelectorY,
+  nodeSelectorShow,
+  nodeSelectorText,
+  setNodeSelectorText,
   previousDraggingPoint
 }) => (
   <Svg
     height={height}
     width={width}
     style={{border: '1px solid black'}}
+    onClick={hideNodeSelector}
+    onDoubleClick={showNodeSelector}
   >
     <NodeSelector
-      x={10}
-      y={20}
+      changeText={setNodeSelectorText}
+      show={nodeSelectorShow}
+      x={nodeSelectorX}
+      y={nodeSelectorY}
+      text={nodeSelectorText}
     />
     {nodes.map(
       (node, i) => (

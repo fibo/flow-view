@@ -4,7 +4,10 @@ import {
   DEL_NODE,
   DRAG_ITEMS,
   END_DRAGGING_ITEMS,
-  SELECT_ITEM
+  HIDE_NODE_SELECTOR,
+  SELECT_ITEM,
+  SET_NODE_SELECTOR_TEXT,
+  SHOW_NODE_SELECTOR
 } from '../actions'
 
 let nextId = 0
@@ -73,6 +76,11 @@ const flowViewApp = (state = initialState, action) => {
         previousDraggingPoint: null
       })
 
+    case HIDE_NODE_SELECTOR:
+      return Object.assign({}, state, {
+        nodeSelector: null
+      })
+
     case SELECT_ITEM:
       let selectedItems = []
       let itemId = action.id
@@ -92,7 +100,23 @@ const flowViewApp = (state = initialState, action) => {
           x: action.x,
           y: action.y
         },
-        selectedItems
+        selectedItems,
+        nodeSelector: null
+      })
+
+    case SET_NODE_SELECTOR_TEXT:
+      return Object.assign({}, state, {
+        nodeSelector: {
+          text: action.text
+        }
+      })
+
+    case SHOW_NODE_SELECTOR:
+      return Object.assign({}, state, {
+        nodeSelector: {
+          x: action.x,
+          y: action.y
+        }
       })
 
     default:

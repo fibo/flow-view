@@ -1,10 +1,6 @@
 import React, { PropTypes } from 'react'
 import xCoordinateOfPin from '../geometry/xCoordinateOfPin'
-
-const ignoreEvent = (e) => {
-  e.preventDefault()
-  e.stopPropagation()
-}
+import ignoreEvent from '../util/ignoreEvent'
 
 const highlighted = {
   stroke: 'rgb(0,0,0)',
@@ -24,6 +20,7 @@ const Node = ({
   endDragging
 }) => (
   <g
+    onClick={ignoreEvent}
     onMouseDown={selectNode}
     onMouseUp={endDragging}
     onMouseLeave={endDragging}

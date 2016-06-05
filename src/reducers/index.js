@@ -1,32 +1,54 @@
 import initialState from '../initialState'
 import {
   ADD_NODE,
+  ADD_LINK,
   DEL_NODE,
   DRAG_ITEMS,
+  DRAG_LINK,
   END_DRAGGING_ITEMS,
+  END_DRAGGING_LINK,
   HIDE_NODE_SELECTOR,
   SELECT_ITEM,
   SET_NODE_SELECTOR_TEXT,
   SHOW_NODE_SELECTOR
 } from '../actions'
 
-let nextId = 0
-
-const generateId = () => {
-  nextId++
-  return `id${nextId}`
-}
-
 const flowViewApp = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_NODE:
-      const id = generateId()
+  let nextId = 0
 
+  const generateId = () => {
+    nextId++
+
+    const newId = `id${nextId}`
+
+    const currentIds = Object.keys(state.node).concat(Object.keys(state.link))
+
+    const foundId = (currentIds.filter(
+      (id) => { return id === newId }
+    ).length === 1)
+
+    if (foundId) return generateId()
+    else return newId
+  }
+
+  switch (action.type) {
+    case ADD_LINK:
+      let link = Object.assign({}, state.link)
+
+      link[generateId()] = action.link
+
+      return Object.assign({}, state, {
+        link,
+        selectedItems: [],
+        previousDraggingPoint: action.previousDraggingPoint
+      })
+
+    case ADD_NODE:
       let node = Object.assign({}, state.node)
 
-      node[id] = action.node
+      node[generateId()] = action.node
 
-      return Object.assign({node}, state)
+      return Object.assign({}, state, { node })
 
     case DEL_NODE:
       const nextState = Object.assign({}, state)
@@ -70,10 +92,30 @@ const flowViewApp = (state = initialState, action) => {
         previousDraggingPoint
       })
 
+    case DRAG_LINK:
+      return Object.assign({}, state, {
+        previousDraggingPoint: {
+          x: state.previousDraggingPoint.x + action.draggingDelta.x,
+          y: state.previousDraggingPoint.y + action.draggingDelta.y
+        }
+      })
+
     case END_DRAGGING_ITEMS:
       return Object.assign({}, state, {
         isDraggingItems: false,
         previousDraggingPoint: null
+      })
+
+    case END_DRAGGING_LINK:
+      let linkBefore = Object.assign({}, state.link)
+
+      // Remove dragged link.
+      delete linkBefore[action.id]
+
+      return Object.assign({}, state, {
+        previousDraggingPoint: null,
+        draggedLinkId: null,
+        link: linkBefore
       })
 
     case HIDE_NODE_SELECTOR:

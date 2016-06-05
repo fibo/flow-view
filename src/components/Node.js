@@ -8,22 +8,24 @@ const highlighted = {
 }
 
 const Node = ({
+  id,
   x, y, width, height,
   fill, text,
   pinSize,
   ins, outs,
   dragged,
   dragItems,
-  createLink,
+  addLink,
   selectNode,
   selected,
-  endDragging
+  endDragging,
+  endDraggingLink
 }) => (
   <g
     onClick={ignoreEvent}
     onMouseDown={selectNode}
     onMouseUp={endDragging}
-    onMouseLeave={endDragging}
+    onMouseLeave={dragged ? endDragging : undefined}
     onMouseMove={dragged ? dragItems : undefined}
     transform={`matrix(1,0,0,1,${x},${y})`}
     style={{
@@ -49,9 +51,11 @@ const Node = ({
       ins.map(
         (pin, i, array) => (
           <rect key={i}
+            onClick={ignoreEvent}
             onMouseDown={ignoreEvent}
             onMouseMove={ignoreEvent}
             onMouseUp={ignoreEvent}
+            onMouseLeave={ignoreEvent}
             fill={fill.pin}
             {...pin}
           >
@@ -67,9 +71,11 @@ const Node = ({
             key={i}
             x={xCoordinateOfPin(pinSize, width, outs.length, i)}
             y={height - pinSize}
-            onMouseDown={ignoreEvent}
+            onClick={ignoreEvent}
+            onMouseDown={addLink([id, i], null)}
             onMouseMove={ignoreEvent}
-            onMouseUp={ignoreEvent}
+            onMouseUp={endDraggingLink}
+            onMouseLeave={ignoreEvent}
             fill={fill.pin}
             {...pin}
           >
@@ -98,7 +104,7 @@ Node.propTypes = {
   endDragging: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
-  createLink: PropTypes.func.isRequired
+  addLink: PropTypes.func.isRequired
 }
 
 Node.defaultProps = {

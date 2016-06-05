@@ -1,9 +1,7 @@
 {
   "name": "flow-view",
   "main": [
-    "dist/flow-view.js",
-    "dist/flow-view.map",
-    "dist/flow-view.min.js"
+    "dist/flow-view.js"
   ],
   "homepage": "http://g14n.info/flow-view",
   "authors": [

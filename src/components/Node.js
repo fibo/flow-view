@@ -17,8 +17,6 @@ const Node = ({
   text,
   pinRadius,
   ins, outs,
-  dragged,
-  dragItems,
   draggedLinkId,
   isDraggingLink,
   addLink,
@@ -30,9 +28,6 @@ const Node = ({
   <g
     onClick={ignoreEvent}
     onMouseDown={selectNode}
-    onMouseUp={dragged ? endDragging : undefined}
-    onMouseLeave={dragged ? endDragging : undefined}
-    onMouseMove={dragged ? dragItems : undefined}
     transform={`matrix(1,0,0,1,${x},${y})`}
     style={{
       cursor: (selected ? 'pointer' : 'default')
@@ -105,11 +100,9 @@ Node.propTypes = {
   pinRadius: PropTypes.number.isRequired,
   text: PropTypes.string.isRequired,
   ins: PropTypes.array.isRequired,
-  dragged: PropTypes.bool.isRequired,
   outs: PropTypes.array.isRequired,
   selectNode: PropTypes.func.isRequired,
   endDragging: PropTypes.func.isRequired,
-  dragItems: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
   addLink: PropTypes.func.isRequired
 }

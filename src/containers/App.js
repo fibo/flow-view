@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import xCoordinateOfPin from '../geometry/xCoordinateOfPin'
+import xCenterOfPin from '../util/xCenterOfPin'
 import {
   addLink,
   dragItems,
@@ -13,8 +13,7 @@ import {
 } from '../actions'
 import Canvas from '../components/Canvas'
 
-const halfPinSize = 5
-const pinSize = halfPinSize * 2
+const pinRadius = 6
 const fontWidth = 8
 const nodeHeight = 40
 
@@ -39,10 +38,9 @@ const mapStateToProps = (state, ownProps) => {
     const ins = node.ins.map(
       (pin, i, ins) => {
         return {
-          x: xCoordinateOfPin(pinSize, width, ins.length, i),
-          y: 0,
-          width: pinSize,
-          height: pinSize,
+          cx: xCenterOfPin(pinRadius, width, ins.length, i),
+          cy: pinRadius,
+          r: pinRadius,
           data: ins[i]
         }
       }
@@ -51,10 +49,9 @@ const mapStateToProps = (state, ownProps) => {
     const outs = node.outs.map(
       (pin, i, outs) => {
         return {
-          x: xCoordinateOfPin(pinSize, width, outs.length, i),
-          y: height - pinSize,
-          width: pinSize,
-          height: pinSize,
+          cx: xCenterOfPin(pinRadius, width, outs.length, i),
+          cy: height - pinRadius,
+          r: pinRadius,
           data: outs[i]
         }
       }
@@ -89,15 +86,15 @@ const mapStateToProps = (state, ownProps) => {
       // Start node.
       if ((Array.isArray(link.from)) && (node.id === link.from[0])) {
         const position = link.from[1] || 0
-        x = node.x + xCoordinateOfPin(pinSize, node.width, node.outs.length, position) + halfPinSize
-        y = node.y + node.height - halfPinSize
+        x = node.x + xCenterOfPin(pinRadius, node.width, node.outs.length, position)
+        y = node.y + node.height - pinRadius
       }
 
       // End node.
       if ((Array.isArray(link.to)) && (node.id === link.to[0])) {
         const position = link.to[1] || 0
-        x2 = node.x + xCoordinateOfPin(pinSize, node.width, node.ins.length, position) + halfPinSize
-        y2 = node.y + halfPinSize
+        x2 = node.x + xCenterOfPin(pinRadius, node.width, node.ins.length, position)
+        y2 = node.y + pinRadius
       }
     }
 
@@ -140,7 +137,7 @@ const mapStateToProps = (state, ownProps) => {
     width: (ownProps.width || state.width),
     nodes,
     links,
-    pinSize,
+    pinRadius,
     selectedItems: state.selectedItems,
     previousDraggingPoint,
     isDraggingLink,
@@ -153,14 +150,16 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
+  const offset = ownProps.offset
+
   return {
     addLink: (from, to) => (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       const previousDraggingPoint = {
-        x: e.clientX,
-        y: e.clientY
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
       }
 
       dispatch(addLink({ from, to }, previousDraggingPoint))
@@ -170,8 +169,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       e.stopPropagation()
 
       const draggingDelta = {
-        x: e.clientX - previousDraggingPoint.x,
-        y: e.clientY - previousDraggingPoint.y
+        x: e.clientX - offset.x - previousDraggingPoint.x,
+        y: e.clientY - offset.y - previousDraggingPoint.y
       }
 
       dispatch(dragLink(previousDraggingPoint, draggingDelta))
@@ -181,13 +180,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       e.stopPropagation()
 
       const draggingDelta = {
-        x: e.clientX - previousDraggingPoint.x,
-        y: e.clientY - previousDraggingPoint.y
+        x: e.clientX - offset.x - previousDraggingPoint.x,
+        y: e.clientY - offset.y - previousDraggingPoint.y
       }
 
       dispatch(dragItems(previousDraggingPoint, draggingDelta))
     },
-    endDraggingLink: (draggedLinkId) => (e) => {
+    endDraggingLink: (draggedLinkId, link) => (e) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -211,8 +210,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
       dispatch(selectItem({
         id: linkid,
-        x: e.clientX,
-        y: e.clientY
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
       }))
     },
     selectNode: (nodeid) => (e) => {
@@ -221,8 +220,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
       dispatch(selectItem({
         id: nodeid,
-        x: e.clientX,
-        y: e.clientY
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
       }))
     },
     setNodeSelectorText: (e) => {
@@ -238,8 +237,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       e.stopPropagation()
 
       dispatch(showNodeSelector({
-        x: e.clientX - 10,
-        y: e.clientY - 10
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
       }))
     }
   }

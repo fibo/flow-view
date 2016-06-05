@@ -107,15 +107,23 @@ const flowViewApp = (state = initialState, action) => {
       })
 
     case END_DRAGGING_LINK:
-      let linkBefore = Object.assign({}, state.link)
+      let newLink = Object.assign({}, state.link)
 
-      // Remove dragged link.
-      delete linkBefore[action.id]
+      if (action.link) {
+        const newFrom = action.link.from
+        const newTo = action.link.to
+
+        if (newFrom) newLink[action.id].from = newFrom
+        if (newTo) newLink[action.id].to = newTo
+      } else {
+        // Remove dragged link.
+        delete newLink[action.id]
+      }
 
       return Object.assign({}, state, {
         previousDraggingPoint: null,
         draggedLinkId: null,
-        link: linkBefore
+        link: newLink
       })
 
     case HIDE_NODE_SELECTOR:

@@ -1,20 +1,26 @@
 import React, { PropTypes } from 'react'
-import xCoordinateOfPin from '../geometry/xCoordinateOfPin'
 import ignoreEvent from '../util/ignoreEvent'
 
 const highlighted = {
-  stroke: 'rgb(0,0,0)',
+  stroke: 'black',
   strokeWidth: 1
+}
+
+const fill = 'lightgray'
+const styles = {
+  defaultPin: { stroke: 'black', strokeWidth: 1 }
 }
 
 const Node = ({
   id,
   x, y, width, height,
-  fill, text,
-  pinSize,
+  text,
+  pinRadius,
   ins, outs,
   dragged,
   dragItems,
+  draggedLinkId,
+  isDraggingLink,
   addLink,
   selectNode,
   selected,
@@ -24,7 +30,7 @@ const Node = ({
   <g
     onClick={ignoreEvent}
     onMouseDown={selectNode}
-    onMouseUp={endDragging}
+    onMouseUp={dragged ? endDragging : undefined}
     onMouseLeave={dragged ? endDragging : undefined}
     onMouseMove={dragged ? dragItems : undefined}
     transform={`matrix(1,0,0,1,${x},${y})`}
@@ -33,15 +39,17 @@ const Node = ({
     }}
   >
     <rect
+      rx={pinRadius}
+      ry={pinRadius}
       width={width}
       height={height}
-      fill={fill.box}
+      fill={fill}
       style={selected ? highlighted : undefined}
     ></rect>
 
     <text
-      x={pinSize}
-      y={pinSize * 2}
+      x={pinRadius * 2}
+      y={height / 2}
       style={{pointerEvents: 'none'}}
     >
       <tspan>{text}</tspan>
@@ -50,16 +58,19 @@ const Node = ({
     {
       ins.map(
         (pin, i, array) => (
-          <rect key={i}
+          <circle
+            key={i}
+            cx={pin.cx}
+            cy={pin.cy}
+            r={pin.r}
+            fill={fill}
             onClick={ignoreEvent}
-            onMouseDown={ignoreEvent}
-            onMouseMove={ignoreEvent}
-            onMouseUp={ignoreEvent}
             onMouseLeave={ignoreEvent}
-            fill={fill.pin}
-            {...pin}
+            onMouseDown={ignoreEvent}
+            onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId, { to: [ id, i ] }) : undefined}
+            style={styles.defaultPin}
           >
-          </rect>
+          </circle>
         )
       )
     }
@@ -67,19 +78,19 @@ const Node = ({
     {
       outs.map(
         (pin, i) => (
-          <rect
+          <circle
             key={i}
-            x={xCoordinateOfPin(pinSize, width, outs.length, i)}
-            y={height - pinSize}
+            cx={pin.cx}
+            cy={pin.cy}
+            r={pin.r}
+            fill={fill}
+            style={styles.defaultPin}
             onClick={ignoreEvent}
             onMouseDown={addLink([id, i], null)}
-            onMouseMove={ignoreEvent}
-            onMouseUp={endDraggingLink}
+            onMouseUp={ignoreEvent}
             onMouseLeave={ignoreEvent}
-            fill={fill.pin}
-            {...pin}
           >
-          </rect>
+          </circle>
         )
       )
     }
@@ -91,12 +102,8 @@ Node.propTypes = {
   y: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  pinSize: PropTypes.number.isRequired,
+  pinRadius: PropTypes.number.isRequired,
   text: PropTypes.string.isRequired,
-  fill: PropTypes.shape({
-    box: PropTypes.string.isRequired,
-    pin: PropTypes.string.isRequired
-  }),
   ins: PropTypes.array.isRequired,
   dragged: PropTypes.bool.isRequired,
   outs: PropTypes.array.isRequired,
@@ -108,10 +115,6 @@ Node.propTypes = {
 }
 
 Node.defaultProps = {
-  fill: {
-    box: '#cccccc',
-    pin: '#333333'
-  },
   selected: false
 }
 

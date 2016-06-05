@@ -65,10 +65,11 @@ export const endDraggingItems = () => {
 
 export const END_DRAGGING_LINK = 'END_DRAGGING_LINK'
 
-export const endDraggingLink = (id) => {
+export const endDraggingLink = (id, link) => {
   return {
     type: END_DRAGGING_LINK,
-    id
+    id,
+    link
   }
 }
 

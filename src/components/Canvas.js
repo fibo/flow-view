@@ -8,7 +8,7 @@ const Canvas = ({
   nodes, links,
   height, width,
   hideNodeSelector,
-  pinSize,
+  pinRadius,
   selectLink,
   selectNode,
   addLink,
@@ -46,12 +46,14 @@ const Canvas = ({
       (node, i) => (
         <Node
           key={i}
-          pinSize={pinSize}
+          pinRadius={pinRadius}
           addLink={addLink}
           selectNode={selectNode(node.id)}
           endDragging={endDraggingItems}
+          isDraggingLink={isDraggingLink}
           dragItems={dragItems(previousDraggingPoint)}
-          endDraggingLink={endDraggingLink(draggedLinkId)}
+          endDraggingLink={endDraggingLink}
+          draggedLinkId={draggedLinkId}
           {...node}
         />
       )
@@ -60,6 +62,7 @@ const Canvas = ({
     {links.map(
       (link) => (
         <Link
+          pinRadius={pinRadius}
           selectLink={selectLink(link.id)}
           key={link.id}
           {...link}
@@ -69,18 +72,16 @@ const Canvas = ({
   </Svg>
 )
 
+const point = PropTypes.shape({
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired
+})
+
 Canvas.propTypes = Object.assign({
   links: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
-  pinSize: PropTypes.number.isRequired,
-  previousDraggingPoint: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
-  })
+  pinRadius: PropTypes.number.isRequired,
+  previousDraggingPoint: point
 }, Svg.propTypes)
-
-Canvas.defaultProps = {
-  pinSize: 10
-}
 
 export default Canvas

@@ -22,13 +22,16 @@ class Canvas {
       document.body.appendChild(element)
     }
 
-    staticProps(this)({
-      element
-    })
+    staticProps(this)({ element })
   }
 
   render (view) {
     const element = this.element
+
+    const offset = {
+      x: element.offsetLeft,
+      y: element.offsetTop
+    }
 
     let store = createStore(
       reducers,
@@ -38,7 +41,7 @@ class Canvas {
 
     render(
       <Provider store={store}>
-        <App />
+        <App offset={offset} />
       </Provider>,
       element
     )

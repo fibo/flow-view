@@ -63,7 +63,6 @@ const mapStateToProps = (state, ownProps) => {
       y: node.y,
       text: node.text,
       width, height,
-      dragged: (selected && state.isDraggingItems),
       ins,
       outs,
       selected: (state.selectedItems.indexOf(id) > -1)
@@ -141,6 +140,7 @@ const mapStateToProps = (state, ownProps) => {
     selectedItems: state.selectedItems,
     previousDraggingPoint,
     isDraggingLink,
+    isDraggingItems: state.isDraggingItems,
     nodeSelectorX,
     nodeSelectorY,
     nodeSelectorShow,

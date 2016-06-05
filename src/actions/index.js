@@ -9,10 +9,11 @@ export const addNode = (node) => {
 
 export const ADD_LINK = 'ADD_LINK'
 
-export const addLink = (link) => {
+export const addLink = (link, previousDraggingPoint) => {
   return {
     type: ADD_LINK,
-    link
+    link,
+    previousDraggingPoint
   }
 }
 
@@ -44,11 +45,30 @@ export const dragItems = (previousDraggingPoint, draggingDelta) => {
   }
 }
 
+export const DRAG_LINK = 'DRAG_LINK'
+
+export const dragLink = (previousDraggingPoint, draggingDelta) => {
+  return {
+    type: DRAG_LINK,
+    previousDraggingPoint,
+    draggingDelta
+  }
+}
+
 export const END_DRAGGING_ITEMS = 'END_DRAGGING_ITEMS'
 
 export const endDraggingItems = () => {
   return {
     type: END_DRAGGING_ITEMS
+  }
+}
+
+export const END_DRAGGING_LINK = 'END_DRAGGING_LINK'
+
+export const endDraggingLink = (id) => {
+  return {
+    type: END_DRAGGING_LINK,
+    id
   }
 }
 

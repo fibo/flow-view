@@ -11,9 +11,13 @@ const Canvas = ({
   pinSize,
   selectLink,
   selectNode,
-  createLink,
+  addLink,
+  draggedLinkId,
+  isDraggingLink,
   dragItems,
+  dragLink,
   endDraggingItems,
+  endDraggingLink,
   showNodeSelector,
   nodeSelectorX,
   nodeSelectorY,
@@ -26,8 +30,10 @@ const Canvas = ({
     height={height}
     width={width}
     style={{border: '1px solid black'}}
-    onClick={hideNodeSelector}
+    onMouseDown={hideNodeSelector}
     onDoubleClick={showNodeSelector}
+    onMouseMove={isDraggingLink ? dragLink(previousDraggingPoint) : undefined}
+    onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId) : undefined}
   >
     <NodeSelector
       changeText={setNodeSelectorText}
@@ -41,10 +47,11 @@ const Canvas = ({
         <Node
           key={i}
           pinSize={pinSize}
-          createLink={createLink}
+          addLink={addLink}
           selectNode={selectNode(node.id)}
           endDragging={endDraggingItems}
           dragItems={dragItems(previousDraggingPoint)}
+          endDraggingLink={endDraggingLink(draggedLinkId)}
           {...node}
         />
       )

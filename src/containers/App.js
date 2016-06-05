@@ -3,7 +3,9 @@ import xCoordinateOfPin from '../geometry/xCoordinateOfPin'
 import {
   addLink,
   dragItems,
+  dragLink,
   endDraggingItems,
+  endDraggingLink,
   hideNodeSelector,
   selectItem,
   setNodeSelectorText,
@@ -18,6 +20,10 @@ const nodeHeight = 40
 
 const mapStateToProps = (state, ownProps) => {
   let nodes = []
+
+  let draggedLinkId = state.draggedLinkId
+
+  const previousDraggingPoint = state.previousDraggingPoint
 
   for (let id in state.node) {
     const node = Object.assign({},
@@ -81,23 +87,36 @@ const mapStateToProps = (state, ownProps) => {
 
     for (let node of nodes) {
       // Start node.
-      if (node.id === link.from[0]) {
+      if ((Array.isArray(link.from)) && (node.id === link.from[0])) {
         const position = link.from[1] || 0
         x = node.x + xCoordinateOfPin(pinSize, node.width, node.outs.length, position) + halfPinSize
         y = node.y + node.height - halfPinSize
       }
 
       // End node.
-      if (node.id === link.to[0]) {
+      if ((Array.isArray(link.to)) && (node.id === link.to[0])) {
         const position = link.to[1] || 0
         x2 = node.x + xCoordinateOfPin(pinSize, node.width, node.ins.length, position) + halfPinSize
         y2 = node.y + halfPinSize
       }
     }
 
+    if (link.from === null) {
+      draggedLinkId = id
+      x = previousDraggingPoint.x
+      y = previousDraggingPoint.y
+    }
+
+    if (link.to === null) {
+      draggedLinkId = id
+      x2 = previousDraggingPoint.x
+      y2 = previousDraggingPoint.y
+    }
+
     links.push({
       id,
       selected: (state.selectedItems.indexOf(id) > -1),
+      dragged: (draggedLinkId === id),
       x, y,
       x2, y2
     })
@@ -114,6 +133,8 @@ const mapStateToProps = (state, ownProps) => {
     nodeSelectorText = state.nodeSelector.text
   }
 
+  const isDraggingLink = (draggedLinkId !== null)
+
   return {
     height: (ownProps.height || state.height),
     width: (ownProps.width || state.width),
@@ -121,21 +142,44 @@ const mapStateToProps = (state, ownProps) => {
     links,
     pinSize,
     selectedItems: state.selectedItems,
-    previousDraggingPoint: state.previousDraggingPoint,
-    isConnectingLink: state.isConnectingLink,
+    previousDraggingPoint,
+    isDraggingLink,
     nodeSelectorX,
     nodeSelectorY,
     nodeSelectorShow,
-    nodeSelectorText: nodeSelectorText
+    nodeSelectorText,
+    draggedLinkId
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    createLink: (from, to) => (e) => {
-      dispatch(addLink(from, to))
+    addLink: (from, to) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const previousDraggingPoint = {
+        x: e.clientX,
+        y: e.clientY
+      }
+
+      dispatch(addLink({ from, to }, previousDraggingPoint))
+    },
+    dragLink: (previousDraggingPoint) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const draggingDelta = {
+        x: e.clientX - previousDraggingPoint.x,
+        y: e.clientY - previousDraggingPoint.y
+      }
+
+      dispatch(dragLink(previousDraggingPoint, draggingDelta))
     },
     dragItems: (previousDraggingPoint) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       const draggingDelta = {
         x: e.clientX - previousDraggingPoint.x,
         y: e.clientY - previousDraggingPoint.y
@@ -143,13 +187,28 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
       dispatch(dragItems(previousDraggingPoint, draggingDelta))
     },
-    endDraggingItems: () => {
+    endDraggingLink: (draggedLinkId) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      dispatch(endDraggingLink(draggedLinkId))
+    },
+    endDraggingItems: (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       dispatch(endDraggingItems())
     },
-    hideNodeSelector: () => {
+    hideNodeSelector: (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       dispatch(hideNodeSelector())
     },
     selectLink: (linkid) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       dispatch(selectItem({
         id: linkid,
         x: e.clientX,
@@ -157,6 +216,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }))
     },
     selectNode: (nodeid) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       dispatch(selectItem({
         id: nodeid,
         x: e.clientX,
@@ -164,11 +226,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }))
     },
     setNodeSelectorText: (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       setNodeSelectorText({
         text: e.target.value
       })
     },
     showNodeSelector: (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
       dispatch(showNodeSelector({
         x: e.clientX - 10,
         y: e.clientY - 10

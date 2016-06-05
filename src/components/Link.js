@@ -2,10 +2,8 @@ import React, { PropTypes } from 'react'
 
 const stroke = '#333333'
 const strokeWidth = 3
-const highlighted = {
-  stroke: 'orange',
-  strokeWidth: 4
-}
+const highlightedStrokeWidth = 4
+const strokeDasharray = '5, 5'
 
 const Link = ({
   x, y,
@@ -18,8 +16,9 @@ const Link = ({
   >
     <line
       x1={x} y1={y} x2={x2} y2={y2}
-      stroke={selected ? highlighted.stroke : stroke}
-      strokeWidth={selected ? highlighted.strokeWidth : strokeWidth}
+      stroke={stroke}
+      strokeDasharray={selected ? strokeDasharray : undefined}
+      strokeWidth={selected ? highlightedStrokeWidth : strokeWidth}
     ></line>
   </g>
 )

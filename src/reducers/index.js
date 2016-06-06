@@ -1,4 +1,4 @@
-import initialState from '../initialState'
+import initialState from '../util/initialState'
 import {
   ADD_NODE,
   ADD_LINK,

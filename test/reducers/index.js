@@ -1,6 +1,6 @@
 /*
 import test from 'tape'
-import initialState from 'initialState'
+import initialState from 'util/initialState'
 import deepFreeze from 'deep-freeze'
 import flowViewApp from 'reducers'
 import {

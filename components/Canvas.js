@@ -27,6 +27,7 @@ const Canvas = ({
   nodeSelectorShow,
   nodeSelectorText,
   setNodeSelectorText,
+  setNumIns,
   previousDraggingPoint
 }) => {
   return (
@@ -61,6 +62,7 @@ const Canvas = ({
           isDraggingLink={isDraggingLink}
           endDraggingLink={endDraggingLink}
           draggedLinkId={draggedLinkId}
+          setNumIns={setNumIns(node.id)}
           {...node}
         />
       )

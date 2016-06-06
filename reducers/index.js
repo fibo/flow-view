@@ -10,6 +10,7 @@ import {
   HIDE_NODE_SELECTOR,
   SELECT_ITEM,
   SET_NODE_SELECTOR_TEXT,
+  SET_NUM_INS,
   SHOW_NODE_SELECTOR
 } from '../actions'
 
@@ -165,6 +166,41 @@ const flowViewApp = (state = initialState, action) => {
         nodeSelector: {
           text: action.text
         }
+      })
+
+    case SET_NUM_INS:
+      // TODO use node11 by now, but solve the scope issue
+      // by creating a function for every reducer case.
+      const node11 = Object.assign(
+        {},
+        state.node
+      )
+
+      const nodeOfIns = Object.assign(
+        { ins: [] },
+        node11[action.nodeid]
+      )
+
+      const numIns = nodeOfIns.ins.length
+
+      if (numIns === action.num) return state
+
+      if (numIns < action.num) {
+        // Adding ins.
+        for (let i = numIns; i < action.num; i++) {
+          nodeOfIns.ins.push(`in${i}`)
+        }
+      } else {
+        // Removing ins.
+        for (let i = numIns; i > action.num; i--) {
+          // TODO should remove input only if not connected?
+          // For sure links should be removed.
+          nodeOfIns.ins.pop()
+        }
+      }
+
+      return Object.assign({}, state, {
+        node: node11
       })
 
     case SHOW_NODE_SELECTOR:

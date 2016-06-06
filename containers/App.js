@@ -10,6 +10,7 @@ import {
   endDraggingLink,
   hideNodeSelector,
   selectItem,
+  setNumIns,
   setNodeSelectorText,
   showNodeSelector
 } from '../actions'
@@ -242,6 +243,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       setNodeSelectorText({
         text: e.target.value
       })
+    },
+    setNumIns: (nodeid) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      dispatch(setNumIns({
+        nodeid,
+        num: e.target.value
+      }))
     },
     showNodeSelector: (e) => {
       e.preventDefault()

@@ -9,6 +9,7 @@ const Canvas = ({
   height, width,
   hideNodeSelector,
   pinRadius,
+  delNode,
   selectLink,
   selectNode,
   addLink,
@@ -50,6 +51,7 @@ const Canvas = ({
           pinRadius={pinRadius}
           addLink={addLink}
           selectNode={selectNode(node.id)}
+          delNode={delNode(node.id)}
           endDragging={endDraggingItems}
           isDraggingLink={isDraggingLink}
           endDraggingLink={endDraggingLink}

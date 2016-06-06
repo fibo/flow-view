@@ -1,16 +1,13 @@
 import React, { PropTypes } from 'react'
 import ignoreEvent from '../util/ignoreEvent'
 
-const highlighted = {
-  stroke: 'black',
-  strokeWidth: 1
-}
-
-const fill = 'lightgray'
+const fill = 'ghostwhite'
 const styles = {
+  defaultBox: { stroke: 'black', strokeWidth: 1 },
   defaultPin: { stroke: 'black', strokeWidth: 1 }
 }
 
+// path minus 'M19 13H5v-2h14v2z'
 const Node = ({
   id,
   x, y, width, height,
@@ -21,6 +18,7 @@ const Node = ({
   isDraggingLink,
   addLink,
   selectNode,
+  delNode,
   selected,
   endDragging,
   endDraggingLink
@@ -28,18 +26,43 @@ const Node = ({
   <g
     onClick={ignoreEvent}
     onMouseDown={selectNode}
-    transform={`matrix(1,0,0,1,${x},${y})`}
+    transform={`translate(${x},${y})`}
     style={{
       cursor: (selected ? 'pointer' : 'default')
     }}
   >
+    {selected
+      ? (
+          <g
+            onClick={delNode}
+          >
+            <rect
+              transform={`translate(${width+2},-18)`}
+              rx={pinRadius}
+              ry={pinRadius}
+              width={20}
+              height={20}
+              fill={fill}
+              style={styles.defaultBox}
+            >
+            </rect>
+            <path
+      transform={`translate(${width},-20)`}
+            fill={'black'}
+              d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
+            />
+          </g>
+        )
+      : undefined
+    }
+
     <rect
       rx={pinRadius}
       ry={pinRadius}
       width={width}
       height={height}
       fill={fill}
-      style={selected ? highlighted : undefined}
+      style={styles.defaultBox}
     ></rect>
 
     <text

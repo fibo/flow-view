@@ -1,6 +1,4 @@
-'use strict';
-
-var Canvas = require('flow-view').Canvas;
+var Canvas = require('flow-view').Canvas
 var view = {
   width: 400, height: 300,
   node: {
@@ -8,12 +6,13 @@ var view = {
       x: 80, y: 100,
       width: 100,
       text: 'Drag me',
-      outs: ['out0']
+      outs: ['out1', 'out2', 'out3']
     },
     b: {
       x: 180, y: 200,
       text: 'Click me',
-      ins: ['in0', { name: 'in1', type: 'bool' }]
+      ins: ['in0', { name: 'in1', type: 'bool' }],
+      outs: ['return']
     }
   },
   link: {
@@ -22,8 +21,8 @@ var view = {
       to: ['b', 1]
     }
   }
-};
+}
 
-var canvas = new Canvas('drawing');
+var canvas = new Canvas('drawing')
 
-canvas.render(view);
+canvas.render(view)

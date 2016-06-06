@@ -1,4 +1,4 @@
 .travis.yml
 dist/
 npm-debug.log
-!build
+bower.json

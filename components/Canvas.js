@@ -9,6 +9,7 @@ const Canvas = ({
   height, width,
   hideNodeSelector,
   pinRadius,
+  addNode,
   delNode,
   selectLink,
   selectNode,
@@ -27,7 +28,8 @@ const Canvas = ({
   nodeSelectorText,
   setNodeSelectorText,
   previousDraggingPoint
-}) => (
+}) => {
+  return (
   <Svg
     height={height}
     width={width}
@@ -37,13 +39,16 @@ const Canvas = ({
     onMouseMove={isDraggingLink ? dragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined}
     onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined}
   >
+
     <NodeSelector
-      changeText={setNodeSelectorText}
-      show={nodeSelectorShow}
       x={nodeSelectorX}
       y={nodeSelectorY}
       text={nodeSelectorText}
+      show={nodeSelectorShow}
+      changeText={setNodeSelectorText}
+      addNode={addNode}
     />
+
     {nodes.map(
       (node, i) => (
         <Node
@@ -73,6 +78,7 @@ const Canvas = ({
     )}
   </Svg>
 )
+}
 
 const point = PropTypes.shape({
   x: PropTypes.number.isRequired,

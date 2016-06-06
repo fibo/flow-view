@@ -48,7 +48,13 @@ const flowViewApp = (state = initialState, action) => {
 
       node[generateId()] = action.node
 
-      return Object.assign({}, state, { node })
+      return Object.assign({},
+        state,
+        {
+          node,
+          nodeSelector: null
+        }
+      )
 
     case DEL_NODE:
       const nextState = Object.assign({}, state)

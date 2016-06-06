@@ -3,32 +3,38 @@ import ignoreEvent from '../util/ignoreEvent'
 
 const NodeSelector = ({
   x, y,
-  show,
   text,
+  show,
+  addNode,
   changeText
-}) => (
-  show
-  ? (
-    <foreignObject
-      x={x}
-      y={y}
-      width={120}
-      height={20}
-      onClick={ignoreEvent}
-    >
-      <input
-        onChange={changeText}
-        type='text'
-        value={text}
-        ref={(input) => { if (input !== null) input.focus() }}
-      />
-    </foreignObject>
+}) => {
+  if (!show) return null
+
+          console.log('text', text)
+  return (
+  <foreignObject
+    x={x}
+    y={y}
+    width={120}
+    height={20}
+    onClick={ignoreEvent}
+  >
+    <input
+      type='text'
+      value={text}
+      onChange={changeText}
+      onKeyPress={(e) => {
+        if (e.key === 'Enter') {
+          addNode({x, y, text: e.target.value})
+        }
+      }}
+      ref={(input) => { if (input !== null) input.focus() }}
+    />
+  </foreignObject>
   )
-  : null
-)
+}
 
 NodeSelector.propTypes = {
-  show: PropTypes.bool.isRequired,
   x: PropTypes.number,
   y: PropTypes.number
 }

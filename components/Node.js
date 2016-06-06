@@ -7,7 +7,10 @@ const styles = {
   defaultPin: { stroke: 'black', strokeWidth: 1 }
 }
 
-// path minus 'M19 13H5v-2h14v2z'
+const focusTarget = (e) => {
+  e.target.focus()
+}
+
 const Node = ({
   id,
   x, y, width, height,
@@ -20,11 +23,13 @@ const Node = ({
   selectNode,
   delNode,
   selected,
+  setNumIns,
   endDragging,
   endDraggingLink
 }) => (
   <g
     onClick={ignoreEvent}
+    onDoubleClick={ignoreEvent}
     onMouseDown={selectNode}
     transform={`translate(${x},${y})`}
     style={{
@@ -47,11 +52,35 @@ const Node = ({
             >
             </rect>
             <path
-      transform={`translate(${width},-20)`}
-            fill={'black'}
+              transform={`translate(${width},-20)`}
+              fill={'black'}
               d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
             />
           </g>
+        )
+      : undefined
+    }
+
+    {selected
+      ? (
+          <foreignObject
+            x={-45}
+            y={0}
+            width={40}
+            height={20}
+          >
+            <input
+              type='number'
+              min={0}
+              step={1}
+              value={ins.length}
+              style={{
+                width: 40
+              }}
+              onClick={focusTarget}
+              onChange={setNumIns}
+            />
+          </foreignObject>
         )
       : undefined
     }

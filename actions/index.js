@@ -101,6 +101,16 @@ export const setNodeSelectorText = (text) => {
   }
 }
 
+export const SET_NUM_INS = 'SET_NUM_INS'
+
+export const setNumIns = ({ nodeid, num }) => {
+  return {
+    type: SET_NUM_INS,
+    nodeid,
+    num
+  }
+}
+
 export const SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR'
 
 export const showNodeSelector = ({x, y}) => {

@@ -10,7 +10,6 @@ const NodeSelector = ({
 }) => {
   if (!show) return null
 
-          console.log('text', text)
   return (
   <foreignObject
     x={x}

@@ -4,6 +4,7 @@ import {
   addLink,
   dragItems,
   dragLink,
+  delNode,
   endDraggingItems,
   endDraggingLink,
   hideNodeSelector,
@@ -174,6 +175,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }
 
       dispatch(dragLink(previousDraggingPoint, draggingDelta))
+    },
+    delNode: (nodeid) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      dispatch(delNode(nodeid))
     },
     dragItems: (previousDraggingPoint) => (e) => {
       e.preventDefault()

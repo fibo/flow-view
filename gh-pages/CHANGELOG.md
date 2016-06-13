@@ -12,11 +12,9 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## [Unreleased]
 
-## [1.2.1] - 
-
 ### Added
 
-- build dir
+- lib dir
 - svgx
 - more tests with cheerio
 - React components

@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
-import { Svg } from 'svgx'
 
 const Canvas = ({
   nodes, links,
@@ -31,7 +30,7 @@ const Canvas = ({
   previousDraggingPoint
 }) => {
   return (
-  <Svg
+  <svg
     height={height}
     width={width}
     style={{border: '1px solid black'}}
@@ -78,7 +77,7 @@ const Canvas = ({
         />
       )
     )}
-  </Svg>
+  </svg>
 )
 }
 
@@ -88,10 +87,12 @@ const point = PropTypes.shape({
 })
 
 Canvas.propTypes = Object.assign({
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
   links: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
   pinRadius: PropTypes.number.isRequired,
   previousDraggingPoint: point
-}, Svg.propTypes)
+})
 
 export default Canvas

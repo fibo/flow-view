@@ -1,14 +1,13 @@
 import React, { PropTypes } from 'react'
-import ignoreEvent from '../util/ignoreEvent'
+import ignoreEvent from '../../util/ignoreEvent'
+
+import NumIns from './NumIns'
+import NumOuts from './NumOuts'
 
 const fill = 'ghostwhite'
 const styles = {
   defaultBox: { stroke: 'black', strokeWidth: 1 },
   defaultPin: { stroke: 'black', strokeWidth: 1 }
-}
-
-const focusTarget = (e) => {
-  e.target.focus()
 }
 
 const Node = ({
@@ -24,6 +23,7 @@ const Node = ({
   delNode,
   selected,
   setNumIns,
+  setNumOuts,
   endDragging,
   endDraggingLink
 }) => (
@@ -38,50 +38,31 @@ const Node = ({
   >
     {selected
       ? (
-          <g
-            onClick={delNode}
-          >
-            <rect
-              transform={`translate(${width+2},-18)`}
-              rx={pinRadius}
-              ry={pinRadius}
-              width={20}
-              height={20}
-              fill={fill}
-              style={styles.defaultBox}
-            >
-            </rect>
-            <path
-              transform={`translate(${width},-20)`}
-              fill={'black'}
-              d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
-            />
-          </g>
+      <g
+        onClick={delNode}
+      >
+        <rect
+          transform={`translate(${width + 2},-18)`}
+          rx={pinRadius}
+          ry={pinRadius}
+          width={20}
+          height={20}
+          fill={fill}
+          style={styles.defaultBox}
+        >
+        </rect>
+        <path
+          transform={`translate(${width},-20)`}
+          fill={'black'}
+          d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
+        />
+      </g>
         )
       : undefined
     }
 
     {selected
-      ? (
-          <foreignObject
-            x={-45}
-            y={0}
-            width={40}
-            height={20}
-          >
-            <input
-              type='number'
-              min={0}
-              step={1}
-              value={ins.length}
-              style={{
-                width: 40
-              }}
-              onClick={focusTarget}
-              onChange={setNumIns}
-            />
-          </foreignObject>
-        )
+      ?  <NumIns setNum={setNumIns} value={ins.length} />
       : undefined
     }
 

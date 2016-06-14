@@ -12,6 +12,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## [Unreleased]
 
+### TODO
+
+migrate to webpack
+server side rendering, canvas.exportToSVG exportToFileSVG
+
 ### Added
 
 - lib dir

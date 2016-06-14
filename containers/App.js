@@ -36,8 +36,6 @@ const mapStateToProps = (state, ownProps) => {
     const height = node.height || nodeHeight
     const width = (node.width || ((node.text.length + 4) * fontWidth))
 
-    const selected = (state.selectedItems.indexOf(id) > -1)
-
     const ins = node.ins.map(
       (pin, i, ins) => {
         return {

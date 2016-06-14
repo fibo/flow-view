@@ -11,8 +11,11 @@ import {
   SELECT_ITEM,
   SET_NODE_SELECTOR_TEXT,
   SET_NUM_INS,
+  SET_NUM_OUTS,
   SHOW_NODE_SELECTOR
 } from '../actions'
+import setNumIns from './setNumIns'
+import setNumOuts from './setNumOuts'
 
 const flowViewApp = (state = initialState, action) => {
   let nextId = 0
@@ -168,40 +171,9 @@ const flowViewApp = (state = initialState, action) => {
         }
       })
 
-    case SET_NUM_INS:
-      // TODO use node11 by now, but solve the scope issue
-      // by creating a function for every reducer case.
-      const node11 = Object.assign(
-        {},
-        state.node
-      )
+    case SET_NUM_INS: return setNumIns(state, action)
 
-      const nodeOfIns = Object.assign(
-        { ins: [] },
-        node11[action.nodeid]
-      )
-
-      const numIns = nodeOfIns.ins.length
-
-      if (numIns === action.num) return state
-
-      if (numIns < action.num) {
-        // Adding ins.
-        for (let i = numIns; i < action.num; i++) {
-          nodeOfIns.ins.push(`in${i}`)
-        }
-      } else {
-        // Removing ins.
-        for (let i = numIns; i > action.num; i--) {
-          // TODO should remove input only if not connected?
-          // For sure links should be removed.
-          nodeOfIns.ins.pop()
-        }
-      }
-
-      return Object.assign({}, state, {
-        node: node11
-      })
+    case SET_NUM_OUTS: return setNumOuts(state, action)
 
     case SHOW_NODE_SELECTOR:
       return Object.assign({}, state, {

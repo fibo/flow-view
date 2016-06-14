@@ -8,9 +8,16 @@
     "url": "http://g14n.info"
   },
   "license": "MIT",
-  "main": "lib/flow-view.js",
+  "main": "lib/index.js",
   "scripts": {
-    "babel": "babel . --ignore node_modules --ignore dist --out-dir lib",
+    "babel": "for x in Canvas.js flow-view.js containers actions components reducers util; do npm run babel:$x; done",
+    "babel:Canvas.js": "babel --out-dir lib Canvas.js",
+    "babel:flow-view.js": "babel --out-file lib/index.js flow-view.js",
+    "babel:components": "babel components --out-dir lib/components",
+    "babel:reducers": "babel reducers --out-dir lib/reducers",
+    "babel:containers": "babel containers --out-dir lib/containers",
+    "babel:actions": "babel actions --out-dir lib/actions",
+    "babel:util": "babel util --out-dir lib/util",
     "browserify": "browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "check-deps": "npm outdated",
     "cp": "npm run cp_examples; npm run cp_package.json",

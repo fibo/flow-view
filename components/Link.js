@@ -18,20 +18,18 @@ const Link = ({
       cx={x}
       cy={y}
       r={pinRadius - 2}
-    >
-    </circle>
+    />
     <line
       x1={x} y1={y} x2={x2} y2={y2}
       stroke={stroke}
       strokeDasharray={selected ? strokeDasharray : undefined}
       strokeWidth={selected ? highlightedStrokeWidth : strokeWidth}
-    ></line>
+    />
     <circle
       cx={x2}
       cy={y2}
       r={pinRadius - 2}
-    >
-    </circle>
+    />
   </g>
 )
 

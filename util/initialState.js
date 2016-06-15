@@ -7,7 +7,10 @@ const initialState = {
   isDraggingItems: false,
   previousDraggingPoint: null,
   nodeSelector: null,
-  draggedLinkId: null
+  draggedLinkId: null,
+  pinRadius: 6,
+  nodeHeight: 40,
+  fontWidth: 8
 }
 
 export default initialState

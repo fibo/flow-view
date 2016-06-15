@@ -8,8 +8,16 @@
     "url": "http://g14n.info"
   },
   "license": "MIT",
-  "main": "flow-view.js",
+  "main": "lib/index.js",
   "scripts": {
+    "babel": "for x in Canvas.js flow-view.js containers actions components reducers util; do npm run babel:$x; done",
+    "babel:Canvas.js": "BABEL_ENV=umd babel --out-dir lib Canvas.js",
+    "babel:flow-view.js": "BABEL_ENV=umd babel --out-file lib/index.js flow-view.js",
+    "babel:components": "BABEL_ENV=umd babel components --out-dir lib/components",
+    "babel:reducers": "BABEL_ENV=umd babel reducers --out-dir lib/reducers",
+    "babel:containers": "BABEL_ENV=umd babel containers --out-dir lib/containers",
+    "babel:actions": "BABEL_ENV=umd babel actions --out-dir lib/actions",
+    "babel:util": "BABEL_ENV=umd babel util --out-dir lib/util",
     "browserify": "browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "check-deps": "npm outdated",
     "cp": "npm run cp_examples; npm run cp_package.json",
@@ -63,10 +71,12 @@
     "redux": "^3.5.2",
     "standard": "^7.1.2",
     "static-props": "^1.0.0",
-    "svgx": "^0.4.3"
+    "svgx": "^0.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.3.0",

@@ -59,8 +59,6 @@ const Canvas = ({
           delNode={delNode(node.id)}
           endDragging={endDraggingItems}
           isDraggingLink={isDraggingLink}
-          endDraggingLink={endDraggingLink}
-          draggedLinkId={draggedLinkId}
           setNumIns={setNumIns(node.id)}
           setNumOuts={setNumOuts(node.id)}
           {...node}

@@ -62,7 +62,12 @@ const Node = ({
     }
 
     {selected
-      ?  <NumIns setNum={setNumIns} value={ins.length} />
+      ? <NumIns setNum={setNumIns} value={ins.length} />
+      : undefined
+    }
+
+    {selected
+      ? <NumOuts setNum={setNumOuts} value={outs.length} />
       : undefined
     }
 

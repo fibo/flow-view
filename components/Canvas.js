@@ -27,9 +27,9 @@ const Canvas = ({
   nodeSelectorText,
   setNodeSelectorText,
   setNumIns,
+  setNumOuts,
   previousDraggingPoint
-}) => {
-  return (
+}) => (
   <svg
     height={height}
     width={width}
@@ -62,6 +62,7 @@ const Canvas = ({
           endDraggingLink={endDraggingLink}
           draggedLinkId={draggedLinkId}
           setNumIns={setNumIns(node.id)}
+          setNumOuts={setNumOuts(node.id)}
           {...node}
         />
       )
@@ -79,7 +80,6 @@ const Canvas = ({
     )}
   </svg>
 )
-}
 
 const point = PropTypes.shape({
   x: PropTypes.number.isRequired,

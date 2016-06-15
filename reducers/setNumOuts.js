@@ -19,7 +19,7 @@ const setNumOuts = (state, action) => {
   if (numPins < num) {
     // Adding pins.
     for (let i = numPins; i < num; i++) {
-      node[nodeid].outs.push(`out${i}`)
+      nodePins.push(`out${i}`)
     }
   } else {
     // Removing pins.
@@ -36,9 +36,11 @@ const setNumOuts = (state, action) => {
       })
 
       // Remove pin only if it is not connected.
-      if (!isConnected) node[nodeid].outs.pop()
+      if (!isConnected) nodePins.pop()
     }
   }
+
+  node[nodeid].outs = nodePins
 
   return Object.assign({}, state, { node })
 }

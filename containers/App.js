@@ -17,14 +17,14 @@ import {
 } from '../actions'
 import Canvas from '../components/Canvas'
 
-const pinRadius = 6
-const fontWidth = 8
-const nodeHeight = 40
-
 const mapStateToProps = (state, ownProps) => {
   let nodes = []
 
   let draggedLinkId = state.draggedLinkId
+
+  const pinRadius = state.pinRadius
+  const nodeHeight = state.nodeHeight
+  const fontWidth = state.fontWidth
 
   const previousDraggingPoint = state.previousDraggingPoint
 
@@ -34,6 +34,7 @@ const mapStateToProps = (state, ownProps) => {
       state.node[id]
     )
 
+    // TODO these two lines are repeated in reducers/index.js, refactor them!
     const height = node.height || nodeHeight
     const width = (node.width || ((node.text.length + 4) * fontWidth))
 
@@ -197,7 +198,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
       dispatch(dragItems(previousDraggingPoint, draggingDelta))
     },
-    endDraggingLink: (draggedLinkId, link) => (e) => {
+    endDraggingLink: (draggedLinkId) => (e) => {
       e.preventDefault()
       e.stopPropagation()
 

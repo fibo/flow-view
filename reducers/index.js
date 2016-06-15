@@ -1,4 +1,4 @@
-import initialState from '../util/initialState'
+import xCenterOfPin from '../util/xCenterOfPin'
 import {
   ADD_NODE,
   ADD_LINK,
@@ -118,17 +118,44 @@ const flowViewApp = (state = initialState, action) => {
 
     case END_DRAGGING_LINK:
       let newLink = Object.assign({}, state.link)
+      const lastX = state.previousDraggingPoint.x
+      const lastY = state.previousDraggingPoint.y
+      const linkId = action.id
+      let draggedLink = Object.assign({}, state.link[linkId])
 
-      if (action.link) {
-        const newFrom = action.link.from
-        const newTo = action.link.to
+      const pinRadius = state.pinRadius
+      const nodeHeight = state.nodeHeight
+      const fontWidth = state.fontWidth
 
-        if (newFrom) newLink[action.id].from = newFrom
-        if (newTo) newLink[action.id].to = newTo
-      } else {
-        // Remove dragged link.
-        delete newLink[action.id]
-      }
+        let to = draggedLink.to
+        let from = draggedLink.from
+
+      Object.keys(state.node).forEach((nodeid) => {
+        // Cannot connect a node to itself.
+        if (from[0] === nodeid) return
+
+        const node = state.node[nodeid]
+
+        const height = node.height || nodeHeight
+        const width = (node.width || ((node.text.length + 4) * fontWidth))
+
+        // Nothing to do if drag ends outside the node.
+        if ((lastX < node.x) || (lastX > (node.x + width))) return
+        if ((lastY < node.y) || (lastY > (node.y + height))) return
+
+        node.ins.forEach((pin, i) => {
+          const cx = node.x + xCenterOfPin(pinRadius, width, node.ins.length, i)
+          const cy = node.y + pinRadius
+          const r = 2 * pinRadius
+
+          if ((lastX > (cx - r)) && (lastX < (cx + r))) to = [nodeid, i]
+        })
+      })
+
+      // Connect link to target...
+      if (to) newLink[linkId].to = to
+      // ...or remove dragged link if no target was found.
+      else delete newLink[linkId]
 
       return Object.assign({}, state, {
         previousDraggingPoint: null,

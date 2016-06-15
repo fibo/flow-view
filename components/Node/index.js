@@ -23,9 +23,7 @@ const Node = ({
   delNode,
   selected,
   setNumIns,
-  setNumOuts,
-  endDragging,
-  endDraggingLink
+  setNumOuts
 }) => (
   <g
     onClick={ignoreEvent}
@@ -100,7 +98,6 @@ const Node = ({
             onClick={ignoreEvent}
             onMouseLeave={ignoreEvent}
             onMouseDown={ignoreEvent}
-            onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId, { to: [ id, i ] }) : undefined}
             style={styles.defaultPin}
           >
           </circle>
@@ -140,7 +137,6 @@ Node.propTypes = {
   ins: PropTypes.array.isRequired,
   outs: PropTypes.array.isRequired,
   selectNode: PropTypes.func.isRequired,
-  endDragging: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
   addLink: PropTypes.func.isRequired
 }

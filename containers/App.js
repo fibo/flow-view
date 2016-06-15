@@ -11,6 +11,7 @@ import {
   hideNodeSelector,
   selectItem,
   setNumIns,
+  setNumOuts,
   setNodeSelectorText,
   showNodeSelector
 } from '../actions'
@@ -247,6 +248,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       e.stopPropagation()
 
       dispatch(setNumIns({
+        nodeid,
+        num: e.target.value
+      }))
+    },
+    setNumOuts: (nodeid) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      dispatch(setNumOuts({
         nodeid,
         num: e.target.value
       }))

@@ -3,8 +3,8 @@ import focusTarget from '../../util/focusTarget'
 
 const NumOuts = ({ setNum, value }) => (
   <foreignObject
-    x={45}
-    y={0}
+    x={-50}
+    y={20}
     width={40}
     height={20}
   >

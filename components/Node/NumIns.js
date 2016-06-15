@@ -3,7 +3,7 @@ import focusTarget from '../../util/focusTarget'
 
 const NumIns = ({ setNum, value }) => (
   <foreignObject
-    x={-45}
+    x={-50}
     y={0}
     width={40}
     height={20}

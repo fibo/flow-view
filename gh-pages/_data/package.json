@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React/Redux",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -20,14 +20,16 @@
     "babel:util": "BABEL_ENV=umd babel util --out-dir lib/util",
     "browserify": "browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "check-deps": "npm outdated",
-    "cp": "npm run cp:examples; npm run cp:package.json",
+    "cp": "npm run cp:examples",
     "cp:examples": "cp examples/basic/usage.js gh-pages/_includes/jscode/basic",
-    "cp:package.json": "cp package.json gh-pages/_data/",
     "build": "npm run browserify && npm run minify && npm run jekyll; git status",
+    "gh-pages:_data": "for x in package.json tags.json; do npm run gh-pages:_data:$x; done",
+    "gh-pages:_data:package.json": "cp package.json gh-pages/_data/",
+    "gh-pages:_data:tags.json": "wget https://api.github.com/repos/fibo/algebra/tags -O gh-pages/_data/tags.json",
     "gh-pages:push": "git subtree --prefix gh-pages push origin gh-pages",
     "gh-pages:pull": "git subtree --prefix gh-pages pull origin gh-pages",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
-    "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
+    "jekyll": "npm run homepage; npm run cp; cd gh-pages:_data; jekyll build; cd ..",
     "jekyll:serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
     "lint": "standard flow-view.js Canvas.js reducers/*js util/*js containers/*js; npm run lint:components; npm run lint:test",
     "lint:components": "cd components; standard; cd ..",
@@ -39,11 +41,12 @@
     "pull": "git pull origin master && npm run gh-pages:pull",
     "push": "git push origin master && npm run gh-pages:push",
     "start": "BABEL_ENV=development NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify -p livereactload",
-    "update-deps": "npm update --save --dev",
+    "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
     "test": "for x in commonjs components; do npm run test:$x; done",
     "test:commonjs": "NODE_PATH=lib tape test/commonjs/*.js",
-    "test:components": "NODE_PATH=. tape -r babel-register test/components/*.js"
+    "test:components": "NODE_PATH=. tape -r babel-register test/components/*.js",
+    "update-deps": "npm update --save --dev"
   },
   "pre-commit": [
     "lint",

@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import ignoreEvent from '../util/ignoreEvent'
 
 const stroke = '#333333'
 const strokeWidth = 3
@@ -8,10 +9,14 @@ const Link = ({
   x, y,
   x2, y2,
   pinRadius,
-  selected, selectLink
+  selected,
+  selectLink,
+  deleteLink
 }) => (
   <g
-    onMouseDown={selectLink}
+    onClick={selected ? undefined : selectLink}
+    onDoubleClick={selected ? deleteLink : undefined}
+    onMouseDown={ignoreEvent}
   >
     <circle
       cx={x}
@@ -36,7 +41,8 @@ Link.propTypes = {
   y: PropTypes.number.isRequired,
   x2: PropTypes.number.isRequired,
   y2: PropTypes.number.isRequired,
-  selectLink: PropTypes.func.isRequired
+  deleteLink: PropTypes.func,
+  selectLink: PropTypes.func
 }
 
 export default Link

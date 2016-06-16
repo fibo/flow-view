@@ -16,8 +16,6 @@ const Node = ({
   text,
   pinRadius,
   ins, outs,
-  draggedLinkId,
-  isDraggingLink,
   addLink,
   selectNode,
   delNode,

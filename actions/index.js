@@ -20,10 +20,10 @@ export const delNode = (id) => ({
   id
 })
 
-export const DEL_LINK = 'DEL_LINK'
+export const DELETE_LINK = 'DELETE_LINK'
 
-export const delLink = (id) => ({
-  type: DEL_LINK,
+export const deleteLink = (id) => ({
+  type: DELETE_LINK,
   id
 })
 

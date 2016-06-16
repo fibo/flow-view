@@ -1,5 +1,8 @@
+# Include lib folder, which contains babel compiled output.
 !lib
+
 .travis.yml
 dist/
-npm-debug.log
+gh-pages
+examples
 bower.json

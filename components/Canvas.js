@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import initialState from '../util/initialState'
 import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
@@ -79,18 +80,20 @@ const Canvas = ({
   </svg>
 )
 
-const point = PropTypes.shape({
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired
-})
-
-Canvas.propTypes = Object.assign({
+Canvas.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   links: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
   pinRadius: PropTypes.number.isRequired,
-  previousDraggingPoint: point
-})
+  previousDraggingPoint: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired
+  })
+}
+
+Canvas.defaultProps = {
+  pinRadius: initialState.pinRadius
+}
 
 export default Canvas

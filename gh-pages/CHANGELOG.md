@@ -23,6 +23,7 @@ server side rendering, canvas.exportToSVG exportToFileSVG
 
 ### Added
 
+- budo dev server and react hot loading
 - dynamic changelog
 - Codepen example for v2
 - Better header comment for minified version

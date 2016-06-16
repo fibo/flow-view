@@ -11,6 +11,7 @@ const Canvas = ({
   pinRadius,
   addNode,
   delNode,
+  deleteLink,
   selectLink,
   selectNode,
   addLink,
@@ -72,6 +73,7 @@ const Canvas = ({
         <Link
           pinRadius={pinRadius}
           selectLink={selectLink(link.id)}
+          deleteLink={deleteLink(link.id)}
           key={link.id}
           {...link}
         />

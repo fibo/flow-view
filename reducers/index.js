@@ -1,4 +1,5 @@
 import xCenterOfPin from '../util/xCenterOfPin'
+import initialState from '../util/initialState'
 import {
   ADD_NODE,
   ADD_LINK,
@@ -127,8 +128,8 @@ const flowViewApp = (state = initialState, action) => {
       const nodeHeight = state.nodeHeight
       const fontWidth = state.fontWidth
 
-        let to = draggedLink.to
-        let from = draggedLink.from
+      let to = draggedLink.to
+      let from = draggedLink.from
 
       Object.keys(state.node).forEach((nodeid) => {
         // Cannot connect a node to itself.
@@ -145,7 +146,6 @@ const flowViewApp = (state = initialState, action) => {
 
         node.ins.forEach((pin, i) => {
           const cx = node.x + xCenterOfPin(pinRadius, width, node.ins.length, i)
-          const cy = node.y + pinRadius
           const r = 2 * pinRadius
 
           if ((lastX > (cx - r)) && (lastX < (cx + r))) to = [nodeid, i]

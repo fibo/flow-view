@@ -4,7 +4,7 @@ flow: /empty.json
 ---
 # flow-view
 
-> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]+[Redux]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]/[Redux]
 
 [Description](#description) |
 [Installation](#installation) |

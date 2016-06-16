@@ -29,7 +29,7 @@ server side rendering, canvas.exportToSVG exportToFileSVG
 - Better header comment for minified version
 - lib dir, contains commonjs build
 - svgx
-- more tests with cheerio
+- more tests with cheerio, and also server side... finally I can use travis
 - React components
 - standard js
 - ES6 code and babel transpiling

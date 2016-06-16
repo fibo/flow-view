@@ -9,6 +9,9 @@ import staticProps from 'static-props'
 
 class Canvas {
   constructor (elementId) {
+    // Nothing to do in the constructor if we are not in browser context.
+    if (typeof document === 'undefined') return
+
     if (typeof elementId !== 'string') {
       throw new TypeError('elementId must be a string', elementId)
     }

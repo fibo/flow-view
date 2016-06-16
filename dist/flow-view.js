@@ -243,6 +243,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _initialState = require('../util/initialState');
+
+var _initialState2 = _interopRequireDefault(_initialState);
+
 var _Link = require('./Link');
 
 var _Link2 = _interopRequireDefault(_Link);
@@ -327,23 +331,25 @@ var Canvas = function Canvas(_ref) {
   );
 };
 
-var point = _react.PropTypes.shape({
-  x: _react.PropTypes.number.isRequired,
-  y: _react.PropTypes.number.isRequired
-});
-
-Canvas.propTypes = Object.assign({
+Canvas.propTypes = {
   width: _react.PropTypes.number.isRequired,
   height: _react.PropTypes.number.isRequired,
   links: _react.PropTypes.array.isRequired,
   nodes: _react.PropTypes.array.isRequired,
   pinRadius: _react.PropTypes.number.isRequired,
-  previousDraggingPoint: point
-});
+  previousDraggingPoint: _react.PropTypes.shape({
+    x: _react.PropTypes.number.isRequired,
+    y: _react.PropTypes.number.isRequired
+  })
+};
+
+Canvas.defaultProps = {
+  pinRadius: _initialState2.default.pinRadius
+};
 
 exports.default = Canvas;
 
-},{"./Link":4,"./Node":7,"./NodeSelector":8,"react":189}],4:[function(require,module,exports){
+},{"../util/initialState":205,"./Link":4,"./Node":7,"./NodeSelector":8,"react":189}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -359,7 +365,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var stroke = '#333333';
 var strokeWidth = 3;
 var highlightedStrokeWidth = 4;
-var strokeDasharray = '5, 5';
 
 var Link = function Link(_ref) {
   var x = _ref.x;
@@ -377,27 +382,27 @@ var Link = function Link(_ref) {
     _react2.default.createElement('circle', {
       cx: x,
       cy: y,
-      r: pinRadius - 2
+      r: strokeWidth
     }),
     _react2.default.createElement('line', {
       x1: x, y1: y, x2: x2, y2: y2,
       stroke: stroke,
-      strokeDasharray: selected ? strokeDasharray : undefined,
       strokeWidth: selected ? highlightedStrokeWidth : strokeWidth
     }),
     _react2.default.createElement('circle', {
       cx: x2,
       cy: y2,
-      r: pinRadius - 2
+      r: strokeWidth
     })
   );
 };
 
 Link.propTypes = {
-  x: _react.PropTypes.number,
-  y: _react.PropTypes.number,
-  x2: _react.PropTypes.number,
-  y2: _react.PropTypes.number
+  x: _react.PropTypes.number.isRequired,
+  y: _react.PropTypes.number.isRequired,
+  x2: _react.PropTypes.number.isRequired,
+  y2: _react.PropTypes.number.isRequired,
+  selectLink: _react.PropTypes.func.isRequired
 };
 
 exports.default = Link;
@@ -2281,11 +2286,11 @@ var KNOWN_STATICS = {
     arity: true
 };
 
-module.exports = function hoistNonReactStatics(targetComponent, sourceComponent) {
+module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
     if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
         var keys = Object.getOwnPropertyNames(sourceComponent);
-        for (var i=0; i<keys.length; ++i) {
-            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]]) {
+        for (var i = 0; i < keys.length; ++i) {
+            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]] && (!customStatics || !customStatics[keys[i]])) {
                 try {
                     targetComponent[keys[i]] = sourceComponent[keys[i]];
                 } catch (error) {
@@ -2585,10 +2590,30 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 var process = module.exports = {};
 
-// cached from whatever global is present so that test runners that stub it don't break things.
-var cachedSetTimeout = setTimeout;
-var cachedClearTimeout = clearTimeout;
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
 
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+  try {
+    cachedSetTimeout = setTimeout;
+  } catch (e) {
+    cachedSetTimeout = function () {
+      throw new Error('setTimeout is not defined');
+    }
+  }
+  try {
+    cachedClearTimeout = clearTimeout;
+  } catch (e) {
+    cachedClearTimeout = function () {
+      throw new Error('clearTimeout is not defined');
+    }
+  }
+} ())
 var queue = [];
 var draining = false;
 var currentQueue;
@@ -22207,6 +22232,10 @@ var _xCenterOfPin = require('../util/xCenterOfPin');
 
 var _xCenterOfPin2 = _interopRequireDefault(_xCenterOfPin);
 
+var _initialState = require('../util/initialState');
+
+var _initialState2 = _interopRequireDefault(_initialState);
+
 var _actions = require('../actions');
 
 var _setNumIns = require('./setNumIns');
@@ -22220,7 +22249,7 @@ var _setNumOuts2 = _interopRequireDefault(_setNumOuts);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var flowViewApp = function flowViewApp() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+  var state = arguments.length <= 0 || arguments[0] === undefined ? _initialState2.default : arguments[0];
   var action = arguments[1];
 
   var nextId = 0;
@@ -22359,7 +22388,6 @@ var flowViewApp = function flowViewApp() {
 
           node.ins.forEach(function (pin, i) {
             var cx = node.x + (0, _xCenterOfPin2.default)(pinRadius, width, node.ins.length, i);
-            var cy = node.y + pinRadius;
             var r = 2 * pinRadius;
 
             if (lastX > cx - r && lastX < cx + r) to = [nodeid, i];
@@ -22452,7 +22480,7 @@ var flowViewApp = function flowViewApp() {
 
 exports.default = flowViewApp;
 
-},{"../actions":2,"../util/xCenterOfPin":206,"./setNumIns":201,"./setNumOuts":202}],201:[function(require,module,exports){
+},{"../actions":2,"../util/initialState":205,"../util/xCenterOfPin":206,"./setNumIns":201,"./setNumOuts":202}],201:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

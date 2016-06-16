@@ -3,6 +3,9 @@ title: Change Log
 permalink: /changelog
 ---
 
+{% assign package = site.data.package %}
+{% assign tags = site.data.tags %}
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
@@ -14,12 +17,16 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### TODO
 
-migrate to webpack
 server side rendering, canvas.exportToSVG exportToFileSVG
+
+## [2.0.0] - 2016-06-16
 
 ### Added
 
-- lib dir
+- dynamic changelog
+- Codepen example for v2
+- Better header comment for minified version
+- lib dir, contains commonjs build
 - svgx
 - more tests with cheerio
 - React components
@@ -54,9 +61,10 @@ server side rendering, canvas.exportToSVG exportToFileSVG
 
 ### First stable release
 
-[Unreleased]: https://github.com/fibo/flow-view/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/fibo/flow-view/compare/v1.2.1...v2.0.0
-[1.2.1]: https://github.com/fibo/flow-view/compare/v1.1.1...v1.2.1
-[1.1.1]: https://github.com/fibo/flow-view/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/fibo/flow-view/compare/v1.0.2...v1.1.0
-[1.0.2]: https://github.com/fibo/flow-view/compare/v1.0.0...v1.0.2
+[Unreleased]: https://github.com/fibo/{{ package.name }}/compare/v{{ package.version }}...HEAD
+
+{% for tag in tags offset:2 %}
+  {% assign current = tags[forloop.index0].name %}
+  {% assign previous = tags[forloop.index].name %}
+  [{{ current }}]: https://github.com/fibo/{{ package.name }}/compare/{{ previous }}...{{ current }}
+{% endfor %}

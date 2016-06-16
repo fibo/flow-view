@@ -1,0 +1,137 @@
+[
+  {
+    "name": "v0.10.1",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.10.1",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.10.1",
+    "commit": {
+      "sha": "91bae9d752a8ee809d21c1e7f614ea11ca7b37f8",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/91bae9d752a8ee809d21c1e7f614ea11ca7b37f8"
+    }
+  },
+  {
+    "name": "v0.10.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.10.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.10.0",
+    "commit": {
+      "sha": "f403137ce9c5c5a8eb2467a2fbcbf989df02ff75",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/f403137ce9c5c5a8eb2467a2fbcbf989df02ff75"
+    }
+  },
+  {
+    "name": "v0.9.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.9.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.9.0",
+    "commit": {
+      "sha": "147a79fbb6b9f59c0087d3f32ed99a1854387416",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/147a79fbb6b9f59c0087d3f32ed99a1854387416"
+    }
+  },
+  {
+    "name": "v0.8.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.8.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.8.0",
+    "commit": {
+      "sha": "3533ba6360a25e1b2e927aebd4057949cdfd671e",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/3533ba6360a25e1b2e927aebd4057949cdfd671e"
+    }
+  },
+  {
+    "name": "v0.7.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.7.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.7.0",
+    "commit": {
+      "sha": "60932a1b739d23f298af90584f971da3c733f04e",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/60932a1b739d23f298af90584f971da3c733f04e"
+    }
+  },
+  {
+    "name": "v0.6.2",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.6.2",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.6.2",
+    "commit": {
+      "sha": "c7905f1ab78e78e5b166801d577cdbcd6dff1951",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/c7905f1ab78e78e5b166801d577cdbcd6dff1951"
+    }
+  },
+  {
+    "name": "v0.6.1",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.6.1",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.6.1",
+    "commit": {
+      "sha": "ef08b7aa515934fc98d60d2c1ad5d6cbc5583844",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/ef08b7aa515934fc98d60d2c1ad5d6cbc5583844"
+    }
+  },
+  {
+    "name": "v0.6.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.6.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.6.0",
+    "commit": {
+      "sha": "150ba81b72bdaf51ce9eb43bf603cba17b948702",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/150ba81b72bdaf51ce9eb43bf603cba17b948702"
+    }
+  },
+  {
+    "name": "v0.5.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.5.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.5.0",
+    "commit": {
+      "sha": "15274faa7f84edf2c6fc8c05562c648de735b914",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/15274faa7f84edf2c6fc8c05562c648de735b914"
+    }
+  },
+  {
+    "name": "v0.4.0",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.4.0",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.4.0",
+    "commit": {
+      "sha": "d921fdfcc73ecd44c1610564999ace4275937c6d",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/d921fdfcc73ecd44c1610564999ace4275937c6d"
+    }
+  },
+  {
+    "name": "v0.1.7",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.1.7",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.1.7",
+    "commit": {
+      "sha": "6e308c0a09bcf2d90cfd4c3bdeba5a53488b2172",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/6e308c0a09bcf2d90cfd4c3bdeba5a53488b2172"
+    }
+  },
+  {
+    "name": "v0.1.5",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.1.5",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.1.5",
+    "commit": {
+      "sha": "dd2eebb0302af70eefa43efcdf5e9a159b631ffb",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/dd2eebb0302af70eefa43efcdf5e9a159b631ffb"
+    }
+  },
+  {
+    "name": "v0.1.4",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.1.4",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.1.4",
+    "commit": {
+      "sha": "aaaa70afa01c600d718ca24f350f57e7d69a9396",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/aaaa70afa01c600d718ca24f350f57e7d69a9396"
+    }
+  },
+  {
+    "name": "v0.1.2",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.1.2",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.1.2",
+    "commit": {
+      "sha": "1669e639d34f4ad9d121d30a507e0c2d0d2dacd4",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/1669e639d34f4ad9d121d30a507e0c2d0d2dacd4"
+    }
+  },
+  {
+    "name": "v0.1",
+    "zipball_url": "https://api.github.com/repos/fibo/algebra/zipball/v0.1",
+    "tarball_url": "https://api.github.com/repos/fibo/algebra/tarball/v0.1",
+    "commit": {
+      "sha": "6e8097cf8bd2e3e3458b9a85b881a9cfc39bc01c",
+      "url": "https://api.github.com/repos/fibo/algebra/commits/6e8097cf8bd2e3e3458b9a85b881a9cfc39bc01c"
+    }
+  }
+]

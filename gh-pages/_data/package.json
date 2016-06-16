@@ -31,7 +31,7 @@
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jekyll_serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
     "lint": "standard",
-    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n Version: ${npm_package_version}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
+    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n // Version: ${npm_package_version}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
     "preversion": "npm run build; npm run git_add-f",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",

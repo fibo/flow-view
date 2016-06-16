@@ -8,7 +8,7 @@ flow: /empty.json
 
 [Description](#description) |
 [Installation](#installation) |
-[API](#api)
+[API](#api) |
 [License](#license)
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
@@ -29,6 +29,8 @@ in React, yeah! Previous version is still available [here](https://github.com/fi
 > Please, help me give Node a common visual interface. Use *flow-view*!
 
 Any feedback is welcome!
+
+<p><a href="http://codepen.io/fibo/pen/qNNmdd/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
 ## Installation
 

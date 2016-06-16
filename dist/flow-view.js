@@ -41,6 +41,9 @@ var Canvas = function () {
   function Canvas(elementId) {
     _classCallCheck(this, Canvas);
 
+    // Nothing to do in the constructor if we are not in browser context.
+    if (typeof document === 'undefined') return;
+
     if (typeof elementId !== 'string') {
       throw new TypeError('elementId must be a string', elementId);
     }
@@ -116,11 +119,11 @@ var delNode = exports.delNode = function delNode(id) {
   };
 };
 
-var DEL_LINK = exports.DEL_LINK = 'DEL_LINK';
+var DELETE_LINK = exports.DELETE_LINK = 'DELETE_LINK';
 
-var delLink = exports.delLink = function delLink(id) {
+var deleteLink = exports.deleteLink = function deleteLink(id) {
   return {
-    type: DEL_LINK,
+    type: DELETE_LINK,
     id: id
   };
 };
@@ -270,6 +273,7 @@ var Canvas = function Canvas(_ref) {
   var pinRadius = _ref.pinRadius;
   var addNode = _ref.addNode;
   var delNode = _ref.delNode;
+  var deleteLink = _ref.deleteLink;
   var selectLink = _ref.selectLink;
   var selectNode = _ref.selectNode;
   var addLink = _ref.addLink;
@@ -325,6 +329,7 @@ var Canvas = function Canvas(_ref) {
       return _react2.default.createElement(_Link2.default, _extends({
         pinRadius: pinRadius,
         selectLink: selectLink(link.id),
+        deleteLink: deleteLink(link.id),
         key: link.id
       }, link));
     })
@@ -360,6 +365,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _ignoreEvent = require('../util/ignoreEvent');
+
+var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var stroke = '#333333';
@@ -374,10 +383,13 @@ var Link = function Link(_ref) {
   var pinRadius = _ref.pinRadius;
   var selected = _ref.selected;
   var selectLink = _ref.selectLink;
+  var deleteLink = _ref.deleteLink;
   return _react2.default.createElement(
     'g',
     {
-      onMouseDown: selectLink
+      onClick: selected ? undefined : selectLink,
+      onDoubleClick: selected ? deleteLink : undefined,
+      onMouseDown: _ignoreEvent2.default
     },
     _react2.default.createElement('circle', {
       cx: x,
@@ -402,12 +414,13 @@ Link.propTypes = {
   y: _react.PropTypes.number.isRequired,
   x2: _react.PropTypes.number.isRequired,
   y2: _react.PropTypes.number.isRequired,
-  selectLink: _react.PropTypes.func.isRequired
+  deleteLink: _react.PropTypes.func,
+  selectLink: _react.PropTypes.func
 };
 
 exports.default = Link;
 
-},{"react":189}],5:[function(require,module,exports){
+},{"../util/ignoreEvent":204,"react":189}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -548,8 +561,6 @@ var Node = function Node(_ref) {
   var pinRadius = _ref.pinRadius;
   var ins = _ref.ins;
   var outs = _ref.outs;
-  var draggedLinkId = _ref.draggedLinkId;
-  var isDraggingLink = _ref.isDraggingLink;
   var addLink = _ref.addLink;
   var selectNode = _ref.selectNode;
   var delNode = _ref.delNode;
@@ -919,6 +930,14 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
         };
 
         dispatch((0, _actions.dragLink)(previousDraggingPoint, draggingDelta));
+      };
+    },
+    deleteLink: function deleteLink(linkid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.deleteLink)(linkid));
       };
     },
     delNode: function delNode(nodeid) {
@@ -22295,6 +22314,17 @@ var flowViewApp = function flowViewApp() {
           })
         };
 
+      case _actions.DELETE_LINK:
+        var delLink = Object.assign({}, state);
+
+        var linkid = action.id;
+
+        delete delLink.link[linkid];
+
+        return {
+          v: delLink
+        };
+
       case _actions.DEL_NODE:
         var nextState = Object.assign({}, state);
 
@@ -22302,11 +22332,11 @@ var flowViewApp = function flowViewApp() {
 
         delete nextState.node[nodeid];
 
-        for (var linkid in nextState.link) {
-          var isSource = nextState.link[linkid].from[0] === nodeid;
-          var isTarget = nextState.link[linkid].to[0] === nodeid;
+        for (var _linkid in nextState.link) {
+          var isSource = nextState.link[_linkid].from[0] === nodeid;
+          var isTarget = nextState.link[_linkid].to[0] === nodeid;
 
-          if (isSource || isTarget) delete nextState.link[linkid];
+          if (isSource || isTarget) delete nextState.link[_linkid];
         }
 
         return {

@@ -59,16 +59,19 @@ $ npm install flow-view
 
 > flow-view Canvas constructor
 
-* **@param** `{String}` elementId
+* **@param** `{String}` containerId
 * **@returns** `{Object}` canvas
 
-In your HTML, optionally place a div where you want to mount the canvas.
-If the DOM element does not exists, a brand new div is created and appended
-to the page *body*.
+Suppose your *containerId* is `drawing`.
+In your HTML, **optionally** place a div where you want to mount the canvas.
 
 ```html
 <div id="drawing"></div>
 ```
+
+If *flow-view* finds a `document` and does not exist a DOM element
+with given *containerId*, a brand new `div` is created and appended
+to the page *body*.
 
 Create an empty canvas
 
@@ -77,6 +80,16 @@ var Canvas = require('flow-view').Canvas
 
 var canvas = new Canvas('drawing')
 ```
+
+Note that nothing willl happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
+
+### `canvas.containerId`
+
+It is the id of the DOM element container.
+
+### `canvas.container`
+
+It is the DOM element container, if any. On server side, this attribute is `null`.
 
 ### `canvas.render(view)`
 

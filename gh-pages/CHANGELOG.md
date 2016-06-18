@@ -19,6 +19,17 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 server side rendering, canvas.exportToSVG exportToFileSVG
 
+## [2.1.0] - 2016-06-18
+
+### Fixed
+
+- Put lib dir under version control, the npm package could not be imported.
+
+### Added
+
+- container element and containerId
+- server side test
+
 ## [2.0.0] - 2016-06-16
 
 ### Added

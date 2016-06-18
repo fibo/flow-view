@@ -18,10 +18,10 @@ class Canvas {
 
     // If we are in browser context, get the container or create it.
     if (typeof document !== 'undefined') {
-      container = document.getcontainerById(containerId)
+      container = document.getElementById(containerId)
 
       if (container === null) {
-        container = document.createcontainer('div')
+        container = document.createElement('div')
         container.id = containerId
         document.body.appendChild(container)
       }

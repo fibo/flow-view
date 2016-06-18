@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React/Redux",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -29,7 +29,7 @@
     "gh-pages:push": "git subtree --prefix gh-pages push origin gh-pages",
     "gh-pages:pull": "git subtree --prefix gh-pages pull origin gh-pages",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
-    "jekyll": "npm run homepage; npm run cp; cd gh-pages:_data; jekyll build; cd ..",
+    "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jekyll:serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
     "lint": "standard flow-view.js Canvas.js reducers/*js util/*js containers/*js; npm run lint:components; npm run lint:test",
     "lint:components": "cd components; standard; cd ..",
@@ -43,8 +43,8 @@
     "start": "BABEL_ENV=development NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify -p livereactload",
     "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in commonjs components; do npm run test:$x; done",
-    "test:commonjs": "NODE_PATH=lib tape test/commonjs/*.js",
+    "test": "for x in serverside components; do npm run test:$x; done",
+    "test:serverside": "NODE_PATH=lib tape test/serverside/*.js",
     "test:components": "NODE_PATH=. tape -r babel-register test/components/*.js",
     "update-deps": "npm update --save --dev"
   },

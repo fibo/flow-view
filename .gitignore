@@ -6,3 +6,4 @@ Gemfile*
 gh-pages/_site
 dist/
 build/
+_site

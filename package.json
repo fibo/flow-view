@@ -43,8 +43,8 @@
     "start": "BABEL_ENV=development NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify -p livereactload",
     "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in commonjs components; do npm run test:$x; done",
-    "test:commonjs": "NODE_PATH=lib tape test/commonjs/*.js",
+    "test": "for x in serverside components; do npm run test:$x; done",
+    "test:serverside": "NODE_PATH=lib tape test/serverside/*.js",
     "test:components": "NODE_PATH=. tape -r babel-register test/components/*.js",
     "update-deps": "npm update --save --dev"
   },

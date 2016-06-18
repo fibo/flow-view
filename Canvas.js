@@ -8,32 +8,34 @@ import reducers from './reducers'
 import staticProps from 'static-props'
 
 class Canvas {
-  constructor (elementId) {
-    // Nothing to do in the constructor if we are not in browser context.
-    if (typeof document === 'undefined') return
+  constructor (containerId) {
+    let container = null
 
-    if (typeof elementId !== 'string') {
-      throw new TypeError('elementId must be a string', elementId)
+    // Check that containerId is a string.
+    if (typeof containerId !== 'string') {
+      throw new TypeError('containerId must be a string', containerId)
     }
 
-    // Create element and append it to body if it does not exist already.
-    let element = document.getElementById(elementId)
+    // If we are in browser context, get the container or create it.
+    if (typeof document !== 'undefined') {
+      container = document.getcontainerById(containerId)
 
-    if (element === null) {
-      element = document.createElement('div')
-      element.id = elementId
-      document.body.appendChild(element)
+      if (container === null) {
+        container = document.createcontainer('div')
+        container.id = containerId
+        document.body.appendChild(container)
+      }
     }
 
-    staticProps(this)({ element })
+    staticProps(this)({ container, containerId })
   }
 
   render (view) {
-    const element = this.element
+    const container = this.container
 
     const offset = {
-      x: element.offsetLeft,
-      y: element.offsetTop
+      x: container.offsetLeft,
+      y: container.offsetTop
     }
 
     let store = createStore(
@@ -46,7 +48,7 @@ class Canvas {
       <Provider store={store}>
         <App offset={offset} />
       </Provider>,
-      element
+      container
     )
   }
 }

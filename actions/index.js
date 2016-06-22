@@ -1,104 +1,160 @@
-export const ADD_NODE = 'ADD_NODE'
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(['exports'], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports);
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports);
+    global.index = mod.exports;
+  }
+})(this, function (exports) {
+  'use strict';
 
-export const addNode = (node) => ({
-  type: ADD_NODE,
-  node
-})
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var ADD_NODE = exports.ADD_NODE = 'ADD_NODE';
 
-export const ADD_LINK = 'ADD_LINK'
+  var addNode = exports.addNode = function addNode(node) {
+    return {
+      type: ADD_NODE,
+      node: node
+    };
+  };
 
-export const addLink = (link, previousDraggingPoint) => ({
-  type: ADD_LINK,
-  link,
-  previousDraggingPoint
-})
+  var ADD_LINK = exports.ADD_LINK = 'ADD_LINK';
 
-export const DEL_NODE = 'DEL_NODE'
+  var addLink = exports.addLink = function addLink(link, previousDraggingPoint) {
+    return {
+      type: ADD_LINK,
+      link: link,
+      previousDraggingPoint: previousDraggingPoint
+    };
+  };
 
-export const delNode = (id) => ({
-  type: DEL_NODE,
-  id
-})
+  var DEL_NODE = exports.DEL_NODE = 'DEL_NODE';
 
-export const DELETE_LINK = 'DELETE_LINK'
+  var delNode = exports.delNode = function delNode(id) {
+    return {
+      type: DEL_NODE,
+      id: id
+    };
+  };
 
-export const deleteLink = (id) => ({
-  type: DELETE_LINK,
-  id
-})
+  var DELETE_LINK = exports.DELETE_LINK = 'DELETE_LINK';
 
-export const DRAG_ITEMS = 'DRAG_ITEMS'
+  var deleteLink = exports.deleteLink = function deleteLink(id) {
+    return {
+      type: DELETE_LINK,
+      id: id
+    };
+  };
 
-export const dragItems = (previousDraggingPoint, draggingDelta) => ({
-  type: DRAG_ITEMS,
-  previousDraggingPoint,
-  draggingDelta
-})
+  var DRAG_ITEMS = exports.DRAG_ITEMS = 'DRAG_ITEMS';
 
-export const DRAG_LINK = 'DRAG_LINK'
+  var dragItems = exports.dragItems = function dragItems(previousDraggingPoint, draggingDelta) {
+    return {
+      type: DRAG_ITEMS,
+      previousDraggingPoint: previousDraggingPoint,
+      draggingDelta: draggingDelta
+    };
+  };
 
-export const dragLink = (previousDraggingPoint, draggingDelta) => ({
-  type: DRAG_LINK,
-  previousDraggingPoint,
-  draggingDelta
-})
+  var DRAG_LINK = exports.DRAG_LINK = 'DRAG_LINK';
 
-export const END_DRAGGING_ITEMS = 'END_DRAGGING_ITEMS'
+  var dragLink = exports.dragLink = function dragLink(previousDraggingPoint, draggingDelta) {
+    return {
+      type: DRAG_LINK,
+      previousDraggingPoint: previousDraggingPoint,
+      draggingDelta: draggingDelta
+    };
+  };
 
-export const endDraggingItems = () => ({
-  type: END_DRAGGING_ITEMS
-})
+  var END_DRAGGING_ITEMS = exports.END_DRAGGING_ITEMS = 'END_DRAGGING_ITEMS';
 
-export const END_DRAGGING_LINK = 'END_DRAGGING_LINK'
+  var endDraggingItems = exports.endDraggingItems = function endDraggingItems() {
+    return {
+      type: END_DRAGGING_ITEMS
+    };
+  };
 
-export const endDraggingLink = (id, link) => ({
-  type: END_DRAGGING_LINK,
-  id,
-  link
-})
+  var END_DRAGGING_LINK = exports.END_DRAGGING_LINK = 'END_DRAGGING_LINK';
 
-export const HIDE_NODE_SELECTOR = 'HIDE_NODE_SELECTOR'
+  var endDraggingLink = exports.endDraggingLink = function endDraggingLink(id, link) {
+    return {
+      type: END_DRAGGING_LINK,
+      id: id,
+      link: link
+    };
+  };
 
-export const hideNodeSelector = () => ({
-  type: HIDE_NODE_SELECTOR
-})
+  var HIDE_NODE_SELECTOR = exports.HIDE_NODE_SELECTOR = 'HIDE_NODE_SELECTOR';
 
-export const SELECT_ITEM = 'SELECT_ITEM'
+  var hideNodeSelector = exports.hideNodeSelector = function hideNodeSelector() {
+    return {
+      type: HIDE_NODE_SELECTOR
+    };
+  };
 
-export const selectItem = ({id, x, y}) => ({
-  type: SELECT_ITEM,
-  id,
-  x,
-  y
-})
+  var SELECT_ITEM = exports.SELECT_ITEM = 'SELECT_ITEM';
 
-export const SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT'
+  var selectItem = exports.selectItem = function selectItem(_ref) {
+    var id = _ref.id;
+    var x = _ref.x;
+    var y = _ref.y;
+    return {
+      type: SELECT_ITEM,
+      id: id,
+      x: x,
+      y: y
+    };
+  };
 
-export const setNodeSelectorText = (text) => ({
-  type: SET_NODE_SELECTOR_TEXT,
-  text
-})
+  var SET_NODE_SELECTOR_TEXT = exports.SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT';
 
-export const SET_NUM_INS = 'SET_NUM_INS'
+  var setNodeSelectorText = exports.setNodeSelectorText = function setNodeSelectorText(text) {
+    return {
+      type: SET_NODE_SELECTOR_TEXT,
+      text: text
+    };
+  };
 
-export const setNumIns = ({ nodeid, num }) => ({
-  type: SET_NUM_INS,
-  nodeid,
-  num
-})
+  var SET_NUM_INS = exports.SET_NUM_INS = 'SET_NUM_INS';
 
-export const SET_NUM_OUTS = 'SET_NUM_OUTS'
+  var setNumIns = exports.setNumIns = function setNumIns(_ref2) {
+    var nodeid = _ref2.nodeid;
+    var num = _ref2.num;
+    return {
+      type: SET_NUM_INS,
+      nodeid: nodeid,
+      num: num
+    };
+  };
 
-export const setNumOuts = ({ nodeid, num }) => ({
-  type: SET_NUM_OUTS,
-  nodeid,
-  num
-})
+  var SET_NUM_OUTS = exports.SET_NUM_OUTS = 'SET_NUM_OUTS';
 
-export const SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR'
+  var setNumOuts = exports.setNumOuts = function setNumOuts(_ref3) {
+    var nodeid = _ref3.nodeid;
+    var num = _ref3.num;
+    return {
+      type: SET_NUM_OUTS,
+      nodeid: nodeid,
+      num: num
+    };
+  };
 
-export const showNodeSelector = ({x, y}) => ({
-  type: SHOW_NODE_SELECTOR,
-  x,
-  y
-})
+  var SHOW_NODE_SELECTOR = exports.SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR';
+
+  var showNodeSelector = exports.showNodeSelector = function showNodeSelector(_ref4) {
+    var x = _ref4.x;
+    var y = _ref4.y;
+    return {
+      type: SHOW_NODE_SELECTOR,
+      x: x,
+      y: y
+    };
+  };
+});

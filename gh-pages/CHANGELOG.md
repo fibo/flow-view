@@ -19,6 +19,12 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 server side rendering, canvas.exportToSVG exportToFileSVG
 
+## [2.1.1] - 2016-06-22
+
+### Added
+
+- Restored src/ folder, babel build is inverted now: compiled code is in root
+
 ## [2.1.0] - 2016-06-18
 
 ### Fixed

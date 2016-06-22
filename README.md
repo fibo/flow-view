@@ -45,3 +45,6 @@ google-analytics:
   id: UA-12635045-12
 ```
 
+### github-corner.html
+
+Comes from [GitHub corners](http://tholman.com/github-corners/).

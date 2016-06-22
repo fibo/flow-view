@@ -123,6 +123,14 @@ canvas.render({
 })
 ```
 
+### Components
+
+Import *flow-view*  components, for instance *Canvas*
+
+```javascript
+import { Canvas } from 'flow-view/components'
+```
+
 ## License
 
 [MIT](http://g14n.info/mit-license)

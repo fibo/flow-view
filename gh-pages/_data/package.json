@@ -1,24 +1,17 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React/Redux",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
     "url": "http://g14n.info"
   },
   "license": "MIT",
-  "main": "lib/flow-view.js",
+  "main": "flow-view.js",
   "scripts": {
-    "babel": "for x in Canvas.js flow-view.js containers actions components reducers util; do npm run babel:$x; done",
-    "babel:Canvas.js": "BABEL_ENV=umd babel --out-dir lib Canvas.js",
-    "babel:flow-view.js": "BABEL_ENV=umd babel --out-dir lib flow-view.js",
-    "babel:components": "BABEL_ENV=umd babel components --out-dir lib/components",
-    "babel:reducers": "BABEL_ENV=umd babel reducers --out-dir lib/reducers",
-    "babel:containers": "BABEL_ENV=umd babel containers --out-dir lib/containers",
-    "babel:actions": "BABEL_ENV=umd babel actions --out-dir lib/actions",
-    "babel:util": "BABEL_ENV=umd babel util --out-dir lib/util",
-    "browserify": "browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
+    "babel": "BABEL_ENV=umd babel --out-dir . src/",
+    "browserify": "browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "check-deps": "npm outdated",
     "cp": "npm run cp:examples",
     "cp:examples": "cp examples/basic/usage.js gh-pages/_includes/jscode/basic",
@@ -34,7 +27,7 @@
     "lint": "standard flow-view.js Canvas.js reducers/*js util/*js containers/*js; npm run lint:components; npm run lint:test",
     "lint:components": "cd components; standard; cd ..",
     "lint:test": "cd test; standard; cd ..",
-    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Version: ${npm_package_version}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
+    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
     "pretest": "npm run babel",
     "preversion": "npm run build; npm run babel",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
@@ -44,8 +37,8 @@
     "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
     "test": "for x in serverside components; do npm run test:$x; done",
-    "test:serverside": "NODE_PATH=lib tape test/serverside/*.js",
-    "test:components": "NODE_PATH=. tape -r babel-register test/components/*.js",
+    "test:serverside": "NODE_PATH=. tape test/serverside/*.js",
+    "test:components": "NODE_PATH=src tape -r babel-register test/components/*.js",
     "update-deps": "npm update --save --dev"
   },
   "pre-commit": [

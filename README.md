@@ -48,3 +48,9 @@ google-analytics:
 ### github-corner.html
 
 Comes from [GitHub corners](http://tholman.com/github-corners/).
+
+### github-markdown-css.html
+
+[github-markdown-css](https://github.com/sindresorhus/github-markdown-css) is
+
+> The minimal amount of CSS to replicate the GitHub Markdown style

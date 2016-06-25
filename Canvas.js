@@ -87,17 +87,12 @@
       value: function render(view) {
         var container = this.container;
 
-        var offset = {
-          x: container.offsetLeft,
-          y: container.offsetTop
-        };
-
         var store = (0, _redux.createStore)(_reducers2.default, Object.assign(_initialState2.default, view), window.devToolsExtension && window.devToolsExtension());
 
         (0, _reactDom.render)(_react2.default.createElement(
           _reactRedux.Provider,
           { store: store },
-          _react2.default.createElement(_App2.default, { offset: offset })
+          _react2.default.createElement(_App2.default, { container: container })
         ), container);
       }
     }]);

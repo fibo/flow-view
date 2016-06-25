@@ -18,7 +18,13 @@ import {
 } from '../actions'
 import Canvas from '../components/Canvas'
 
-const mapStateToProps = (state, ownProps) => {
+// TODO refactor state and props to reogranize it and simplify it.
+// In particular it would be easier for external libs importing flow-view
+// if mapDispatchToProps is omitted, so it is necessary to refactor everything
+// and use dispatch in every component.
+// This has also a huge benefit! That custom components (from external libs)
+// can use dispatch directly and do not need a custom mapDispatchToProps.
+export function mapStateToProps (state, ownProps) {
   let nodes = []
 
   let draggedLinkId = state.draggedLinkId
@@ -153,8 +159,13 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  const offset = ownProps.offset
+export function mapDispatchToProps (dispatch, ownProps) {
+  const container = ownProps.container
+
+  const offset = {
+    x: container.offsetLeft,
+    y: container.offsetTop
+  }
 
   return {
     addLink: (from, to) => (e) => {

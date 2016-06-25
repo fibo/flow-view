@@ -84,7 +84,7 @@
             })
           };
 
-        case _actions.DELETE_LINK:
+        case _actions.DEL_LINK:
           var delLink = Object.assign({}, state);
 
           var linkid = action.id;

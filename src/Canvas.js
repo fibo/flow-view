@@ -33,11 +33,6 @@ class Canvas {
   render (view) {
     const container = this.container
 
-    const offset = {
-      x: container.offsetLeft,
-      y: container.offsetTop
-    }
-
     let store = createStore(
       reducers,
       Object.assign(initialState, view),
@@ -46,7 +41,7 @@ class Canvas {
 
     render(
       <Provider store={store}>
-        <App offset={offset} />
+        <App container={container} />
       </Provider>,
       container
     )

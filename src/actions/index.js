@@ -20,10 +20,10 @@ export const delNode = (id) => ({
   id
 })
 
-export const DELETE_LINK = 'DELETE_LINK'
+export const DEL_LINK = 'DEL_LINK'
 
 export const deleteLink = (id) => ({
-  type: DELETE_LINK,
+  type: DEL_LINK,
   id
 })
 
@@ -102,3 +102,19 @@ export const showNodeSelector = ({x, y}) => ({
   x,
   y
 })
+
+export default [
+  ADD_LINK,
+  ADD_NODE,
+  DEL_LINK,
+  DEL_NODE,
+  DRAG_ITEMS,
+  DRAG_LINK,
+  END_DRAGGING_ITEMS,
+  END_DRAGGING_LINK,
+  HIDE_NODE_SELECTOR,
+  SELECT_ITEM,
+  SET_NODE_SELECTOR_TEXT,
+  SET_NUM_INS,
+  SET_NUM_OUTS
+]

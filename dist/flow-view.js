@@ -21236,17 +21236,12 @@ var Canvas = function () {
     value: function render(view) {
       var container = this.container;
 
-      var offset = {
-        x: container.offsetLeft,
-        y: container.offsetTop
-      };
-
       var store = (0, _redux.createStore)(_reducers2.default, Object.assign(_initialState2.default, view), window.devToolsExtension && window.devToolsExtension());
 
       (0, _reactDom.render)(_react2.default.createElement(
         _reactRedux.Provider,
         { store: store },
-        _react2.default.createElement(_App2.default, { offset: offset })
+        _react2.default.createElement(_App2.default, { container: container })
       ), container);
     }
   }]);
@@ -21256,7 +21251,7 @@ var Canvas = function () {
 
 exports.default = Canvas;
 
-},{"./containers/App":200,"./reducers":201,"./util/initialState":206,"react":180,"react-dom":35,"react-redux":38,"redux":186,"static-props":188}],192:[function(require,module,exports){
+},{"./containers/App":199,"./reducers":200,"./util/initialState":205,"react":180,"react-dom":35,"react-redux":38,"redux":186,"static-props":188}],192:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21290,11 +21285,11 @@ var delNode = exports.delNode = function delNode(id) {
   };
 };
 
-var DELETE_LINK = exports.DELETE_LINK = 'DELETE_LINK';
+var DEL_LINK = exports.DEL_LINK = 'DEL_LINK';
 
 var deleteLink = exports.deleteLink = function deleteLink(id) {
   return {
-    type: DELETE_LINK,
+    type: DEL_LINK,
     id: id
   };
 };
@@ -21403,6 +21398,8 @@ var showNodeSelector = exports.showNodeSelector = function showNodeSelector(_ref
     y: y
   };
 };
+
+exports.default = [ADD_LINK, ADD_NODE, DEL_LINK, DEL_NODE, DRAG_ITEMS, DRAG_LINK, END_DRAGGING_ITEMS, END_DRAGGING_LINK, HIDE_NODE_SELECTOR, SELECT_ITEM, SET_NODE_SELECTOR_TEXT, SET_NUM_INS, SET_NUM_OUTS];
 
 },{}],193:[function(require,module,exports){
 'use strict';
@@ -21525,7 +21522,7 @@ Canvas.defaultProps = {
 
 exports.default = Canvas;
 
-},{"../util/initialState":206,"./Link":194,"./Node":197,"./NodeSelector":198,"react":180}],194:[function(require,module,exports){
+},{"../util/initialState":205,"./Link":194,"./Node":197,"./NodeSelector":198,"react":180}],194:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21591,7 +21588,7 @@ Link.propTypes = {
 
 exports.default = Link;
 
-},{"../util/ignoreEvent":205,"react":180}],195:[function(require,module,exports){
+},{"../util/ignoreEvent":204,"react":180}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21641,7 +21638,7 @@ NumIns.PropTypes = {
 
 exports.default = NumIns;
 
-},{"../../util/focusTarget":204,"react":180}],196:[function(require,module,exports){
+},{"../../util/focusTarget":203,"react":180}],196:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21691,7 +21688,7 @@ NumOuts.PropTypes = {
 
 exports.default = NumOuts;
 
-},{"../../util/focusTarget":204,"react":180}],197:[function(require,module,exports){
+},{"../../util/focusTarget":203,"react":180}],197:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21842,7 +21839,7 @@ Node.defaultProps = {
 
 exports.default = Node;
 
-},{"../../util/ignoreEvent":205,"./NumIns":195,"./NumOuts":196,"react":180}],198:[function(require,module,exports){
+},{"../../util/ignoreEvent":204,"./NumIns":195,"./NumOuts":196,"react":180}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21898,39 +21895,14 @@ NodeSelector.propTypes = {
 
 exports.default = NodeSelector;
 
-},{"../util/ignoreEvent":205,"react":180}],199:[function(require,module,exports){
+},{"../util/ignoreEvent":204,"react":180}],199:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _Canvas = require('./Canvas');
-
-var _Canvas2 = _interopRequireDefault(_Canvas);
-
-var _Node = require('./Node');
-
-var _Node2 = _interopRequireDefault(_Node);
-
-var _NodeSelector = require('./NodeSelector');
-
-var _NodeSelector2 = _interopRequireDefault(_NodeSelector);
-
-var _Link = require('./Link');
-
-var _Link2 = _interopRequireDefault(_Link);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = { Canvas: _Canvas2.default, Node: _Node2.default, Link: _Link2.default, NodeSelector: _NodeSelector2.default };
-
-},{"./Canvas":193,"./Link":194,"./Node":197,"./NodeSelector":198}],200:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.mapStateToProps = mapStateToProps;
+exports.mapDispatchToProps = mapDispatchToProps;
 
 var _reactRedux = require('react-redux');
 
@@ -21946,7 +21918,13 @@ var _Canvas2 = _interopRequireDefault(_Canvas);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+// TODO refactor state and props to reogranize it and simplify it.
+// In particular it would be easier for external libs importing flow-view
+// if mapDispatchToProps is omitted, so it is necessary to refactor everything
+// and use dispatch in every component.
+// This has also a huge benefit! That custom components (from external libs)
+// can use dispatch directly and do not need a custom mapDispatchToProps.
+function mapStateToProps(state, ownProps) {
   var nodes = [];
 
   var draggedLinkId = state.draggedLinkId;
@@ -22095,10 +22073,15 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     nodeSelectorText: nodeSelectorText,
     draggedLinkId: draggedLinkId
   };
-};
+}
 
-var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
-  var offset = ownProps.offset;
+function mapDispatchToProps(dispatch, ownProps) {
+  var container = ownProps.container;
+
+  var offset = {
+    x: container.offsetLeft,
+    y: container.offsetTop
+  };
 
   return {
     addLink: function addLink(from, to) {
@@ -22243,11 +22226,11 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
       }));
     }
   };
-};
+}
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Canvas2.default);
 
-},{"../actions":192,"../components/Canvas":193,"../util/xCenterOfPin":207,"react-redux":38}],201:[function(require,module,exports){
+},{"../actions":192,"../components/Canvas":193,"../util/xCenterOfPin":206,"react-redux":38}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22323,7 +22306,7 @@ var flowViewApp = function flowViewApp() {
           })
         };
 
-      case _actions.DELETE_LINK:
+      case _actions.DEL_LINK:
         var delLink = Object.assign({}, state);
 
         var linkid = action.id;
@@ -22519,7 +22502,7 @@ var flowViewApp = function flowViewApp() {
 
 exports.default = flowViewApp;
 
-},{"../actions":192,"../util/initialState":206,"../util/xCenterOfPin":207,"./setNumIns":202,"./setNumOuts":203}],202:[function(require,module,exports){
+},{"../actions":192,"../util/initialState":205,"../util/xCenterOfPin":206,"./setNumIns":201,"./setNumOuts":202}],201:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22572,7 +22555,7 @@ var setNumIns = function setNumIns(state, action) {
 
 exports.default = setNumIns;
 
-},{}],203:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22625,7 +22608,7 @@ var setNumOuts = function setNumOuts(state, action) {
 
 exports.default = setNumOuts;
 
-},{}],204:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22637,7 +22620,7 @@ var focusTarget = function focusTarget(e) {
 
 exports.default = focusTarget;
 
-},{}],205:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22650,7 +22633,7 @@ var ignoreEvent = function ignoreEvent(e) {
 
 exports.default = ignoreEvent;
 
-},{}],206:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22673,7 +22656,7 @@ var initialState = {
 
 exports.default = initialState;
 
-},{}],207:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22693,29 +22676,14 @@ exports.default = xCenterOfPin;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.reducers = exports.components = exports.actions = exports.Canvas = undefined;
+exports.Canvas = undefined;
 
 var _Canvas = require('./Canvas');
 
 var _Canvas2 = _interopRequireDefault(_Canvas);
 
-var _actions = require('./actions');
-
-var _actions2 = _interopRequireDefault(_actions);
-
-var _components2 = require('./components');
-
-var _components3 = _interopRequireDefault(_components2);
-
-var _reducers = require('./reducers');
-
-var _reducers2 = _interopRequireDefault(_reducers);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Canvas = _Canvas2.default;
-exports.actions = _actions2.default;
-exports.components = _components3.default;
-exports.reducers = _reducers2.default;
 
-},{"./Canvas":191,"./actions":192,"./components":199,"./reducers":201}]},{},[]);
+},{"./Canvas":191}]},{},[]);

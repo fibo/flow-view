@@ -4,7 +4,7 @@ import {
   ADD_NODE,
   ADD_LINK,
   DEL_NODE,
-  DELETE_LINK,
+  DEL_LINK,
   DRAG_ITEMS,
   DRAG_LINK,
   END_DRAGGING_ITEMS,
@@ -62,7 +62,7 @@ const flowViewApp = (state = initialState, action) => {
         }
       )
 
-    case DELETE_LINK:
+    case DEL_LINK:
       const delLink = Object.assign({}, state)
 
       const linkid = action.id

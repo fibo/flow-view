@@ -1,21 +1,23 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react-redux', '../util/xCenterOfPin', '../actions', '../components/Canvas'], factory);
+    define(['exports', 'react-redux', '../util/xCenterOfPin', '../actions', '../components/Canvas'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react-redux'), require('../util/xCenterOfPin'), require('../actions'), require('../components/Canvas'));
+    factory(exports, require('react-redux'), require('../util/xCenterOfPin'), require('../actions'), require('../components/Canvas'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.reactRedux, global.xCenterOfPin, global.actions, global.Canvas);
+    factory(mod.exports, global.reactRedux, global.xCenterOfPin, global.actions, global.Canvas);
     global.App = mod.exports;
   }
-})(this, function (module, exports, _reactRedux, _xCenterOfPin, _actions, _Canvas) {
+})(this, function (exports, _reactRedux, _xCenterOfPin, _actions, _Canvas) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+  exports.mapStateToProps = mapStateToProps;
+  exports.mapDispatchToProps = mapDispatchToProps;
 
   var _xCenterOfPin2 = _interopRequireDefault(_xCenterOfPin);
 
@@ -27,7 +29,13 @@
     };
   }
 
-  var mapStateToProps = function mapStateToProps(state, ownProps) {
+  // TODO refactor state and props to reogranize it and simplify it.
+  // In particular it would be easier for external libs importing flow-view
+  // if mapDispatchToProps is omitted, so it is necessary to refactor everything
+  // and use dispatch in every component.
+  // This has also a huge benefit! That custom components (from external libs)
+  // can use dispatch directly and do not need a custom mapDispatchToProps.
+  function mapStateToProps(state, ownProps) {
     var nodes = [];
 
     var draggedLinkId = state.draggedLinkId;
@@ -176,10 +184,15 @@
       nodeSelectorText: nodeSelectorText,
       draggedLinkId: draggedLinkId
     };
-  };
+  }
 
-  var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
-    var offset = ownProps.offset;
+  function mapDispatchToProps(dispatch, ownProps) {
+    var container = ownProps.container;
+
+    var offset = {
+      x: container.offsetLeft,
+      y: container.offsetTop
+    };
 
     return {
       addLink: function addLink(from, to) {
@@ -324,8 +337,7 @@
         }));
       }
     };
-  };
+  }
 
   exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Canvas2.default);
-  module.exports = exports['default'];
 });

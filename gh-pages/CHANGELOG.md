@@ -19,6 +19,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 server side rendering, canvas.exportToSVG exportToFileSVG
 
+## [2.3.0] 2016-06-25
+
+Exposed actions, util/initialState, components and other stuff needed to import,
+extend and use flow-view in other projects, in particular [dflow].
+
 ## [2.1.1] - 2016-06-22
 
 ### Added
@@ -78,6 +83,8 @@ server side rendering, canvas.exportToSVG exportToFileSVG
 ## **1.0.0** - 2016-01-17
 
 ### First stable release
+
+[dflow]: http://g14n.info/dflow "dflow"
 
 [Unreleased]: https://github.com/fibo/{{ package.name }}/compare/v{{ package.version }}...HEAD
 

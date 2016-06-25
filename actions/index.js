@@ -44,11 +44,11 @@
     };
   };
 
-  var DELETE_LINK = exports.DELETE_LINK = 'DELETE_LINK';
+  var DEL_LINK = exports.DEL_LINK = 'DEL_LINK';
 
   var deleteLink = exports.deleteLink = function deleteLink(id) {
     return {
-      type: DELETE_LINK,
+      type: DEL_LINK,
       id: id
     };
   };
@@ -157,4 +157,6 @@
       y: y
     };
   };
+
+  exports.default = [ADD_LINK, ADD_NODE, DEL_LINK, DEL_NODE, DRAG_ITEMS, DRAG_LINK, END_DRAGGING_ITEMS, END_DRAGGING_LINK, HIDE_NODE_SELECTOR, SELECT_ITEM, SET_NODE_SELECTOR_TEXT, SET_NUM_INS, SET_NUM_OUTS];
 });

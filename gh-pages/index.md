@@ -55,6 +55,10 @@ $ npm install flow-view
 
 ## API
 
+In the example code contained in this section, when imported by another
+[Redux] app, anything related to *flow-view* is stored in the state
+attribute `view`.
+
 ### `new Canvas('drawing')`
 
 > flow-view Canvas constructor
@@ -81,7 +85,7 @@ var Canvas = require('flow-view').Canvas
 var canvas = new Canvas('drawing')
 ```
 
-Note that nothing willl happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
+Note that nothing will happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
 
 ### `canvas.containerId`
 
@@ -123,12 +127,78 @@ canvas.render({
 })
 ```
 
-### Components
+### Actions and reducers
 
-Import *flow-view*  components, for instance *Canvas*
+Import *flow-view*  list of action constants and *flow-view* reducers, for
+example to use them in your Redux app  *reducers/index.js*.
 
 ```javascript
-import { Canvas } from 'flow-view/components'
+import {
+  MY_ACTION
+} from '../actions'
+
+// Import all actions and reducers.
+import viewActions from 'flow-view/actions'
+import viewReducers from 'flow-view/reducers'
+
+export default function (state, action) {
+  let view = Object.assign({}, state.view)
+
+  if (viewActions.includes(action.type)) {
+    view = viewReducers(state.view, action)
+  }
+
+  switch (action.type) {
+    case viewActions.ADD_NODE:
+      // Intercept the flow-view action and do something else.
+      return state
+
+    case MY_ACTION:
+      // Do something related to this action, then return the state adding laso the view.
+      return Object.assign({}, state, { view })
+
+    default:
+      return state
+  }
+}
+```
+
+Follows the action list:
+
+* ADD_LINK
+* ADD_NODE_
+* DEL_LINK
+* DEL_NODE
+* DRAG_ITEMS
+* DRAG_LINK
+* END_DRAGGING_ITEMS
+* END_DRAGGING_LINK
+* HIDE_NODE_SELECTOR
+* SELECT_ITEM
+* SET_NODE_SELECTOR_TEXT
+* SET_NUM_INS
+* SET_NUM_OUTS
+
+### Components
+
+Import *flow-view* components
+
+```javascript
+import { Canvas, Link, Node } from 'flow-view/components'
+```
+
+### Initial state
+
+Could be used in your *reducers/index.js*, with something like
+
+```javascript
+import viewInitialState from 'flow-view/util/initialState'
+import modelInitialState from '../model/initialState'
+
+const initialState = {
+  model: modelInitialState,
+  view: viewInitialState
+}
 ```
 
 ## License

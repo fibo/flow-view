@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react'
 import ignoreEvent from '../util/ignoreEvent'
+import { addNode } from '../actions'
 
 const NodeSelector = ({
+  dispatch,
   x, y,
   text,
   show,
-  addNode,
   changeText
 }) => (
   show ? (
@@ -22,7 +23,7 @@ const NodeSelector = ({
         onChange={changeText}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            addNode({x, y, text: e.target.value})
+            dispatch(addNode({x, y, text: e.target.value}))
           }
         }}
         ref={(input) => { if (input !== null) input.focus() }}

@@ -5,6 +5,7 @@ import Node from './Node'
 import NodeSelector from './NodeSelector'
 
 const Canvas = ({
+  dispatch,
   nodes, links,
   height, width,
   hideNodeSelector,
@@ -49,6 +50,7 @@ const Canvas = ({
       show={nodeSelectorShow}
       changeText={setNodeSelectorText}
       addNode={addNode}
+      dispatch={dispatch}
     />
 
     {nodes.map(

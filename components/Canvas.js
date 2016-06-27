@@ -48,6 +48,7 @@
   };
 
   var Canvas = function Canvas(_ref) {
+    var dispatch = _ref.dispatch;
     var nodes = _ref.nodes;
     var links = _ref.links;
     var height = _ref.height;
@@ -93,7 +94,8 @@
         text: nodeSelectorText,
         show: nodeSelectorShow,
         changeText: setNodeSelectorText,
-        addNode: addNode
+        addNode: addNode,
+        dispatch: dispatch
       }),
       nodes.map(function (node, i) {
         return _react2.default.createElement(_Node2.default, _extends({

@@ -195,6 +195,7 @@
     };
 
     return {
+      dispatch: dispatch,
       addLink: function addLink(from, to) {
         return function (e) {
           e.preventDefault();
@@ -207,9 +208,6 @@
 
           dispatch((0, _actions.addLink)({ from: from, to: to }, previousDraggingPoint));
         };
-      },
-      addNode: function addNode(node) {
-        dispatch((0, _actions.addNode)(node));
       },
       dragLink: function dragLink(previousDraggingPoint) {
         return function (e) {

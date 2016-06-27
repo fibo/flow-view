@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/ignoreEvent'], factory);
+    define(['module', 'exports', 'react', '../util/ignoreEvent', '../actions'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/ignoreEvent'));
+    factory(module, exports, require('react'), require('../util/ignoreEvent'), require('../actions'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.ignoreEvent);
+    factory(mod, mod.exports, global.react, global.ignoreEvent, global.actions);
     global.NodeSelector = mod.exports;
   }
-})(this, function (module, exports, _react, _ignoreEvent) {
+})(this, function (module, exports, _react, _ignoreEvent, _actions) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -28,11 +28,11 @@
   }
 
   var NodeSelector = function NodeSelector(_ref) {
+    var dispatch = _ref.dispatch;
     var x = _ref.x;
     var y = _ref.y;
     var text = _ref.text;
     var show = _ref.show;
-    var addNode = _ref.addNode;
     var changeText = _ref.changeText;
     return show ? _react2.default.createElement(
       'foreignObject',
@@ -49,7 +49,7 @@
         onChange: changeText,
         onKeyPress: function onKeyPress(e) {
           if (e.key === 'Enter') {
-            addNode({ x: x, y: y, text: e.target.value });
+            dispatch((0, _actions.addNode)({ x: x, y: y, text: e.target.value }));
           }
         },
         ref: function ref(input) {

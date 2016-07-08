@@ -33,7 +33,7 @@ Any feedback is welcome!
 With [bower](http://bower.io/) do
 
 ```bash
-$ bower install flow-view
+bower install flow-view
 ```
 
 or use a CDN adding this to your HTML page
@@ -46,7 +46,7 @@ Note that *flow-view* is supposed to be imported in your project build,
 so it is recommended you install it with [npm](https://npmjs.org/)
 
 ```bash
-$ npm install flow-view
+npm install flow-view
 ```
 
 ## API

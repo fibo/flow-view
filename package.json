@@ -62,13 +62,15 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
-    "not-defined": "^1.0.0",
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0",
+    "babel-preset-react": "^6.11.1",
+    "not-defined": "^1.1.0",
+    "react": "^15.2.0",
+    "react-dom": "^15.2.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "static-props": "^1.0.0",
-    "svgx": "^0.6.0"
+    "svgx": "^0.6.0",
+    "uglify-js": "^2.7.0"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",

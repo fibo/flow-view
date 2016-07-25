@@ -1,0 +1,13 @@
+<meta charset="utf-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+{% assign package = site.data.package %}
+
+<meta name="description" content="{{ package.description | strip_newlines }}">
+<meta name="keywords" content="{{ package.keywords | join: ',' }}">
+<meta name="author" content="{{ package.author.name }}">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>{{ page.title }}</title>

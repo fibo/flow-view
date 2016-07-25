@@ -13,20 +13,33 @@ The following g14n.info microsites are involved:
 
 ## Setup
 
-Assuming that the content of the *gh-pages* branch is under the *gh-pages/* folder,
+Assuming that the content of the *gh-pages* branch is under the *gh-pages/* folder, do
 
-```
-git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
-git subtree add --prefix=gh-pages/_includes/common/ common_includes master
-```
+1. [Add remote](#add-remote)
+2. [Add subtree](#add-subtree)
 
-The use the includes as usual, for example in *gh-pages/_layouts/page.html*
+Then use the includes as usual, for example in *gh-pages/_layouts/page.html*
 
 ```
 {% include common/analytics.html %}
 ```
 
+### Add remote
+
+```
+git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
+```
+
+### Add subtree
+
+```
+git subtree add --prefix=gh-pages/_includes/common/ common_includes master
+```
+
+
 ## Update
+
+If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 
 In a working tree with all modifications committed, launch
 
@@ -44,4 +57,12 @@ Add to your *_config.yml*
 google-analytics:
   id: UA-12635045-12
 ```
+
+### meta.html
+
+Requires `page.title` and *_data/package.json* file with the following entries:
+
+* description
+* keywords
+* author.name
 

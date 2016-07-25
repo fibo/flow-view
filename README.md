@@ -66,3 +66,7 @@ Requires `page.title` and *_data/package.json* file with the following entries:
 * keywords
 * author.name
 
+### purecss.html
+
+Includes a minified version of purecss from Yahoo CDN.
+

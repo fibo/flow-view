@@ -36,7 +36,6 @@ git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
 git subtree add --prefix=gh-pages/_includes/common/ common_includes master
 ```
 
-
 ## Update
 
 If you are in a new cloned repo, you need to [add remote](#add-remote) first.
@@ -69,4 +68,14 @@ Requires `page.title` and *_data/package.json* file with the following entries:
 ### purecss.html
 
 Includes a minified version of purecss from Yahoo CDN.
+
+### github-corner.html
+
+Comes from [GitHub corners](http://tholman.com/github-corners/).
+
+### github-markdown-css.html
+
+[github-markdown-css](https://github.com/sindresorhus/github-markdown-css) is
+
+> The minimal amount of CSS to replicate the GitHub Markdown style
 

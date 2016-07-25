@@ -2,6 +2,17 @@
 
 > is a git subtree containing Jekyll layouts used across my personal website
 
+The following g14n.info microsites are involved:
+
+<!--
+* [algebra](http://g14n.info/algebra)
+* [dflow](http://g14n.info/dflow)
+* [flow-view](http://g14n.info/flow-view)
+* [geohash-neighbours](http://g14n.info/geohash-neighbours)
+* [iper](http://g14n.info/iper)
+-->
+* [tris3d-canvas](http://g14n.info/tris3d-canvas)
+
 ## Setup
 
 First of all, make sure you have already imported [g14n.info-jekyll-includes].

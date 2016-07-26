@@ -60,5 +60,6 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 ### responsive-side-menu.html
 
 Requires file *_data/menu.yml* containing menu entries and their href.
+Uses also variable `site.domain`.
 
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

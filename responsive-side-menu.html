@@ -22,7 +22,7 @@
 
           <ul class="pure-menu-list">
             {% for menu_item in site.data.menu %}
-              <li class="pure-menu-item"><a href="{{ menu_item[1] }}" class="pure-menu-link">/{{ site.data.package.name }}/{{ menu_item[0] }}</a></li>
+            <li class="pure-menu-item"><a href="/{{ site.data.package.name }}/{{ menu_item[1] }}" class="pure-menu-link">{{ menu_item[0] }}</a></li>
             {% endfor %}
           </ul>
       </div>

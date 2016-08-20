@@ -44,7 +44,6 @@ git remote add common_layouts git@github.com:fibo/g14n.info-jekyll-layouts.git
 git subtree add --prefix=gh-pages/_layouts/common/ common_layouts master
 ```
 
-
 ## Update
 
 If you are in a new cloned repo, you need to [add remote](#add-remote) first.
@@ -59,7 +58,17 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 
 ### responsive-side-menu.html
 
-Requires file *_data/menu.yml* containing menu entries and their href.
-Uses also variable `site.domain`.
+Requires
+
+* variable `site.domain`.
+* file *_data/package.json* containing attribute *name*.
+* file *_data/menu.yml* containing menu entries and their href.
+
+Follows a sample *menu.yml*
+
+```yaml
+Example: example
+API: api
+```
 
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

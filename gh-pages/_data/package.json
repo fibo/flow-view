@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React/Redux",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -24,8 +24,8 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > gh-pages/index.md; cat README.md >> gh-pages/index.md",
     "jekyll": "npm run homepage; npm run cp; cd gh-pages; jekyll build; cd ..",
     "jekyll:serve": "npm run browserify; npm run homepage; npm run cp; cd gh-pages; jekyll serve; cd ..",
-    "lint": "standard flow-view.js Canvas.js reducers/*js util/*js containers/*js; npm run lint:components; npm run lint:test",
-    "lint:components": "cd components; standard; cd ..",
+    "lint": "for x in src test; do npm run lint:$x; done",
+    "lint:src": "cd src; standard; cd ..",
     "lint:test": "cd test; standard; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
     "pretest": "npm run babel",
@@ -36,9 +36,9 @@
     "start": "BABEL_ENV=development NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify -p livereactload",
     "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in serverside components; do npm run test:$x; done",
-    "test:serverside": "NODE_PATH=. tape test/serverside/*.js",
-    "test:components": "NODE_PATH=src tape -r babel-register test/components/*.js",
+    "test": "for x in serverside components; do npm run test_$x; done",
+    "test_serverside": "NODE_PATH=. tape test/serverside/*.js",
+    "test_components": "echo TODO there is some issue with babel-register NODE_PATH=src tape -r babel-register test/components/*.js",
     "update-deps": "npm update --save --dev"
   },
   "pre-commit": [
@@ -62,13 +62,21 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
-    "not-defined": "^1.0.0",
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0",
+    "babel-cli": "^6.11.4",
+    "babel-plugin-transform-es2015-modules-umd": "^6.12.0",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-react": "^6.11.1",
+    "babel-register": "^6.11.6",
+    "browserify": "^13.1.0",
+    "budo": "^8.4.0",
+    "not-defined": "^1.1.0",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "static-props": "^1.0.0",
-    "svgx": "^0.6.0"
+    "svgx": "^0.6.0",
+    "uglify-js": "^2.7.3"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",
@@ -81,7 +89,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
     "budo": "^8.2.2",
-    "cheerio": "^0.20.0",
+    "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
     "livereactload": "^2.2.3",
     "pre-commit": "^1.1.3",

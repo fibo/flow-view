@@ -15,7 +15,7 @@ export const addLink = (link, previousDraggingPoint) => ({
 
 export const DEL_NODE = 'DEL_NODE'
 
-export const delNode = (id) => ({
+export const deleteNode = (id) => ({
   type: DEL_NODE,
   id
 })
@@ -72,13 +72,6 @@ export const selectItem = ({id, x, y}) => ({
   y
 })
 
-export const SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT'
-
-export const setNodeSelectorText = (text) => ({
-  type: SET_NODE_SELECTOR_TEXT,
-  text
-})
-
 export const SET_NUM_INS = 'SET_NUM_INS'
 
 export const setNumIns = ({ nodeid, num }) => ({
@@ -114,7 +107,6 @@ export default [
   END_DRAGGING_LINK,
   HIDE_NODE_SELECTOR,
   SELECT_ITEM,
-  SET_NODE_SELECTOR_TEXT,
   SET_NUM_INS,
   SET_NUM_OUTS
 ]

@@ -4,11 +4,18 @@ import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
 import {
+  addNode,
+  addLink,
+  deleteLink,
+  deleteNode,
   dragItems,
   dragLink,
   endDraggingItems,
   endDraggingLink,
   hideNodeSelector,
+  selectItem,
+  setNumIns,
+  setNumOuts,
   showNodeSelector
 } from '../actions'
 
@@ -17,11 +24,6 @@ const Canvas = ({
   nodes, links,
   height, width,
   pinRadius,
-  addNode,
-  delNode,
-  deleteLink,
-  selectLink,
-  selectNode,
   offset,
   draggedLinkId,
   isDraggingLink,
@@ -30,9 +32,6 @@ const Canvas = ({
   nodeSelectorY,
   nodeSelectorShow,
   nodeSelectorText,
-  setNodeSelectorText,
-  setNumIns,
-  setNumOuts,
   previousDraggingPoint
 }) => {
   const onDragLink = (previousDraggingPoint) => (e) => {
@@ -66,6 +65,13 @@ const Canvas = ({
     dispatch(dragItems(previousDraggingPoint, draggingDelta))
   }
 
+  const onDeleteNode = (nodeid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(deleteNode(nodeid))
+  }
+
   const onEndDraggingItems = (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -80,7 +86,7 @@ const Canvas = ({
     dispatch(hideNodeSelector())
   }
 
-  const onShowNodeSelector: (e) => {
+  const onShowNodeSelector = (e) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -88,6 +94,64 @@ const Canvas = ({
       x: e.clientX - offset.x,
       y: e.clientY - offset.y
     }))
+  }
+
+  const selectLink = (linkid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(selectItem({
+      id: linkid,
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y
+    }))
+  }
+
+  const selectNode = (nodeid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(selectItem({
+      id: nodeid,
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y
+    }))
+  }
+
+  const onDeleteLink = (linkid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(deleteLink(linkid))
+  }
+
+  const onSetNumIns = (nodeid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(setNumIns({
+      nodeid,
+      num: e.target.value
+    }))
+  }
+
+  const onSetNumOuts = (nodeid) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(setNumOuts({
+      nodeid,
+      num: e.target.value
+    }))
+  }
+
+  const onAddNode = ({ x, y, text }) => {
+    console.log(x, y, text)
+    dispatch(addNode({ x, y, text }))
+  }
+
+  const onAddLink = ({ from, to }, previousDraggingPoint) => {
+    dispatch(addLink({ from, to }, previousDraggingPoint))
   }
 
   return (
@@ -102,28 +166,26 @@ const Canvas = ({
     >
 
       <NodeSelector
-        dispatch={dispatch}
         x={nodeSelectorX}
         y={nodeSelectorY}
         text={nodeSelectorText}
         show={nodeSelectorShow}
-        changeText={setNodeSelectorText}
-        addNode={addNode}
+        addNode={onAddNode}
       />
 
       {nodes.map(
         (node, i) => (
           <Node
-            dispatch={dispatch}
             key={i}
             pinRadius={pinRadius}
             offset={offset}
             selectNode={selectNode(node.id)}
-            delNode={delNode(node.id)}
+            delNode={onDeleteNode(node.id)}
+            addLink={onAddLink}
             endDragging={onEndDraggingItems}
             isDraggingLink={isDraggingLink}
-            setNumIns={setNumIns(node.id)}
-            setNumOuts={setNumOuts(node.id)}
+            setNumIns={onSetNumIns(node.id)}
+            setNumOuts={onSetNumOuts(node.id)}
             {...node}
           />
         )
@@ -134,7 +196,7 @@ const Canvas = ({
           <Link
             pinRadius={pinRadius}
             selectLink={selectLink(link.id)}
-            deleteLink={deleteLink(link.id)}
+            deleteLink={onDeleteLink(link.id)}
             key={link.id}
             {...link}
           />

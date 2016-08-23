@@ -1,13 +1,10 @@
 import React, { PropTypes } from 'react'
 import ignoreEvent from '../util/ignoreEvent'
-import { addNode } from '../actions'
 
 const NodeSelector = ({
-  dispatch,
   x, y,
-  text,
   show,
-  changeText
+  addNode
 }) => (
   show ? (
     <foreignObject
@@ -19,14 +16,17 @@ const NodeSelector = ({
     >
       <input
         type='text'
-        value={text}
-        onChange={changeText}
+        ref={(input) => { if (input !== null) input.focus() }}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            dispatch(addNode({x, y, text: e.target.value}))
+          const text = e.target.value.trim()
+
+          const pressedEnter = (e.key === 'Enter')
+          const textIsNotBlank = text.length > 0
+
+          if (pressedEnter && textIsNotBlank) {
+            addNode({ x, y, text })
           }
         }}
-        ref={(input) => { if (input !== null) input.focus() }}
       />
     </foreignObject>
     )

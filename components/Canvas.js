@@ -53,25 +53,15 @@
     var links = _ref.links;
     var height = _ref.height;
     var width = _ref.width;
-    var hideNodeSelector = _ref.hideNodeSelector;
     var pinRadius = _ref.pinRadius;
-    var addNode = _ref.addNode;
-    var delNode = _ref.delNode;
-    var deleteLink = _ref.deleteLink;
-    var selectLink = _ref.selectLink;
-    var selectNode = _ref.selectNode;
     var offset = _ref.offset;
     var draggedLinkId = _ref.draggedLinkId;
     var isDraggingLink = _ref.isDraggingLink;
     var isDraggingItems = _ref.isDraggingItems;
-    var showNodeSelector = _ref.showNodeSelector;
     var nodeSelectorX = _ref.nodeSelectorX;
     var nodeSelectorY = _ref.nodeSelectorY;
     var nodeSelectorShow = _ref.nodeSelectorShow;
     var nodeSelectorText = _ref.nodeSelectorText;
-    var setNodeSelectorText = _ref.setNodeSelectorText;
-    var setNumIns = _ref.setNumIns;
-    var setNumOuts = _ref.setNumOuts;
     var previousDraggingPoint = _ref.previousDraggingPoint;
 
     var onDragLink = function onDragLink(previousDraggingPoint) {
@@ -111,11 +101,112 @@
       };
     };
 
+    var onDeleteNode = function onDeleteNode(nodeid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.deleteNode)(nodeid));
+      };
+    };
+
     var onEndDraggingItems = function onEndDraggingItems(e) {
       e.preventDefault();
       e.stopPropagation();
 
       dispatch((0, _actions.endDraggingItems)());
+    };
+
+    var onHideNodeSelector = function onHideNodeSelector(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      dispatch((0, _actions.hideNodeSelector)());
+    };
+
+    var onShowNodeSelector = function onShowNodeSelector(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      dispatch((0, _actions.showNodeSelector)({
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y
+      }));
+    };
+
+    var selectLink = function selectLink(linkid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.selectItem)({
+          id: linkid,
+          x: e.clientX - offset.x,
+          y: e.clientY - offset.y
+        }));
+      };
+    };
+
+    var selectNode = function selectNode(nodeid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.selectItem)({
+          id: nodeid,
+          x: e.clientX - offset.x,
+          y: e.clientY - offset.y
+        }));
+      };
+    };
+
+    var onDeleteLink = function onDeleteLink(linkid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.deleteLink)(linkid));
+      };
+    };
+
+    var onSetNumIns = function onSetNumIns(nodeid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.setNumIns)({
+          nodeid: nodeid,
+          num: e.target.value
+        }));
+      };
+    };
+
+    var onSetNumOuts = function onSetNumOuts(nodeid) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.setNumOuts)({
+          nodeid: nodeid,
+          num: e.target.value
+        }));
+      };
+    };
+
+    var onAddNode = function onAddNode(_ref2) {
+      var x = _ref2.x;
+      var y = _ref2.y;
+      var text = _ref2.text;
+
+      console.log(x, y, text);
+      dispatch((0, _actions.addNode)({ x: x, y: y, text: text }));
+    };
+
+    var onAddLink = function onAddLink(_ref3, previousDraggingPoint) {
+      var from = _ref3.from;
+      var to = _ref3.to;
+
+      dispatch((0, _actions.addLink)({ from: from, to: to }, previousDraggingPoint));
     };
 
     return _react2.default.createElement(
@@ -124,39 +215,37 @@
         height: height,
         width: width,
         style: { border: '1px solid black' },
-        onMouseDown: hideNodeSelector,
-        onDoubleClick: showNodeSelector,
+        onMouseDown: onHideNodeSelector,
+        onDoubleClick: onShowNodeSelector,
         onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined,
         onMouseUp: isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined
       },
       _react2.default.createElement(_NodeSelector2.default, {
-        dispatch: dispatch,
         x: nodeSelectorX,
         y: nodeSelectorY,
         text: nodeSelectorText,
         show: nodeSelectorShow,
-        changeText: setNodeSelectorText,
-        addNode: addNode
+        addNode: onAddNode
       }),
       nodes.map(function (node, i) {
         return _react2.default.createElement(_Node2.default, _extends({
-          dispatch: dispatch,
           key: i,
           pinRadius: pinRadius,
           offset: offset,
           selectNode: selectNode(node.id),
-          delNode: delNode(node.id),
+          delNode: onDeleteNode(node.id),
+          addLink: onAddLink,
           endDragging: onEndDraggingItems,
           isDraggingLink: isDraggingLink,
-          setNumIns: setNumIns(node.id),
-          setNumOuts: setNumOuts(node.id)
+          setNumIns: onSetNumIns(node.id),
+          setNumOuts: onSetNumOuts(node.id)
         }, node));
       }),
       links.map(function (link) {
         return _react2.default.createElement(_Link2.default, _extends({
           pinRadius: pinRadius,
           selectLink: selectLink(link.id),
-          deleteLink: deleteLink(link.id),
+          deleteLink: onDeleteLink(link.id),
           key: link.id
         }, link));
       })

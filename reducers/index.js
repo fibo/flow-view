@@ -239,15 +239,6 @@
             })
           };
 
-        case _actions.SET_NODE_SELECTOR_TEXT:
-          return {
-            v: Object.assign({}, state, {
-              nodeSelector: {
-                text: action.text
-              }
-            })
-          };
-
         case _actions.SET_NUM_INS:
           return {
             v: (0, _setNumIns2.default)(state, action)

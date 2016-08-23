@@ -1,23 +1,22 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['exports', 'react-redux', '../util/xCenterOfPin', '../actions', '../components/Canvas'], factory);
+    define(['exports', 'react-redux', '../util/xCenterOfPin', '../components/Canvas'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require('react-redux'), require('../util/xCenterOfPin'), require('../actions'), require('../components/Canvas'));
+    factory(exports, require('react-redux'), require('../util/xCenterOfPin'), require('../components/Canvas'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.reactRedux, global.xCenterOfPin, global.actions, global.Canvas);
+    factory(mod.exports, global.reactRedux, global.xCenterOfPin, global.Canvas);
     global.App = mod.exports;
   }
-})(this, function (exports, _reactRedux, _xCenterOfPin, _actions, _Canvas) {
+})(this, function (exports, _reactRedux, _xCenterOfPin, _Canvas) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.mapStateToProps = mapStateToProps;
-  exports.mapDispatchToProps = mapDispatchToProps;
 
   var _xCenterOfPin2 = _interopRequireDefault(_xCenterOfPin);
 
@@ -29,12 +28,6 @@
     };
   }
 
-  // TODO refactor state and props to reogranize it and simplify it.
-  // In particular it would be easier for external libs importing flow-view
-  // if mapDispatchToProps is omitted, so it is necessary to refactor everything
-  // and use dispatch in every component.
-  // This has also a huge benefit! That custom components (from external libs)
-  // can use dispatch directly and do not need a custom mapDispatchToProps.
   function mapStateToProps(state, ownProps) {
     var container = ownProps.container;
 
@@ -60,21 +53,22 @@
       var height = node.height || nodeHeight;
       var width = node.width || (node.text.length + 4) * fontWidth;
 
-      var ins = node.ins.map(function (pin, i, ins) {
+      var ins = node.ins.map(function (pin, i, pins) {
         return {
-          cx: (0, _xCenterOfPin2.default)(pinRadius, width, ins.length, i),
+          cx: (0, _xCenterOfPin2.default)(pinRadius, width, pins.length, i),
           cy: pinRadius,
           r: pinRadius,
-          data: ins[i]
+          data: pins[i]
         };
       });
 
-      var outs = node.outs.map(function (pin, i, outs) {
+      var outs = node.outs.map(function (pin, i, pins) {
+        console.log(pins.length);
         return {
-          cx: (0, _xCenterOfPin2.default)(pinRadius, width, outs.length, i),
+          cx: (0, _xCenterOfPin2.default)(pinRadius, width, pins.length, i),
           cy: height - pinRadius,
           r: pinRadius,
-          data: outs[i]
+          data: pins[i]
         };
       });
 
@@ -165,12 +159,10 @@
     var nodeSelectorShow = state.nodeSelector !== null;
     var nodeSelectorX = 0;
     var nodeSelectorY = 0;
-    var nodeSelectorText = '';
 
     if (nodeSelectorShow) {
       nodeSelectorX = state.nodeSelector.x;
       nodeSelectorY = state.nodeSelector.y;
-      nodeSelectorText = state.nodeSelector.text;
     }
 
     var isDraggingLink = draggedLinkId !== null;
@@ -189,108 +181,9 @@
       nodeSelectorX: nodeSelectorX,
       nodeSelectorY: nodeSelectorY,
       nodeSelectorShow: nodeSelectorShow,
-      nodeSelectorText: nodeSelectorText,
       draggedLinkId: draggedLinkId
     };
   }
 
-  function mapDispatchToProps(dispatch, ownProps) {
-    var container = ownProps.container;
-
-    var offset = {
-      x: container.offsetLeft,
-      y: container.offsetTop
-    };
-
-    return {
-      dispatch: dispatch,
-      deleteLink: function deleteLink(linkid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.deleteLink)(linkid));
-        };
-      },
-      delNode: function delNode(nodeid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.delNode)(nodeid));
-        };
-      },
-      hideNodeSelector: function hideNodeSelector(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        dispatch((0, _actions.hideNodeSelector)());
-      },
-      selectLink: function selectLink(linkid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.selectItem)({
-            id: linkid,
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y
-          }));
-        };
-      },
-      selectNode: function selectNode(nodeid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.selectItem)({
-            id: nodeid,
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y
-          }));
-        };
-      },
-      setNodeSelectorText: function setNodeSelectorText(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        (0, _actions.setNodeSelectorText)({
-          text: e.target.value
-        });
-      },
-      setNumIns: function setNumIns(nodeid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.setNumIns)({
-            nodeid: nodeid,
-            num: e.target.value
-          }));
-        };
-      },
-      setNumOuts: function setNumOuts(nodeid) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.setNumOuts)({
-            nodeid: nodeid,
-            num: e.target.value
-          }));
-        };
-      },
-      showNodeSelector: function showNodeSelector(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        dispatch((0, _actions.showNodeSelector)({
-          x: e.clientX - offset.x,
-          y: e.clientY - offset.y
-        }));
-      }
-    };
-  }
-
-  exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Canvas2.default);
+  exports.default = (0, _reactRedux.connect)(mapStateToProps)(_Canvas2.default);
 });

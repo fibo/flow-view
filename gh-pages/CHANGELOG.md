@@ -18,19 +18,33 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### TODO
 
 server side rendering, canvas.exportToSVG exportToFileSVG
+New g14n.info layouts, with link Changelog page
 
-## [2.3.0] 2016-06-25
+## [v2.4.0] 2016-08-23
 
-Exposed actions, util/initialState, components and other stuff needed to import,
+### Changed
+
+- Removed mapDispatchToProps, it will be easier to manage it or to port it to pure React.
+- Started moving some state from Redux to React components.
+
+### Fixed
+
+- Fixed changelog links.
+
+## [v2.3.0] 2016-06-25
+
+### Added
+
+- Exposed actions, util/initialState, components and other stuff needed to import,
 extend and use flow-view in other projects, in particular [dflow].
 
-## [2.1.1] - 2016-06-22
+## [v2.1.1] - 2016-06-22
 
 ### Added
 
 - Restored src/ folder, babel build is inverted now: compiled code is in root
 
-## [2.1.0] - 2016-06-18
+## [v2.1.0] - 2016-06-18
 
 ### Fixed
 
@@ -41,7 +55,7 @@ extend and use flow-view in other projects, in particular [dflow].
 - container element and containerId
 - server side test
 
-## [2.0.0] - 2016-06-16
+## [v2.0.0] - 2016-06-16
 
 ### Added
 
@@ -57,7 +71,7 @@ extend and use flow-view in other projects, in particular [dflow].
 - ES6 code and babel transpiling
 - pre-commit hooks
 
-## [1.2.1] - 2016-03-14
+## [v1.2.1] - 2016-03-14
 
 ### Added
 
@@ -65,14 +79,14 @@ extend and use flow-view in other projects, in particular [dflow].
 - smaller build, less svg.js code
 - removed dev deps and unnecessary server side tests
 
-## [1.1.0] - 2016-03-02
+## [v1.1.0] - 2016-03-02
 
 ### Added
 
 - [Codepen collection](http://codepen.io/collection/DojWVW/) of examples
 - source map
 
-## [1.0.2] - 2016-02-20
+## [v1.0.2] - 2016-02-20
 
 ### Added
 

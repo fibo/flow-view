@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 
 import ignoreEvent from '../../util/ignoreEvent'
-import { addLink } from '../../actions'
 
 import NumIns from './NumIns'
 import NumOuts from './NumOuts'
@@ -18,8 +17,8 @@ const Node = ({
   text,
   pinRadius,
   ins, outs,
-  dispatch,
   offset,
+  addLink,
   selectNode,
   delNode,
   selected,
@@ -129,7 +128,7 @@ const Node = ({
               const from = [id, i]
               const to = null
 
-              dispatch(addLink({ from, to }, previousDraggingPoint))
+              addLink({ from, to }, previousDraggingPoint)
             }}
             onMouseUp={ignoreEvent}
             onMouseLeave={ignoreEvent}

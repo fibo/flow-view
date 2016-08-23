@@ -11,7 +11,6 @@ import {
   END_DRAGGING_LINK,
   HIDE_NODE_SELECTOR,
   SELECT_ITEM,
-  SET_NODE_SELECTOR_TEXT,
   SET_NUM_INS,
   SET_NUM_OUTS,
   SHOW_NODE_SELECTOR
@@ -199,13 +198,6 @@ const flowViewApp = (state = initialState, action) => {
         },
         selectedItems,
         nodeSelector: null
-      })
-
-    case SET_NODE_SELECTOR_TEXT:
-      return Object.assign({}, state, {
-        nodeSelector: {
-          text: action.text
-        }
       })
 
     case SET_NUM_INS: return setNumIns(state, action)

@@ -37,7 +37,7 @@
 
   var DEL_NODE = exports.DEL_NODE = 'DEL_NODE';
 
-  var delNode = exports.delNode = function delNode(id) {
+  var deleteNode = exports.deleteNode = function deleteNode(id) {
     return {
       type: DEL_NODE,
       id: id
@@ -113,15 +113,6 @@
     };
   };
 
-  var SET_NODE_SELECTOR_TEXT = exports.SET_NODE_SELECTOR_TEXT = 'SET_NODE_SELECTOR_TEXT';
-
-  var setNodeSelectorText = exports.setNodeSelectorText = function setNodeSelectorText(text) {
-    return {
-      type: SET_NODE_SELECTOR_TEXT,
-      text: text
-    };
-  };
-
   var SET_NUM_INS = exports.SET_NUM_INS = 'SET_NUM_INS';
 
   var setNumIns = exports.setNumIns = function setNumIns(_ref2) {
@@ -158,5 +149,5 @@
     };
   };
 
-  exports.default = [ADD_LINK, ADD_NODE, DEL_LINK, DEL_NODE, DRAG_ITEMS, DRAG_LINK, END_DRAGGING_ITEMS, END_DRAGGING_LINK, HIDE_NODE_SELECTOR, SELECT_ITEM, SET_NODE_SELECTOR_TEXT, SET_NUM_INS, SET_NUM_OUTS];
+  exports.default = [ADD_LINK, ADD_NODE, DEL_LINK, DEL_NODE, DRAG_ITEMS, DRAG_LINK, END_DRAGGING_ITEMS, END_DRAGGING_LINK, HIDE_NODE_SELECTOR, SELECT_ITEM, SET_NUM_INS, SET_NUM_OUTS];
 });

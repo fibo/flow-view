@@ -1,21 +1,7 @@
 import { connect } from 'react-redux'
 import xCenterOfPin from '../util/xCenterOfPin'
-import {
-  delNode,
-  deleteLink,
-  selectItem,
-  setNumIns,
-  setNumOuts,
-  setNodeSelectorText
-} from '../actions'
 import Canvas from '../components/Canvas'
 
-// TODO refactor state and props to reogranize it and simplify it.
-// In particular it would be easier for external libs importing flow-view
-// if mapDispatchToProps is omitted, so it is necessary to refactor everything
-// and use dispatch in every component.
-// This has also a huge benefit! That custom components (from external libs)
-// can use dispatch directly and do not need a custom mapDispatchToProps.
 export function mapStateToProps (state, ownProps) {
   const container = ownProps.container
 
@@ -45,23 +31,24 @@ export function mapStateToProps (state, ownProps) {
     const width = (node.width || ((node.text.length + 4) * fontWidth))
 
     const ins = node.ins.map(
-      (pin, i, ins) => {
+      (pin, i, pins) => {
         return {
-          cx: xCenterOfPin(pinRadius, width, ins.length, i),
+          cx: xCenterOfPin(pinRadius, width, pins.length, i),
           cy: pinRadius,
           r: pinRadius,
-          data: ins[i]
+          data: pins[i]
         }
       }
     )
 
     const outs = node.outs.map(
-      (pin, i, outs) => {
+      (pin, i, pins) => {
+        console.log(pins.length)
         return {
-          cx: xCenterOfPin(pinRadius, width, outs.length, i),
+          cx: xCenterOfPin(pinRadius, width, pins.length, i),
           cy: height - pinRadius,
           r: pinRadius,
-          data: outs[i]
+          data: pins[i]
         }
       }
     )
@@ -130,12 +117,10 @@ export function mapStateToProps (state, ownProps) {
   const nodeSelectorShow = (state.nodeSelector !== null)
   let nodeSelectorX = 0
   let nodeSelectorY = 0
-  let nodeSelectorText = ''
 
   if (nodeSelectorShow) {
     nodeSelectorX = state.nodeSelector.x
     nodeSelectorY = state.nodeSelector.y
-    nodeSelectorText = state.nodeSelector.text
   }
 
   const isDraggingLink = (draggedLinkId !== null)
@@ -154,83 +139,10 @@ export function mapStateToProps (state, ownProps) {
     nodeSelectorX,
     nodeSelectorY,
     nodeSelectorShow,
-    nodeSelectorText,
     draggedLinkId
   }
 }
 
-export function mapDispatchToProps (dispatch, ownProps) {
-  const container = ownProps.container
-
-  const offset = {
-    x: container.offsetLeft,
-    y: container.offsetTop
-  }
-
-  return {
-    dispatch,
-    deleteLink: (linkid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(deleteLink(linkid))
-    },
-    delNode: (nodeid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(delNode(nodeid))
-    },
-    selectLink: (linkid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(selectItem({
-        id: linkid,
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }))
-    },
-    selectNode: (nodeid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(selectItem({
-        id: nodeid,
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }))
-    },
-    setNodeSelectorText: (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      setNodeSelectorText({
-        text: e.target.value
-      })
-    },
-    setNumIns: (nodeid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(setNumIns({
-        nodeid,
-        num: e.target.value
-      }))
-    },
-    setNumOuts: (nodeid) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(setNumOuts({
-        nodeid,
-        num: e.target.value
-      }))
-    }
-  }
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(Canvas)

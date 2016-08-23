@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/ignoreEvent', '../actions'], factory);
+    define(['module', 'exports', 'react', '../util/ignoreEvent'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/ignoreEvent'), require('../actions'));
+    factory(module, exports, require('react'), require('../util/ignoreEvent'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.ignoreEvent, global.actions);
+    factory(mod, mod.exports, global.react, global.ignoreEvent);
     global.NodeSelector = mod.exports;
   }
-})(this, function (module, exports, _react, _ignoreEvent, _actions) {
+})(this, function (module, exports, _react, _ignoreEvent) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -28,12 +28,10 @@
   }
 
   var NodeSelector = function NodeSelector(_ref) {
-    var dispatch = _ref.dispatch;
     var x = _ref.x;
     var y = _ref.y;
-    var text = _ref.text;
     var show = _ref.show;
-    var changeText = _ref.changeText;
+    var addNode = _ref.addNode;
     return show ? _react2.default.createElement(
       'foreignObject',
       {
@@ -45,15 +43,18 @@
       },
       _react2.default.createElement('input', {
         type: 'text',
-        value: text,
-        onChange: changeText,
-        onKeyPress: function onKeyPress(e) {
-          if (e.key === 'Enter') {
-            dispatch((0, _actions.addNode)({ x: x, y: y, text: e.target.value }));
-          }
-        },
         ref: function ref(input) {
           if (input !== null) input.focus();
+        },
+        onKeyPress: function onKeyPress(e) {
+          var text = e.target.value.trim();
+
+          var pressedEnter = e.key === 'Enter';
+          var textIsNotBlank = text.length > 0;
+
+          if (pressedEnter && textIsNotBlank) {
+            addNode({ x: x, y: y, text: text });
+          }
         }
       })
     ) : null;

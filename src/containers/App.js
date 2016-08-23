@@ -1,9 +1,7 @@
 import { connect } from 'react-redux'
 import xCenterOfPin from '../util/xCenterOfPin'
 import {
-  addLink,
   dragItems,
-  dragLink,
   delNode,
   deleteLink,
   endDraggingItems,
@@ -176,17 +174,6 @@ export function mapDispatchToProps (dispatch, ownProps) {
 
   return {
     dispatch,
-    dragLink: (previousDraggingPoint) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      const draggingDelta = {
-        x: e.clientX - offset.x - previousDraggingPoint.x,
-        y: e.clientY - offset.y - previousDraggingPoint.y
-      }
-
-      dispatch(dragLink(previousDraggingPoint, draggingDelta))
-    },
     deleteLink: (linkid) => (e) => {
       e.preventDefault()
       e.stopPropagation()

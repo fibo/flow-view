@@ -3,6 +3,9 @@ import initialState from '../util/initialState'
 import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
+import {
+  dragLink
+} from '../actions'
 
 const Canvas = ({
   dispatch,
@@ -20,7 +23,6 @@ const Canvas = ({
   isDraggingLink,
   isDraggingItems,
   dragItems,
-  dragLink,
   endDraggingItems,
   endDraggingLink,
   showNodeSelector,
@@ -32,58 +34,72 @@ const Canvas = ({
   setNumIns,
   setNumOuts,
   previousDraggingPoint
-}) => (
-  <svg
-    height={height}
-    width={width}
-    style={{border: '1px solid black'}}
-    onMouseDown={hideNodeSelector}
-    onDoubleClick={showNodeSelector}
-    onMouseMove={isDraggingLink ? dragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined}
-    onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined}
-  >
+}) => {
+  const onDragLink = (previousDraggingPoint) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
 
-    <NodeSelector
-      dispatch={dispatch}
-      x={nodeSelectorX}
-      y={nodeSelectorY}
-      text={nodeSelectorText}
-      show={nodeSelectorShow}
-      changeText={setNodeSelectorText}
-      addNode={addNode}
-    />
+    const draggingDelta = {
+      x: e.clientX - offset.x - previousDraggingPoint.x,
+      y: e.clientY - offset.y - previousDraggingPoint.y
+    }
 
-    {nodes.map(
-      (node, i) => (
-        <Node
-          dispatch={dispatch}
-          key={i}
-          pinRadius={pinRadius}
-          offset={offset}
-          selectNode={selectNode(node.id)}
-          delNode={delNode(node.id)}
-          endDragging={endDraggingItems}
-          isDraggingLink={isDraggingLink}
-          setNumIns={setNumIns(node.id)}
-          setNumOuts={setNumOuts(node.id)}
-          {...node}
-        />
-      )
-    )}
+    dispatch(dragLink(previousDraggingPoint, draggingDelta))
+  }
 
-    {links.map(
-      (link) => (
-        <Link
-          pinRadius={pinRadius}
-          selectLink={selectLink(link.id)}
-          deleteLink={deleteLink(link.id)}
-          key={link.id}
-          {...link}
-        />
-      )
-    )}
-  </svg>
-)
+  return (
+    <svg
+      height={height}
+      width={width}
+      style={{border: '1px solid black'}}
+      onMouseDown={hideNodeSelector}
+      onDoubleClick={showNodeSelector}
+      onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined}
+      onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined}
+    >
+
+      <NodeSelector
+        dispatch={dispatch}
+        x={nodeSelectorX}
+        y={nodeSelectorY}
+        text={nodeSelectorText}
+        show={nodeSelectorShow}
+        changeText={setNodeSelectorText}
+        addNode={addNode}
+      />
+
+      {nodes.map(
+        (node, i) => (
+          <Node
+            dispatch={dispatch}
+            key={i}
+            pinRadius={pinRadius}
+            offset={offset}
+            selectNode={selectNode(node.id)}
+            delNode={delNode(node.id)}
+            endDragging={endDraggingItems}
+            isDraggingLink={isDraggingLink}
+            setNumIns={setNumIns(node.id)}
+            setNumOuts={setNumOuts(node.id)}
+            {...node}
+          />
+        )
+      )}
+
+      {links.map(
+        (link) => (
+          <Link
+            pinRadius={pinRadius}
+            selectLink={selectLink(link.id)}
+            deleteLink={deleteLink(link.id)}
+            key={link.id}
+            {...link}
+          />
+        )
+      )}
+    </svg>
+  )
+}
 
 Canvas.propTypes = {
   width: PropTypes.number.isRequired,

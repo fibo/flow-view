@@ -3,12 +3,10 @@ import xCenterOfPin from '../util/xCenterOfPin'
 import {
   delNode,
   deleteLink,
-  hideNodeSelector,
   selectItem,
   setNumIns,
   setNumOuts,
-  setNodeSelectorText,
-  showNodeSelector
+  setNodeSelectorText
 } from '../actions'
 import Canvas from '../components/Canvas'
 
@@ -183,12 +181,6 @@ export function mapDispatchToProps (dispatch, ownProps) {
 
       dispatch(delNode(nodeid))
     },
-    hideNodeSelector: (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(hideNodeSelector())
-    },
     selectLink: (linkid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -233,15 +225,6 @@ export function mapDispatchToProps (dispatch, ownProps) {
       dispatch(setNumOuts({
         nodeid,
         num: e.target.value
-      }))
-    },
-    showNodeSelector: (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(showNodeSelector({
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
       }))
     }
   }

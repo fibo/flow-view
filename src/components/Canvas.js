@@ -4,7 +4,10 @@ import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
 import {
-  dragLink
+  dragItems,
+  dragLink,
+  endDraggingItems,
+  endDraggingLink
 } from '../actions'
 
 const Canvas = ({
@@ -22,9 +25,6 @@ const Canvas = ({
   draggedLinkId,
   isDraggingLink,
   isDraggingItems,
-  dragItems,
-  endDraggingItems,
-  endDraggingLink,
   showNodeSelector,
   nodeSelectorX,
   nodeSelectorY,
@@ -47,6 +47,32 @@ const Canvas = ({
     dispatch(dragLink(previousDraggingPoint, draggingDelta))
   }
 
+  const onEndDraggingLink = (draggedLinkId) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(endDraggingLink(draggedLinkId))
+  }
+
+  const onDragItems = (previousDraggingPoint) => (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const draggingDelta = {
+      x: e.clientX - offset.x - previousDraggingPoint.x,
+      y: e.clientY - offset.y - previousDraggingPoint.y
+    }
+
+    dispatch(dragItems(previousDraggingPoint, draggingDelta))
+  }
+
+  const onEndDraggingItems = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(endDraggingItems())
+  }
+
   return (
     <svg
       height={height}
@@ -54,8 +80,8 @@ const Canvas = ({
       style={{border: '1px solid black'}}
       onMouseDown={hideNodeSelector}
       onDoubleClick={showNodeSelector}
-      onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined}
-      onMouseUp={isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined}
+      onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
+      onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
     >
 
       <NodeSelector
@@ -77,7 +103,7 @@ const Canvas = ({
             offset={offset}
             selectNode={selectNode(node.id)}
             delNode={delNode(node.id)}
-            endDragging={endDraggingItems}
+            endDragging={onEndDraggingItems}
             isDraggingLink={isDraggingLink}
             setNumIns={setNumIns(node.id)}
             setNumOuts={setNumOuts(node.id)}

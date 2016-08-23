@@ -64,9 +64,6 @@
     var draggedLinkId = _ref.draggedLinkId;
     var isDraggingLink = _ref.isDraggingLink;
     var isDraggingItems = _ref.isDraggingItems;
-    var dragItems = _ref.dragItems;
-    var endDraggingItems = _ref.endDraggingItems;
-    var endDraggingLink = _ref.endDraggingLink;
     var showNodeSelector = _ref.showNodeSelector;
     var nodeSelectorX = _ref.nodeSelectorX;
     var nodeSelectorY = _ref.nodeSelectorY;
@@ -91,6 +88,36 @@
       };
     };
 
+    var onEndDraggingLink = function onEndDraggingLink(draggedLinkId) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch((0, _actions.endDraggingLink)(draggedLinkId));
+      };
+    };
+
+    var onDragItems = function onDragItems(previousDraggingPoint) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var draggingDelta = {
+          x: e.clientX - offset.x - previousDraggingPoint.x,
+          y: e.clientY - offset.y - previousDraggingPoint.y
+        };
+
+        dispatch((0, _actions.dragItems)(previousDraggingPoint, draggingDelta));
+      };
+    };
+
+    var onEndDraggingItems = function onEndDraggingItems(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      dispatch((0, _actions.endDraggingItems)());
+    };
+
     return _react2.default.createElement(
       'svg',
       {
@@ -99,8 +126,8 @@
         style: { border: '1px solid black' },
         onMouseDown: hideNodeSelector,
         onDoubleClick: showNodeSelector,
-        onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined,
-        onMouseUp: isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined
+        onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined,
+        onMouseUp: isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined
       },
       _react2.default.createElement(_NodeSelector2.default, {
         dispatch: dispatch,
@@ -119,7 +146,7 @@
           offset: offset,
           selectNode: selectNode(node.id),
           delNode: delNode(node.id),
-          endDragging: endDraggingItems,
+          endDragging: onEndDraggingItems,
           isDraggingLink: isDraggingLink,
           setNumIns: setNumIns(node.id),
           setNumOuts: setNumOuts(node.id)

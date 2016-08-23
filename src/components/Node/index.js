@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 
-
 import ignoreEvent from '../../util/ignoreEvent'
+import { addLink } from '../../actions'
 
 import NumIns from './NumIns'
 import NumOuts from './NumOuts'
@@ -18,7 +18,8 @@ const Node = ({
   text,
   pinRadius,
   ins, outs,
-  addLink,
+  dispatch,
+  offset,
   selectNode,
   delNode,
   selected,
@@ -116,7 +117,20 @@ const Node = ({
             fill={fill}
             style={styles.defaultPin}
             onClick={ignoreEvent}
-            onMouseDown={addLink([id, i], null)}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              const previousDraggingPoint = {
+                x: e.clientX - offset.x,
+                y: e.clientY - offset.y
+              }
+
+              const from = [id, i]
+              const to = null
+
+              dispatch(addLink({ from, to }, previousDraggingPoint))
+            }}
             onMouseUp={ignoreEvent}
             onMouseLeave={ignoreEvent}
           >
@@ -137,8 +151,7 @@ Node.propTypes = {
   ins: PropTypes.array.isRequired,
   outs: PropTypes.array.isRequired,
   selectNode: PropTypes.func.isRequired,
-  selected: PropTypes.bool.isRequired,
-  addLink: PropTypes.func.isRequired
+  selected: PropTypes.bool.isRequired
 }
 
 Node.defaultProps = {

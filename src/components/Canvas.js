@@ -15,7 +15,7 @@ const Canvas = ({
   deleteLink,
   selectLink,
   selectNode,
-  addLink,
+  offset,
   draggedLinkId,
   isDraggingLink,
   isDraggingItems,
@@ -44,21 +44,22 @@ const Canvas = ({
   >
 
     <NodeSelector
+      dispatch={dispatch}
       x={nodeSelectorX}
       y={nodeSelectorY}
       text={nodeSelectorText}
       show={nodeSelectorShow}
       changeText={setNodeSelectorText}
       addNode={addNode}
-      dispatch={dispatch}
     />
 
     {nodes.map(
       (node, i) => (
         <Node
+          dispatch={dispatch}
           key={i}
           pinRadius={pinRadius}
-          addLink={addLink}
+          offset={offset}
           selectNode={selectNode(node.id)}
           delNode={delNode(node.id)}
           endDragging={endDraggingItems}

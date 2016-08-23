@@ -220,33 +220,6 @@
           dispatch((0, _actions.delNode)(nodeid));
         };
       },
-      dragItems: function dragItems(previousDraggingPoint) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          var draggingDelta = {
-            x: e.clientX - offset.x - previousDraggingPoint.x,
-            y: e.clientY - offset.y - previousDraggingPoint.y
-          };
-
-          dispatch((0, _actions.dragItems)(previousDraggingPoint, draggingDelta));
-        };
-      },
-      endDraggingLink: function endDraggingLink(draggedLinkId) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.endDraggingLink)(draggedLinkId));
-        };
-      },
-      endDraggingItems: function endDraggingItems(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        dispatch((0, _actions.endDraggingItems)());
-      },
       hideNodeSelector: function hideNodeSelector(e) {
         e.preventDefault();
         e.stopPropagation();

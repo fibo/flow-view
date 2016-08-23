@@ -1,11 +1,8 @@
 import { connect } from 'react-redux'
 import xCenterOfPin from '../util/xCenterOfPin'
 import {
-  dragItems,
   delNode,
   deleteLink,
-  endDraggingItems,
-  endDraggingLink,
   hideNodeSelector,
   selectItem,
   setNumIns,
@@ -185,29 +182,6 @@ export function mapDispatchToProps (dispatch, ownProps) {
       e.stopPropagation()
 
       dispatch(delNode(nodeid))
-    },
-    dragItems: (previousDraggingPoint) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      const draggingDelta = {
-        x: e.clientX - offset.x - previousDraggingPoint.x,
-        y: e.clientY - offset.y - previousDraggingPoint.y
-      }
-
-      dispatch(dragItems(previousDraggingPoint, draggingDelta))
-    },
-    endDraggingLink: (draggedLinkId) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(endDraggingLink(draggedLinkId))
-    },
-    endDraggingItems: (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      dispatch(endDraggingItems())
     },
     hideNodeSelector: (e) => {
       e.preventDefault()

@@ -68,7 +68,7 @@ Follows a sample *menu.yml*
 
 ```yaml
 Example: example
-API: api
+API: '#api'
 ```
 
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

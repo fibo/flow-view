@@ -137,7 +137,6 @@ Import *flow-view*  list of action constants
 * END_DRAGGING_LINK
 * HIDE_NODE_SELECTOR
 * SELECT_ITEM
-* SET_NODE_SELECTOR_TEXT
 * SET_NUM_INS
 * SET_NUM_OUTS
 
@@ -176,7 +175,7 @@ export default function (state, action) {
       return Object.assign({}, state, { view })
 
     case MY_ACTION:
-      // Do something related to this action, then return the state adding laso the view.
+      // Do something related to this action, then return the state adding also the view.
 
       // your code here
 

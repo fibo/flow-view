@@ -37,7 +37,7 @@ Any feedback is welcome!
 With [bower](http://bower.io/) do
 
 ```bash
-$ bower install flow-view
+bower install flow-view
 ```
 
 or use a CDN adding this to your HTML page
@@ -50,7 +50,7 @@ Note that *flow-view* is supposed to be imported in your project build,
 so it is recommended you install it with [npm](https://npmjs.org/)
 
 ```bash
-$ npm install flow-view
+npm install flow-view
 ```
 
 ## API
@@ -129,44 +129,10 @@ canvas.render({
 
 ### Actions and reducers
 
-Import *flow-view*  list of action constants and *flow-view* reducers, for
-example to use them in your Redux app  *reducers/index.js*.
-
-```javascript
-import {
-  MY_ACTION
-} from '../actions'
-
-// Import all actions and reducers.
-import viewActions from 'flow-view/actions'
-import viewReducers from 'flow-view/reducers'
-
-export default function (state, action) {
-  let view = Object.assign({}, state.view)
-
-  if (viewActions.includes(action.type)) {
-    view = viewReducers(state.view, action)
-  }
-
-  switch (action.type) {
-    case viewActions.ADD_NODE:
-      // Intercept the flow-view action and do something else.
-      return state
-
-    case MY_ACTION:
-      // Do something related to this action, then return the state adding laso the view.
-      return Object.assign({}, state, { view })
-
-    default:
-      return state
-  }
-}
-```
-
-Follows the action list:
+Import *flow-view*  list of action constants
 
 * ADD_LINK
-* ADD_NODE_
+* ADD_NODE
 * DEL_LINK
 * DEL_NODE
 * DRAG_ITEMS
@@ -175,9 +141,55 @@ Follows the action list:
 * END_DRAGGING_LINK
 * HIDE_NODE_SELECTOR
 * SELECT_ITEM
-* SET_NODE_SELECTOR_TEXT
 * SET_NUM_INS
 * SET_NUM_OUTS
+
+You can use also import *flow-view* reducers, for example to augment your
+Redux app  *reducers/index.js*.
+
+```javascript
+import {
+  MY_ACTION
+} from '../actions'
+
+// Import actions and reducers from flow-view.
+import viewActions from 'flow-view/actions'
+import viewReducers from 'flow-view/reducers'
+
+export default function (state, action) {
+  let view = Object.assign({}, state.view)
+
+  if (viewActions.includes(action.type)) {
+    view = viewReducers(state.view, action)
+    // Note that instead of
+    //
+    //     return state
+    //
+    // the code below uses
+    //
+    //      return Object.assign({}, state, { view })
+  }
+
+  switch (action.type) {
+    case viewActions.ADD_NODE:
+      // Intercept the flow-view action and do something else.
+
+      // your code here
+
+      return Object.assign({}, state, { view })
+
+    case MY_ACTION:
+      // Do something related to this action, then return the state adding also the view.
+
+      // your code here
+
+      return Object.assign({}, state, { view })
+
+    default:
+      return Object.assign({}, state, { view })
+  }
+}
+```
 
 ### Components
 

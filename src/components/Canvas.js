@@ -7,14 +7,15 @@ import {
   dragItems,
   dragLink,
   endDraggingItems,
-  endDraggingLink
+  endDraggingLink,
+  hideNodeSelector,
+  showNodeSelector
 } from '../actions'
 
 const Canvas = ({
   dispatch,
   nodes, links,
   height, width,
-  hideNodeSelector,
   pinRadius,
   addNode,
   delNode,
@@ -25,7 +26,6 @@ const Canvas = ({
   draggedLinkId,
   isDraggingLink,
   isDraggingItems,
-  showNodeSelector,
   nodeSelectorX,
   nodeSelectorY,
   nodeSelectorShow,
@@ -73,13 +73,30 @@ const Canvas = ({
     dispatch(endDraggingItems())
   }
 
+  const onHideNodeSelector = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(hideNodeSelector())
+  }
+
+  const onShowNodeSelector: (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    dispatch(showNodeSelector({
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y
+    }))
+  }
+
   return (
     <svg
       height={height}
       width={width}
       style={{border: '1px solid black'}}
-      onMouseDown={hideNodeSelector}
-      onDoubleClick={showNodeSelector}
+      onMouseDown={onHideNodeSelector}
+      onDoubleClick={onShowNodeSelector}
       onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
       onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
     >

@@ -24,6 +24,13 @@ import Canvas from '../components/Canvas'
 // This has also a huge benefit! That custom components (from external libs)
 // can use dispatch directly and do not need a custom mapDispatchToProps.
 export function mapStateToProps (state, ownProps) {
+  const container = ownProps.container
+
+  const offset = {
+    x: container.offsetLeft,
+    y: container.offsetTop
+  }
+
   let nodes = []
 
   let draggedLinkId = state.draggedLinkId
@@ -91,14 +98,14 @@ export function mapStateToProps (state, ownProps) {
     let y2 = null
 
     for (let node of nodes) {
-      // Start node.
+      // Source node.
       if ((Array.isArray(link.from)) && (node.id === link.from[0])) {
         const position = link.from[1] || 0
         x = node.x + xCenterOfPin(pinRadius, node.width, node.outs.length, position)
         y = node.y + node.height - pinRadius
       }
 
-      // End node.
+      // Target node.
       if ((Array.isArray(link.to)) && (node.id === link.to[0])) {
         const position = link.to[1] || 0
         x2 = node.x + xCenterOfPin(pinRadius, node.width, node.ins.length, position)
@@ -145,6 +152,7 @@ export function mapStateToProps (state, ownProps) {
     width: (ownProps.width || state.width),
     nodes,
     links,
+    offset,
     pinRadius,
     selectedItems: state.selectedItems,
     previousDraggingPoint,
@@ -168,17 +176,6 @@ export function mapDispatchToProps (dispatch, ownProps) {
 
   return {
     dispatch,
-    addLink: (from, to) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      const previousDraggingPoint = {
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }
-
-      dispatch(addLink({ from, to }, previousDraggingPoint))
-    },
     dragLink: (previousDraggingPoint) => (e) => {
       e.preventDefault()
       e.stopPropagation()

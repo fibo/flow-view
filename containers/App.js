@@ -36,6 +36,13 @@
   // This has also a huge benefit! That custom components (from external libs)
   // can use dispatch directly and do not need a custom mapDispatchToProps.
   function mapStateToProps(state, ownProps) {
+    var container = ownProps.container;
+
+    var offset = {
+      x: container.offsetLeft,
+      y: container.offsetTop
+    };
+
     var nodes = [];
 
     var draggedLinkId = state.draggedLinkId;
@@ -105,14 +112,14 @@
         for (var _iterator = nodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var node = _step.value;
 
-          // Start node.
+          // Source node.
           if (Array.isArray(link.from) && node.id === link.from[0]) {
             var position = link.from[1] || 0;
             x = node.x + (0, _xCenterOfPin2.default)(pinRadius, node.width, node.outs.length, position);
             y = node.y + node.height - pinRadius;
           }
 
-          // End node.
+          // Target node.
           if (Array.isArray(link.to) && node.id === link.to[0]) {
             var _position = link.to[1] || 0;
             x2 = node.x + (0, _xCenterOfPin2.default)(pinRadius, node.width, node.ins.length, _position);
@@ -173,6 +180,7 @@
       width: ownProps.width || state.width,
       nodes: nodes,
       links: links,
+      offset: offset,
       pinRadius: pinRadius,
       selectedItems: state.selectedItems,
       previousDraggingPoint: previousDraggingPoint,
@@ -196,32 +204,6 @@
 
     return {
       dispatch: dispatch,
-      addLink: function addLink(from, to) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          var previousDraggingPoint = {
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y
-          };
-
-          dispatch((0, _actions.addLink)({ from: from, to: to }, previousDraggingPoint));
-        };
-      },
-      dragLink: function dragLink(previousDraggingPoint) {
-        return function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          var draggingDelta = {
-            x: e.clientX - offset.x - previousDraggingPoint.x,
-            y: e.clientY - offset.y - previousDraggingPoint.y
-          };
-
-          dispatch((0, _actions.dragLink)(previousDraggingPoint, draggingDelta));
-        };
-      },
       deleteLink: function deleteLink(linkid) {
         return function (e) {
           e.preventDefault();

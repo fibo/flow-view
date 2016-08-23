@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../../util/ignoreEvent', './NumIns', './NumOuts'], factory);
+    define(['module', 'exports', 'react', '../../util/ignoreEvent', '../../actions', './NumIns', './NumOuts'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../../util/ignoreEvent'), require('./NumIns'), require('./NumOuts'));
+    factory(module, exports, require('react'), require('../../util/ignoreEvent'), require('../../actions'), require('./NumIns'), require('./NumOuts'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.ignoreEvent, global.NumIns, global.NumOuts);
+    factory(mod, mod.exports, global.react, global.ignoreEvent, global.actions, global.NumIns, global.NumOuts);
     global.index = mod.exports;
   }
-})(this, function (module, exports, _react, _ignoreEvent, _NumIns, _NumOuts) {
+})(this, function (module, exports, _react, _ignoreEvent, _actions, _NumIns, _NumOuts) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -47,7 +47,8 @@
     var pinRadius = _ref.pinRadius;
     var ins = _ref.ins;
     var outs = _ref.outs;
-    var addLink = _ref.addLink;
+    var dispatch = _ref.dispatch;
+    var offset = _ref.offset;
     var selectNode = _ref.selectNode;
     var delNode = _ref.delNode;
     var selected = _ref.selected;
@@ -129,7 +130,20 @@
           fill: fill,
           style: styles.defaultPin,
           onClick: _ignoreEvent2.default,
-          onMouseDown: addLink([id, i], null),
+          onMouseDown: function onMouseDown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var previousDraggingPoint = {
+              x: e.clientX - offset.x,
+              y: e.clientY - offset.y
+            };
+
+            var from = [id, i];
+            var to = null;
+
+            dispatch((0, _actions.addLink)({ from: from, to: to }, previousDraggingPoint));
+          },
           onMouseUp: _ignoreEvent2.default,
           onMouseLeave: _ignoreEvent2.default
         });
@@ -147,8 +161,7 @@
     ins: _react.PropTypes.array.isRequired,
     outs: _react.PropTypes.array.isRequired,
     selectNode: _react.PropTypes.func.isRequired,
-    selected: _react.PropTypes.bool.isRequired,
-    addLink: _react.PropTypes.func.isRequired
+    selected: _react.PropTypes.bool.isRequired
   };
 
   Node.defaultProps = {

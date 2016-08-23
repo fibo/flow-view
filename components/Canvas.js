@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/initialState', './Link', './Node', './NodeSelector'], factory);
+    define(['module', 'exports', 'react', '../util/initialState', './Link', './Node', './NodeSelector', '../actions'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/initialState'), require('./Link'), require('./Node'), require('./NodeSelector'));
+    factory(module, exports, require('react'), require('../util/initialState'), require('./Link'), require('./Node'), require('./NodeSelector'), require('../actions'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.initialState, global.Link, global.Node, global.NodeSelector);
+    factory(mod, mod.exports, global.react, global.initialState, global.Link, global.Node, global.NodeSelector, global.actions);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _initialState, _Link, _Node, _NodeSelector) {
+})(this, function (module, exports, _react, _initialState, _Link, _Node, _NodeSelector, _actions) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -60,12 +60,11 @@
     var deleteLink = _ref.deleteLink;
     var selectLink = _ref.selectLink;
     var selectNode = _ref.selectNode;
-    var addLink = _ref.addLink;
+    var offset = _ref.offset;
     var draggedLinkId = _ref.draggedLinkId;
     var isDraggingLink = _ref.isDraggingLink;
     var isDraggingItems = _ref.isDraggingItems;
     var dragItems = _ref.dragItems;
-    var dragLink = _ref.dragLink;
     var endDraggingItems = _ref.endDraggingItems;
     var endDraggingLink = _ref.endDraggingLink;
     var showNodeSelector = _ref.showNodeSelector;
@@ -77,6 +76,21 @@
     var setNumIns = _ref.setNumIns;
     var setNumOuts = _ref.setNumOuts;
     var previousDraggingPoint = _ref.previousDraggingPoint;
+
+    var onDragLink = function onDragLink(previousDraggingPoint) {
+      return function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var draggingDelta = {
+          x: e.clientX - offset.x - previousDraggingPoint.x,
+          y: e.clientY - offset.y - previousDraggingPoint.y
+        };
+
+        dispatch((0, _actions.dragLink)(previousDraggingPoint, draggingDelta));
+      };
+    };
+
     return _react2.default.createElement(
       'svg',
       {
@@ -85,23 +99,24 @@
         style: { border: '1px solid black' },
         onMouseDown: hideNodeSelector,
         onDoubleClick: showNodeSelector,
-        onMouseMove: isDraggingLink ? dragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined,
+        onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? dragItems(previousDraggingPoint) : undefined,
         onMouseUp: isDraggingLink ? endDraggingLink(draggedLinkId) : isDraggingItems ? endDraggingItems : undefined
       },
       _react2.default.createElement(_NodeSelector2.default, {
+        dispatch: dispatch,
         x: nodeSelectorX,
         y: nodeSelectorY,
         text: nodeSelectorText,
         show: nodeSelectorShow,
         changeText: setNodeSelectorText,
-        addNode: addNode,
-        dispatch: dispatch
+        addNode: addNode
       }),
       nodes.map(function (node, i) {
         return _react2.default.createElement(_Node2.default, _extends({
+          dispatch: dispatch,
           key: i,
           pinRadius: pinRadius,
-          addLink: addLink,
+          offset: offset,
           selectNode: selectNode(node.id),
           delNode: delNode(node.id),
           endDragging: endDraggingItems,

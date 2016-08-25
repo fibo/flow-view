@@ -28,10 +28,10 @@
   }
 
   var NodeSelector = function NodeSelector(_ref) {
+    var addNode = _ref.addNode;
+    var show = _ref.show;
     var x = _ref.x;
     var y = _ref.y;
-    var show = _ref.show;
-    var addNode = _ref.addNode;
     return show ? _react2.default.createElement(
       'foreignObject',
       {

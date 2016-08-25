@@ -70,14 +70,11 @@
         {
           onClick: delNode
         },
-        _react2.default.createElement('rect', {
+        _react2.default.createElement('circle', {
           transform: 'translate(' + (width + 2) + ',-18)',
-          rx: pinRadius,
-          ry: pinRadius,
-          width: 20,
-          height: 20,
-          fill: fill,
-          style: styles.defaultBox
+          cx: 20,
+          cy: 20,
+          fill: fill
         }),
         _react2.default.createElement('path', {
           transform: 'translate(' + width + ',-20)',

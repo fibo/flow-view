@@ -12,18 +12,22 @@ const styles = {
 }
 
 const Node = ({
-  id,
-  x, y, width, height,
-  text,
-  pinRadius,
-  ins, outs,
-  offset,
   addLink,
+  height,
+  id,
+  ins,
+  offset,
+  outs,
+  pinRadius,
   selectNode,
   delNode,
   selected,
   setNumIns,
-  setNumOuts
+  setNumOuts,
+  text,
+  width,
+  x,
+  y
 }) => (
   <g
     onClick={ignoreEvent}
@@ -40,16 +44,14 @@ const Node = ({
         onClick={delNode}
       >
         <rect
-          transform={`translate(${width + 2},-18)`}
-          rx={pinRadius}
-          ry={pinRadius}
+          transform={`translate(${width},-20)`}
           width={20}
           height={20}
           fill={fill}
           style={styles.defaultBox}
         />
         <path
-          transform={`translate(${width},-20)`}
+          transform={`translate(${width - 2},-22)`}
           fill={'black'}
           d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
         />
@@ -69,8 +71,6 @@ const Node = ({
     }
 
     <rect
-      rx={pinRadius}
-      ry={pinRadius}
       width={width}
       height={height}
       fill={fill}

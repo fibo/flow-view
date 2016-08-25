@@ -33,7 +33,7 @@
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",
     "push": "git push origin master && npm run gh-pages:push",
-    "start": "BABEL_ENV=development NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify -p livereactload",
+    "start": "BABEL_ENV=development NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify -p livereactload",
     "postpublish": "npm run gh-pages:_data; git commit -am ':arrow_up: updated version'; npm run push",
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
     "test": "for x in serverside components; do npm run test_$x; done",

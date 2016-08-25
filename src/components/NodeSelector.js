@@ -2,9 +2,10 @@ import React, { PropTypes } from 'react'
 import ignoreEvent from '../util/ignoreEvent'
 
 const NodeSelector = ({
-  x, y,
+  addNode,
   show,
-  addNode
+  x,
+  y
 }) => (
   show ? (
     <foreignObject

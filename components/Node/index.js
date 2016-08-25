@@ -38,22 +38,22 @@
   };
 
   var Node = function Node(_ref) {
-    var id = _ref.id;
-    var x = _ref.x;
-    var y = _ref.y;
-    var width = _ref.width;
-    var height = _ref.height;
-    var text = _ref.text;
-    var pinRadius = _ref.pinRadius;
-    var ins = _ref.ins;
-    var outs = _ref.outs;
-    var offset = _ref.offset;
     var addLink = _ref.addLink;
+    var height = _ref.height;
+    var id = _ref.id;
+    var ins = _ref.ins;
+    var offset = _ref.offset;
+    var outs = _ref.outs;
+    var pinRadius = _ref.pinRadius;
     var selectNode = _ref.selectNode;
     var delNode = _ref.delNode;
     var selected = _ref.selected;
     var setNumIns = _ref.setNumIns;
     var setNumOuts = _ref.setNumOuts;
+    var text = _ref.text;
+    var width = _ref.width;
+    var x = _ref.x;
+    var y = _ref.y;
     return _react2.default.createElement(
       'g',
       {
@@ -70,14 +70,15 @@
         {
           onClick: delNode
         },
-        _react2.default.createElement('circle', {
-          transform: 'translate(' + (width + 2) + ',-18)',
-          cx: 20,
-          cy: 20,
-          fill: fill
+        _react2.default.createElement('rect', {
+          transform: 'translate(' + width + ',-20)',
+          width: 20,
+          height: 20,
+          fill: fill,
+          style: styles.defaultBox
         }),
         _react2.default.createElement('path', {
-          transform: 'translate(' + width + ',-20)',
+          transform: 'translate(' + (width - 2) + ',-22)',
           fill: 'black',
           d: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
         })
@@ -85,8 +86,6 @@
       selected ? _react2.default.createElement(_NumIns2.default, { setNum: setNumIns, value: ins.length }) : undefined,
       selected ? _react2.default.createElement(_NumOuts2.default, { setNum: setNumOuts, value: outs.length }) : undefined,
       _react2.default.createElement('rect', {
-        rx: pinRadius,
-        ry: pinRadius,
         width: width,
         height: height,
         fill: fill,

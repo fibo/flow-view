@@ -28,6 +28,7 @@ const flowViewApp = (state = initialState, action) => {
 
     const currentIds = Object.keys(state.node).concat(Object.keys(state.link))
 
+    // TODO try with currentIds.include(id)
     const foundId = (currentIds.filter(
       (id) => { return id === newId }
     ).length === 1)

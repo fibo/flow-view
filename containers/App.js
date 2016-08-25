@@ -73,14 +73,15 @@
       });
 
       nodes.push({
+        height: height,
         id: id,
-        x: node.x,
-        y: node.y,
-        text: node.text,
-        width: width, height: height,
         ins: ins,
         outs: outs,
-        selected: state.selectedItems.indexOf(id) > -1
+        selected: state.selectedItems.indexOf(id) > -1,
+        text: node.text,
+        width: width,
+        y: node.y,
+        x: node.x
       });
     };
 
@@ -148,11 +149,13 @@
       }
 
       links.push({
+        dragged: draggedLinkId === _id,
         id: _id,
         selected: state.selectedItems.indexOf(_id) > -1,
-        dragged: draggedLinkId === _id,
-        x: x, y: y,
-        x2: x2, y2: y2
+        x: x,
+        y: y,
+        x2: x2,
+        y2: y2
       });
     }
 

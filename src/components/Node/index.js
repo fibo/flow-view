@@ -47,8 +47,7 @@ const Node = ({
           height={20}
           fill={fill}
           style={styles.defaultBox}
-        >
-        </rect>
+        />
         <path
           transform={`translate(${width},-20)`}
           fill={'black'}
@@ -76,7 +75,7 @@ const Node = ({
       height={height}
       fill={fill}
       style={styles.defaultBox}
-    ></rect>
+    />
 
     <text
       x={pinRadius * 2}
@@ -99,8 +98,7 @@ const Node = ({
             onMouseLeave={ignoreEvent}
             onMouseDown={ignoreEvent}
             style={styles.defaultPin}
-          >
-          </circle>
+          />
         )
       )
     }
@@ -132,8 +130,7 @@ const Node = ({
             }}
             onMouseUp={ignoreEvent}
             onMouseLeave={ignoreEvent}
-          >
-          </circle>
+          />
         )
       )
     }

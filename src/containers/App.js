@@ -54,14 +54,15 @@ export function mapStateToProps (state, ownProps) {
     )
 
     nodes.push({
+      height,
       id,
-      x: node.x,
-      y: node.y,
-      text: node.text,
-      width, height,
       ins,
       outs,
-      selected: (state.selectedItems.indexOf(id) > -1)
+      selected: (state.selectedItems.indexOf(id) > -1),
+      text: node.text,
+      width,
+      y: node.y,
+      x: node.x
     })
   }
 
@@ -106,11 +107,13 @@ export function mapStateToProps (state, ownProps) {
     }
 
     links.push({
+      dragged: (draggedLinkId === id),
       id,
       selected: (state.selectedItems.indexOf(id) > -1),
-      dragged: (draggedLinkId === id),
-      x, y,
-      x2, y2
+      x,
+      y,
+      x2,
+      y2
     })
   }
 

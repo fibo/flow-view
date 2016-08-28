@@ -29,7 +29,6 @@
   }
 
   function mapStateToProps(state, ownProps) {
-    console.log(state);
     var documentElement = ownProps.documentElement;
 
     var offset = {
@@ -64,7 +63,6 @@
       });
 
       var outs = node.outs.map(function (pin, i, pins) {
-        console.log(pins.length);
         return {
           cx: (0, _xCenterOfPin2.default)(pinRadius, width, pins.length, i),
           cy: height - pinRadius,

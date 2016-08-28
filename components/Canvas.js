@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/initialState', './Link', './Node', './NodeSelector', '../actions'], factory);
+    define(['module', 'exports', 'react', '../util/emptyView', './Link', './Node', './NodeSelector', '../actions'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/initialState'), require('./Link'), require('./Node'), require('./NodeSelector'), require('../actions'));
+    factory(module, exports, require('react'), require('../util/emptyView'), require('./Link'), require('./Node'), require('./NodeSelector'), require('../actions'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.initialState, global.Link, global.Node, global.NodeSelector, global.actions);
+    factory(mod, mod.exports, global.react, global.emptyView, global.Link, global.Node, global.NodeSelector, global.actions);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _initialState, _Link, _Node, _NodeSelector, _actions) {
+})(this, function (module, exports, _react, _emptyView, _Link, _Node, _NodeSelector, _actions) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,7 +19,7 @@
 
   var _react2 = _interopRequireDefault(_react);
 
-  var _initialState2 = _interopRequireDefault(_initialState);
+  var _emptyView2 = _interopRequireDefault(_emptyView);
 
   var _Link2 = _interopRequireDefault(_Link);
 
@@ -330,7 +330,7 @@
 
   // TODO emptyView.pinRadius should be in defaultTheme
   Canvas.defaultProps = {
-    pinRadius: emptyView.pinRadius
+    pinRadius: _emptyView2.default.pinRadius
   };
 
   exports.default = Canvas;

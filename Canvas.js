@@ -87,7 +87,32 @@
       value: function render(view) {
         var documentElement = this.documentElement;
 
-        var store = (0, _redux.createStore)(_reducers2.default, Object.assign({ view: _emptyView2.default }, { view: view }), window.devToolsExtension && window.devToolsExtension());
+        // TODO selectedItems, previousDraggingPoint, draggedLinkId, etc.
+        // should be in components/Canvas state, not in emptyView.
+        // Other attrivutes like pinRadius, fontWidth, nodeHeight should
+        // be in defaultTheme or even better in components/Canvas defaultProps.
+
+        var store = (0, _redux.createStore)(_reducers2.default, {
+          view: Object.assign({
+            height: _emptyView2.default.height,
+            width: _emptyView2.default.width,
+            node: _emptyView2.default.node,
+            link: _emptyView2.default.link,
+            selectedItems: _emptyView2.default.selectedItems,
+            isDraggingItems: _emptyView2.default.isDraggingItems,
+            previousDraggingPoint: _emptyView2.default.previousDraggingPoint,
+            nodeSelector: _emptyView2.default.nodeSelector,
+            draggedLinkId: _emptyView2.default.draggedLinkId,
+            pinRadius: _emptyView2.default.pinRadius,
+            nodeHeight: _emptyView2.default.nodeHeight,
+            fontWidth: _emptyView2.default.fontWidth
+          }, {
+            node: view.node,
+            link: view.link,
+            height: view.height,
+            width: view.width
+          })
+        }, window.devToolsExtension && window.devToolsExtension());
 
         (0, _reactDom.render)(_react2.default.createElement(
           _reactRedux.Provider,

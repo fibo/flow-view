@@ -328,8 +328,9 @@
     })
   };
 
+  // TODO emptyView.pinRadius should be in defaultTheme
   Canvas.defaultProps = {
-    pinRadius: _initialState2.default.pinRadius
+    pinRadius: emptyView.pinRadius
   };
 
   exports.default = Canvas;

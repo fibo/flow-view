@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', '../util/xCenterOfPin', '../util/initialState', '../actions', './setNumIns', './setNumOuts'], factory);
+    define(['module', 'exports', 'redux', '../util/xCenterOfPin', '../actions', './setNumIns', './setNumOuts', '../util/emptyView'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('../util/xCenterOfPin'), require('../util/initialState'), require('../actions'), require('./setNumIns'), require('./setNumOuts'));
+    factory(module, exports, require('redux'), require('../util/xCenterOfPin'), require('../actions'), require('./setNumIns'), require('./setNumOuts'), require('../util/emptyView'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.xCenterOfPin, global.initialState, global.actions, global.setNumIns, global.setNumOuts);
+    factory(mod, mod.exports, global.redux, global.xCenterOfPin, global.actions, global.setNumIns, global.setNumOuts, global.emptyView);
     global.index = mod.exports;
   }
-})(this, function (module, exports, _xCenterOfPin, _initialState, _actions, _setNumIns, _setNumOuts) {
+})(this, function (module, exports, _redux, _xCenterOfPin, _actions, _setNumIns, _setNumOuts, _emptyView) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,11 +19,11 @@
 
   var _xCenterOfPin2 = _interopRequireDefault(_xCenterOfPin);
 
-  var _initialState2 = _interopRequireDefault(_initialState);
-
   var _setNumIns2 = _interopRequireDefault(_setNumIns);
 
   var _setNumOuts2 = _interopRequireDefault(_setNumOuts);
+
+  var _emptyView2 = _interopRequireDefault(_emptyView);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -37,8 +37,10 @@
     return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
   };
 
-  var flowViewApp = function flowViewApp() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? _initialState2.default : arguments[0];
+  var initialState = { view: _emptyView2.default };
+
+  var flowView = function flowView() {
+    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
     var action = arguments[1];
 
     var nextId = 0;
@@ -270,6 +272,6 @@
     if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   };
 
-  exports.default = flowViewApp;
+  exports.default = (0, _redux.combineReducers)({ view: flowView });
   module.exports = exports['default'];
 });

@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod.exports, global.reactRedux, global.xCenterOfPin, global.Canvas);
-    global.App = mod.exports;
+    global.FlowView = mod.exports;
   }
 })(this, function (exports, _reactRedux, _xCenterOfPin, _Canvas) {
   'use strict';
@@ -29,25 +29,26 @@
   }
 
   function mapStateToProps(state, ownProps) {
-    var container = ownProps.container;
+    console.log(state);
+    var documentElement = ownProps.documentElement;
 
     var offset = {
-      x: container.offsetLeft,
-      y: container.offsetTop
+      x: documentElement.offsetLeft,
+      y: documentElement.offsetTop
     };
 
     var nodes = [];
 
-    var draggedLinkId = state.draggedLinkId;
+    var draggedLinkId = state.view.draggedLinkId;
 
-    var pinRadius = state.pinRadius;
-    var nodeHeight = state.nodeHeight;
-    var fontWidth = state.fontWidth;
+    var pinRadius = state.view.pinRadius;
+    var nodeHeight = state.view.nodeHeight;
+    var fontWidth = state.view.fontWidth;
 
-    var previousDraggingPoint = state.previousDraggingPoint;
+    var previousDraggingPoint = state.view.previousDraggingPoint;
 
     var _loop = function _loop(id) {
-      var node = Object.assign({}, { ins: [], outs: [] }, state.node[id]);
+      var node = Object.assign({}, { ins: [], outs: [] }, state.view.node[id]);
 
       // TODO these two lines are repeated in reducers/index.js, refactor them!
       var height = node.height || nodeHeight;
@@ -77,7 +78,7 @@
         id: id,
         ins: ins,
         outs: outs,
-        selected: state.selectedItems.indexOf(id) > -1,
+        selected: state.view.selectedItems.indexOf(id) > -1,
         text: node.text,
         width: width,
         y: node.y,
@@ -85,14 +86,14 @@
       });
     };
 
-    for (var id in state.node) {
+    for (var id in state.view.node) {
       _loop(id);
     }
 
     var links = [];
 
-    for (var _id in state.link) {
-      var link = Object.assign({}, state.link[_id]);
+    for (var _id in state.view.link) {
+      var link = Object.assign({}, state.view.link[_id]);
 
       var x = null;
       var y = null;
@@ -151,7 +152,7 @@
       links.push({
         dragged: draggedLinkId === _id,
         id: _id,
-        selected: state.selectedItems.indexOf(_id) > -1,
+        selected: state.view.selectedItems.indexOf(_id) > -1,
         x: x,
         y: y,
         x2: x2,
@@ -159,28 +160,28 @@
       });
     }
 
-    var nodeSelectorShow = state.nodeSelector !== null;
+    var nodeSelectorShow = state.view.nodeSelector !== null;
     var nodeSelectorX = 0;
     var nodeSelectorY = 0;
 
     if (nodeSelectorShow) {
-      nodeSelectorX = state.nodeSelector.x;
-      nodeSelectorY = state.nodeSelector.y;
+      nodeSelectorX = state.view.nodeSelector.x;
+      nodeSelectorY = state.view.nodeSelector.y;
     }
 
     var isDraggingLink = draggedLinkId !== null;
 
     return {
-      height: ownProps.height || state.height,
-      width: ownProps.width || state.width,
+      height: ownProps.height || state.view.height,
+      width: ownProps.width || state.view.width,
       nodes: nodes,
       links: links,
       offset: offset,
       pinRadius: pinRadius,
-      selectedItems: state.selectedItems,
+      selectedItems: state.view.selectedItems,
       previousDraggingPoint: previousDraggingPoint,
       isDraggingLink: isDraggingLink,
-      isDraggingItems: state.isDraggingItems,
+      isDraggingItems: state.view.isDraggingItems,
       nodeSelectorX: nodeSelectorX,
       nodeSelectorY: nodeSelectorY,
       nodeSelectorShow: nodeSelectorShow,

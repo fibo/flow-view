@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', 'redux', 'react-redux', './containers/App', './util/initialState', './reducers', 'static-props'], factory);
+    define(['module', 'exports', 'react', 'react-dom', 'redux', 'react-redux', './containers/FlowView', './util/emptyView', './reducers', 'static-props'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('redux'), require('react-redux'), require('./containers/App'), require('./util/initialState'), require('./reducers'), require('static-props'));
+    factory(module, exports, require('react'), require('react-dom'), require('redux'), require('react-redux'), require('./containers/FlowView'), require('./util/emptyView'), require('./reducers'), require('static-props'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.redux, global.reactRedux, global.App, global.initialState, global.reducers, global.staticProps);
+    factory(mod, mod.exports, global.react, global.reactDom, global.redux, global.reactRedux, global.FlowView, global.emptyView, global.reducers, global.staticProps);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _redux, _reactRedux, _App, _initialState, _reducers, _staticProps) {
+})(this, function (module, exports, _react, _reactDom, _redux, _reactRedux, _FlowView, _emptyView, _reducers, _staticProps) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,9 +19,9 @@
 
   var _react2 = _interopRequireDefault(_react);
 
-  var _App2 = _interopRequireDefault(_App);
+  var _FlowView2 = _interopRequireDefault(_FlowView);
 
-  var _initialState2 = _interopRequireDefault(_initialState);
+  var _emptyView2 = _interopRequireDefault(_emptyView);
 
   var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -58,42 +58,42 @@
   }();
 
   var Canvas = function () {
-    function Canvas(containerId) {
+    function Canvas(documentElementId) {
       _classCallCheck(this, Canvas);
 
-      var container = null;
+      var documentElement = null;
 
-      // Check that containerId is a string.
-      if (typeof containerId !== 'string') {
-        throw new TypeError('containerId must be a string', containerId);
+      // Check that documentElementId is a string.
+      if (typeof documentElementId !== 'string') {
+        throw new TypeError('documentElementId must be a string', documentElementId);
       }
 
-      // If we are in browser context, get the container or create it.
+      // If we are in browser context, get the documentElement or create it.
       if (typeof document !== 'undefined') {
-        container = document.getElementById(containerId);
+        documentElement = document.getElementById(documentElementId);
 
-        if (container === null) {
-          container = document.createElement('div');
-          container.id = containerId;
-          document.body.appendChild(container);
+        if (documentElement === null) {
+          documentElement = document.createElement('div');
+          documentElement.id = documentElementId;
+          document.body.appendChild(documentElement);
         }
       }
 
-      (0, _staticProps2.default)(this)({ container: container, containerId: containerId });
+      (0, _staticProps2.default)(this)({ documentElement: documentElement });
     }
 
     _createClass(Canvas, [{
       key: 'render',
       value: function render(view) {
-        var container = this.container;
+        var documentElement = this.documentElement;
 
-        var store = (0, _redux.createStore)(_reducers2.default, Object.assign(_initialState2.default, view), window.devToolsExtension && window.devToolsExtension());
+        var store = (0, _redux.createStore)(_reducers2.default, Object.assign({ view: _emptyView2.default }, { view: view }), window.devToolsExtension && window.devToolsExtension());
 
         (0, _reactDom.render)(_react2.default.createElement(
           _reactRedux.Provider,
           { store: store },
-          _react2.default.createElement(_App2.default, { container: container })
-        ), container);
+          _react2.default.createElement(_FlowView2.default, { documentElement: documentElement })
+        ), documentElement);
       }
     }]);
 

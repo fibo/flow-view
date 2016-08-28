@@ -1,5 +1,5 @@
+import { combineReducers } from 'redux'
 import xCenterOfPin from '../util/xCenterOfPin'
-import initialState from '../util/initialState'
 import {
   ADD_NODE,
   ADD_LINK,
@@ -15,10 +15,14 @@ import {
   SET_NUM_OUTS,
   SHOW_NODE_SELECTOR
 } from '../actions'
+
 import setNumIns from './setNumIns'
 import setNumOuts from './setNumOuts'
 
-const flowViewApp = (state = initialState, action) => {
+import emptyView from '../util/emptyView'
+const initialState = { view: emptyView }
+
+const flowView = (state = initialState, action) => {
   let nextId = 0
 
   const generateId = () => {
@@ -218,4 +222,4 @@ const flowViewApp = (state = initialState, action) => {
   }
 }
 
-export default flowViewApp
+export default combineReducers({ view: flowView })

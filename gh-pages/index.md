@@ -87,11 +87,7 @@ var canvas = new Canvas('drawing')
 
 Note that nothing will happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
 
-### `canvas.containerId`
-
-It is the id of the DOM element container.
-
-### `canvas.container`
+### `canvas.documentElement`
 
 It is the DOM element container, if any. On server side, this attribute is `null`.
 
@@ -125,92 +121,6 @@ canvas.render({
     }
   }
 })
-```
-
-### Actions and reducers
-
-Import *flow-view*  list of action constants
-
-* ADD_LINK
-* ADD_NODE
-* DEL_LINK
-* DEL_NODE
-* DRAG_ITEMS
-* DRAG_LINK
-* END_DRAGGING_ITEMS
-* END_DRAGGING_LINK
-* HIDE_NODE_SELECTOR
-* SELECT_ITEM
-* SET_NUM_INS
-* SET_NUM_OUTS
-
-You can use also import *flow-view* reducers, for example to augment your
-Redux app  *reducers/index.js*.
-
-```javascript
-import {
-  MY_ACTION
-} from '../actions'
-
-// Import actions and reducers from flow-view.
-import viewActions from 'flow-view/actions'
-import viewReducers from 'flow-view/reducers'
-
-export default function (state, action) {
-  let view = Object.assign({}, state.view)
-
-  if (viewActions.includes(action.type)) {
-    view = viewReducers(state.view, action)
-    // Note that instead of
-    //
-    //     return state
-    //
-    // the code below uses
-    //
-    //      return Object.assign({}, state, { view })
-  }
-
-  switch (action.type) {
-    case viewActions.ADD_NODE:
-      // Intercept the flow-view action and do something else.
-
-      // your code here
-
-      return Object.assign({}, state, { view })
-
-    case MY_ACTION:
-      // Do something related to this action, then return the state adding also the view.
-
-      // your code here
-
-      return Object.assign({}, state, { view })
-
-    default:
-      return Object.assign({}, state, { view })
-  }
-}
-```
-
-### Components
-
-Import *flow-view* components
-
-```javascript
-import { Canvas, Link, Node } from 'flow-view/components'
-```
-
-### Initial state
-
-Could be used in your *reducers/index.js*, with something like
-
-```javascript
-import viewInitialState from 'flow-view/util/initialState'
-import modelInitialState from '../model/initialState'
-
-const initialState = {
-  model: modelInitialState,
-  view: viewInitialState
-}
 ```
 
 ## License

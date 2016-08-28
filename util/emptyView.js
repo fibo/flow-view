@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod, mod.exports);
-    global.initialState = mod.exports;
+    global.emptyView = mod.exports;
   }
 })(this, function (module, exports) {
   "use strict";
@@ -16,7 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var initialState = {
+  var emptyView = {
     height: 500,
     width: 500,
     node: {},
@@ -31,6 +31,6 @@
     fontWidth: 8
   };
 
-  exports.default = initialState;
+  exports.default = emptyView;
   module.exports = exports["default"];
 });

@@ -3,27 +3,27 @@ import xCenterOfPin from '../util/xCenterOfPin'
 import Canvas from '../components/Canvas'
 
 export function mapStateToProps (state, ownProps) {
-  const container = ownProps.container
+  const documentElement = ownProps.documentElement
 
   const offset = {
-    x: container.offsetLeft,
-    y: container.offsetTop
+    x: documentElement.offsetLeft,
+    y: documentElement.offsetTop
   }
 
   let nodes = []
 
-  let draggedLinkId = state.draggedLinkId
+  let draggedLinkId = state.view.draggedLinkId
 
-  const pinRadius = state.pinRadius
-  const nodeHeight = state.nodeHeight
-  const fontWidth = state.fontWidth
+  const pinRadius = state.view.pinRadius
+  const nodeHeight = state.view.nodeHeight
+  const fontWidth = state.view.fontWidth
 
-  const previousDraggingPoint = state.previousDraggingPoint
+  const previousDraggingPoint = state.view.previousDraggingPoint
 
-  for (let id in state.node) {
+  for (let id in state.view.node) {
     const node = Object.assign({},
       { ins: [], outs: [] },
-      state.node[id]
+      state.view.node[id]
     )
 
     // TODO these two lines are repeated in reducers/index.js, refactor them!
@@ -31,26 +31,21 @@ export function mapStateToProps (state, ownProps) {
     const width = (node.width || ((node.text.length + 4) * fontWidth))
 
     const ins = node.ins.map(
-      (pin, i, pins) => {
-        return {
-          cx: xCenterOfPin(pinRadius, width, pins.length, i),
-          cy: pinRadius,
-          r: pinRadius,
-          data: pins[i]
-        }
-      }
+      (pin, i, pins) => ({
+        cx: xCenterOfPin(pinRadius, width, pins.length, i),
+        cy: pinRadius,
+        r: pinRadius,
+        data: pins[i]
+      })
     )
 
     const outs = node.outs.map(
-      (pin, i, pins) => {
-        console.log(pins.length)
-        return {
-          cx: xCenterOfPin(pinRadius, width, pins.length, i),
-          cy: height - pinRadius,
-          r: pinRadius,
-          data: pins[i]
-        }
-      }
+      (pin, i, pins) => ({
+        cx: xCenterOfPin(pinRadius, width, pins.length, i),
+        cy: height - pinRadius,
+        r: pinRadius,
+        data: pins[i]
+      })
     )
 
     nodes.push({
@@ -58,7 +53,7 @@ export function mapStateToProps (state, ownProps) {
       id,
       ins,
       outs,
-      selected: (state.selectedItems.indexOf(id) > -1),
+      selected: (state.view.selectedItems.indexOf(id) > -1),
       text: node.text,
       width,
       y: node.y,
@@ -68,9 +63,9 @@ export function mapStateToProps (state, ownProps) {
 
   let links = []
 
-  for (let id in state.link) {
+  for (let id in state.view.link) {
     const link = Object.assign({},
-      state.link[id]
+      state.view.link[id]
     )
 
     let x = null
@@ -109,7 +104,7 @@ export function mapStateToProps (state, ownProps) {
     links.push({
       dragged: (draggedLinkId === id),
       id,
-      selected: (state.selectedItems.indexOf(id) > -1),
+      selected: (state.view.selectedItems.indexOf(id) > -1),
       x,
       y,
       x2,
@@ -117,28 +112,28 @@ export function mapStateToProps (state, ownProps) {
     })
   }
 
-  const nodeSelectorShow = (state.nodeSelector !== null)
+  const nodeSelectorShow = (state.view.nodeSelector !== null)
   let nodeSelectorX = 0
   let nodeSelectorY = 0
 
   if (nodeSelectorShow) {
-    nodeSelectorX = state.nodeSelector.x
-    nodeSelectorY = state.nodeSelector.y
+    nodeSelectorX = state.view.nodeSelector.x
+    nodeSelectorY = state.view.nodeSelector.y
   }
 
   const isDraggingLink = (draggedLinkId !== null)
 
   return {
-    height: (ownProps.height || state.height),
-    width: (ownProps.width || state.width),
+    height: (ownProps.height || state.view.height),
+    width: (ownProps.width || state.view.width),
     nodes,
     links,
     offset,
     pinRadius,
-    selectedItems: state.selectedItems,
+    selectedItems: state.view.selectedItems,
     previousDraggingPoint,
     isDraggingLink,
-    isDraggingItems: state.isDraggingItems,
+    isDraggingItems: state.view.isDraggingItems,
     nodeSelectorX,
     nodeSelectorY,
     nodeSelectorShow,
@@ -146,6 +141,4 @@ export function mapStateToProps (state, ownProps) {
   }
 }
 
-export default connect(
-  mapStateToProps
-)(Canvas)
+export default connect(mapStateToProps)(Canvas)

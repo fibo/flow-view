@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import initialState from '../util/initialState'
+import emptyView from '../util/emptyView'
 import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
@@ -221,8 +221,9 @@ Canvas.propTypes = {
   })
 }
 
+// TODO emptyView.pinRadius should be in defaultTheme
 Canvas.defaultProps = {
-  pinRadius: initialState.pinRadius
+  pinRadius: emptyView.pinRadius
 }
 
 export default Canvas

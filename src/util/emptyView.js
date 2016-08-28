@@ -1,4 +1,4 @@
-const initialState = {
+const emptyView = {
   height: 500,
   width: 500,
   node: {},
@@ -13,4 +13,4 @@ const initialState = {
   fontWidth: 8
 }
 
-export default initialState
+export default emptyView

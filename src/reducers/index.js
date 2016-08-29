@@ -12,8 +12,7 @@ import {
   HIDE_NODE_SELECTOR,
   SELECT_ITEM,
   SET_NUM_INS,
-  SET_NUM_OUTS,
-  SHOW_NODE_SELECTOR
+  SET_NUM_OUTS
 } from '../actions'
 
 import setNumIns from './setNumIns'
@@ -208,14 +207,6 @@ const flowView = (state = initialState, action) => {
     case SET_NUM_INS: return setNumIns(state, action)
 
     case SET_NUM_OUTS: return setNumOuts(state, action)
-
-    case SHOW_NODE_SELECTOR:
-      return Object.assign({}, state, {
-        nodeSelector: {
-          x: action.x,
-          y: action.y
-        }
-      })
 
     default:
       return state

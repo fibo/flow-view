@@ -20,6 +20,15 @@ import {
 } from '../actions'
 
 class Canvas extends Component {
+  constructor () {
+    super()
+
+    this.state = {
+      pointer: { x: 0, y: 0 },
+      showNodeSelector: false
+    }
+  }
+
   render () {
     const {
       dispatch,
@@ -30,12 +39,21 @@ class Canvas extends Component {
       draggedLinkId,
       isDraggingLink,
       isDraggingItems,
-      nodeSelectorX,
-      nodeSelectorY,
-      nodeSelectorShow,
       nodeSelectorText,
       previousDraggingPoint
     } = this.props
+
+    const {
+      pointer,
+      showNodeSelector
+    } = this.state
+
+    const setState = this.setState.bind(this)
+
+    const getCoordinates = (e) => ({
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y
+    })
 
     const onDragLink = (previousDraggingPoint) => (e) => {
       e.preventDefault()
@@ -45,6 +63,10 @@ class Canvas extends Component {
         x: e.clientX - offset.x - previousDraggingPoint.x,
         y: e.clientY - offset.y - previousDraggingPoint.y
       }
+
+      const pointer = getCoordinates(e)
+
+      setState({ pointer })
 
       dispatch(dragLink(previousDraggingPoint, draggingDelta))
     }
@@ -89,14 +111,14 @@ class Canvas extends Component {
       dispatch(hideNodeSelector())
     }
 
-    const onShowNodeSelector = (e) => {
+    const onDoubleClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      dispatch(showNodeSelector({
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }))
+      setState({
+        pointer: getCoordinates(e),
+        showNodeSelector: true
+      })
     }
 
     const selectLink = (linkid) => (e) => {
@@ -162,16 +184,16 @@ class Canvas extends Component {
         width={width}
         style={{border: '1px solid black'}}
         onMouseDown={onHideNodeSelector}
-        onDoubleClick={onShowNodeSelector}
+        onDoubleClick={onDoubleClick}
         onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
         onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
       >
 
         <NodeSelector
-          x={nodeSelectorX}
-          y={nodeSelectorY}
+          x={pointer.x}
+          y={pointer.y}
           text={nodeSelectorText}
-          show={nodeSelectorShow}
+          show={showNodeSelector}
           addNode={onAddNode}
         />
 
@@ -223,7 +245,9 @@ Canvas.propTypes = {
 
 // TODO emptyView.pinRadius should be in defaultTheme
 Canvas.defaultProps = {
-  pinRadius: emptyView.pinRadius
+  height: 400,
+  pinRadius: emptyView.pinRadius,
+  width: 400
 }
 
 export default Canvas

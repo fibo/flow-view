@@ -101,7 +101,13 @@
     function Canvas() {
       _classCallCheck(this, Canvas);
 
-      return _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this));
+
+      _this.state = {
+        pointer: { x: 0, y: 0 },
+        showNodeSelector: false
+      };
+      return _this;
     }
 
     _createClass(Canvas, [{
@@ -118,12 +124,21 @@
         var draggedLinkId = _props.draggedLinkId;
         var isDraggingLink = _props.isDraggingLink;
         var isDraggingItems = _props.isDraggingItems;
-        var nodeSelectorX = _props.nodeSelectorX;
-        var nodeSelectorY = _props.nodeSelectorY;
-        var nodeSelectorShow = _props.nodeSelectorShow;
         var nodeSelectorText = _props.nodeSelectorText;
         var previousDraggingPoint = _props.previousDraggingPoint;
+        var _state = this.state;
+        var pointer = _state.pointer;
+        var showNodeSelector = _state.showNodeSelector;
 
+
+        var setState = this.setState.bind(this);
+
+        var getCoordinates = function getCoordinates(e) {
+          return {
+            x: e.clientX - offset.x,
+            y: e.clientY - offset.y
+          };
+        };
 
         var onDragLink = function onDragLink(previousDraggingPoint) {
           return function (e) {
@@ -134,6 +149,10 @@
               x: e.clientX - offset.x - previousDraggingPoint.x,
               y: e.clientY - offset.y - previousDraggingPoint.y
             };
+
+            var pointer = getCoordinates(e);
+
+            setState({ pointer: pointer });
 
             dispatch((0, _actions.dragLink)(previousDraggingPoint, draggingDelta));
           };
@@ -185,14 +204,14 @@
           dispatch((0, _actions.hideNodeSelector)());
         };
 
-        var onShowNodeSelector = function onShowNodeSelector(e) {
+        var onDoubleClick = function onDoubleClick(e) {
           e.preventDefault();
           e.stopPropagation();
 
-          dispatch((0, _actions.showNodeSelector)({
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y
-          }));
+          setState({
+            pointer: getCoordinates(e),
+            showNodeSelector: true
+          });
         };
 
         var selectLink = function selectLink(linkid) {
@@ -276,15 +295,15 @@
             width: width,
             style: { border: '1px solid black' },
             onMouseDown: onHideNodeSelector,
-            onDoubleClick: onShowNodeSelector,
+            onDoubleClick: onDoubleClick,
             onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined,
             onMouseUp: isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined
           },
           _react2.default.createElement(_NodeSelector2.default, {
-            x: nodeSelectorX,
-            y: nodeSelectorY,
+            x: pointer.x,
+            y: pointer.y,
             text: nodeSelectorText,
-            show: nodeSelectorShow,
+            show: showNodeSelector,
             addNode: onAddNode
           }),
           nodes.map(function (node, i) {
@@ -330,7 +349,9 @@
 
   // TODO emptyView.pinRadius should be in defaultTheme
   Canvas.defaultProps = {
-    pinRadius: _emptyView2.default.pinRadius
+    height: 400,
+    pinRadius: _emptyView2.default.pinRadius,
+    width: 400
   };
 
   exports.default = Canvas;

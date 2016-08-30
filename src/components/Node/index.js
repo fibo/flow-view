@@ -44,8 +44,6 @@ const Node = ({
       >
         <rect
           transform={`translate(${width},-20)`}
-          width={20}
-          height={20}
           fill={fill}
           style={styles.defaultBox}
         />
@@ -78,7 +76,7 @@ const Node = ({
 
     <text
       x={pinRadius * 2}
-      y={height / 2}
+      y={pinRadius * 2 + 17}
       style={{pointerEvents: 'none'}}
     >
       <tspan>{text}</tspan>

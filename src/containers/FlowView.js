@@ -15,8 +15,8 @@ export function mapStateToProps (state, ownProps) {
   let draggedLinkId = state.view.draggedLinkId
 
   const pinRadius = state.view.pinRadius
-  const nodeHeight = state.view.nodeHeight
-  const fontWidth = state.view.fontWidth
+  const nodeHeight = 50
+  const fontWidth = 17 * 0.43
 
   const previousDraggingPoint = state.view.previousDraggingPoint
 

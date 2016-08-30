@@ -8,9 +8,7 @@ const emptyView = {
   previousDraggingPoint: null,
   nodeSelector: null,
   draggedLinkId: null,
-  pinRadius: 6,
-  nodeHeight: 40,
-  fontWidth: 8
+  pinRadius: 6
 }
 
 export default emptyView

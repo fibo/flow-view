@@ -12,11 +12,9 @@ import {
   dragLink,
   endDraggingItems,
   endDraggingLink,
-  hideNodeSelector,
   selectItem,
   setNumIns,
-  setNumOuts,
-  showNodeSelector
+  setNumOuts
 } from '../actions'
 
 class Canvas extends Component {
@@ -39,7 +37,6 @@ class Canvas extends Component {
       draggedLinkId,
       isDraggingLink,
       isDraggingItems,
-      nodeSelectorText,
       previousDraggingPoint
     } = this.props
 
@@ -64,9 +61,9 @@ class Canvas extends Component {
         y: e.clientY - offset.y - previousDraggingPoint.y
       }
 
-      const pointer = getCoordinates(e)
-
-      setState({ pointer })
+      setState({
+        pointer: getCoordinates(e)
+      })
 
       dispatch(dragLink(previousDraggingPoint, draggingDelta))
     }
@@ -104,11 +101,13 @@ class Canvas extends Component {
       dispatch(endDraggingItems())
     }
 
-    const onHideNodeSelector = (e) => {
+    const onClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      dispatch(hideNodeSelector())
+      setState({
+        showNodeSelector: false
+      })
     }
 
     const onDoubleClick = (e) => {
@@ -183,20 +182,17 @@ class Canvas extends Component {
         height={height}
         width={width}
         style={{border: '1px solid black'}}
-        onMouseDown={onHideNodeSelector}
+        onClick={onClick}
         onDoubleClick={onDoubleClick}
         onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
         onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
       >
-
         <NodeSelector
+          addNode={onAddNode}
           x={pointer.x}
           y={pointer.y}
-          text={nodeSelectorText}
           show={showNodeSelector}
-          addNode={onAddNode}
         />
-
         {nodes.map(
           (node, i) => (
             <Node

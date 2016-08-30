@@ -30,7 +30,6 @@ const Node = ({
   y
 }) => (
   <g
-    onClick={ignoreEvent}
     onDoubleClick={ignoreEvent}
     onMouseDown={selectNode}
     transform={`translate(${x},${y})`}

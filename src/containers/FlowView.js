@@ -112,15 +112,6 @@ export function mapStateToProps (state, ownProps) {
     })
   }
 
-  const nodeSelectorShow = (state.view.nodeSelector !== null)
-  let nodeSelectorX = 0
-  let nodeSelectorY = 0
-
-  if (nodeSelectorShow) {
-    nodeSelectorX = state.view.nodeSelector.x
-    nodeSelectorY = state.view.nodeSelector.y
-  }
-
   const isDraggingLink = (draggedLinkId !== null)
 
   return {
@@ -134,9 +125,6 @@ export function mapStateToProps (state, ownProps) {
     previousDraggingPoint,
     isDraggingLink,
     isDraggingItems: state.view.isDraggingItems,
-    nodeSelectorX,
-    nodeSelectorY,
-    nodeSelectorShow,
     draggedLinkId
   }
 }

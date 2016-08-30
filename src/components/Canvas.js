@@ -181,6 +181,9 @@ class Canvas extends Component {
       <svg
         height={height}
         width={width}
+        fontFamily='Courier'
+        fontSize={17}
+        textAnchor='start'
         style={{border: '1px solid black'}}
         onClick={onClick}
         onDoubleClick={onDoubleClick}

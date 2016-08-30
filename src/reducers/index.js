@@ -9,7 +9,6 @@ import {
   DRAG_LINK,
   END_DRAGGING_ITEMS,
   END_DRAGGING_LINK,
-  HIDE_NODE_SELECTOR,
   SELECT_ITEM,
   SET_NUM_INS,
   SET_NUM_OUTS
@@ -174,11 +173,6 @@ const flowView = (state = initialState, action) => {
         previousDraggingPoint: null,
         draggedLinkId: null,
         link: newLink
-      })
-
-    case HIDE_NODE_SELECTOR:
-      return Object.assign({}, state, {
-        nodeSelector: null
       })
 
     case SELECT_ITEM:

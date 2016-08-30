@@ -57,12 +57,6 @@ export const endDraggingLink = (id, link) => ({
   link
 })
 
-export const HIDE_NODE_SELECTOR = 'HIDE_NODE_SELECTOR'
-
-export const hideNodeSelector = () => ({
-  type: HIDE_NODE_SELECTOR
-})
-
 export const SELECT_ITEM = 'SELECT_ITEM'
 
 export const selectItem = ({id, x, y}) => ({
@@ -88,25 +82,3 @@ export const setNumOuts = ({ nodeid, num }) => ({
   num
 })
 
-export const SHOW_NODE_SELECTOR = 'SHOW_NODE_SELECTOR'
-
-export const showNodeSelector = ({x, y}) => ({
-  type: SHOW_NODE_SELECTOR,
-  x,
-  y
-})
-
-export default [
-  ADD_LINK,
-  ADD_NODE,
-  DEL_LINK,
-  DEL_NODE,
-  DRAG_ITEMS,
-  DRAG_LINK,
-  END_DRAGGING_ITEMS,
-  END_DRAGGING_LINK,
-  HIDE_NODE_SELECTOR,
-  SELECT_ITEM,
-  SET_NUM_INS,
-  SET_NUM_OUTS
-]

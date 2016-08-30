@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react'
-import ignoreEvent from '../util/ignoreEvent'
+
+const hidden = {display: 'none', overflow: 'hidden'}
+const visible = {display: 'inline', overflow: 'visible'}
 
 const NodeSelector = ({
   addNode,
@@ -7,34 +9,34 @@ const NodeSelector = ({
   x,
   y
 }) => (
-  show ? (
-    <foreignObject
-      x={x}
-      y={y}
-      width={120}
-      height={20}
-      onClick={ignoreEvent}
-    >
-      <input
-        type='text'
-        ref={(input) => { if (input !== null) input.focus() }}
-        onKeyPress={(e) => {
-          const text = e.target.value.trim()
+  <foreignObject
+    style={(show ? visible : hidden)}
+    x={x}
+    y={y}
+    width={200}
+    height={20}
+  >
+    <input
+      type='text'
+      ref={(input) => { if (input !== null) input.focus() }}
+      style={{ outline: 'none' }}
+      onKeyPress={(e) => {
+        const text = e.target.value.trim()
 
-          const pressedEnter = (e.key === 'Enter')
-          const textIsNotBlank = text.length > 0
+        const pressedEnter = (e.key === 'Enter')
+        const textIsNotBlank = text.length > 0
 
-          if (pressedEnter && textIsNotBlank) {
-            addNode({ x, y, text })
-          }
-        }}
-      />
-    </foreignObject>
-    )
-  : null
+        if (pressedEnter && textIsNotBlank) {
+          addNode({ x, y, text })
+        }
+      }}
+    />
+  </foreignObject>
 )
 
 NodeSelector.propTypes = {
+  addNode: PropTypes.func,
+  show: PropTypes.bool,
   x: PropTypes.number,
   y: PropTypes.number
 }

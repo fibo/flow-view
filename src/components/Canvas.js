@@ -1,27 +1,16 @@
 import React, { Component, PropTypes } from 'react'
-import emptyView from '../util/emptyView'
+import xCenterOfPin from '../utils/xCenterOfPin'
+import emptyView from '../utils/emptyView'
 import Link from './Link'
 import Node from './Node'
 import NodeSelector from './NodeSelector'
-import {
-  addNode,
-  addLink,
-  deleteLink,
-  deleteNode,
-  dragItems,
-  dragLink,
-  endDraggingItems,
-  endDraggingLink,
-  selectItem,
-  setNumIns,
-  setNumOuts
-} from '../actions'
 
 class Canvas extends Component {
   constructor () {
     super()
 
     this.state = {
+      links: [],
       pointer: { x: 0, y: 0 },
       showNodeSelector: false
     }
@@ -29,15 +18,18 @@ class Canvas extends Component {
 
   render () {
     const {
-      dispatch,
-      nodes, links,
+      node,
       height, width,
       pinRadius,
       offset,
-      draggedLinkId,
       isDraggingLink,
       isDraggingItems,
+      selectedItems,
       previousDraggingPoint
+    } = this.props
+
+    var {
+      draggedLinkId
     } = this.props
 
     const {
@@ -47,58 +39,94 @@ class Canvas extends Component {
 
     const setState = this.setState.bind(this)
 
+    let links = []
+
+    for (let id in this.props.link) {
+      const link = Object.assign({},
+        this.prop.link[id]
+      )
+
+      let x = null
+      let y = null
+      let x2 = null
+      let y2 = null
+
+      for (let node of nodes) {
+        // Source node.
+        if ((Array.isArray(link.from)) && (node.id === link.from[0])) {
+          const position = link.from[1] || 0
+          x = node.x + xCenterOfPin(pinRadius, node.width, node.outs.length, position)
+          y = node.y + node.height - pinRadius
+        }
+
+        // Target node.
+        if ((Array.isArray(link.to)) && (node.id === link.to[0])) {
+          const position = link.to[1] || 0
+          x2 = node.x + xCenterOfPin(pinRadius, node.width, node.ins.length, position)
+          y2 = node.y + pinRadius
+        }
+      }
+
+      if (link.from === null) {
+        draggedLinkId = id
+        x = previousDraggingPoint.x
+        y = previousDraggingPoint.y
+      }
+
+      if (link.to === null) {
+        draggedLinkId = id
+        x2 = previousDraggingPoint.x
+        y2 = previousDraggingPoint.y
+      }
+
+      links.push({
+        dragged: (draggedLinkId === id),
+        id,
+        selected: (selectedItems.indexOf(id) > -1),
+        x,
+        y,
+        x2,
+        y2
+      })
+    }
+
     const getCoordinates = (e) => ({
       x: e.clientX - offset.x,
       y: e.clientY - offset.y
     })
 
-    const onDragLink = (previousDraggingPoint) => (e) => {
+    const onDragLink = (pointer) => (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       const draggingDelta = {
-        x: e.clientX - offset.x - previousDraggingPoint.x,
-        y: e.clientY - offset.y - previousDraggingPoint.y
+        x: e.clientX - offset.x - pointer.x,
+        y: e.clientY - offset.y - pointer.y
       }
 
       setState({
         pointer: getCoordinates(e)
       })
-
-      dispatch(dragLink(previousDraggingPoint, draggingDelta))
     }
 
     const onEndDraggingLink = (draggedLinkId) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(endDraggingLink(draggedLinkId))
     }
 
     const onDragItems = (previousDraggingPoint) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      const draggingDelta = {
-        x: e.clientX - offset.x - previousDraggingPoint.x,
-        y: e.clientY - offset.y - previousDraggingPoint.y
-      }
-
-      dispatch(dragItems(previousDraggingPoint, draggingDelta))
     }
 
     const onDeleteNode = (nodeid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(deleteNode(nodeid))
     }
 
     const onEndDraggingItems = (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(endDraggingItems())
     }
 
     const onClick = (e) => {
@@ -123,58 +151,32 @@ class Canvas extends Component {
     const selectLink = (linkid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(selectItem({
-        id: linkid,
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }))
     }
 
     const selectNode = (nodeid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(selectItem({
-        id: nodeid,
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y
-      }))
     }
 
     const onDeleteLink = (linkid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(deleteLink(linkid))
     }
 
     const onSetNumIns = (nodeid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(setNumIns({
-        nodeid,
-        num: e.target.value
-      }))
     }
 
     const onSetNumOuts = (nodeid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
-
-      dispatch(setNumOuts({
-        nodeid,
-        num: e.target.value
-      }))
     }
 
     const onAddNode = ({ x, y, text }) => {
-      dispatch(addNode({ x, y, text }))
     }
 
     const onAddLink = ({ from, to }, previousDraggingPoint) => {
-      dispatch(addLink({ from, to }, previousDraggingPoint))
     }
 
     return (
@@ -187,7 +189,7 @@ class Canvas extends Component {
         style={{border: '1px solid black'}}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
-        onMouseMove={isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
+        onMouseMove={isDraggingLink ? onDragLink(pointer) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
         onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
       >
         <NodeSelector
@@ -233,7 +235,7 @@ class Canvas extends Component {
 Canvas.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  links: PropTypes.array.isRequired,
+  link: PropTypes.object.isRequired,
   nodes: PropTypes.array.isRequired,
   pinRadius: PropTypes.number.isRequired,
   previousDraggingPoint: PropTypes.shape({

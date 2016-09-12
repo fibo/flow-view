@@ -18,15 +18,32 @@ class Canvas extends Component {
 
   render () {
     const {
-      node,
-      height, width,
-      pinRadius,
-      offset,
-      isDraggingLink,
-      isDraggingItems,
-      selectedItems,
-      previousDraggingPoint
+      fontFamily,
+      fontSize,
+      height,
+      width
     } = this.props
+
+    return (
+      <svg
+        fontFamily={fontFamily}
+        fontSize={fontSize}
+        height={height}
+        textAnchor='start'
+        style={{border: '1px solid black'}}
+        width={width}
+      >
+        <text
+          x={29}
+          y={2 + 17}
+          style={{pointerEvents: 'none'}}
+        >
+          <tspan>'Hello flow-view'</tspan>
+        </text>
+      </svg>
+    )
+  }
+    /*
 
     var {
       draggedLinkId
@@ -230,24 +247,22 @@ class Canvas extends Component {
       </svg>
     )
   }
+  */
 }
 
 Canvas.propTypes = {
+  fontFamily: PropTypes.string.isRequired,
+  fontSize: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  link: PropTypes.object.isRequired,
-  nodes: PropTypes.array.isRequired,
-  pinRadius: PropTypes.number.isRequired,
-  previousDraggingPoint: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
-  })
+  pinRadius: PropTypes.number.isRequired
 }
 
-// TODO emptyView.pinRadius should be in defaultTheme
 Canvas.defaultProps = {
+  fontFamily: 'Courier',
+  fontSize: 17,
   height: 400,
-  pinRadius: emptyView.pinRadius,
+  pinRadius: 6,
   width: 400
 }
 

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import { findDOMNode } from 'react-dom'
 import xCenterOfPin from '../utils/xCenterOfPin'
 import emptyView from '../utils/emptyView'
 import Link from './Link'
@@ -14,6 +15,17 @@ class Canvas extends Component {
       pointer: { x: 0, y: 0 },
       showNodeSelector: false
     }
+  }
+
+  componentDidMount() {
+    const container = findDOMNode(this).parentNode
+
+    console.log(container)
+
+    // TODO compute offset and do
+    //this.setState({
+    //  offset
+    //})
   }
 
   render () {

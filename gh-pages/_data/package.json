@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "description": "is a visual editor for Dataflow programming, powered by React/Redux",
+  "description": "is a visual editor for Dataflow programming, powered by React",
   "version": "2.4.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
@@ -28,7 +28,6 @@
     "lint:src": "cd src; standard; cd ..",
     "lint:test": "cd test; standard; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
-    "pretest": "npm run babel",
     "preversion": "npm run build; npm run babel",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",
@@ -55,8 +54,7 @@
     "visual",
     "svg",
     "editor",
-    "react",
-    "redux"
+    "react"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
@@ -69,11 +67,8 @@
     "not-defined": "^1.1.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
-    "react-redux": "^4.4.5",
-    "redux": "^3.5.2",
     "static-props": "^1.0.0",
-    "svgx": "^0.6.0",
-    "uglify-js": "^2.7.3"
+    "svgx": "^0.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",

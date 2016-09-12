@@ -2,10 +2,8 @@ var Canvas = require('flow-view').Canvas
 var test = require('tape')
 
 test('Server side Canvas', (t) => {
-  var containerId = 'drawing'
-  var canvas = new Canvas(containerId)
+  var canvas = new Canvas('drawing')
 
-  t.equal(containerId, canvas.containerId, 'containerId')
   t.equal(null, canvas.container, 'container')
 
   t.end()

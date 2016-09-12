@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', 'redux', 'react-redux', './containers/FlowView', './util/emptyView', './reducers', 'static-props'], factory);
+    define(['module', 'exports', 'react', 'react-dom', './components/Canvas'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('redux'), require('react-redux'), require('./containers/FlowView'), require('./util/emptyView'), require('./reducers'), require('static-props'));
+    factory(module, exports, require('react'), require('react-dom'), require('./components/Canvas'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.redux, global.reactRedux, global.FlowView, global.emptyView, global.reducers, global.staticProps);
+    factory(mod, mod.exports, global.react, global.reactDom, global.Canvas);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _redux, _reactRedux, _FlowView, _emptyView, _reducers, _staticProps) {
+})(this, function (module, exports, _react, _reactDom, _Canvas) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,13 +19,7 @@
 
   var _react2 = _interopRequireDefault(_react);
 
-  var _FlowView2 = _interopRequireDefault(_FlowView);
-
-  var _emptyView2 = _interopRequireDefault(_emptyView);
-
-  var _reducers2 = _interopRequireDefault(_reducers);
-
-  var _staticProps2 = _interopRequireDefault(_staticProps);
+  var _Canvas2 = _interopRequireDefault(_Canvas);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -57,74 +51,44 @@
     };
   }();
 
-  var Canvas = function () {
-    function Canvas(documentElementId) {
-      _classCallCheck(this, Canvas);
+  var FlowViewCanvas = function () {
+    function FlowViewCanvas(containerId) {
+      _classCallCheck(this, FlowViewCanvas);
 
-      var documentElement = null;
+      this.container = null;
 
-      // Check that documentElementId is a string.
-      if (typeof documentElementId !== 'string') {
-        throw new TypeError('documentElementId must be a string', documentElementId);
+      // Check that containerId is a string.
+      if (typeof containerId !== 'string') {
+        throw new TypeError('containerId must be a string', containerId);
       }
 
-      // If we are in browser context, get the documentElement or create it.
+      // If we are in browser context, get the document element containing
+      // the canvas or create it.
       if (typeof document !== 'undefined') {
-        documentElement = document.getElementById(documentElementId);
+        var container = document.getElementById(containerId);
 
-        if (documentElement === null) {
-          documentElement = document.createElement('div');
-          documentElement.id = documentElementId;
-          document.body.appendChild(documentElement);
+        if (container === null) {
+          container = document.createElement('div');
+          container.id = containerId;
+          document.body.appendChild(container);
         }
-      }
 
-      (0, _staticProps2.default)(this)({ documentElement: documentElement });
+        this.container = container;
+      }
     }
 
-    _createClass(Canvas, [{
+    _createClass(FlowViewCanvas, [{
       key: 'render',
       value: function render(view) {
-        var documentElement = this.documentElement;
+        var container = this.container;
 
-        // TODO selectedItems, previousDraggingPoint, draggedLinkId, etc.
-        // should be in components/Canvas state, not in emptyView.
-        // Other attrivutes like pinRadius, fontWidth, nodeHeight should
-        // be in defaultTheme or even better in components/Canvas defaultProps.
-
-        var store = (0, _redux.createStore)(_reducers2.default, {
-          view: Object.assign({
-            height: _emptyView2.default.height,
-            width: _emptyView2.default.width,
-            node: _emptyView2.default.node,
-            link: _emptyView2.default.link,
-            selectedItems: _emptyView2.default.selectedItems,
-            isDraggingItems: _emptyView2.default.isDraggingItems,
-            previousDraggingPoint: _emptyView2.default.previousDraggingPoint,
-            nodeSelector: _emptyView2.default.nodeSelector,
-            draggedLinkId: _emptyView2.default.draggedLinkId,
-            pinRadius: _emptyView2.default.pinRadius,
-            nodeHeight: _emptyView2.default.nodeHeight,
-            fontWidth: _emptyView2.default.fontWidth
-          }, {
-            node: view.node,
-            link: view.link,
-            height: view.height,
-            width: view.width
-          })
-        }, window.devToolsExtension && window.devToolsExtension());
-
-        (0, _reactDom.render)(_react2.default.createElement(
-          _reactRedux.Provider,
-          { store: store },
-          _react2.default.createElement(_FlowView2.default, { documentElement: documentElement })
-        ), documentElement);
+        (0, _reactDom.render)(_react2.default.createElement(_Canvas2.default, null), container);
       }
     }]);
 
-    return Canvas;
+    return FlowViewCanvas;
   }();
 
-  exports.default = Canvas;
+  exports.default = FlowViewCanvas;
   module.exports = exports['default'];
 });

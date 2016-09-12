@@ -1,8 +1,8 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../../util/focusTarget'], factory);
+    define(['module', 'exports', 'react', '../../utils/focusTarget'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../../util/focusTarget'));
+    factory(module, exports, require('react'), require('../../utils/focusTarget'));
   } else {
     var mod = {
       exports: {}

@@ -1,8 +1,8 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/ignoreEvent'], factory);
+    define(['module', 'exports', 'react', '../utils/ignoreEvent'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/ignoreEvent'));
+    factory(module, exports, require('react'), require('../utils/ignoreEvent'));
   } else {
     var mod = {
       exports: {}

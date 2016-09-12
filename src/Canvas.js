@@ -1,37 +1,37 @@
 import React from 'react'
 import { render } from 'react-dom'
 import Canvas from './components/Canvas'
-import staticProps from 'static-props'
 
 class FlowViewCanvas {
-  constructor (documentElementId) {
-    let documentElement = null
+  constructor (containerId) {
+    this.container = null
 
-    // Check that documentElementId is a string.
-    if (typeof documentElementId !== 'string') {
-      throw new TypeError('documentElementId must be a string', documentElementId)
+    // Check that containerId is a string.
+    if (typeof containerId !== 'string') {
+      throw new TypeError('containerId must be a string', containerId)
     }
 
-    // If we are in browser context, get the documentElement or create it.
+    // If we are in browser context, get the document element containing
+    // the canvas or create it.
     if (typeof document !== 'undefined') {
-      documentElement = document.getElementById(documentElementId)
+      var container = document.getElementById(containerId)
 
-      if (documentElement === null) {
-        documentElement = document.createElement('div')
-        documentElement.id = documentElementId
-        document.body.appendChild(documentElement)
+      if (container === null) {
+        container = document.createElement('div')
+        container.id = containerId
+        document.body.appendChild(container)
       }
-    }
 
-    staticProps(this)({ documentElement })
+      this.container = container
+    }
   }
 
   render (view) {
-    const documentElement = this.documentElement
+    const container = this.container
 
     render(
       <Canvas />,
-      documentElement
+      container
     )
   }
 }

@@ -1,8 +1,8 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../../util/ignoreEvent', './NumIns', './NumOuts'], factory);
+    define(['module', 'exports', 'react', '../../utils/ignoreEvent', './NumIns', './NumOuts'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../../util/ignoreEvent'), require('./NumIns'), require('./NumOuts'));
+    factory(module, exports, require('react'), require('../../utils/ignoreEvent'), require('./NumIns'), require('./NumOuts'));
   } else {
     var mod = {
       exports: {}
@@ -57,7 +57,6 @@
     return _react2.default.createElement(
       'g',
       {
-        onClick: _ignoreEvent2.default,
         onDoubleClick: _ignoreEvent2.default,
         onMouseDown: selectNode,
         transform: 'translate(' + x + ',' + y + ')',
@@ -72,8 +71,6 @@
         },
         _react2.default.createElement('rect', {
           transform: 'translate(' + width + ',-20)',
-          width: 20,
-          height: 20,
           fill: fill,
           style: styles.defaultBox
         }),
@@ -95,7 +92,7 @@
         'text',
         {
           x: pinRadius * 2,
-          y: height / 2,
+          y: pinRadius * 2 + 17,
           style: { pointerEvents: 'none' }
         },
         _react2.default.createElement(

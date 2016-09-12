@@ -4,7 +4,7 @@ flow: /empty.json
 ---
 # flow-view
 
-> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]/[Redux]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
 [Description](#description) |
 [Installation](#installation) |
@@ -54,10 +54,6 @@ npm install flow-view
 ```
 
 ## API
-
-In the example code contained in this section, when imported by another
-[Redux] app, anything related to *flow-view* is stored in the state
-attribute `view`.
 
 ### `new Canvas('drawing')`
 
@@ -130,4 +126,3 @@ canvas.render({
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
-[Redux]: http://redux.js.org/

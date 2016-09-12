@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../util/emptyView', './Link', './Node', './NodeSelector', '../actions'], factory);
+    define(['module', 'exports', 'react', '../utils/xCenterOfPin', '../utils/emptyView', './Link', './Node', './NodeSelector'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../util/emptyView'), require('./Link'), require('./Node'), require('./NodeSelector'), require('../actions'));
+    factory(module, exports, require('react'), require('../utils/xCenterOfPin'), require('../utils/emptyView'), require('./Link'), require('./Node'), require('./NodeSelector'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.emptyView, global.Link, global.Node, global.NodeSelector, global.actions);
+    factory(mod, mod.exports, global.react, global.xCenterOfPin, global.emptyView, global.Link, global.Node, global.NodeSelector);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _emptyView, _Link, _Node, _NodeSelector, _actions) {
+})(this, function (module, exports, _react, _xCenterOfPin, _emptyView, _Link, _Node, _NodeSelector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -18,6 +18,8 @@
   });
 
   var _react2 = _interopRequireDefault(_react);
+
+  var _xCenterOfPin2 = _interopRequireDefault(_xCenterOfPin);
 
   var _emptyView2 = _interopRequireDefault(_emptyView);
 
@@ -32,20 +34,6 @@
       default: obj
     };
   }
-
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -104,6 +92,7 @@
       var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this));
 
       _this.state = {
+        links: [],
         pointer: { x: 0, y: 0 },
         showNodeSelector: false
       };
@@ -114,220 +103,35 @@
       key: 'render',
       value: function render() {
         var _props = this.props;
-        var dispatch = _props.dispatch;
-        var nodes = _props.nodes;
-        var links = _props.links;
+        var fontFamily = _props.fontFamily;
+        var fontSize = _props.fontSize;
         var height = _props.height;
         var width = _props.width;
-        var pinRadius = _props.pinRadius;
-        var offset = _props.offset;
-        var draggedLinkId = _props.draggedLinkId;
-        var isDraggingLink = _props.isDraggingLink;
-        var isDraggingItems = _props.isDraggingItems;
-        var nodeSelectorText = _props.nodeSelectorText;
-        var previousDraggingPoint = _props.previousDraggingPoint;
-        var _state = this.state;
-        var pointer = _state.pointer;
-        var showNodeSelector = _state.showNodeSelector;
 
-
-        var setState = this.setState.bind(this);
-
-        var getCoordinates = function getCoordinates(e) {
-          return {
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y
-          };
-        };
-
-        var onDragLink = function onDragLink(previousDraggingPoint) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var draggingDelta = {
-              x: e.clientX - offset.x - previousDraggingPoint.x,
-              y: e.clientY - offset.y - previousDraggingPoint.y
-            };
-
-            var pointer = getCoordinates(e);
-
-            setState({ pointer: pointer });
-
-            dispatch((0, _actions.dragLink)(previousDraggingPoint, draggingDelta));
-          };
-        };
-
-        var onEndDraggingLink = function onEndDraggingLink(draggedLinkId) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.endDraggingLink)(draggedLinkId));
-          };
-        };
-
-        var onDragItems = function onDragItems(previousDraggingPoint) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var draggingDelta = {
-              x: e.clientX - offset.x - previousDraggingPoint.x,
-              y: e.clientY - offset.y - previousDraggingPoint.y
-            };
-
-            dispatch((0, _actions.dragItems)(previousDraggingPoint, draggingDelta));
-          };
-        };
-
-        var onDeleteNode = function onDeleteNode(nodeid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.deleteNode)(nodeid));
-          };
-        };
-
-        var onEndDraggingItems = function onEndDraggingItems(e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.endDraggingItems)());
-        };
-
-        var onHideNodeSelector = function onHideNodeSelector(e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          dispatch((0, _actions.hideNodeSelector)());
-        };
-
-        var onDoubleClick = function onDoubleClick(e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          setState({
-            pointer: getCoordinates(e),
-            showNodeSelector: true
-          });
-        };
-
-        var selectLink = function selectLink(linkid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.selectItem)({
-              id: linkid,
-              x: e.clientX - offset.x,
-              y: e.clientY - offset.y
-            }));
-          };
-        };
-
-        var selectNode = function selectNode(nodeid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.selectItem)({
-              id: nodeid,
-              x: e.clientX - offset.x,
-              y: e.clientY - offset.y
-            }));
-          };
-        };
-
-        var onDeleteLink = function onDeleteLink(linkid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.deleteLink)(linkid));
-          };
-        };
-
-        var onSetNumIns = function onSetNumIns(nodeid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.setNumIns)({
-              nodeid: nodeid,
-              num: e.target.value
-            }));
-          };
-        };
-
-        var onSetNumOuts = function onSetNumOuts(nodeid) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            dispatch((0, _actions.setNumOuts)({
-              nodeid: nodeid,
-              num: e.target.value
-            }));
-          };
-        };
-
-        var onAddNode = function onAddNode(_ref) {
-          var x = _ref.x;
-          var y = _ref.y;
-          var text = _ref.text;
-
-          dispatch((0, _actions.addNode)({ x: x, y: y, text: text }));
-        };
-
-        var onAddLink = function onAddLink(_ref2, previousDraggingPoint) {
-          var from = _ref2.from;
-          var to = _ref2.to;
-
-          dispatch((0, _actions.addLink)({ from: from, to: to }, previousDraggingPoint));
-        };
 
         return _react2.default.createElement(
           'svg',
           {
+            fontFamily: fontFamily,
+            fontSize: fontSize,
             height: height,
-            width: width,
+            textAnchor: 'start',
             style: { border: '1px solid black' },
-            onMouseDown: onHideNodeSelector,
-            onDoubleClick: onDoubleClick,
-            onMouseMove: isDraggingLink ? onDragLink(previousDraggingPoint) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined,
-            onMouseUp: isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined
+            width: width
           },
-          _react2.default.createElement(_NodeSelector2.default, {
-            x: pointer.x,
-            y: pointer.y,
-            text: nodeSelectorText,
-            show: showNodeSelector,
-            addNode: onAddNode
-          }),
-          nodes.map(function (node, i) {
-            return _react2.default.createElement(_Node2.default, _extends({
-              key: i,
-              pinRadius: pinRadius,
-              offset: offset,
-              selectNode: selectNode(node.id),
-              delNode: onDeleteNode(node.id),
-              addLink: onAddLink,
-              endDragging: onEndDraggingItems,
-              isDraggingLink: isDraggingLink,
-              setNumIns: onSetNumIns(node.id),
-              setNumOuts: onSetNumOuts(node.id)
-            }, node));
-          }),
-          links.map(function (link) {
-            return _react2.default.createElement(_Link2.default, _extends({
-              pinRadius: pinRadius,
-              selectLink: selectLink(link.id),
-              deleteLink: onDeleteLink(link.id),
-              key: link.id
-            }, link));
-          })
+          _react2.default.createElement(
+            'text',
+            {
+              x: 29,
+              y: 2 + 17,
+              style: { pointerEvents: 'none' }
+            },
+            _react2.default.createElement(
+              'tspan',
+              null,
+              '\'Hello flow-view\''
+            )
+          )
         );
       }
     }]);
@@ -336,21 +140,18 @@
   }(_react.Component);
 
   Canvas.propTypes = {
+    fontFamily: _react.PropTypes.string.isRequired,
+    fontSize: _react.PropTypes.number.isRequired,
     width: _react.PropTypes.number.isRequired,
     height: _react.PropTypes.number.isRequired,
-    links: _react.PropTypes.array.isRequired,
-    nodes: _react.PropTypes.array.isRequired,
-    pinRadius: _react.PropTypes.number.isRequired,
-    previousDraggingPoint: _react.PropTypes.shape({
-      x: _react.PropTypes.number.isRequired,
-      y: _react.PropTypes.number.isRequired
-    })
+    pinRadius: _react.PropTypes.number.isRequired
   };
 
-  // TODO emptyView.pinRadius should be in defaultTheme
   Canvas.defaultProps = {
+    fontFamily: 'Courier',
+    fontSize: 17,
     height: 400,
-    pinRadius: _emptyView2.default.pinRadius,
+    pinRadius: 6,
     width: 400
   };
 

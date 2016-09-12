@@ -19,6 +19,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 server side rendering, canvas.exportToSVG exportToFileSVG
 New g14n.info layouts, with link Changelog page
+removed Redux
 
 ## [v2.4.0] 2016-08-23
 

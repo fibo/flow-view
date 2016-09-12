@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import ignoreEvent from '../util/ignoreEvent'
+import ignoreEvent from '../utils/ignoreEvent'
 
 const stroke = '#333333'
 const strokeWidth = 3

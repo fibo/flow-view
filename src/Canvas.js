@@ -1,9 +1,9 @@
 import React from 'react'
 import { render } from 'react-dom'
-// import emptyView from './utils/emptyView'
+import Canvas from './components/Canvas'
 import staticProps from 'static-props'
 
-class Canvas {
+class FlowViewCanvas {
   constructor (documentElementId) {
     let documentElement = null
 
@@ -30,10 +30,10 @@ class Canvas {
     const documentElement = this.documentElement
 
     render(
-      <Canvas documentElement={documentElement} />,
+      <Canvas />,
       documentElement
     )
   }
 }
 
-export default Canvas
+export default FlowViewCanvas

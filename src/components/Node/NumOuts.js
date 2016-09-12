@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import focusTarget from '../../util/focusTarget'
+import focusTarget from '../../utils/focusTarget'
 
 const NumOuts = ({ setNum, value }) => (
   <foreignObject

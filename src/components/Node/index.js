@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-import ignoreEvent from '../../util/ignoreEvent'
+import ignoreEvent from '../../utils/ignoreEvent'
 
 import NumIns from './NumIns'
 import NumOuts from './NumOuts'

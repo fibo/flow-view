@@ -30,7 +30,7 @@ class FlowViewCanvas {
     const container = this.container
 
     render(
-      <Canvas />,
+      <Canvas view={view} />,
       container
     )
   }

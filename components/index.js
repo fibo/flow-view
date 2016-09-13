@@ -1,22 +1,22 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['exports', './Canvas', './Link', './Node', './NodeInspector', './NodeSelector'], factory);
+    define(['exports', './Canvas', './Link', './Node', './Inspector', './Selector'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require('./Canvas'), require('./Link'), require('./Node'), require('./NodeInspector'), require('./NodeSelector'));
+    factory(exports, require('./Canvas'), require('./Link'), require('./Node'), require('./Inspector'), require('./Selector'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.Canvas, global.Link, global.Node, global.NodeInspector, global.NodeSelector);
+    factory(mod.exports, global.Canvas, global.Link, global.Node, global.Inspector, global.Selector);
     global.index = mod.exports;
   }
-})(this, function (exports, _Canvas, _Link, _Node, _NodeInspector, _NodeSelector) {
+})(this, function (exports, _Canvas, _Link, _Node, _Inspector, _Selector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.NodeSelector = exports.NodeInspector = exports.Node = exports.Link = exports.Canvas = undefined;
+  exports.Selector = exports.Node = exports.Link = exports.Inspector = exports.Canvas = undefined;
 
   var _Canvas2 = _interopRequireDefault(_Canvas);
 
@@ -24,9 +24,9 @@
 
   var _Node2 = _interopRequireDefault(_Node);
 
-  var _NodeInspector2 = _interopRequireDefault(_NodeInspector);
+  var _Inspector2 = _interopRequireDefault(_Inspector);
 
-  var _NodeSelector2 = _interopRequireDefault(_NodeSelector);
+  var _Selector2 = _interopRequireDefault(_Selector);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -35,8 +35,8 @@
   }
 
   exports.Canvas = _Canvas2.default;
+  exports.Inspector = _Inspector2.default;
   exports.Link = _Link2.default;
   exports.Node = _Node2.default;
-  exports.NodeInspector = _NodeInspector2.default;
-  exports.NodeSelector = _NodeSelector2.default;
+  exports.Selector = _Selector2.default;
 });

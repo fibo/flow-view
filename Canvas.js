@@ -82,7 +82,7 @@
       value: function render(view) {
         var container = this.container;
 
-        (0, _reactDom.render)(_react2.default.createElement(_Canvas2.default, null), container);
+        (0, _reactDom.render)(_react2.default.createElement(_Canvas2.default, { view: view }), container);
       }
     }]);
 

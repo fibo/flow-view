@@ -1,7 +1,7 @@
 import Canvas from './Canvas'
 import Link from './Link'
 import Node from './Node'
-import NodeInspector from './NodeInspector'
-import NodeSelector from './NodeSelector'
+import Inspector from './Inspector'
+import Selector from './Selector'
 
-export { Canvas, Link, Node, NodeInspector, NodeSelector }
+export { Canvas, Inspector, Link, Node, Selector }

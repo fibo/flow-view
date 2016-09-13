@@ -29,10 +29,22 @@ class FlowViewCanvas {
   render (view) {
     const container = this.container
 
-    render(
-      <Canvas view={view} />,
-      container
-    )
+    if (container) {
+      // Client side rendering.
+
+      render(
+        <Canvas view={view} />,
+        container
+      )
+    } else {
+      // Server side rendering.
+
+      // TODO
+      // const canvas = new Canvas(view)
+      // const jsx = canvas.render()
+      // const svgOutput = renderSVGx(jsx)
+      // console.log(svgOutput)
+    }
   }
 }
 

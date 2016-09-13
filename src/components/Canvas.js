@@ -1,15 +1,16 @@
 import React, { Component, PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
+import Inspector from './Inspector'
 import Node from './Node'
+import Selector from './Selector'
 
 class Canvas extends Component {
   constructor () {
     super()
 
     this.state = {
-      links: [],
       pointer: { x: 0, y: 0 },
-      showNodeSelector: false
+      showSelector: false
     }
   }
 
@@ -30,47 +31,90 @@ class Canvas extends Component {
       fontSize,
       height,
       style,
+      view,
       width
     } = this.props
+
+    const {
+      offset,
+      pointer,
+      showSelector
+    } = this.state
+
+    const setState = this.setState.bind(this)
+
+    const getCoordinates = (e) => ({
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y
+    })
+
+    const addNode = ({ x, y, text }) => {
+      console.log(text, x, y)
+    }
+
+    const onClick = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        showSelector: false
+      })
+    }
+
+    const onDoubleClick = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        pointer: getCoordinates(e),
+        showSelector: true
+      })
+    }
 
     return (
       <svg
         fontFamily={fontFamily}
         fontSize={fontSize}
         height={height}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
         textAnchor='start'
         style={style}
         width={width}
       >
-        <Node
-          height={30}
-          text='Hello'
-          width={30}
-          x={20}
-          y={20}
+        <Inspector
+          height={height}
         />
-        <text
-          x={29}
-          y={2 + 17}
-          style={{pointerEvents: 'none'}}
-        >
-          <tspan>'Hello flow-view'</tspan>
-        </text>
+        {Object.keys(view.node).map((id) => (view.node[id])).map(({
+          height,
+          ins,
+          outs,
+          text,
+          width,
+          x,
+          y
+        }, i) => (
+          <Node
+            key={i}
+            height={height}
+            ins={ins}
+            outs={outs}
+            text={text}
+            width={width}
+            x={x}
+            y={y}
+          />
+        ))}
+        <Selector
+          addNode={addNode}
+          show={showSelector}
+          x={pointer.x}
+          y={pointer.y}
+        />
       </svg>
     )
   }
     /*
-
-    var {
-      draggedLinkId
-    } = this.props
-
-    const {
-      pointer,
-      showNodeSelector
-    } = this.state
-
-    const setState = this.setState.bind(this)
 
     let links = []
 
@@ -123,11 +167,6 @@ class Canvas extends Component {
       })
     }
 
-    const getCoordinates = (e) => ({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y
-    })
-
     const onDragLink = (pointer) => (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -162,25 +201,6 @@ class Canvas extends Component {
       e.stopPropagation()
     }
 
-    const onClick = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      setState({
-        showNodeSelector: false
-      })
-    }
-
-    const onDoubleClick = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      setState({
-        pointer: getCoordinates(e),
-        showNodeSelector: true
-      })
-    }
-
     const selectLink = (linkid) => (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -206,9 +226,6 @@ class Canvas extends Component {
       e.stopPropagation()
     }
 
-    const onAddNode = ({ x, y, text }) => {
-    }
-
     const onAddLink = ({ from, to }, previousDraggingPoint) => {
     }
 
@@ -225,12 +242,6 @@ class Canvas extends Component {
         onMouseMove={isDraggingLink ? onDragLink(pointer) : isDraggingItems ? onDragItems(previousDraggingPoint) : undefined}
         onMouseUp={isDraggingLink ? onEndDraggingLink(draggedLinkId) : isDraggingItems ? onEndDraggingItems : undefined}
       >
-        <NodeSelector
-          addNode={onAddNode}
-          x={pointer.x}
-          y={pointer.y}
-          show={showNodeSelector}
-        />
         {nodes.map(
           (node, i) => (
             <Node
@@ -270,8 +281,11 @@ Canvas.propTypes = {
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  pinRadius: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
+  view: PropTypes.shape({
+    link: PropTypes.object.isRequired,
+    node: PropTypes.object.isRequired
+  }),
   width: PropTypes.number.isRequired
 }
 
@@ -279,8 +293,11 @@ Canvas.defaultProps = {
   fontFamily: 'Courier',
   fontSize: 17,
   height: 400,
-  pinRadius: 6,
   style: { border: '1px solid black' },
+  view: {
+    link: {},
+    node: {}
+  },
   width: 400
 }
 

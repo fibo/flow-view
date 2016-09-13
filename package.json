@@ -67,7 +67,6 @@
     "not-defined": "^1.1.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
-    "static-props": "^1.0.0",
     "svgx": "^0.6.0"
   },
   "devDependencies": {

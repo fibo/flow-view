@@ -285,7 +285,7 @@ Canvas.propTypes = {
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
-  }),
+  }).isRequired,
   width: PropTypes.number.isRequired
 }
 

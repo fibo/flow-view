@@ -1,10 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
-import xCenterOfPin from '../utils/xCenterOfPin'
-import emptyView from '../utils/emptyView'
-import Link from './Link'
 import Node from './Node'
-import NodeSelector from './NodeSelector'
 
 class Canvas extends Component {
   constructor () {
@@ -17,15 +13,15 @@ class Canvas extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const container = findDOMNode(this).parentNode
 
-    console.log(container)
+    const offset = {
+      x: container.offsetLeft,
+      y: container.offsetTop
+    }
 
-    // TODO compute offset and do
-    //this.setState({
-    //  offset
-    //})
+    this.setState({ offset })
   }
 
   render () {
@@ -33,6 +29,7 @@ class Canvas extends Component {
       fontFamily,
       fontSize,
       height,
+      style,
       width
     } = this.props
 
@@ -42,9 +39,16 @@ class Canvas extends Component {
         fontSize={fontSize}
         height={height}
         textAnchor='start'
-        style={{border: '1px solid black'}}
+        style={style}
         width={width}
       >
+        <Node
+          height={30}
+          text='Hello'
+          width={30}
+          x={20}
+          y={20}
+        />
         <text
           x={29}
           y={2 + 17}
@@ -265,9 +269,10 @@ class Canvas extends Component {
 Canvas.propTypes = {
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  pinRadius: PropTypes.number.isRequired
+  pinRadius: PropTypes.number.isRequired,
+  style: PropTypes.object.isRequired,
+  width: PropTypes.number.isRequired
 }
 
 Canvas.defaultProps = {
@@ -275,6 +280,7 @@ Canvas.defaultProps = {
   fontSize: 17,
   height: 400,
   pinRadius: 6,
+  style: { border: '1px solid black' },
   width: 400
 }
 

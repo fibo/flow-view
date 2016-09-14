@@ -29,11 +29,25 @@ class FlowViewCanvas {
   render (view) {
     const container = this.container
 
+    // TODO validate view, use Object.defineProperty(this, 'view', { set: setView })
+    this.view = view
+
+    const dragItems = (dragginDelta) => {
+      // TODO update only selected items
+      Object.keys(view.node).forEach((id) => {
+        view.node[id].x += dragginDelta.x
+        view.node[id].y += dragginDelta.y
+      })
+    }
+
     if (container) {
       // Client side rendering.
 
       render(
-        <Canvas view={view} />,
+        <Canvas
+          dragItems={dragItems}
+          view={view}
+        />,
         container
       )
     } else {

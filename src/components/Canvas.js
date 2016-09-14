@@ -3,13 +3,14 @@ import { findDOMNode } from 'react-dom'
 import Inspector from './Inspector'
 import Node from './Node'
 import Selector from './Selector'
+import no from 'not-defined'
 
 class Canvas extends Component {
   constructor () {
     super()
 
     this.state = {
-      pointer: { x: 0, y: 0 },
+      pointer: null,
       showSelector: false
     }
   }
@@ -27,6 +28,7 @@ class Canvas extends Component {
 
   render () {
     const {
+      dragItems,
       fontFamily,
       fontSize,
       height,
@@ -37,8 +39,11 @@ class Canvas extends Component {
 
     const {
       offset,
-      pointer,
       showSelector
+    } = this.state
+
+    var {
+      pointer
     } = this.state
 
     const setState = this.setState.bind(this)
@@ -71,6 +76,26 @@ class Canvas extends Component {
       })
     }
 
+    const onMouseMove = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const nextPointer = getCoordinates(e)
+
+      if (no(pointer)) pointer = nextPointer
+
+      const draggingDelta = {
+        x: nextPointer.x - pointer.x,
+        y: nextPointer.y - pointer.y
+      }
+
+      dragItems(draggingDelta)
+
+      setState({
+        pointer: nextPointer
+      })
+    }
+
     return (
       <svg
         fontFamily={fontFamily}
@@ -78,6 +103,7 @@ class Canvas extends Component {
         height={height}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        onMouseMove={onMouseMove}
         textAnchor='start'
         style={style}
         width={width}
@@ -108,8 +134,8 @@ class Canvas extends Component {
         <Selector
           addNode={addNode}
           show={showSelector}
-          x={pointer.x}
-          y={pointer.y}
+          x={pointer ? pointer.x : 0}
+          y={pointer ? pointer.y : 0}
         />
       </svg>
     )
@@ -278,6 +304,7 @@ class Canvas extends Component {
 }
 
 Canvas.propTypes = {
+  dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
@@ -290,6 +317,7 @@ Canvas.propTypes = {
 }
 
 Canvas.defaultProps = {
+  dragItems: Function.prototype,
   fontFamily: 'Courier',
   fontSize: 17,
   height: 400,

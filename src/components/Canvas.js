@@ -3,7 +3,6 @@ import { findDOMNode } from 'react-dom'
 import Inspector from './Inspector'
 import Node from './Node'
 import Selector from './Selector'
-import no from 'not-defined'
 
 class Canvas extends Component {
   constructor () {
@@ -39,11 +38,8 @@ class Canvas extends Component {
 
     const {
       offset,
+      pointer,
       showSelector
-    } = this.state
-
-    var {
-      pointer
     } = this.state
 
     const setState = this.setState.bind(this)
@@ -76,13 +72,29 @@ class Canvas extends Component {
       })
     }
 
+    const onMouseEnter = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        pointer: getCoordinates(e)
+      })
+    }
+
+    const onMouseLeave = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        pointer: null
+      })
+    }
+
     const onMouseMove = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       const nextPointer = getCoordinates(e)
-
-      if (no(pointer)) pointer = nextPointer
 
       const draggingDelta = {
         x: nextPointer.x - pointer.x,
@@ -103,6 +115,8 @@ class Canvas extends Component {
         height={height}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}
         textAnchor='start'
         style={style}

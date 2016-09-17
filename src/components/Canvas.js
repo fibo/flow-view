@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import ignoreEvent from '../utils/ignoreEvent'
 import { findDOMNode } from 'react-dom'
 import Inspector from './Inspector'
 import Node from './Node'
@@ -40,6 +41,7 @@ class Canvas extends Component {
     const {
       offset,
       pointer,
+      selectedItems,
       showSelector
     } = this.state
 
@@ -51,20 +53,6 @@ class Canvas extends Component {
       x: e.clientX - offset.x,
       y: e.clientY - offset.y
     })
-
-    const hideSelector = () => {
-      // TODO It should be better to have emit('createNode', node)
-      // in the Selector and
-      // on('createNode', () => {
-      //   setState({ showSelector: false })
-      // })
-      // in the Canvas.
-
-      // Need to change state to force React rendering.
-      setState({
-        showSelector: false
-      })
-    }
 
     const onClick = (e) => {
       e.preventDefault()
@@ -85,21 +73,13 @@ class Canvas extends Component {
       })
     }
 
-    const onMouseEnter = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      setState({
-        pointer: getCoordinates(e)
-      })
-    }
-
     const onMouseLeave = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       setState({
         pointer: null,
+        selectedItems: [],
         showSelector: false
       })
     }
@@ -115,14 +95,49 @@ class Canvas extends Component {
       const nextPointer = getCoordinates(e)
 
       const draggingDelta = {
-        x: nextPointer.x - pointer.x,
-        y: nextPointer.y - pointer.y
+        x: (pointer ? nextPointer.x - pointer.x : 0),
+        y: (pointer ? nextPointer.y - pointer.y : 0)
       }
 
       dragItems(draggingDelta, selectedItems)
 
       setState({
         pointer: nextPointer
+      })
+    }
+
+    const onMouseUp = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        selectedItems: [],
+        pointer: null
+      })
+    }
+
+    /**
+     * Bring up selected nodes.
+     */
+
+    const selectedFirst = (a, b) => {
+      // FIXME it works, but it would be nice if the selected
+      // items keep being up after deselection.
+      const aIsSelected = selectedItems.includes(a)
+      const bIsSelected = selectedItems.includes(b)
+
+      if (aIsSelected && bIsSelected) return 0
+
+      if (aIsSelected) return 1
+      if (bIsSelected) return -1
+    }
+
+    const selectItem = (id) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      setState({
+        selectedItems: [id]
       })
     }
 
@@ -133,9 +148,10 @@ class Canvas extends Component {
         height={height}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
-        onMouseEnter={onMouseEnter}
+        onMouseEnter={ignoreEvent}
         onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
         textAnchor='start'
         style={style}
         width={width}
@@ -143,34 +159,47 @@ class Canvas extends Component {
         <Inspector
           height={height}
         />
-        {Object.keys(view.node)
-               .map((id) => (view.node[id]))
-               .map(({
-                 height,
-                 ins,
-                 outs,
-                 text,
-                 width,
-                 x,
-                 y
-               }, i) => (
-                 <Node
-                   key={i}
-                   fontSize={fontSize}
-                   height={height}
-                   ins={ins}
-                   outs={outs}
-                   text={text}
-                   width={width}
-                   x={x}
-                   y={y}
-                 />
-               ))
-        }
+        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+          const {
+            height,
+            ins,
+            outs,
+            text,
+            width,
+            x,
+            y
+          } = view.node[id]
+
+          return (
+            <Node
+              key={i}
+              fontSize={fontSize}
+              height={height}
+              ins={ins}
+              outs={outs}
+              selectNode={selectItem(id)}
+              text={text}
+              width={width}
+              x={x}
+              y={y}
+            />
+          )
+        })}
         <Selector
           createNode={(node) => {
             createNode(node)
-            hideSelector()
+
+            // TODO It should be better to have emit('createNode', node)
+            // in the Selector and
+            // on('createNode', () => {
+            //   setState({ showSelector: false })
+            // })
+            // in the Canvas.
+
+            // Need to change state to force React rendering.
+            setState({
+              showSelector: false
+            })
           }}
           fontFamily={fontFamily}
           pointer={pointer}

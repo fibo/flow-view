@@ -31,6 +31,7 @@ class Node extends Component {
       outs,
       pinSize,
       selected,
+      selectNode,
       text,
       x,
       y
@@ -52,7 +53,7 @@ class Node extends Component {
       <g
         onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
-        onMouseDown={ignoreEvent}
+        onMouseDown={selectNode}
         style={{ cursor: (selected ? 'pointer' : 'default') }}
         transform={`translate(${x},${y})`}
       >
@@ -72,7 +73,7 @@ class Node extends Component {
               height={pinSize}
               onClick={ignoreEvent}
               onMouseLeave={ignoreEvent}
-              onMouseDown={ignoreEvent}
+              onMouseDown={selectNode}
               transform={`translate(${x},0)`}
               width={pinSize}
             />
@@ -82,7 +83,7 @@ class Node extends Component {
           height={bodyHeight}
           onClick={ignoreEvent}
           onDoubleClick={ignoreEvent}
-          onMouseDown={ignoreEvent}
+          onMouseDown={selectNode}
           transform={`translate(0,${pinSize})`}
           width={computedWidth}
         >
@@ -148,6 +149,7 @@ Node.defaultProps = {
   outs: [],
   pinSize: 10,
   selected: false,
+  selectNode: Function.prototype,
   text: 'Node'
 }
 

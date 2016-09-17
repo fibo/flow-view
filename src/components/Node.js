@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
+import theme from './theme'
 
 class Node extends Component {
   getBody () {
@@ -147,7 +148,7 @@ Node.defaultProps = {
   },
   ins: [],
   outs: [],
-  pinSize: 10,
+  pinSize: theme.pinSize,
   selected: false,
   selectNode: Function.prototype,
   text: 'Node'

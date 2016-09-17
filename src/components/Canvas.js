@@ -2,8 +2,10 @@ import React, { Component, PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
 import { findDOMNode } from 'react-dom'
 import Inspector from './Inspector'
+import Link from './Link'
 import Node from './Node'
 import Selector from './Selector'
+// TODO import defaultTheme from './theme.json'
 
 class Canvas extends Component {
   constructor () {
@@ -182,6 +184,26 @@ class Canvas extends Component {
               width={width}
               x={x}
               y={y}
+            />
+          )
+        })}
+        {Object.keys(view.link).map((id, i) => {
+          const {
+            from,
+            to
+          } = view.link[id]
+
+          const x1=0
+          const y1=0
+          const x2=100
+          const y2=100
+          return (
+            <Link
+              key={i}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
             />
           )
         })}

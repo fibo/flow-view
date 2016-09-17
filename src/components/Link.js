@@ -1,17 +1,18 @@
 import React, { PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
+import theme from './theme'
 
 const stroke = '#333333'
-const strokeWidth = 3
-const highlightedStrokeWidth = 4
 
 const Link = ({
-  x, y,
-  x2, y2,
-  pinRadius,
+  deleteLink,
   selected,
   selectLink,
-  deleteLink
+  width,
+  x1,
+  y1,
+  x2,
+  y2
 }) => (
   <g
     onClick={selected ? undefined : selectLink}
@@ -19,30 +20,39 @@ const Link = ({
     onMouseDown={ignoreEvent}
   >
     <circle
-      cx={x}
-      cy={y}
-      r={strokeWidth}
+      cx={x1}
+      cy={y1}
+      r={width}
     />
     <line
-      x1={x} y1={y} x2={x2} y2={y2}
+      x1={x1} y1={y1} x2={x2} y2={y2}
       stroke={stroke}
-      strokeWidth={selected ? highlightedStrokeWidth : strokeWidth}
+      strokeWidth={width}
     />
     <circle
       cx={x2}
       cy={y2}
-      r={strokeWidth}
+      r={width}
     />
   </g>
 )
 
 Link.propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
+  deleteLink: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired,
+  selectLink: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  x1: PropTypes.number.isRequired,
+  y1: PropTypes.number.isRequired,
   x2: PropTypes.number.isRequired,
-  y2: PropTypes.number.isRequired,
-  deleteLink: PropTypes.func,
-  selectLink: PropTypes.func
+  y2: PropTypes.number.isRequired
+}
+
+Link.defaultProps = {
+  deleteLink: Function.prototype,
+  selected: false,
+  selectLink: Function.prototype,
+  width: theme.lineWidth
 }
 
 export default Link

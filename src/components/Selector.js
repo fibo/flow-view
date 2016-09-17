@@ -6,36 +6,43 @@ const visible = { display: 'inline', overflow: 'visible' }
 class Selector extends Component {
   render () {
     const {
-      addNode,
+      createNode,
+      fontFamily,
       height,
+      pointer,
       show,
-      width,
-      x,
-      y
+      width
     } = this.props
+
+    const onKeyPress = (e) => {
+      const text = e.target.value.trim()
+      const pointer = this.props.pointer
+
+      const pressedEnter = (e.key === 'Enter')
+      const textIsNotBlank = text.length > 0
+
+      if (pressedEnter && textIsNotBlank) {
+        createNode({
+          text,
+          x: pointer.x,
+          y: pointer.y
+        })
+      }
+    }
 
     return (
       <foreignObject
         height={height}
         style={(show ? visible : hidden)}
         width={width}
-        x={x}
-        y={y}
+        x={pointer ? pointer.x : 0}
+        y={pointer ? pointer.y : 0}
       >
         <input
           type='text'
           ref={(input) => { if (input !== null) input.focus() }}
-          style={{ outline: 'none' }}
-          onKeyPress={(e) => {
-            const text = e.target.value.trim()
-
-            const pressedEnter = (e.key === 'Enter')
-            const textIsNotBlank = text.length > 0
-
-            if (pressedEnter && textIsNotBlank) {
-              addNode({ x, y, text })
-            }
-          }}
+          style={{ outline: 'none', fontFamily }}
+          onKeyPress={onKeyPress}
         />
       </foreignObject>
     )
@@ -43,10 +50,13 @@ class Selector extends Component {
 }
 
 Selector.propTypes = {
-  addNode: PropTypes.func.isRequired,
+  createNode: PropTypes.func.isRequired,
+  fontFamily: PropTypes.string.isRequired,
   show: PropTypes.bool.isRequired,
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired
+  pointer: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired
+  })
 }
 
 Selector.defaultProps = {

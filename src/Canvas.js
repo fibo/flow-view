@@ -1,6 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import Canvas from './components/Canvas'
+import randomString from './utils/randomString'
 
 class FlowViewCanvas {
   constructor (containerId) {
@@ -29,27 +30,39 @@ class FlowViewCanvas {
   render (view) {
     const container = this.container
 
-    // TODO validate view, use Object.defineProperty(this, 'view', { set: setView })
-    this.view = view
+    const createNode = (node) => {
+      function generateId () {
+        const id = randomString(3)
+        return node[id] ? generateId() : id
+      }
 
-    const dragItems = (dragginDelta) => {
-      // TODO update only selected items
-      Object.keys(view.node).forEach((id) => {
-        view.node[id].x += dragginDelta.x
-        view.node[id].y += dragginDelta.y
-      })
+      const id = generateId()
+
+      view.node[id] = node
     }
+
+    const dragItems = (dragginDelta, selectItems) => {
+      Object.keys(view.node)
+            .filter((id) => (selectItems.includes(id)))
+            .forEach((id) => {
+              view.node[id].x += dragginDelta.x
+              view.node[id].y += dragginDelta.y
+            })
+
+      // TODO drag links
+    }
+
+    const component = (
+      <Canvas
+        createNode={createNode}
+        dragItems={dragItems}
+        view={view}
+      />
+    )
 
     if (container) {
       // Client side rendering.
-
-      render(
-        <Canvas
-          dragItems={dragItems}
-          view={view}
-        />,
-        container
-      )
+      render(component, container)
     } else {
       // Server side rendering.
 

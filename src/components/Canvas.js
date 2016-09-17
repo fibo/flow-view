@@ -10,7 +10,8 @@ class Canvas extends Component {
 
     this.state = {
       pointer: null,
-      showSelector: false
+      showSelector: false,
+      selectedItems: []
     }
   }
 
@@ -27,6 +28,7 @@ class Canvas extends Component {
 
   render () {
     const {
+      createNode,
       dragItems,
       fontSize,
       height,
@@ -50,8 +52,18 @@ class Canvas extends Component {
       y: e.clientY - offset.y
     })
 
-    const addNode = ({ x, y, text }) => {
-      console.log(text, x, y)
+    const hideSelector = () => {
+      // TODO It should be better to have emit('createNode', node)
+      // in the Selector and
+      // on('createNode', () => {
+      //   setState({ showSelector: false })
+      // })
+      // in the Canvas.
+
+      // Need to change state to force React rendering.
+      setState({
+        showSelector: false
+      })
     }
 
     const onClick = (e) => {
@@ -87,13 +99,18 @@ class Canvas extends Component {
       e.stopPropagation()
 
       setState({
-        pointer: null
+        pointer: null,
+        showSelector: false
       })
     }
 
     const onMouseMove = (e) => {
       e.preventDefault()
       e.stopPropagation()
+
+      const selectedItems = this.state.selectedItems
+
+      if (selectedItems.length === 0) return
 
       const nextPointer = getCoordinates(e)
 
@@ -102,7 +119,7 @@ class Canvas extends Component {
         y: nextPointer.y - pointer.y
       }
 
-      dragItems(draggingDelta)
+      dragItems(draggingDelta, selectedItems)
 
       setState({
         pointer: nextPointer
@@ -126,32 +143,38 @@ class Canvas extends Component {
         <Inspector
           height={height}
         />
-        {Object.keys(view.node).map((id) => (view.node[id])).map(({
-          height,
-          ins,
-          outs,
-          text,
-          width,
-          x,
-          y
-        }, i) => (
-          <Node
-            key={i}
-            fontSize={fontSize}
-            height={height}
-            ins={ins}
-            outs={outs}
-            text={text}
-            width={width}
-            x={x}
-            y={y}
-          />
-        ))}
+        {Object.keys(view.node)
+               .map((id) => (view.node[id]))
+               .map(({
+                 height,
+                 ins,
+                 outs,
+                 text,
+                 width,
+                 x,
+                 y
+               }, i) => (
+                 <Node
+                   key={i}
+                   fontSize={fontSize}
+                   height={height}
+                   ins={ins}
+                   outs={outs}
+                   text={text}
+                   width={width}
+                   x={x}
+                   y={y}
+                 />
+               ))
+        }
         <Selector
-          addNode={addNode}
+          createNode={(node) => {
+            createNode(node)
+            hideSelector()
+          }}
+          fontFamily={fontFamily}
+          pointer={pointer}
           show={showSelector}
-          x={pointer ? pointer.x : 0}
-          y={pointer ? pointer.y : 0}
         />
       </svg>
     )
@@ -320,6 +343,7 @@ class Canvas extends Component {
 }
 
 Canvas.propTypes = {
+  createNode: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
@@ -332,8 +356,9 @@ Canvas.propTypes = {
 }
 
 Canvas.defaultProps = {
+  createNode: Function.prototype,
   dragItems: Function.prototype,
-  fontSize: 17,
+  fontSize: 17, // FIXME fontSize seems to be ignored
   height: 400,
   style: { border: '1px solid black' },
   view: {

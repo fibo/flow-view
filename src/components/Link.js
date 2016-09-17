@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
-import theme from './theme'
-
-const stroke = '#333333'
+import defaultTheme from './theme'
 
 const Link = ({
   deleteLink,
+  fill,
+  pinSize,
   selected,
   selectLink,
   width,
@@ -19,26 +19,35 @@ const Link = ({
     onDoubleClick={selected ? deleteLink : undefined}
     onMouseDown={ignoreEvent}
   >
-    <circle
-      cx={x1}
-      cy={y1}
-      r={width}
+    <rect
+      fill={fill}
+      height={pinSize}
+      width={pinSize}
+      x={x1}
+      y={y1}
     />
     <line
-      x1={x1} y1={y1} x2={x2} y2={y2}
-      stroke={stroke}
+      stroke={fill}
       strokeWidth={width}
+      x1={x1 + pinSize / 2}
+      y1={y1 + pinSize / 2}
+      x2={x2 + pinSize / 2}
+      y2={y2 + pinSize / 2}
     />
-    <circle
-      cx={x2}
-      cy={y2}
-      r={width}
+    <rect
+      fill={fill}
+      height={pinSize}
+      width={pinSize}
+      x={x2}
+      y={y2}
     />
   </g>
 )
 
 Link.propTypes = {
   deleteLink: PropTypes.func.isRequired,
+  fill: PropTypes.string.isRequired,
+  pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectLink: PropTypes.func.isRequired,
   width: PropTypes.number.isRequired,
@@ -50,9 +59,11 @@ Link.propTypes = {
 
 Link.defaultProps = {
   deleteLink: Function.prototype,
+  fill: 'gray',
+  pinSize: defaultTheme.pinSize,
   selected: false,
   selectLink: Function.prototype,
-  width: theme.lineWidth
+  width: defaultTheme.lineWidth
 }
 
 export default Link

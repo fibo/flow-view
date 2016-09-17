@@ -1,7 +1,8 @@
 import React, { PropTypes, Component } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
-import theme from './theme'
+import computeNodeWidth from '../utils/computeNodeWidth'
+import defaultTheme from './theme'
 
 class Node extends Component {
   getBody () {
@@ -34,21 +35,20 @@ class Node extends Component {
       selected,
       selectNode,
       text,
+      width,
       x,
       y
     } = this.props
 
     const body = this.getBody()
 
-    // Node shape defaults to a square.
-    const width = this.props.width || bodyHeight + pinSize * 2
-
-    // Heuristic value, based on Courier font.
-    const fontAspectRatio = 0.64
-
-    const dynamicWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
-
-    const computedWidth = Math.max(width, dynamicWidth)
+    const computedWidth = computeNodeWidth({
+      bodyHeight,
+      pinSize,
+      fontSize,
+      text,
+      width
+    })
 
     return (
       <g
@@ -140,15 +140,17 @@ Node.propTypes = {
 }
 
 Node.defaultProps = {
-  bodyHeight: 20,
+  bodyHeight: defaultTheme.nodeBodyHeight,
   fill: {
     body: 'whitesmoke',
     border: 'lightgray',
-    pin: 'gray'
+    pin: 'darkgray' // Ahahah darkgray is not darker than gray
+    // Actually we have
+    // whitesmoke < lightgray < darkgray < gray
   },
   ins: [],
   outs: [],
-  pinSize: theme.pinSize,
+  pinSize: defaultTheme.pinSize,
   selected: false,
   selectNode: Function.prototype,
   text: 'Node'

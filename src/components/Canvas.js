@@ -28,7 +28,6 @@ class Canvas extends Component {
   render () {
     const {
       dragItems,
-      fontFamily,
       fontSize,
       height,
       style,
@@ -41,6 +40,8 @@ class Canvas extends Component {
       pointer,
       showSelector
     } = this.state
+
+    const fontFamily = 'Courier'
 
     const setState = this.setState.bind(this)
 
@@ -136,6 +137,7 @@ class Canvas extends Component {
         }, i) => (
           <Node
             key={i}
+            fontSize={fontSize}
             height={height}
             ins={ins}
             outs={outs}
@@ -319,7 +321,6 @@ class Canvas extends Component {
 
 Canvas.propTypes = {
   dragItems: PropTypes.func.isRequired,
-  fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
@@ -332,7 +333,6 @@ Canvas.propTypes = {
 
 Canvas.defaultProps = {
   dragItems: Function.prototype,
-  fontFamily: 'Courier',
   fontSize: 17,
   height: 400,
   style: { border: '1px solid black' },

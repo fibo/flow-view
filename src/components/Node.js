@@ -26,16 +26,27 @@ class Node extends Component {
     const {
       bodyHeight,
       fill,
+      fontSize,
       ins,
       outs,
       pinSize,
       selected,
-      width,
+      text,
       x,
       y
     } = this.props
 
     const body = this.getBody()
+
+    // Node shape defaults to a square.
+    const width = this.props.width || bodyHeight + pinSize * 2
+
+    // Heuristic value, based on Courier font.
+    const fontAspectRatio = 0.64
+
+    const dynamicWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
+
+    const computedWidth = Math.max(width, dynamicWidth)
 
     return (
       <g
@@ -48,11 +59,11 @@ class Node extends Component {
         <rect
           fill={fill.border}
           height={pinSize}
-          width={width}
+          width={computedWidth}
         />
         {ins.map((pin, i, array) => {
           // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
-          const x = xOfPin(pinSize, width, array.length, i)
+          const x = xOfPin(pinSize, computedWidth, array.length, i)
 
           return (
             <rect
@@ -73,7 +84,7 @@ class Node extends Component {
           onDoubleClick={ignoreEvent}
           onMouseDown={ignoreEvent}
           transform={`translate(0,${pinSize})`}
-          width={width}
+          width={computedWidth}
         >
           <div
             style={{backgroundColor: fill.body}}
@@ -85,10 +96,10 @@ class Node extends Component {
           fill={fill.border}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
-          width={width}
+          width={computedWidth}
         />
         {outs.map((pin, i, array) => {
-          const x = xOfPin(pinSize, width, array.length, i)
+          const x = xOfPin(pinSize, computedWidth, array.length, i)
 
           return (
             <rect
@@ -115,14 +126,15 @@ Node.propTypes = {
     border: PropTypes.string.isRequired,
     pin: PropTypes.string.isRequired
   }).isRequired,
+  fontSize: PropTypes.number.isRequired,
   ins: PropTypes.array.isRequired,
   outs: PropTypes.array.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   text: PropTypes.string.isRequired,
+  width: PropTypes.number,
   x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired
+  y: PropTypes.number.isRequired
 }
 
 Node.defaultProps = {
@@ -136,8 +148,7 @@ Node.defaultProps = {
   outs: [],
   pinSize: 10,
   selected: false,
-  text: 'Node',
-  width: 100
+  text: 'Node'
 }
 
 export default Node

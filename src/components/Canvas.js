@@ -3,9 +3,11 @@ import ignoreEvent from '../utils/ignoreEvent'
 import { findDOMNode } from 'react-dom'
 import Inspector from './Inspector'
 import Link from './Link'
+import xOfPin from '../utils/xOfPin'
+import computeNodeWidth from '../utils/computeNodeWidth'
 import Node from './Node'
 import Selector from './Selector'
-// TODO import defaultTheme from './theme.json'
+import defaultTheme from './theme'
 
 class Canvas extends Component {
   constructor () {
@@ -33,8 +35,12 @@ class Canvas extends Component {
     const {
       createNode,
       dragItems,
+      fontFamily,
       fontSize,
       height,
+      lineWidth,
+      nodeBodyHeight,
+      pinSize,
       style,
       view,
       width
@@ -46,8 +52,6 @@ class Canvas extends Component {
       selectedItems,
       showSelector
     } = this.state
-
-    const fontFamily = 'Courier'
 
     const setState = this.setState.bind(this)
 
@@ -179,6 +183,7 @@ class Canvas extends Component {
               height={height}
               ins={ins}
               outs={outs}
+              pinSize={pinSize}
               selectNode={selectItem(id)}
               text={text}
               width={width}
@@ -193,10 +198,48 @@ class Canvas extends Component {
             to
           } = view.link[id]
 
-          const x1=0
-          const y1=0
-          const x2=100
-          const y2=100
+          var x1 = null
+          var y1 = null
+          var x2 = null
+          var y2 = null
+
+          const nodeIds = Object.keys(view.node)
+          const idEquals = (x) => (id) => (id === x[0])
+          const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
+          const targetId = (to ? nodeIds.find(idEquals(to)) : null)
+
+          var computedWidth = null
+
+          if (sourceId) {
+            const source = view.node[sourceId]
+
+            computedWidth = computeNodeWidth({
+              bodyHeight: nodeBodyHeight, // TODO custom nodes height
+              pinSize,
+              fontSize,
+              text: source.text,
+              width: source.width
+            })
+
+            x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
+            y1 = source.y + pinSize + nodeBodyHeight
+          }
+
+          if (targetId) {
+            const target = view.node[targetId]
+
+            computedWidth = computeNodeWidth({
+              bodyHeight: nodeBodyHeight, // TODO custom nodes height
+              pinSize,
+              fontSize,
+              text: target.text,
+              width: target.width
+            })
+
+            x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
+            y2 = target.y
+          }
+
           return (
             <Link
               key={i}
@@ -204,6 +247,8 @@ class Canvas extends Component {
               y1={y1}
               x2={x2}
               y2={y2}
+              lineWidth={lineWidth}
+              pinSize={pinSize}
             />
           )
         })}
@@ -342,9 +387,6 @@ class Canvas extends Component {
       e.stopPropagation()
     }
 
-    const onAddLink = ({ from, to }, previousDraggingPoint) => {
-    }
-
     return (
       <svg
         height={height}
@@ -396,8 +438,12 @@ class Canvas extends Component {
 Canvas.propTypes = {
   createNode: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
+  fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  nodeBodyHeight: PropTypes.number.isRequired,
+  lineWidth: PropTypes.number.isRequired,
+  pinSize: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
@@ -409,8 +455,12 @@ Canvas.propTypes = {
 Canvas.defaultProps = {
   createNode: Function.prototype,
   dragItems: Function.prototype,
+  fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   height: 400,
+  lineWidth: defaultTheme.lineWidth,
+  nodeBodyHeight: defaultTheme.nodeBodyHeight,
+  pinSize: defaultTheme.pinSize,
   style: { border: '1px solid black' },
   view: {
     link: {},

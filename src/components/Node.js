@@ -62,7 +62,9 @@ class Node extends Component {
         onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
         onMouseDown={selectNode}
-        style={{ cursor: (selected ? 'pointer' : 'default') }}
+        style={{
+          cursor: (selected ? 'pointer' : 'default')
+        }}
         transform={`translate(${x},${y})`}
       >
         <rect
@@ -74,7 +76,7 @@ class Node extends Component {
           // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          const onMouseEnter = (e) => {
+          const onEnterPinIn = (e) => {
             e.preventDefault()
             e.stopPropagation()
 
@@ -86,7 +88,7 @@ class Node extends Component {
             })
           }
 
-          const onMouseLeave = (e) => {
+          const onLeavePinIn = (e) => {
             onLeavePin()
           }
 
@@ -95,8 +97,8 @@ class Node extends Component {
               key={i}
               fill={fill.pin}
               height={pinSize}
-              onMouseEnter={onMouseEnter}
-              onMouseLeave={onMouseLeave}
+              onMouseEnter={onEnterPinIn}
+              onMouseLeave={onLeavePinIn}
               transform={`translate(${x},0)`}
               width={pinSize}
             />

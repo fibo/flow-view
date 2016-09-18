@@ -84,7 +84,11 @@ class Canvas extends Component {
       })
     }
 
-    const onUpdateLink = (link) => {
+    const onUpdateLink = (id, link) => {
+      updateLink(id, link)
+
+      link.id = id
+
       setState({
         draggedLink: link
       })
@@ -116,7 +120,12 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      const draggedLink = this.state.draggedLink
+      if (draggedLink) deleteLink(draggedLink.id)
+
       setState({
+        currentPin: null,
+        draggedLink: null,
         pointer: null,
         selectedItems: [],
         showSelector: false

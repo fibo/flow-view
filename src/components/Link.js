@@ -32,17 +32,16 @@ class Link extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      onUpdateLink({ id, from, to: null })
+      onUpdateLink(id, { from, to: null })
     }
 
     return (
       <g
         onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
-        onMouseUp={ignoreEvent}
       >
         <line
-          onMouseDown={selectLink}
+          onMouseUp={selectLink}
           stroke={selected ? 'red' : fill}
           strokeWidth={width}
           x1={x1 + pinSize / 2}

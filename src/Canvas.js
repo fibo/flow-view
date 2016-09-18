@@ -68,8 +68,6 @@ class FlowViewCanvas {
               view.node[id].x += dragginDelta.x
               view.node[id].y += dragginDelta.y
             })
-
-      // TODO drag links
     }
 
     const updateLink = (id, link) => {

@@ -4,6 +4,7 @@ class Inspector extends Component {
   render () {
     const {
       height,
+      selectedItems,
       width,
       x,
       y
@@ -17,6 +18,7 @@ class Inspector extends Component {
         y={y}
       >
         <p>Halo inspektor</p>
+        <p>{selectedItems}</p>
       </foreignObject>
     )
   }

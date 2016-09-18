@@ -3,6 +3,9 @@ import { render } from 'react-dom'
 import Canvas from './components/Canvas'
 import randomString from './utils/randomString'
 
+// TODO find a better way to generate ids.
+const idLength = 3
+
 class FlowViewCanvas {
   constructor (containerId) {
     this.container = null
@@ -30,9 +33,20 @@ class FlowViewCanvas {
   render (view) {
     const container = this.container
 
+    const createLink = (link) => {
+      function generateId () {
+        const id = randomString(idLength)
+        return link[id] ? generateId() : id
+      }
+
+      const id = generateId()
+
+      view.link[id] = link
+    }
+
     const createNode = (node) => {
       function generateId () {
-        const id = randomString(3)
+        const id = randomString(idLength)
         return node[id] ? generateId() : id
       }
 
@@ -54,6 +68,7 @@ class FlowViewCanvas {
 
     const component = (
       <Canvas
+        createLink={createLink}
         createNode={createNode}
         dragItems={dragItems}
         view={view}

@@ -37,6 +37,7 @@ class Canvas extends Component {
     const {
       createLink,
       createNode,
+      deleteLink,
       dragItems,
       fontFamily,
       fontSize,
@@ -45,6 +46,7 @@ class Canvas extends Component {
       nodeBodyHeight,
       pinSize,
       style,
+      updateLink,
       view,
       width
     } = this.props
@@ -73,6 +75,10 @@ class Canvas extends Component {
     }
 
     const onCreateLink = (link) => {
+      const id = createLink(link)
+
+      link.id = id
+
       setState({
         creatingLink: link
       })
@@ -115,23 +121,22 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      const creatingLink = this.state.creatingLink
-      const selectedItems = this.state.selectedItems
-
-      if ((creatingLink === null) && (selectedItems.length === 0)) return
-
       const nextPointer = getCoordinates(e)
-
-      const draggingDelta = {
-        x: (pointer ? nextPointer.x - pointer.x : 0),
-        y: (pointer ? nextPointer.y - pointer.y : 0)
-      }
-
-      dragItems(draggingDelta, selectedItems)
 
       setState({
         pointer: nextPointer
       })
+
+      const selectedItems = this.state.selectedItems
+
+      if (selectedItems.length > 0) {
+        const draggingDelta = {
+          x: (pointer ? nextPointer.x - pointer.x : 0),
+          y: (pointer ? nextPointer.y - pointer.y : 0)
+        }
+
+        dragItems(draggingDelta, selectedItems)
+      }
     }
 
     const onMouseUp = (e) => {
@@ -141,6 +146,7 @@ class Canvas extends Component {
       const creatingLink = this.state.creatingLink
       const currentPin = this.state.currentPin
 
+        /*
       if (creatingLink && currentPin) {
         const from = creatingLink.from
         // TODO create link in the opposite direction
@@ -152,6 +158,20 @@ class Canvas extends Component {
             from,
             to: [ currentPin.nodeId, currentPin.position ]
           })
+        }
+        */
+      if (creatingLink) {
+        const id = creatingLink.id
+
+        if (currentPin && currentPin.type === 'in') {
+          updateLink(id, {
+            to: [
+              currentPin.nodeId,
+              currentPin.position
+            ]
+          })
+        } else {
+          deleteLink(id)
         }
       }
 
@@ -282,6 +302,12 @@ class Canvas extends Component {
 
             x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
             y2 = target.y
+          } else {
+            // FIXME at first, pointer is null. This trick works, but,
+            // it should be reviosioned when implementing creating links
+            // in the opposite direction.
+            x2 = pointer ? pointer.x : x1
+            y2 = pointer ? pointer.y : y1
           }
 
           return (
@@ -482,6 +508,7 @@ class Canvas extends Component {
 Canvas.propTypes = {
   createLink: PropTypes.func.isRequired,
   createNode: PropTypes.func.isRequired,
+  deleteLink: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
@@ -490,6 +517,7 @@ Canvas.propTypes = {
   lineWidth: PropTypes.number.isRequired,
   pinSize: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
+  updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
@@ -500,6 +528,7 @@ Canvas.propTypes = {
 Canvas.defaultProps = {
   createLink: Function.prototype,
   createNode: Function.prototype,
+  deleteLink: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
@@ -508,6 +537,7 @@ Canvas.defaultProps = {
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,
   style: { border: '1px solid black' },
+  updateLink: Function.prototype,
   view: {
     link: {},
     node: {}

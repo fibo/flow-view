@@ -42,6 +42,8 @@ class FlowViewCanvas {
       const id = generateId()
 
       view.link[id] = link
+
+      return id
     }
 
     const createNode = (node) => {
@@ -55,6 +57,10 @@ class FlowViewCanvas {
       view.node[id] = node
     }
 
+    const deleteLink = (id) => {
+      delete view.link[id]
+    }
+
     const dragItems = (dragginDelta, selectItems) => {
       Object.keys(view.node)
             .filter((id) => (selectItems.includes(id)))
@@ -66,11 +72,17 @@ class FlowViewCanvas {
       // TODO drag links
     }
 
+    const updateLink = (id, link) => {
+      view.link[id] = Object.assign(view.link[id], link)
+    }
+
     const component = (
       <Canvas
         createLink={createLink}
         createNode={createNode}
+        deleteLink={deleteLink}
         dragItems={dragItems}
+        updateLink={updateLink}
         view={view}
       />
     )

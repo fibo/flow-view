@@ -78,6 +78,7 @@ class Canvas extends Component {
       const id = createLink(link)
 
       link.id = id
+      console.log(link)
 
       setState({
         creatingLink: link
@@ -292,19 +293,22 @@ class Canvas extends Component {
             // FIXME at first, pointer is null. This trick works, but,
             // it should be reviosioned when implementing creating links
             // in the opposite direction.
-            x2 = pointer ? pointer.x : x1
-            y2 = pointer ? pointer.y : y1
+            x2 = pointer ? (pointer.x - pinSize / 2) : x1
+            y2 = pointer ? (pointer.y - pinSize) : y1
           }
 
           return (
             <Link
               key={i}
+              from={from}
+              lineWidth={lineWidth}
+              onCreateLink={onCreateLink}
+              pinSize={pinSize}
+              to={to}
               x1={x1}
               y1={y1}
               x2={x2}
               y2={y2}
-              lineWidth={lineWidth}
-              pinSize={pinSize}
             />
           )
         })}

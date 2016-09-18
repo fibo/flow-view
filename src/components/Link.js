@@ -5,10 +5,11 @@ import defaultTheme from './theme'
 class Link extends Component {
   render () {
     const {
-      deleteLink,
+      id,
       fill,
       from,
       onCreateLink,
+      onUpdateLink,
       pinSize,
       selected,
       selectLink,
@@ -27,12 +28,22 @@ class Link extends Component {
       onCreateLink({ from, to: null })
     }
 
+    const onTargetMouseDown = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      onUpdateLink({ id, from, to: null })
+    }
+
     return (
       <g
-        onClick={() => {console.log('click')}}
+        onClick={ignoreEvent}
+        onDoubleClick={ignoreEvent}
+        onMouseUp={ignoreEvent}
       >
         <line
-          stroke={fill}
+          onMouseDown={selectLink}
+          stroke={selected ? 'red' : fill}
           strokeWidth={width}
           x1={x1 + pinSize / 2}
           y1={y1 + pinSize / 2}
@@ -51,6 +62,7 @@ class Link extends Component {
           <rect
             fill={fill}
             height={pinSize}
+            onMouseDown={onTargetMouseDown}
             width={pinSize}
             x={x2}
             y={y2}
@@ -62,10 +74,11 @@ class Link extends Component {
 }
 
 Link.propTypes = {
-  deleteLink: PropTypes.func.isRequired,
+  id: PropTypes.string,
   fill: PropTypes.string.isRequired,
   from: PropTypes.array,
   onCreateLink: PropTypes.func.isRequired,
+  onUpdateLink: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectLink: PropTypes.func.isRequired,
@@ -78,9 +91,9 @@ Link.propTypes = {
 }
 
 Link.defaultProps = {
-  deleteLink: Function.prototype,
   fill: 'gray',
   onCreateLink: Function.prototype,
+  onUpdateLink: Function.prototype,
   pinSize: defaultTheme.pinSize,
   selected: false,
   selectLink: Function.prototype,

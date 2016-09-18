@@ -14,7 +14,7 @@ class Canvas extends Component {
     super()
 
     this.state = {
-      creatingLink: null,
+      draggedLink: null,
       currentPin: null,
       pointer: null,
       showSelector: false,
@@ -78,10 +78,15 @@ class Canvas extends Component {
       const id = createLink(link)
 
       link.id = id
-      console.log(link)
 
       setState({
-        creatingLink: link
+        draggedLink: link
+      })
+    }
+
+    const onUpdateLink = (link) => {
+      setState({
+        draggedLink: link
       })
     }
 
@@ -144,11 +149,11 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      const creatingLink = this.state.creatingLink
+      const draggedLink = this.state.draggedLink
       const currentPin = this.state.currentPin
 
-      if (creatingLink) {
-        const id = creatingLink.id
+      if (draggedLink) {
+        const id = draggedLink.id
 
         if (currentPin && currentPin.type === 'in') {
           updateLink(id, {
@@ -163,7 +168,7 @@ class Canvas extends Component {
       }
 
       setState({
-        creatingLink: null,
+        draggedLink: null,
         selectedItems: [],
         pointer: null
       })
@@ -235,6 +240,7 @@ class Canvas extends Component {
               onLeavePin={onLeavePin}
               outs={outs}
               pinSize={pinSize}
+              selected={selectedItems.includes(id)}
               selectNode={selectItem(id)}
               text={text}
               width={width}
@@ -302,8 +308,12 @@ class Canvas extends Component {
               key={i}
               from={from}
               lineWidth={lineWidth}
+              id={id}
               onCreateLink={onCreateLink}
+              onUpdateLink={onUpdateLink}
               pinSize={pinSize}
+              selected={selectedItems.includes(id)}
+              selectLink={selectItem(id)}
               to={to}
               x1={x1}
               y1={y1}

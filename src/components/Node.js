@@ -11,6 +11,9 @@ class Node extends Component {
       text
     } = this.props
 
+    // TODO place an id in the div wrapping the body and try to
+    // resolve bodyHeight from its content.
+
     return (
       <p
         style={{
@@ -29,7 +32,11 @@ class Node extends Component {
       bodyHeight,
       fill,
       fontSize,
+      id,
       ins,
+      onCreateLink,
+      onEnterPin,
+      onLeavePin,
       outs,
       pinSize,
       selected,
@@ -67,14 +74,29 @@ class Node extends Component {
           // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
+          const onMouseEnter = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            onEnterPin({
+              type: 'in',
+              nodeId: id,
+              position: i,
+              pin
+            })
+          }
+
+          const onMouseLeave = (e) => {
+            onLeavePin()
+          }
+
           return (
             <rect
               key={i}
               fill={fill.pin}
               height={pinSize}
-              onClick={ignoreEvent}
-              onMouseLeave={ignoreEvent}
-              onMouseDown={selectNode}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
               transform={`translate(${x},0)`}
               width={pinSize}
             />
@@ -103,6 +125,13 @@ class Node extends Component {
         {outs.map((pin, i, array) => {
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
+          const onMouseDown = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            onCreateLink({ from: [ id, i ], to: null })
+          }
+
           return (
             <rect
               key={i}
@@ -110,7 +139,7 @@ class Node extends Component {
               height={pinSize}
               onClick={ignoreEvent}
               onMouseLeave={ignoreEvent}
-              onMouseDown={ignoreEvent}
+              onMouseDown={onMouseDown}
               transform={`translate(${x},${pinSize + bodyHeight})`}
               width={pinSize}
             />
@@ -129,8 +158,12 @@ Node.propTypes = {
     pin: PropTypes.string.isRequired
   }).isRequired,
   fontSize: PropTypes.number.isRequired,
+  id: PropTypes.string,
   ins: PropTypes.array.isRequired,
   outs: PropTypes.array.isRequired,
+  onCreateLink: PropTypes.func.isRequired,
+  onEnterPin: PropTypes.func.isRequired,
+  onLeavePin: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   text: PropTypes.string.isRequired,
@@ -149,6 +182,9 @@ Node.defaultProps = {
     // whitesmoke < lightgray < darkgray < gray
   },
   ins: [],
+  onCreateLink: Function.prototype,
+  onEnterPin: Function.prototype,
+  onLeavePin: Function.prototype,
   outs: [],
   pinSize: defaultTheme.pinSize,
   selected: false,

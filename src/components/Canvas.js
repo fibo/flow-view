@@ -14,6 +14,8 @@ class Canvas extends Component {
     super()
 
     this.state = {
+      creatingLink: null,
+      currentPin: null,
       pointer: null,
       showSelector: false,
       selectedItems: []
@@ -33,6 +35,7 @@ class Canvas extends Component {
 
   render () {
     const {
+      createLink,
       createNode,
       dragItems,
       fontFamily,
@@ -69,6 +72,12 @@ class Canvas extends Component {
       })
     }
 
+    const onCreateLink = (link) => {
+      setState({
+        creatingLink: link
+      })
+    }
+
     const onDoubleClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -76,6 +85,18 @@ class Canvas extends Component {
       setState({
         pointer: getCoordinates(e),
         showSelector: true
+      })
+    }
+
+    const onEnterPin = (pin) => {
+      setState({
+        currentPin: pin
+      })
+    }
+
+    const onLeavePin = (pin) => {
+      setState({
+        currentPin: null
       })
     }
 
@@ -94,9 +115,10 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      const creatingLink = this.state.creatingLink
       const selectedItems = this.state.selectedItems
 
-      if (selectedItems.length === 0) return
+      if ((creatingLink === null) && (selectedItems.length === 0)) return
 
       const nextPointer = getCoordinates(e)
 
@@ -116,7 +138,25 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      const creatingLink = this.state.creatingLink
+      const currentPin = this.state.currentPin
+
+      if (creatingLink && currentPin) {
+        const from = creatingLink.from
+        // TODO create link in the opposite direction
+        // const to = creatingLink.to
+        // if (to && currentPin.type === 'out')
+
+        if (from && currentPin.type === 'in') {
+          createLink({
+            from,
+            to: [ currentPin.nodeId, currentPin.position ]
+          })
+        }
+      }
+
       setState({
+        creatingLink: null,
         selectedItems: [],
         pointer: null
       })
@@ -181,7 +221,11 @@ class Canvas extends Component {
               key={i}
               fontSize={fontSize}
               height={height}
+              id={id}
               ins={ins}
+              onCreateLink={onCreateLink}
+              onEnterPin={onEnterPin}
+              onLeavePin={onLeavePin}
               outs={outs}
               pinSize={pinSize}
               selectNode={selectItem(id)}
@@ -436,6 +480,7 @@ class Canvas extends Component {
 }
 
 Canvas.propTypes = {
+  createLink: PropTypes.func.isRequired,
   createNode: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
@@ -453,6 +498,7 @@ Canvas.propTypes = {
 }
 
 Canvas.defaultProps = {
+  createLink: Function.prototype,
   createNode: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: defaultTheme.fontFamily,

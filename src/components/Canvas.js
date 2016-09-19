@@ -224,6 +224,7 @@ class Canvas extends Component {
         width={width}
       >
         <Inspector
+          selectedItems={selectedItems}
           height={height}
         />
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {

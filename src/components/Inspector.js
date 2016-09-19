@@ -18,7 +18,7 @@ class Inspector extends Component {
         y={y}
       >
         <p>Halo inspektor</p>
-        <p>{selectedItems}</p>
+        <p>items {selectedItems}</p>
       </foreignObject>
     )
   }

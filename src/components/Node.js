@@ -31,18 +31,18 @@ class Node extends Component {
     const {
       bodyHeight,
       dragged,
+      draggedLink,
       color,
       fontSize,
       id,
       ins,
       onCreateLink,
-      onEnterPin,
-      onLeavePin,
       outs,
       pinSize,
       selected,
       selectNode,
       text,
+      updateLink,
       width,
       willDragNode,
       x,
@@ -85,20 +85,13 @@ class Node extends Component {
           // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          const onEnterPinIn = (e) => {
+          const onMouseUp = (e) => {
             e.preventDefault()
             e.stopPropagation()
 
-            onEnterPin({
-              type: 'in',
-              nodeId: id,
-              position: i,
-              pin
-            })
-          }
-
-          const onLeavePinIn = (e) => {
-            onLeavePin()
+            if (draggedLink) {
+              updateLink(draggedLink.id, { to: [id, i] })
+            }
           }
 
           return (
@@ -106,8 +99,7 @@ class Node extends Component {
               key={i}
               fill={color.pin}
               height={pinSize}
-              onMouseEnter={onEnterPinIn}
-              onMouseLeave={onLeavePinIn}
+              onMouseUp={onMouseUp}
               transform={`translate(${x},0)`}
               width={pinSize}
             />
@@ -165,6 +157,7 @@ class Node extends Component {
 Node.propTypes = {
   bodyHeight: PropTypes.number.isRequired,
   dragged: PropTypes.bool.isRequired,
+  draggedLink: PropTypes.object,
   color: PropTypes.shape({
     bar: PropTypes.string.isRequired,
     body: PropTypes.string.isRequired,
@@ -175,12 +168,11 @@ Node.propTypes = {
   ins: PropTypes.array.isRequired,
   outs: PropTypes.array.isRequired,
   onCreateLink: PropTypes.func.isRequired,
-  onEnterPin: PropTypes.func.isRequired,
-  onLeavePin: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectNode: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
+  updateLink: PropTypes.func.isRequired,
   width: PropTypes.number,
   willDragNode: PropTypes.func.isRequired,
   x: PropTypes.number.isRequired,
@@ -199,15 +191,15 @@ Node.defaultProps = {
     // Actually we have
     // whitesmoke < lightgray < darkgray < gray
   },
+  draggedLink: null,
   ins: [],
   onCreateLink: Function.prototype,
-  onEnterPin: Function.prototype,
-  onLeavePin: Function.prototype,
   outs: [],
   pinSize: defaultTheme.pinSize,
   selected: false,
   selectNode: Function.prototype,
   text: 'Node',
+  updateLink: Function.prototype,
   willDragNode: Function.prototype
 }
 

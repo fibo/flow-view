@@ -16,7 +16,6 @@ class Canvas extends Component {
     this.state = {
       draggedLink: null,
       draggedItems: [],
-      currentPin: null,
       pointer: null,
       showSelector: false,
       selectedItems: []
@@ -54,6 +53,7 @@ class Canvas extends Component {
 
     const {
       draggedItems,
+      draggedLink,
       offset,
       pointer,
       selectedItems,
@@ -106,18 +106,6 @@ class Canvas extends Component {
       })
     }
 
-    const onEnterPin = (pin) => {
-      setState({
-        currentPin: pin
-      })
-    }
-
-    const onLeavePin = (pin) => {
-      setState({
-        currentPin: null
-      })
-    }
-
     const onMouseDown = (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -137,11 +125,9 @@ class Canvas extends Component {
       if (draggedLink) deleteLink(draggedLink.id)
 
       setState({
-        currentPin: null,
         draggedItems: [],
         draggedLink: null,
         pointer: null,
-        selectedItems: [],
         showSelector: false
       })
     }
@@ -173,22 +159,7 @@ class Canvas extends Component {
       e.stopPropagation()
 
       const draggedLink = this.state.draggedLink
-      const currentPin = this.state.currentPin
-
-      if (draggedLink) {
-        const id = draggedLink.id
-
-        if (currentPin && currentPin.type === 'in') {
-          updateLink(id, {
-            to: [
-              currentPin.nodeId,
-              currentPin.position
-            ]
-          })
-        } else {
-          deleteLink(id)
-        }
-      }
+      if (draggedLink) deleteLink(draggedLink.id)
 
       setState({
         draggedLink: null,
@@ -217,6 +188,20 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      // Do not select items when releasing a dragging link.
+
+      const draggedLink = this.state.draggedLink
+
+      if (draggedLink) {
+        deleteLink(draggedLink.id)
+
+        setState({
+          draggedLink: null
+        })
+
+        return
+      }
+
       var selectedItems = Object.assign([], this.state.selectedItems)
 
       const index = selectedItems.indexOf(id)
@@ -239,7 +224,6 @@ class Canvas extends Component {
       e.stopPropagation()
 
       var draggedItems = Object.assign([], this.state.draggedItems)
-      console.log(draggedItems)
 
       const index = draggedItems.indexOf(id)
 
@@ -248,7 +232,6 @@ class Canvas extends Component {
         // TODO if CTRL key pressed: draggedItems.push(id)
       }
 
-      console.log(draggedItems)
       setState({
         draggedItems,
         selectedItems: []
@@ -290,18 +273,18 @@ class Canvas extends Component {
             <Node
               key={i}
               dragged={draggedItems.includes(id)}
+              draggedLink={draggedLink}
               fontSize={fontSize}
               height={height}
               id={id}
               ins={ins}
               onCreateLink={onCreateLink}
-              onEnterPin={onEnterPin}
-              onLeavePin={onLeavePin}
               outs={outs}
               pinSize={pinSize}
               selected={selectedItems.includes(id)}
               selectNode={selectItem(id)}
               text={text}
+              updateLink={updateLink}
               width={width}
               willDragNode={willDragItem(id)}
               x={x}

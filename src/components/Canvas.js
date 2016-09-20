@@ -218,7 +218,15 @@ class Canvas extends Component {
       e.stopPropagation()
 
       var selectedItems = Object.assign([], this.state.selectedItems)
-      if (selectedItems.indexOf(id) === -1) selectedItems.push(id)
+
+      const index = selectedItems.indexOf(id)
+
+      if (index === -1) {
+        selectedItems = [id]
+        // TODO if CTRL key pressed: selectedItems.push(id)
+      } else {
+        selectedItems.splice(index, 1)
+      }
 
       setState({
         draggedItems: [],
@@ -231,10 +239,19 @@ class Canvas extends Component {
       e.stopPropagation()
 
       var draggedItems = Object.assign([], this.state.draggedItems)
-      if (draggedItems.indexOf(id) === -1) draggedItems.push(id)
+      console.log(draggedItems)
 
+      const index = draggedItems.indexOf(id)
+
+      if (index === -1) {
+        draggedItems = [id]
+        // TODO if CTRL key pressed: draggedItems.push(id)
+      }
+
+      console.log(draggedItems)
       setState({
-        draggedItems
+        draggedItems,
+        selectedItems: []
       })
     }
 
@@ -258,6 +275,40 @@ class Canvas extends Component {
           selectedItems={selectedItems}
           height={height}
         />
+        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+          const {
+            height,
+            ins,
+            outs,
+            text,
+            width,
+            x,
+            y
+          } = view.node[id]
+
+          return (
+            <Node
+              key={i}
+              dragged={draggedItems.includes(id)}
+              fontSize={fontSize}
+              height={height}
+              id={id}
+              ins={ins}
+              onCreateLink={onCreateLink}
+              onEnterPin={onEnterPin}
+              onLeavePin={onLeavePin}
+              outs={outs}
+              pinSize={pinSize}
+              selected={selectedItems.includes(id)}
+              selectNode={selectItem(id)}
+              text={text}
+              width={width}
+              willDragNode={willDragItem(id)}
+              x={x}
+              y={y}
+            />
+          )
+        })}
         {Object.keys(view.link).map((id, i) => {
           const {
             from,
@@ -328,40 +379,6 @@ class Canvas extends Component {
               y1={y1}
               x2={x2}
               y2={y2}
-            />
-          )
-        })}
-        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
-          const {
-            height,
-            ins,
-            outs,
-            text,
-            width,
-            x,
-            y
-          } = view.node[id]
-
-          return (
-            <Node
-              key={i}
-              dragged={draggedItems.includes(id)}
-              fontSize={fontSize}
-              height={height}
-              id={id}
-              ins={ins}
-              onCreateLink={onCreateLink}
-              onEnterPin={onEnterPin}
-              onLeavePin={onLeavePin}
-              outs={outs}
-              pinSize={pinSize}
-              selected={selectedItems.includes(id)}
-              selectNode={selectItem(id)}
-              text={text}
-              width={width}
-              willDragNode={willDragItem(id)}
-              x={x}
-              y={y}
             />
           )
         })}

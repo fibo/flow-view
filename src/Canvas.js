@@ -61,9 +61,9 @@ class FlowViewCanvas {
       delete view.link[id]
     }
 
-    const dragItems = (dragginDelta, selectItems) => {
+    const dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
-            .filter((id) => (selectItems.includes(id)))
+            .filter((id) => (draggedItems.includes(id)))
             .forEach((id) => {
               view.node[id].x += dragginDelta.x
               view.node[id].y += dragginDelta.y

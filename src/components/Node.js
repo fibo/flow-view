@@ -30,7 +30,8 @@ class Node extends Component {
   render () {
     const {
       bodyHeight,
-      fill,
+      dragged,
+      color,
       fontSize,
       id,
       ins,
@@ -43,6 +44,7 @@ class Node extends Component {
       selectNode,
       text,
       width,
+      willDragNode,
       x,
       y
     } = this.props
@@ -61,14 +63,21 @@ class Node extends Component {
       <g
         onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
-        onMouseDown={selectNode}
+        onMouseDown={willDragNode}
+        onMouseUp={selectNode}
         style={{
-          cursor: (selected ? 'pointer' : 'default')
+          cursor: (dragged ? 'pointer' : 'default')
         }}
         transform={`translate(${x},${y})`}
       >
         <rect
-          fill={fill.border}
+          stroke={(selected || dragged) ? color.selected : color.border}
+          strokeWidth={selected ? 3 : 2}
+          height={bodyHeight + 2 * pinSize}
+          width={computedWidth}
+        />
+        <rect
+          fill={color.bar}
           height={pinSize}
           width={computedWidth}
         />
@@ -95,7 +104,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={fill.pin}
+              fill={color.pin}
               height={pinSize}
               onMouseEnter={onEnterPinIn}
               onMouseLeave={onLeavePinIn}
@@ -108,18 +117,19 @@ class Node extends Component {
           height={bodyHeight}
           onClick={ignoreEvent}
           onDoubleClick={ignoreEvent}
-          onMouseDown={selectNode}
+          onMouseDown={willDragNode}
+          onMouseUp={selectNode}
           transform={`translate(0,${pinSize})`}
           width={computedWidth}
         >
           <div
-            style={{backgroundColor: fill.body}}
+            style={{backgroundColor: color.body}}
           >
             {body}
           </div>
         </foreignObject>
         <rect
-          fill={fill.border}
+          fill={color.bar}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}
@@ -137,7 +147,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={fill.pin}
+              fill={color.pin}
               height={pinSize}
               onClick={ignoreEvent}
               onMouseLeave={ignoreEvent}
@@ -154,9 +164,10 @@ class Node extends Component {
 
 Node.propTypes = {
   bodyHeight: PropTypes.number.isRequired,
-  fill: PropTypes.shape({
+  dragged: PropTypes.bool.isRequired,
+  color: PropTypes.shape({
+    bar: PropTypes.string.isRequired,
     body: PropTypes.string.isRequired,
-    border: PropTypes.string.isRequired,
     pin: PropTypes.string.isRequired
   }).isRequired,
   fontSize: PropTypes.number.isRequired,
@@ -168,18 +179,23 @@ Node.propTypes = {
   onLeavePin: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
+  selectNode: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
   width: PropTypes.number,
+  willDragNode: PropTypes.func.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired
 }
 
 Node.defaultProps = {
   bodyHeight: defaultTheme.nodeBodyHeight,
-  fill: {
+  dragged: false,
+  color: {
+    bar: 'lightgray',
     body: 'whitesmoke',
-    border: 'lightgray',
-    pin: 'darkgray' // Ahahah darkgray is not darker than gray
+    border: 'gray',
+    pin: 'darkgray', // Ahahah darkgray is not darker than gray
+    selected: defaultTheme.highlightColor
     // Actually we have
     // whitesmoke < lightgray < darkgray < gray
   },
@@ -191,7 +207,8 @@ Node.defaultProps = {
   pinSize: defaultTheme.pinSize,
   selected: false,
   selectNode: Function.prototype,
-  text: 'Node'
+  text: 'Node',
+  willDragNode: Function.prototype
 }
 
 export default Node

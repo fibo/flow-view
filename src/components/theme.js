@@ -1,7 +1,8 @@
 const theme = {
   fontFamily: 'Courier',
-  nodeBodyHeight: 20,
+  highlightColor: 'orange',
   lineWidth: 3,
+  nodeBodyHeight: 20,
   pinSize: 10
 }
 

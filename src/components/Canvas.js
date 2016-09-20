@@ -15,6 +15,7 @@ class Canvas extends Component {
 
     this.state = {
       draggedLink: null,
+      draggedItems: [],
       currentPin: null,
       pointer: null,
       showSelector: false,
@@ -52,6 +53,7 @@ class Canvas extends Component {
     } = this.props
 
     const {
+      draggedItems,
       offset,
       pointer,
       selectedItems,
@@ -116,6 +118,17 @@ class Canvas extends Component {
       })
     }
 
+    const onMouseDown = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      // TODO CTRL key for multiple selection.
+
+      setState({
+        selectedItems: []
+      })
+    }
+
     const onMouseLeave = (e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -142,15 +155,15 @@ class Canvas extends Component {
         pointer: nextPointer
       })
 
-      const selectedItems = this.state.selectedItems
+      const draggedItems = this.state.draggedItems
 
-      if (selectedItems.length > 0) {
+      if (draggedItems.length > 0) {
         const draggingDelta = {
           x: (pointer ? nextPointer.x - pointer.x : 0),
           y: (pointer ? nextPointer.y - pointer.y : 0)
         }
 
-        dragItems(draggingDelta, selectedItems)
+        dragItems(draggingDelta, draggedItems)
       }
     }
 
@@ -203,8 +216,24 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      var selectedItems = Object.assign([], this.state.selectedItems)
+      if (selectedItems.indexOf(id) === -1) selectedItems.push(id)
+
       setState({
-        selectedItems: [id]
+        draggedItems: [],
+        selectedItems
+      })
+    }
+
+    const willDragItem = (id) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      var draggedItems = Object.assign([], this.state.draggedItems)
+      if (draggedItems.indexOf(id) === -1) draggedItems.push(id)
+
+      setState({
+        draggedItems
       })
     }
 
@@ -215,6 +244,7 @@ class Canvas extends Component {
         height={height}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        onMouseDown={onMouseDown}
         onMouseEnter={ignoreEvent}
         onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}
@@ -241,6 +271,7 @@ class Canvas extends Component {
           return (
             <Node
               key={i}
+              dragged={draggedItems.includes(id)}
               fontSize={fontSize}
               height={height}
               id={id}
@@ -254,6 +285,7 @@ class Canvas extends Component {
               selectNode={selectItem(id)}
               text={text}
               width={width}
+              willDragNode={willDragItem(id)}
               x={x}
               y={y}
             />

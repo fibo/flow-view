@@ -42,7 +42,7 @@ class Link extends Component {
       >
         <line
           onMouseUp={selectLink}
-          stroke={selected ? 'red' : fill}
+          stroke={selected ? defaultTheme.highlightColor : fill}
           strokeWidth={width}
           x1={x1 + pinSize / 2}
           y1={y1 + pinSize / 2}

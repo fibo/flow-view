@@ -138,6 +138,7 @@ class Canvas extends Component {
 
       setState({
         currentPin: null,
+        draggedItems: [],
         draggedLink: null,
         pointer: null,
         selectedItems: [],
@@ -257,40 +258,6 @@ class Canvas extends Component {
           selectedItems={selectedItems}
           height={height}
         />
-        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
-          const {
-            height,
-            ins,
-            outs,
-            text,
-            width,
-            x,
-            y
-          } = view.node[id]
-
-          return (
-            <Node
-              key={i}
-              dragged={draggedItems.includes(id)}
-              fontSize={fontSize}
-              height={height}
-              id={id}
-              ins={ins}
-              onCreateLink={onCreateLink}
-              onEnterPin={onEnterPin}
-              onLeavePin={onLeavePin}
-              outs={outs}
-              pinSize={pinSize}
-              selected={selectedItems.includes(id)}
-              selectNode={selectItem(id)}
-              text={text}
-              width={width}
-              willDragNode={willDragItem(id)}
-              x={x}
-              y={y}
-            />
-          )
-        })}
         {Object.keys(view.link).map((id, i) => {
           const {
             from,
@@ -361,6 +328,40 @@ class Canvas extends Component {
               y1={y1}
               x2={x2}
               y2={y2}
+            />
+          )
+        })}
+        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+          const {
+            height,
+            ins,
+            outs,
+            text,
+            width,
+            x,
+            y
+          } = view.node[id]
+
+          return (
+            <Node
+              key={i}
+              dragged={draggedItems.includes(id)}
+              fontSize={fontSize}
+              height={height}
+              id={id}
+              ins={ins}
+              onCreateLink={onCreateLink}
+              onEnterPin={onEnterPin}
+              onLeavePin={onLeavePin}
+              outs={outs}
+              pinSize={pinSize}
+              selected={selectedItems.includes(id)}
+              selectNode={selectItem(id)}
+              text={text}
+              width={width}
+              willDragNode={willDragItem(id)}
+              x={x}
+              y={y}
             />
           )
         })}

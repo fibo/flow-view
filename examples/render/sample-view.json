@@ -1,0 +1,12 @@
+{
+  "node": {
+    "a": {
+      "text": "flow-view",
+      "ins": ["in"],
+      "outs": ["out"],
+      "x": 10,
+      "y": 10
+    }
+  },
+  "link": {}
+}

@@ -10,8 +10,11 @@ import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
 class Canvas extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    // This line of code let create an instance of Canvas server side,
+    //
+    //     const canvas = new Canvas({ view })
+    super(Object.assign(Canvas.defaultProps), props)
 
     this.state = {
       draggedLink: null,

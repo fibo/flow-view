@@ -87,6 +87,7 @@
       value: function render() {
         var _props = this.props;
         var height = _props.height;
+        var selectedItems = _props.selectedItems;
         var width = _props.width;
         var x = _props.x;
         var y = _props.y;
@@ -104,6 +105,12 @@
             'p',
             null,
             'Halo inspektor'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            'items ',
+            selectedItems
           )
         );
       }

@@ -17,9 +17,18 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### TODO
 
-server side rendering, canvas.exportToSVG exportToFileSVG
 New g14n.info layouts, with link Changelog page
-removed Redux
+
+## [v2.5.0]
+
+### Added
+
+- Custom components.
+- Server side rendering.
+
+### Changed
+
+- No Redux, using React local state is fine.
 
 ## [v2.4.0] 2016-08-23
 

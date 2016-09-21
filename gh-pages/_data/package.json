@@ -12,10 +12,11 @@
   "scripts": {
     "babel": "BABEL_ENV=umd babel --out-dir . src/",
     "browserify": "browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
+    "build": "npm run babel; npm run browserify && npm run minify; npm run jekyll; git status",
     "check-deps": "npm outdated",
     "cp": "npm run cp:examples",
     "cp:examples": "cp examples/basic/usage.js gh-pages/_includes/jscode/basic",
-    "build": "npm run browserify && npm run minify && npm run jekyll; git status",
+    "example:render:serverside": "NODE_PATH=. node examples/render/serverside.js",
     "gh-pages:_data": "for x in package.json tags.json; do npm run gh-pages:_data:$x; done",
     "gh-pages:_data:package.json": "cp package.json gh-pages/_data/",
     "gh-pages:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O gh-pages/_data/tags.json",
@@ -28,6 +29,7 @@
     "lint:src": "cd src; standard; cd ..",
     "lint:test": "cd test; standard; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
+    "prebuild": "rimraf utils; rimraf components",
     "preversion": "npm run build; npm run babel",
     "postversion": "git push origin v${npm_package_version}; npm publish; npm run push",
     "pull": "git pull origin master && npm run gh-pages:pull",
@@ -64,10 +66,8 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-register": "^6.14.0",
     "livereactload": "^3.0.0",
-    "not-defined": "^1.1.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
-    "static-props": "^1.0.0",
     "svgx": "^0.6.0"
   },
   "devDependencies": {
@@ -87,6 +87,7 @@
     "livereactload": "^3.0.0",
     "pre-commit": "^1.1.3",
     "react-proxy": "^1.1.8",
+    "rimraf": "^2.5.4",
     "standard": "^8.0.0",
     "tape": "^4.6.0",
     "uglify-js": "^2.6.4"

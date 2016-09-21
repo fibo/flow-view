@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod, mod.exports);
-    global.emptyView = mod.exports;
+    global.xOfPin = mod.exports;
   }
 })(this, function (module, exports) {
   "use strict";
@@ -16,12 +16,12 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var emptyView = {
-    node: {},
-    link: {},
-    pinRadius: 6
+  var xOfPin = function xOfPin(pinSize, width, numPins, position) {
+    if (position === 0) return 0;
+
+    if (numPins > 1) return position * (width - pinSize) / (numPins - 1);
   };
 
-  exports.default = emptyView;
+  exports.default = xOfPin;
   module.exports = exports["default"];
 });

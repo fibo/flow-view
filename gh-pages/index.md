@@ -83,7 +83,7 @@ var canvas = new Canvas('drawing')
 
 Note that nothing will happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
 
-### `canvas.documentElement`
+### `canvas.container`
 
 It is the DOM element container, if any. On server side, this attribute is `null`.
 

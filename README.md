@@ -2,6 +2,8 @@
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
+![sample view][sample_view_svg]
+
 [Description](#description) |
 [Installation](#installation) |
 [API](#api) |
@@ -122,3 +124,4 @@ canvas.render({
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
+[sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

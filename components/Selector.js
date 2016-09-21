@@ -88,14 +88,32 @@
     _createClass(Selector, [{
       key: 'render',
       value: function render() {
+        var _this2 = this;
+
         var _props = this.props;
-        var addNode = _props.addNode;
+        var createNode = _props.createNode;
+        var fontFamily = _props.fontFamily;
         var height = _props.height;
+        var pointer = _props.pointer;
         var show = _props.show;
         var width = _props.width;
-        var x = _props.x;
-        var y = _props.y;
 
+
+        var onKeyPress = function onKeyPress(e) {
+          var text = e.target.value.trim();
+          var pointer = _this2.props.pointer;
+
+          var pressedEnter = e.key === 'Enter';
+          var textIsNotBlank = text.length > 0;
+
+          if (pressedEnter && textIsNotBlank) {
+            createNode({
+              text: text,
+              x: pointer.x,
+              y: pointer.y
+            });
+          }
+        };
 
         return _react2.default.createElement(
           'foreignObject',
@@ -103,25 +121,16 @@
             height: height,
             style: show ? visible : hidden,
             width: width,
-            x: x,
-            y: y
+            x: pointer ? pointer.x : 0,
+            y: pointer ? pointer.y : 0
           },
           _react2.default.createElement('input', {
             type: 'text',
             ref: function ref(input) {
               if (input !== null) input.focus();
             },
-            style: { outline: 'none' },
-            onKeyPress: function onKeyPress(e) {
-              var text = e.target.value.trim();
-
-              var pressedEnter = e.key === 'Enter';
-              var textIsNotBlank = text.length > 0;
-
-              if (pressedEnter && textIsNotBlank) {
-                addNode({ x: x, y: y, text: text });
-              }
-            }
+            style: { outline: 'none', fontFamily: fontFamily },
+            onKeyPress: onKeyPress
           })
         );
       }
@@ -131,10 +140,13 @@
   }(_react.Component);
 
   Selector.propTypes = {
-    addNode: _react.PropTypes.func.isRequired,
+    createNode: _react.PropTypes.func.isRequired,
+    fontFamily: _react.PropTypes.string.isRequired,
     show: _react.PropTypes.bool.isRequired,
-    x: _react.PropTypes.number.isRequired,
-    y: _react.PropTypes.number.isRequired
+    pointer: _react.PropTypes.shape({
+      x: _react.PropTypes.number.isRequired,
+      y: _react.PropTypes.number.isRequired
+    })
   };
 
   Selector.defaultProps = {

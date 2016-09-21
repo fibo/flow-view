@@ -2,6 +2,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import Canvas from './components/Canvas'
 import randomString from './utils/randomString'
+import renderSVGx from 'svgx'
 
 // TODO find a better way to generate ids.
 const idLength = 3
@@ -32,7 +33,13 @@ class FlowViewCanvas {
     }
   }
 
-  render (view) {
+  /**
+   * Render to SVG.
+   *
+   * @param {Object} view
+   * @param {Function} [callback] run server side
+   */
+  render (view, callback) {
     const container = this.container
     const item = this.item
 
@@ -95,11 +102,19 @@ class FlowViewCanvas {
     } else {
       // Server side rendering.
 
-      // TODO
-      // const canvas = new Canvas(view)
-      // const jsx = canvas.render()
-      // const svgOutput = renderSVGx(jsx)
-      // console.log(svgOutput)
+      const canvas = new Canvas({ view })
+
+      const jsx = canvas.render()
+
+      const opts = { doctype: true, xmlns: true }
+
+      const svgOutput = renderSVGx(jsx, opts)
+
+      if (typeof callback === 'function') {
+        callback(null, svgOutput)
+      } else {
+        console.log(svgOutput)
+      }
     }
   }
 }

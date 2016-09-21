@@ -7,7 +7,7 @@ import randomString from './utils/randomString'
 const idLength = 3
 
 class FlowViewCanvas {
-  constructor (containerId) {
+  constructor (containerId, item) {
     this.container = null
 
     // Check that containerId is a string.
@@ -27,11 +27,14 @@ class FlowViewCanvas {
       }
 
       this.container = container
+
+      this.item = item
     }
   }
 
   render (view) {
     const container = this.container
+    const item = this.item
 
     const createLink = (link) => {
       function generateId () {
@@ -80,6 +83,7 @@ class FlowViewCanvas {
         createNode={createNode}
         deleteLink={deleteLink}
         dragItems={dragItems}
+        item={item}
         updateLink={updateLink}
         view={view}
       />

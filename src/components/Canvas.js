@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react'
-import ignoreEvent from '../utils/ignoreEvent'
 import { findDOMNode } from 'react-dom'
-import Inspector from './Inspector'
-import Link from './Link'
-import xOfPin from '../utils/xOfPin'
 import computeNodeWidth from '../utils/computeNodeWidth'
-import Node from './Node'
-import Selector from './Selector'
+import DefaultLink from './Link'
+import DefaultNode from './Node'
 import defaultTheme from './theme'
+import ignoreEvent from '../utils/ignoreEvent'
+import Inspector from './Inspector'
+import xOfPin from '../utils/xOfPin'
+import Selector from './Selector'
 
 class Canvas extends Component {
   constructor () {
@@ -42,6 +42,7 @@ class Canvas extends Component {
       fontFamily,
       fontSize,
       height,
+      item,
       lineWidth,
       nodeBodyHeight,
       pinSize,
@@ -59,6 +60,9 @@ class Canvas extends Component {
       selectedItems,
       showSelector
     } = this.state
+
+    const Link = item.link.DefaultLink
+    const Node = item.node.DefaultNode
 
     const setState = this.setState.bind(this)
 
@@ -418,6 +422,10 @@ Canvas.defaultProps = {
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   height: 400,
+  item: {
+    link: { DefaultLink },
+    node: { DefaultNode }
+  },
   lineWidth: defaultTheme.lineWidth,
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,

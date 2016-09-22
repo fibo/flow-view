@@ -11,10 +11,7 @@ import Selector from './Selector'
 
 class Canvas extends Component {
   constructor (props) {
-    // This line of code let create an instance of Canvas server side,
-    //
-    //     const canvas = new Canvas({ view })
-    super(Object.assign(Canvas.defaultProps), props)
+    super(props)
 
     this.state = {
       draggedLink: null,
@@ -182,8 +179,8 @@ class Canvas extends Component {
     const selectedFirst = (a, b) => {
       // FIXME it works, but it would be nice if the selected
       // items keep being up after deselection.
-      const aIsSelected = selectedItems.includes(a)
-      const bIsSelected = selectedItems.includes(b)
+      const aIsSelected = (selectedItems.indexOf(a) > -1)
+      const bIsSelected = (selectedItems.indexOf(b) > -1)
 
       if (aIsSelected && bIsSelected) return 0
 
@@ -279,7 +276,7 @@ class Canvas extends Component {
           return (
             <Node
               key={i}
-              dragged={draggedItems.includes(id)}
+              dragged={(draggedItems.indexOf(id) > -1)}
               draggedLink={draggedLink}
               fontSize={fontSize}
               height={height}
@@ -288,7 +285,7 @@ class Canvas extends Component {
               onCreateLink={onCreateLink}
               outs={outs}
               pinSize={pinSize}
-              selected={selectedItems.includes(id)}
+              selected={(selectedItems.indexOf(id) > -1)}
               selectNode={selectItem(id)}
               text={text}
               updateLink={updateLink}
@@ -362,7 +359,7 @@ class Canvas extends Component {
               onCreateLink={onCreateLink}
               onUpdateLink={onUpdateLink}
               pinSize={pinSize}
-              selected={selectedItems.includes(id)}
+              selected={(selectedItems.indexOf(id) > -1)}
               selectLink={selectItem(id)}
               to={to}
               x1={x1}
@@ -405,6 +402,10 @@ Canvas.propTypes = {
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  item: PropTypes.shape({
+    link: PropTypes.object.isRequired,
+    node: PropTypes.object.isRequired
+  }).isRequired,
   nodeBodyHeight: PropTypes.number.isRequired,
   lineWidth: PropTypes.number.isRequired,
   pinSize: PropTypes.number.isRequired,

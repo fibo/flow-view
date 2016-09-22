@@ -95,7 +95,7 @@
     function Canvas(props) {
       _classCallCheck(this, Canvas);
 
-      var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, Object.assign(Canvas.defaultProps), props));
+      var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, props));
 
       _this.state = {
         draggedLink: null,
@@ -269,8 +269,8 @@
         var selectedFirst = function selectedFirst(a, b) {
           // FIXME it works, but it would be nice if the selected
           // items keep being up after deselection.
-          var aIsSelected = selectedItems.includes(a);
-          var bIsSelected = selectedItems.includes(b);
+          var aIsSelected = selectedItems.indexOf(a) > -1;
+          var bIsSelected = selectedItems.indexOf(b) > -1;
 
           if (aIsSelected && bIsSelected) return 0;
 
@@ -370,7 +370,7 @@
 
             return _react2.default.createElement(Node, {
               key: i,
-              dragged: draggedItems.includes(id),
+              dragged: draggedItems.indexOf(id) > -1,
               draggedLink: draggedLink,
               fontSize: fontSize,
               height: height,
@@ -379,7 +379,7 @@
               onCreateLink: onCreateLink,
               outs: outs,
               pinSize: pinSize,
-              selected: selectedItems.includes(id),
+              selected: selectedItems.indexOf(id) > -1,
               selectNode: selectItem(id),
               text: text,
               updateLink: updateLink,
@@ -455,7 +455,7 @@
               onCreateLink: onCreateLink,
               onUpdateLink: onUpdateLink,
               pinSize: pinSize,
-              selected: selectedItems.includes(id),
+              selected: selectedItems.indexOf(id) > -1,
               selectLink: selectItem(id),
               to: to,
               x1: x1,
@@ -499,6 +499,10 @@
     fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     height: _react.PropTypes.number.isRequired,
+    item: _react.PropTypes.shape({
+      link: _react.PropTypes.object.isRequired,
+      node: _react.PropTypes.object.isRequired
+    }).isRequired,
     nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
     pinSize: _react.PropTypes.number.isRequired,

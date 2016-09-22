@@ -73,7 +73,7 @@ class FlowViewCanvas {
 
     const dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
-            .filter((id) => (draggedItems.includes(id)))
+            .filter((id) => (draggedItems.indexOf(id) > -1))
             .forEach((id) => {
               view.node[id].x += dragginDelta.x
               view.node[id].y += dragginDelta.y
@@ -102,18 +102,18 @@ class FlowViewCanvas {
     } else {
       // Server side rendering.
 
-      const canvas = new Canvas({ view })
-
-      const jsx = canvas.render()
-
       const opts = { doctype: true, xmlns: true }
+      const jsx = (
+        <Canvas
+          item={item}
+          view={view}
+        />
+      )
 
-      const svgOutput = renderSVGx(jsx, opts)
+      const outputSVG = renderSVGx(jsx, opts)
 
       if (typeof callback === 'function') {
-        callback(null, svgOutput)
-      } else {
-        console.log(svgOutput)
+        callback(null, outputSVG)
       }
     }
   }

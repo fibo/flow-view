@@ -12,7 +12,7 @@
   "scripts": {
     "babel": "BABEL_ENV=umd babel --out-dir . src/",
     "browserify": "browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
-    "build": "npm run babel; npm run browserify && npm run minify; npm run jekyll; git status",
+    "build": "npm run example:render:serverside; npm run browserify && npm run minify; npm run jekyll; git status",
     "check-deps": "npm outdated",
     "cp": "npm run cp:examples",
     "cp:examples": "cp examples/basic/usage.js gh-pages/_includes/jscode/basic",

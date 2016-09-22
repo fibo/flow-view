@@ -6,6 +6,8 @@ flow: /empty.json
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
+![sample view][sample_view_svg]
+
 [Description](#description) |
 [Installation](#installation) |
 [API](#api) |
@@ -90,8 +92,11 @@ It is the DOM element container, if any. On server side, this attribute is `null
 ### `canvas.render(view)`
 
 Draws a view, that is a collection of nodes and links.
+On server side it generates an SVG output like the one you see on top of this README.md,
+see [render/serverside.js example][example_render_serverside].
 
 * **@param** `{Object}` view
+* **@param** `{Object}` [callback] called on serverside context
 * **@returns** `{void}`
 
 ```javascript
@@ -126,3 +131,5 @@ canvas.render({
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
+[example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
+[sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

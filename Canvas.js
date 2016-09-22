@@ -130,7 +130,7 @@
 
         var dragItems = function dragItems(dragginDelta, draggedItems) {
           Object.keys(view.node).filter(function (id) {
-            return draggedItems.includes(id);
+            return draggedItems.indexOf(id) > -1;
           }).forEach(function (id) {
             view.node[id].x += dragginDelta.x;
             view.node[id].y += dragginDelta.y;
@@ -157,18 +157,16 @@
         } else {
           // Server side rendering.
 
-          var canvas = new _Canvas2.default({ view: view });
-
-          var jsx = canvas.render();
-
           var opts = { doctype: true, xmlns: true };
+          var jsx = _react2.default.createElement(_Canvas2.default, {
+            item: item,
+            view: view
+          });
 
-          var svgOutput = (0, _svgx2.default)(jsx, opts);
+          var outputSVG = (0, _svgx2.default)(jsx, opts);
 
           if (typeof callback === 'function') {
-            callback(null, svgOutput);
-          } else {
-            console.log(svgOutput);
+            callback(null, outputSVG);
           }
         }
       }

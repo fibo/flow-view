@@ -132,6 +132,13 @@
       value: function render(view, callback) {
         var _this2 = this;
 
+        view = Object.assign({}, {
+          height: 400,
+          link: {},
+          node: {},
+          width: 400
+        }, view);
+
         var container = this.container;
         var item = this.item;
 

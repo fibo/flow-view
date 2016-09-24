@@ -143,7 +143,11 @@
             x: pinSize,
             y: bodyHeight + pinSize - margin
           },
-          text
+          _react2.default.createElement(
+            'tspan',
+            null,
+            text
+          )
         );
       }
     }, {
@@ -176,8 +180,7 @@
           bodyHeight: bodyHeight,
           pinSize: pinSize,
           fontSize: fontSize,
-          text: text,
-          width: width
+          node: { ins: ins, outs: outs, text: text, width: width }
         });
 
         return _react2.default.createElement(

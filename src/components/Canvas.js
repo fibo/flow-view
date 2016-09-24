@@ -45,7 +45,6 @@ class Canvas extends Component {
       dragItems,
       fontFamily,
       fontSize,
-      height,
       item,
       lineWidth,
       nodeBodyHeight,
@@ -54,8 +53,7 @@ class Canvas extends Component {
       removeOutputPin,
       style,
       updateLink,
-      view,
-      width
+      view
     } = this.props
 
     const {
@@ -66,6 +64,9 @@ class Canvas extends Component {
       selectedItems,
       showSelector
     } = this.state
+
+    const height = view.height
+    const width = view.width
 
     const Link = item.link.DefaultLink
     const Node = item.node.DefaultNode
@@ -287,7 +288,7 @@ class Canvas extends Component {
           height={height}
           removeInputPin={removeInputPin}
           removeOutputPin={removeOutputPin}
-          selectedItems={selectedItems}
+          items={(Object.assign([], selectedItems, draggedItems))}
           view={view}
         />
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
@@ -349,8 +350,7 @@ class Canvas extends Component {
               bodyHeight: nodeBodyHeight, // TODO custom nodes height
               pinSize,
               fontSize,
-              text: source.text,
-              width: source.width
+              node: source
             })
 
             x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
@@ -364,8 +364,7 @@ class Canvas extends Component {
               bodyHeight: nodeBodyHeight, // TODO custom nodes height
               pinSize,
               fontSize,
-              text: target.text,
-              width: target.width
+              node: target
             })
 
             x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
@@ -431,7 +430,6 @@ Canvas.propTypes = {
   dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
   item: PropTypes.shape({
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
@@ -444,10 +442,11 @@ Canvas.propTypes = {
   style: PropTypes.object.isRequired,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
+    height: PropTypes.number.isRequired,
     link: PropTypes.object.isRequired,
-    node: PropTypes.object.isRequired
-  }).isRequired,
-  width: PropTypes.number.isRequired
+    node: PropTypes.object.isRequired,
+    width: PropTypes.number.isRequired
+  }).isRequired
 }
 
 Canvas.defaultProps = {
@@ -460,7 +459,6 @@ Canvas.defaultProps = {
   dragItems: Function.prototype,
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
-  height: 400,
   item: {
     link: { DefaultLink },
     node: { DefaultNode }
@@ -473,10 +471,11 @@ Canvas.defaultProps = {
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {
+    height: 400,
     link: {},
-    node: {}
-  },
-  width: 400
+    node: {},
+    width: 400
+  }
 }
 
 export default Canvas

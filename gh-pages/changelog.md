@@ -25,6 +25,11 @@ New g14n.info layouts, with link Changelog page
 
 - Add or remove input and output pins.
 - Emit events to let integrate with other libraries.
+- Node dynamic width considered the number of pins.
+
+### Fixed
+
+- Can pass width and height view props to Canvas.
 
 ## [v2.5.0] - 2016-09-24
 

@@ -125,6 +125,8 @@
         var _this2 = this;
 
         var _props = this.props;
+        var addInputPin = _props.addInputPin;
+        var addOutputPin = _props.addOutputPin;
         var createLink = _props.createLink;
         var _createNode = _props.createNode;
         var deleteLink = _props.deleteLink;
@@ -132,15 +134,15 @@
         var dragItems = _props.dragItems;
         var fontFamily = _props.fontFamily;
         var fontSize = _props.fontSize;
-        var height = _props.height;
         var item = _props.item;
         var lineWidth = _props.lineWidth;
         var nodeBodyHeight = _props.nodeBodyHeight;
         var pinSize = _props.pinSize;
+        var removeInputPin = _props.removeInputPin;
+        var removeOutputPin = _props.removeOutputPin;
         var style = _props.style;
         var updateLink = _props.updateLink;
         var view = _props.view;
-        var width = _props.width;
         var _state = this.state;
         var draggedItems = _state.draggedItems;
         var draggedLink = _state.draggedLink;
@@ -149,6 +151,9 @@
         var selectedItems = _state.selectedItems;
         var showSelector = _state.showSelector;
 
+
+        var height = view.height;
+        var width = view.width;
 
         var Link = item.link.DefaultLink;
         var Node = item.node.DefaultNode;
@@ -370,10 +375,14 @@
             width: width
           },
           _react2.default.createElement(_Inspector2.default, {
+            addInputPin: addInputPin,
+            addOutputPin: addOutputPin,
             deleteLink: deleteLink,
             deleteNode: deleteNode,
             height: height,
-            selectedItems: selectedItems,
+            removeInputPin: removeInputPin,
+            removeOutputPin: removeOutputPin,
+            items: Object.assign([], selectedItems, draggedItems),
             view: view
           }),
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
@@ -437,8 +446,7 @@
                 bodyHeight: nodeBodyHeight, // TODO custom nodes height
                 pinSize: pinSize,
                 fontSize: fontSize,
-                text: source.text,
-                width: source.width
+                node: source
               });
 
               x1 = source.x + (0, _xOfPin2.default)(pinSize, computedWidth, source.outs.length, from[1]);
@@ -452,8 +460,7 @@
                 bodyHeight: nodeBodyHeight, // TODO custom nodes height
                 pinSize: pinSize,
                 fontSize: fontSize,
-                text: target.text,
-                width: target.width
+                node: target
               });
 
               x2 = target.x + (0, _xOfPin2.default)(pinSize, computedWidth, target.ins.length, to[1]);
@@ -510,6 +517,8 @@
   }(_react.Component);
 
   Canvas.propTypes = {
+    addInputPin: _react.PropTypes.func.isRequired,
+    addOutputPin: _react.PropTypes.func.isRequired,
     createLink: _react.PropTypes.func.isRequired,
     createNode: _react.PropTypes.func.isRequired,
     deleteLink: _react.PropTypes.func.isRequired,
@@ -517,7 +526,6 @@
     dragItems: _react.PropTypes.func.isRequired,
     fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
-    height: _react.PropTypes.number.isRequired,
     item: _react.PropTypes.shape({
       link: _react.PropTypes.object.isRequired,
       node: _react.PropTypes.object.isRequired
@@ -525,16 +533,21 @@
     nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
     pinSize: _react.PropTypes.number.isRequired,
+    removeInputPin: _react.PropTypes.func.isRequired,
+    removeOutputPin: _react.PropTypes.func.isRequired,
     style: _react.PropTypes.object.isRequired,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
+      height: _react.PropTypes.number.isRequired,
       link: _react.PropTypes.object.isRequired,
-      node: _react.PropTypes.object.isRequired
-    }).isRequired,
-    width: _react.PropTypes.number.isRequired
+      node: _react.PropTypes.object.isRequired,
+      width: _react.PropTypes.number.isRequired
+    }).isRequired
   };
 
   Canvas.defaultProps = {
+    addInputPin: Function.prototype,
+    addOutputPin: Function.prototype,
     createLink: Function.prototype,
     createNode: Function.prototype,
     deleteLink: Function.prototype,
@@ -542,7 +555,6 @@
     dragItems: Function.prototype,
     fontFamily: _theme2.default.fontFamily,
     fontSize: 17, // FIXME fontSize seems to be ignored
-    height: 400,
     item: {
       link: { DefaultLink: _Link2.default },
       node: { DefaultNode: _Node2.default }
@@ -550,13 +562,16 @@
     lineWidth: _theme2.default.lineWidth,
     nodeBodyHeight: _theme2.default.nodeBodyHeight,
     pinSize: _theme2.default.pinSize,
+    removeInputPin: Function.prototype,
+    removeOutputPin: Function.prototype,
     style: { border: '1px solid black' },
     updateLink: Function.prototype,
     view: {
+      height: 400,
       link: {},
-      node: {}
-    },
-    width: 400
+      node: {},
+      width: 400
+    }
   };
 
   exports.default = Canvas;

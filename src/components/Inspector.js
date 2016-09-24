@@ -11,7 +11,7 @@ class Inspector extends Component {
       height,
       removeInputPin,
       removeOutputPin,
-      selectedItems,
+      items,
       view,
       width,
       x,
@@ -22,8 +22,8 @@ class Inspector extends Component {
     var item = null
     var itemId = null
 
-    if (selectedItems.length === 1) {
-      itemId = selectedItems[0]
+    if (items.length === 1) {
+      itemId = items[0]
 
       const link = view.link[itemId]
       const node = view.node[itemId]
@@ -56,7 +56,7 @@ class Inspector extends Component {
         Object.keys(view.link).forEach((linkId) => {
           const link = view.link[linkId]
 
-          if ((link.to[0] === itemId) && (link.to[1] === lastInputPosition)) {
+          if (link.to && (link.to[0] === itemId) && (link.to[1] === lastInputPosition)) {
             lastInputIsConnected = true
           }
 
@@ -135,7 +135,7 @@ Inspector.propTypes = {
   height: PropTypes.number.isRequired,
   removeInputPin: PropTypes.func.isRequired,
   removeOutputPin: PropTypes.func.isRequired,
-  selectedItems: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
@@ -150,6 +150,7 @@ Inspector.defaultProps = {
   addOutputPin: Function.prototype,
   deleteLink: Function.prototype,
   deleteNode: Function.prototype,
+  items: [],
   removeInputPin: Function.prototype,
   removeOutputPin: Function.prototype,
   width: 200,

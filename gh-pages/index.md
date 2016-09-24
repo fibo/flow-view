@@ -11,6 +11,7 @@ flow: /empty.json
 [Description](#description) |
 [Installation](#installation) |
 [API](#api) |
+[Examples](#examples) |
 [License](#license)
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
@@ -89,18 +90,24 @@ Note that nothing will happen until you call the [`canvas.render(view)`](#canvas
 
 It is the DOM element container, if any. On server side, this attribute is `null`.
 
-### `canvas.render(view)`
+### `canvas.render()`
 
 Draws a view, that is a collection of nodes and links.
 On server side it generates an SVG output like the one you see on top of this README.md,
 see [render/serverside.js example][example_render_serverside].
 
-* **@param** `{Object}` view
-* **@param** `{Object}` [callback] called on serverside context
+* **@param** `{Object}` *[view]* can be empty
+* **@param** `{Number}` *view.height* defaults to 400
+* **@param** `{Number}` *view.width* defaults to 400
+* **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
+* **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
+* **@param** `{Object}` *[callback]* called on serverside context
 * **@returns** `{void}`
 
 ```javascript
 canvas.render({
+  width: 400,
+  height: 300,
   node: {
     a: {
       x: 80, y: 100,
@@ -124,6 +131,75 @@ canvas.render({
 })
 ```
 
+### Events
+
+The following events are emitted:
+
+| name              | arguments             |
+|-------------------|-----------------------|
+| `createLink`      | link, linkId          |
+| `createNode`      | node, nodeId          |
+| `createInputPin`  | nodeId, position, pin |
+| `createOutputPin` | nodeId, position, pin |
+| `deleteLink`      | linkId                |
+| `deleteNode`      | nodeId                |
+| `deleteInputPin`  | nodeId, position      |
+| `deleteOutputPin` | nodeId, position      |
+
+### Node spec
+
+A node describes an element and has the following attributes:
+
+* **@param* `Number` *x* coordinate of top left vertex
+* **@param* `Number` *y* coordinate of top left vertex
+* **@param* `String` *text*
+* **@param* `Array` *ins* list of input pins
+* **@param* `Array` *outs* list of output pins
+* **@param* `Number` *[width]*, defaults to a value depending on text lenght and number of pins.
+
+An pin can be either a string or an object with the `name` attribute which must be a string.
+Input pins default to string `in${position}`.
+Output pins default to string `out${position}`.
+
+### Link spec
+
+A link describes a connection between elements and has the following attributes:
+
+* **@param* `Array` *from* has exactly two elements
+* **@param* `String` *from[0]* is the key of the source node
+* **@param* `Number` *from[1]* is the output pin position
+* **@param* `Array` *to* has exactly two elements
+* **@param* `Array` *to* has exactly two elements
+* **@param* `String` *to[0]* is the key of the target node
+* **@param* `Number` *to[1]* is the input pin position
+
+## Examples
+
+Clone this repo and install dependencies to run examples
+
+```bash
+git clone https://github.com/fibo/flow-view
+cd flow-view
+npm install
+```
+
+Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is run by
+
+```bash
+npm run example:basic:usage
+```
+
+Available examples are:
+
+* [basic/usage.js][example_basic_usage] `npm run example:basic:usage`
+* [event/emitter.js][example_event_emitter]: `npm run example:event:emitter`
+* [empty/canvas.js][example_empty_canvas]: `npm run example:empty:canvas`
+* [render/serverside.js][example_render_serverside]: `npm run example:render:serverside`
+
+Note that examples are intended to be used for development, hence there
+is an overhead at start time.
+For instance: client side examples use hot reload, and are transpiled on the fly; also server side example will launch babel before starting.
+
 ## License
 
 [MIT](http://g14n.info/mit-license)
@@ -131,5 +207,8 @@ canvas.render({
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
+[example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
+[example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
+[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

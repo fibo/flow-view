@@ -1,0 +1,110 @@
+[
+  {
+    "name": "v2.5.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.5.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.5.0",
+    "commit": {
+      "sha": "0edd72df6249e08a06dcefe9da3ff736790dd701",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/0edd72df6249e08a06dcefe9da3ff736790dd701"
+    }
+  },
+  {
+    "name": "v2.4.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.4.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.4.0",
+    "commit": {
+      "sha": "d63ec263c1fdbb9247fb777d13233e7d6e4cfa95",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/d63ec263c1fdbb9247fb777d13233e7d6e4cfa95"
+    }
+  },
+  {
+    "name": "v2.3.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.3.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.3.0",
+    "commit": {
+      "sha": "e5cf0cb0ab808447362c4c01fea57f654ce911af",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/e5cf0cb0ab808447362c4c01fea57f654ce911af"
+    }
+  },
+  {
+    "name": "v2.2.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.2.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.2.0",
+    "commit": {
+      "sha": "5d0fc2c817afd27c24020da76896a87c3bb8fbd2",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/5d0fc2c817afd27c24020da76896a87c3bb8fbd2"
+    }
+  },
+  {
+    "name": "v2.1.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.1.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.1.0",
+    "commit": {
+      "sha": "5a0df78eb53f373ed6b66ceedc8fbf1260541061",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/5a0df78eb53f373ed6b66ceedc8fbf1260541061"
+    }
+  },
+  {
+    "name": "v2.0.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.0.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.0.0",
+    "commit": {
+      "sha": "bb3a3c691382afb1f2f6e0c46c874a9ec80dc10e",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/bb3a3c691382afb1f2f6e0c46c874a9ec80dc10e"
+    }
+  },
+  {
+    "name": "v1.2.1",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.2.1",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.2.1",
+    "commit": {
+      "sha": "8ce2499a9a9d21307868c0190700d313e2fb65d9",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/8ce2499a9a9d21307868c0190700d313e2fb65d9"
+    }
+  },
+  {
+    "name": "v1.2.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.2.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.2.0",
+    "commit": {
+      "sha": "45d15389d8cd1dca1aca630e6c014946b73db2ae",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/45d15389d8cd1dca1aca630e6c014946b73db2ae"
+    }
+  },
+  {
+    "name": "v1.1.1",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.1.1",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.1.1",
+    "commit": {
+      "sha": "9d66fb39b21728bd26a469972d2010ef2bf6e111",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/9d66fb39b21728bd26a469972d2010ef2bf6e111"
+    }
+  },
+  {
+    "name": "v1.1.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.1.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.1.0",
+    "commit": {
+      "sha": "587f6739a8c68704eb4dc46f09f65b3cf1cc13c0",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/587f6739a8c68704eb4dc46f09f65b3cf1cc13c0"
+    }
+  },
+  {
+    "name": "v1.0.2",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.0.2",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.0.2",
+    "commit": {
+      "sha": "90226130d7d43dbfc5c482ad6c95059c7f84896f",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/90226130d7d43dbfc5c482ad6c95059c7f84896f"
+    }
+  },
+  {
+    "name": "v1.0.0",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.0.0",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.0.0",
+    "commit": {
+      "sha": "6337bdf11774079c9f2d3bd0389fb3e8262c312d",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/6337bdf11774079c9f2d3bd0389fb3e8262c312d"
+    }
+  }
+]

@@ -142,7 +142,7 @@
         var container = this.container;
         var item = this.item;
 
-        var addInputPin = function addInputPin(nodeId, pin) {
+        var createInputPin = function createInputPin(nodeId, pin) {
           var ins = view.node[nodeId].ins;
 
           if ((0, _notDefined2.default)(ins)) view.node[nodeId].ins = ins = [];
@@ -151,10 +151,12 @@
 
           if ((0, _notDefined2.default)(pin)) pin = 'in' + position;
 
+          _this2.emit('createInputPin', nodeId, position, pin);
+
           view.node[nodeId].ins.push(pin);
         };
 
-        var addOutputPin = function addOutputPin(nodeId, pin) {
+        var createOutputPin = function createOutputPin(nodeId, pin) {
           var outs = view.node[nodeId].outs;
 
           if ((0, _notDefined2.default)(outs)) view.node[nodeId].outs = outs = [];
@@ -162,6 +164,8 @@
           var position = outs.length;
 
           if ((0, _notDefined2.default)(pin)) pin = 'out' + position;
+
+          _this2.emit('createOutputPin', nodeId, position, pin);
 
           view.node[nodeId].outs.push(pin);
         };
@@ -176,7 +180,10 @@
 
           view.link[id] = link;
 
-          _this2.emit('createLink', link, id);
+          // Do not fire createLink event if it is a dragging link.
+          if (link.to) {
+            _this2.emit('createLink', link, id);
+          }
 
           return id;
         };
@@ -197,13 +204,16 @@
         };
 
         var deleteLink = function deleteLink(id) {
-          delete view.link[id];
+          // Trigger a deleteLink event only if it is not a dragged link.
+          if (view.link[id].to) {
+            _this2.emit('deleteLink', id);
+          }
 
-          _this2.emit('deleteLink', id);
+          delete view.link[id];
         };
 
         var deleteNode = function deleteNode(id) {
-          // Remove links connected to given node.
+          // delete links connected to given node.
           Object.keys(view.link).forEach(function (linkId) {
             var from = view.link[linkId].from;
             var to = view.link[linkId].to;
@@ -235,41 +245,52 @@
           });
         };
 
-        var removeInputPin = function removeInputPin(nodeId, position) {
+        var deleteInputPin = function deleteInputPin(nodeId, position) {
           var ins = view.node[nodeId].ins;
 
           if ((0, _notDefined2.default)(ins)) view.node[nodeId].ins = ins = [];
 
           if ((0, _notDefined2.default)(position)) position = ins.length - 1;
 
+          _this2.emit('deleteInputPin', nodeId, position);
+
           view.node[nodeId].ins.splice(position, 1);
         };
 
-        var removeOutputPin = function removeOutputPin(nodeId, position) {
+        var deleteOutputPin = function deleteOutputPin(nodeId, position) {
           var outs = view.node[nodeId].outs;
 
           if ((0, _notDefined2.default)(outs)) view.node[nodeId].outs = outs = [];
 
           if ((0, _notDefined2.default)(position)) position = outs.length - 1;
 
+          _this2.emit('deleteOutputPin', nodeId, position);
+
           view.node[nodeId].outs.splice(position, 1);
         };
 
         var updateLink = function updateLink(id, link) {
+          // Trigger a createLink event if it is a connected link.
+          if (link.to) {
+            _this2.emit('createLink', link, id);
+          } else {
+            _this2.emit('deleteLink', link, id);
+          }
+
           view.link[id] = Object.assign(view.link[id], link);
         };
 
         var component = _react2.default.createElement(_Canvas2.default, {
-          addInputPin: addInputPin,
-          addOutputPin: addOutputPin,
+          createInputPin: createInputPin,
+          createOutputPin: createOutputPin,
           createLink: createLink,
           createNode: createNode,
           deleteLink: deleteLink,
           deleteNode: deleteNode,
           dragItems: dragItems,
           item: item,
-          removeInputPin: removeInputPin,
-          removeOutputPin: removeOutputPin,
+          deleteInputPin: deleteInputPin,
+          deleteOutputPin: deleteOutputPin,
           updateLink: updateLink,
           view: view
         });

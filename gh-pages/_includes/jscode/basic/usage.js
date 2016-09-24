@@ -1,7 +1,8 @@
 import { Canvas } from 'flow-view'
 
 const view = {
-  width: 400, height: 300,
+  width: 400,
+  height: 300,
   node: {
     a: {
       x: 80, y: 100,

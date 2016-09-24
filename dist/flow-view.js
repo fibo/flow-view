@@ -55173,10 +55173,17 @@ var FlowViewCanvas = function (_EventEmitter) {
     value: function render(view, callback) {
       var _this2 = this;
 
+      view = Object.assign({}, {
+        height: 400,
+        link: {},
+        node: {},
+        width: 400
+      }, view);
+
       var container = this.container;
       var item = this.item;
 
-      var addInputPin = function addInputPin(nodeId, pin) {
+      var createInputPin = function createInputPin(nodeId, pin) {
         var ins = view.node[nodeId].ins;
 
         if ((0, _notDefined2.default)(ins)) view.node[nodeId].ins = ins = [];
@@ -55185,10 +55192,12 @@ var FlowViewCanvas = function (_EventEmitter) {
 
         if ((0, _notDefined2.default)(pin)) pin = 'in' + position;
 
+        _this2.emit('createInputPin', nodeId, position, pin);
+
         view.node[nodeId].ins.push(pin);
       };
 
-      var addOutputPin = function addOutputPin(nodeId, pin) {
+      var createOutputPin = function createOutputPin(nodeId, pin) {
         var outs = view.node[nodeId].outs;
 
         if ((0, _notDefined2.default)(outs)) view.node[nodeId].outs = outs = [];
@@ -55196,6 +55205,8 @@ var FlowViewCanvas = function (_EventEmitter) {
         var position = outs.length;
 
         if ((0, _notDefined2.default)(pin)) pin = 'out' + position;
+
+        _this2.emit('createOutputPin', nodeId, position, pin);
 
         view.node[nodeId].outs.push(pin);
       };
@@ -55210,7 +55221,10 @@ var FlowViewCanvas = function (_EventEmitter) {
 
         view.link[id] = link;
 
-        _this2.emit('createLink', link, id);
+        // Do not fire createLink event if it is a dragging link.
+        if (link.to) {
+          _this2.emit('createLink', link, id);
+        }
 
         return id;
       };
@@ -55231,13 +55245,16 @@ var FlowViewCanvas = function (_EventEmitter) {
       };
 
       var deleteLink = function deleteLink(id) {
-        delete view.link[id];
+        // Trigger a deleteLink event only if it is not a dragged link.
+        if (view.link[id].to) {
+          _this2.emit('deleteLink', id);
+        }
 
-        _this2.emit('deleteLink', id);
+        delete view.link[id];
       };
 
       var deleteNode = function deleteNode(id) {
-        // Remove links connected to given node.
+        // delete links connected to given node.
         Object.keys(view.link).forEach(function (linkId) {
           var from = view.link[linkId].from;
           var to = view.link[linkId].to;
@@ -55269,41 +55286,52 @@ var FlowViewCanvas = function (_EventEmitter) {
         });
       };
 
-      var removeInputPin = function removeInputPin(nodeId, position) {
+      var deleteInputPin = function deleteInputPin(nodeId, position) {
         var ins = view.node[nodeId].ins;
 
         if ((0, _notDefined2.default)(ins)) view.node[nodeId].ins = ins = [];
 
         if ((0, _notDefined2.default)(position)) position = ins.length - 1;
 
+        _this2.emit('deleteInputPin', nodeId, position);
+
         view.node[nodeId].ins.splice(position, 1);
       };
 
-      var removeOutputPin = function removeOutputPin(nodeId, position) {
+      var deleteOutputPin = function deleteOutputPin(nodeId, position) {
         var outs = view.node[nodeId].outs;
 
         if ((0, _notDefined2.default)(outs)) view.node[nodeId].outs = outs = [];
 
         if ((0, _notDefined2.default)(position)) position = outs.length - 1;
 
+        _this2.emit('deleteOutputPin', nodeId, position);
+
         view.node[nodeId].outs.splice(position, 1);
       };
 
       var updateLink = function updateLink(id, link) {
+        // Trigger a createLink event if it is a connected link.
+        if (link.to) {
+          _this2.emit('createLink', link, id);
+        } else {
+          _this2.emit('deleteLink', link, id);
+        }
+
         view.link[id] = Object.assign(view.link[id], link);
       };
 
       var component = _react2.default.createElement(_Canvas2.default, {
-        addInputPin: addInputPin,
-        addOutputPin: addOutputPin,
+        createInputPin: createInputPin,
+        createOutputPin: createOutputPin,
         createLink: createLink,
         createNode: createNode,
         deleteLink: deleteLink,
         deleteNode: deleteNode,
         dragItems: dragItems,
         item: item,
-        removeInputPin: removeInputPin,
-        removeOutputPin: removeOutputPin,
+        deleteInputPin: deleteInputPin,
+        deleteOutputPin: deleteOutputPin,
         updateLink: updateLink,
         view: view
       });
@@ -55448,8 +55476,8 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var _this2 = this;
 
       var _props = this.props;
-      var addInputPin = _props.addInputPin;
-      var addOutputPin = _props.addOutputPin;
+      var createInputPin = _props.createInputPin;
+      var createOutputPin = _props.createOutputPin;
       var createLink = _props.createLink;
       var _createNode = _props.createNode;
       var deleteLink = _props.deleteLink;
@@ -55457,17 +55485,15 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var dragItems = _props.dragItems;
       var fontFamily = _props.fontFamily;
       var fontSize = _props.fontSize;
-      var height = _props.height;
       var item = _props.item;
       var lineWidth = _props.lineWidth;
       var nodeBodyHeight = _props.nodeBodyHeight;
       var pinSize = _props.pinSize;
-      var removeInputPin = _props.removeInputPin;
-      var removeOutputPin = _props.removeOutputPin;
+      var deleteInputPin = _props.deleteInputPin;
+      var deleteOutputPin = _props.deleteOutputPin;
       var style = _props.style;
       var updateLink = _props.updateLink;
       var view = _props.view;
-      var width = _props.width;
       var _state = this.state;
       var draggedItems = _state.draggedItems;
       var draggedLink = _state.draggedLink;
@@ -55476,6 +55502,9 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var selectedItems = _state.selectedItems;
       var showSelector = _state.showSelector;
 
+
+      var height = view.height;
+      var width = view.width;
 
       var Link = item.link.DefaultLink;
       var Node = item.node.DefaultNode;
@@ -55696,17 +55725,6 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           style: style,
           width: width
         },
-        _react3.default.createElement(_Inspector2.default, {
-          addInputPin: addInputPin,
-          addOutputPin: addOutputPin,
-          deleteLink: deleteLink,
-          deleteNode: deleteNode,
-          height: height,
-          removeInputPin: removeInputPin,
-          removeOutputPin: removeOutputPin,
-          items: Object.assign([], selectedItems, draggedItems),
-          view: view
-        }),
         Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
           var _view$node$id = view.node[id];
           var height = _view$node$id.height;
@@ -55812,6 +55830,16 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
             y2: y2
           });
         }),
+        _react3.default.createElement(_Inspector2.default, {
+          createInputPin: createInputPin,
+          createOutputPin: createOutputPin,
+          deleteLink: deleteLink,
+          deleteNode: deleteNode,
+          deleteInputPin: deleteInputPin,
+          deleteOutputPin: deleteOutputPin,
+          items: Object.assign([], selectedItems, draggedItems),
+          view: view
+        }),
         _react3.default.createElement(_Selector2.default, {
           createNode: function createNode(node) {
             _createNode(node);
@@ -55839,8 +55867,8 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
 }(_react2.Component));
 
 Canvas.propTypes = {
-  addInputPin: _react2.PropTypes.func.isRequired,
-  addOutputPin: _react2.PropTypes.func.isRequired,
+  createInputPin: _react2.PropTypes.func.isRequired,
+  createOutputPin: _react2.PropTypes.func.isRequired,
   createLink: _react2.PropTypes.func.isRequired,
   createNode: _react2.PropTypes.func.isRequired,
   deleteLink: _react2.PropTypes.func.isRequired,
@@ -55848,7 +55876,6 @@ Canvas.propTypes = {
   dragItems: _react2.PropTypes.func.isRequired,
   fontFamily: _react2.PropTypes.string.isRequired,
   fontSize: _react2.PropTypes.number.isRequired,
-  height: _react2.PropTypes.number.isRequired,
   item: _react2.PropTypes.shape({
     link: _react2.PropTypes.object.isRequired,
     node: _react2.PropTypes.object.isRequired
@@ -55856,20 +55883,21 @@ Canvas.propTypes = {
   nodeBodyHeight: _react2.PropTypes.number.isRequired,
   lineWidth: _react2.PropTypes.number.isRequired,
   pinSize: _react2.PropTypes.number.isRequired,
-  removeInputPin: _react2.PropTypes.func.isRequired,
-  removeOutputPin: _react2.PropTypes.func.isRequired,
+  deleteInputPin: _react2.PropTypes.func.isRequired,
+  deleteOutputPin: _react2.PropTypes.func.isRequired,
   style: _react2.PropTypes.object.isRequired,
   updateLink: _react2.PropTypes.func.isRequired,
   view: _react2.PropTypes.shape({
+    height: _react2.PropTypes.number.isRequired,
     link: _react2.PropTypes.object.isRequired,
-    node: _react2.PropTypes.object.isRequired
-  }).isRequired,
-  width: _react2.PropTypes.number.isRequired
+    node: _react2.PropTypes.object.isRequired,
+    width: _react2.PropTypes.number.isRequired
+  }).isRequired
 };
 
 Canvas.defaultProps = {
-  addInputPin: Function.prototype,
-  addOutputPin: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
@@ -55877,7 +55905,6 @@ Canvas.defaultProps = {
   dragItems: Function.prototype,
   fontFamily: _theme2.default.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
-  height: 400,
   item: {
     link: { DefaultLink: _Link2.default },
     node: { DefaultNode: _Node2.default }
@@ -55885,15 +55912,16 @@ Canvas.defaultProps = {
   lineWidth: _theme2.default.lineWidth,
   nodeBodyHeight: _theme2.default.nodeBodyHeight,
   pinSize: _theme2.default.pinSize,
-  removeInputPin: Function.prototype,
-  removeOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteOutputPin: Function.prototype,
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {
+    height: 400,
     link: {},
-    node: {}
-  },
-  width: 400
+    node: {},
+    width: 400
+  }
 };
 
 exports.default = Canvas;
@@ -55959,13 +55987,12 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
     key: 'render',
     value: function render() {
       var _props = this.props;
-      var addInputPin = _props.addInputPin;
-      var addOutputPin = _props.addOutputPin;
+      var createInputPin = _props.createInputPin;
+      var createOutputPin = _props.createOutputPin;
       var deleteLink = _props.deleteLink;
       var deleteNode = _props.deleteNode;
-      var height = _props.height;
-      var removeInputPin = _props.removeInputPin;
-      var removeOutputPin = _props.removeOutputPin;
+      var deleteInputPin = _props.deleteInputPin;
+      var deleteOutputPin = _props.deleteOutputPin;
       var items = _props.items;
       var view = _props.view;
       var width = _props.width;
@@ -55995,7 +56022,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                   deleteLink(itemId);
                 }
               },
-              'remove link'
+              'delete link'
             )
           );
         }
@@ -56053,7 +56080,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                   {
                     disabled: ins.length === 0 || lastInputIsConnected,
                     onClick: function onClick() {
-                      removeInputPin(itemId);
+                      deleteInputPin(itemId);
                     }
                   },
                   '-'
@@ -56062,7 +56089,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                   'button',
                   {
                     onClick: function onClick() {
-                      addInputPin(itemId);
+                      createInputPin(itemId);
                     }
                   },
                   '+'
@@ -56077,7 +56104,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                   {
                     disabled: outs.length === 0 || lastOutputIsConnected,
                     onClick: function onClick() {
-                      removeOutputPin(itemId);
+                      deleteOutputPin(itemId);
                     }
                   },
                   '-'
@@ -56086,7 +56113,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                   'button',
                   {
                     onClick: function onClick() {
-                      addOutputPin(itemId);
+                      createOutputPin(itemId);
                     }
                   },
                   '+'
@@ -56099,7 +56126,7 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
                     deleteNode(itemId);
                   }
                 },
-                'remove node'
+                'delete node'
               )
             );
           })();
@@ -56109,7 +56136,6 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
       return _react3.default.createElement(
         'foreignObject',
         {
-          height: height,
           onDoubleClick: _ignoreEvent2.default,
           onMouseDown: _ignoreEvent2.default,
           onMouseUp: _ignoreEvent2.default,
@@ -56126,13 +56152,12 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
 }(_react2.Component));
 
 Inspector.propTypes = {
-  addInputPin: _react2.PropTypes.func.isRequired,
-  addOutputPin: _react2.PropTypes.func.isRequired,
+  createInputPin: _react2.PropTypes.func.isRequired,
+  createOutputPin: _react2.PropTypes.func.isRequired,
   deleteLink: _react2.PropTypes.func.isRequired,
   deleteNode: _react2.PropTypes.func.isRequired,
-  height: _react2.PropTypes.number.isRequired,
-  removeInputPin: _react2.PropTypes.func.isRequired,
-  removeOutputPin: _react2.PropTypes.func.isRequired,
+  deleteInputPin: _react2.PropTypes.func.isRequired,
+  deleteOutputPin: _react2.PropTypes.func.isRequired,
   items: _react2.PropTypes.array.isRequired,
   view: _react2.PropTypes.shape({
     link: _react2.PropTypes.object.isRequired,
@@ -56144,13 +56169,13 @@ Inspector.propTypes = {
 };
 
 Inspector.defaultProps = {
-  addInputPin: Function.prototype,
-  addOutputPin: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   deleteLink: Function.prototype,
   deleteNode: Function.prototype,
   items: [],
-  removeInputPin: Function.prototype,
-  removeOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteOutputPin: Function.prototype,
   width: 200,
   x: 0,
   y: 0

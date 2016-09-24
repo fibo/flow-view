@@ -19,7 +19,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
-## [v2.6.0]
+## [v2.6.0] - 2016-09-25
 
 ### Added
 

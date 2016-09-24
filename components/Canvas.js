@@ -183,10 +183,8 @@
         var onUpdateLink = function onUpdateLink(id, link) {
           updateLink(id, link);
 
-          link.id = id;
-
           setState({
-            draggedLink: link
+            draggedLink: null
           });
         };
 
@@ -253,13 +251,20 @@
           e.stopPropagation();
 
           var draggedLink = _this2.state.draggedLink;
-          if (draggedLink) deleteLink(draggedLink.id);
 
-          setState({
-            draggedLink: null,
-            selectedItems: [],
-            pointer: null
-          });
+          if (draggedLink) {
+            deleteLink(draggedLink.id);
+
+            setState({
+              draggedLink: null,
+              pointer: null
+            });
+          } else {
+            setState({
+              selectedItems: [],
+              pointer: null
+            });
+          }
         };
 
         /**
@@ -382,7 +387,7 @@
               selected: selectedItems.indexOf(id) > -1,
               selectNode: selectItem(id),
               text: text,
-              updateLink: updateLink,
+              updateLink: onUpdateLink,
               width: width,
               willDragNode: willDragItem(id),
               x: x,

@@ -94,6 +94,8 @@
       key: 'getBody',
       value: function getBody() {
         var _props = this.props;
+        var bodyHeight = _props.bodyHeight;
+        var fontSize = _props.fontSize;
         var pinSize = _props.pinSize;
         var text = _props.text;
 
@@ -101,14 +103,45 @@
         // TODO place an id in the div wrapping the body and try to
         // resolve bodyHeight from its content.
 
+        /*
+         TODO The following code works and it is ok for custom nodes.
+         BUT it os not ok for server side rendering cause foreignobject
+           not supported in image context.
+         return (
+          <foreignObject
+            height={bodyHeight}
+            onClick={ignoreEvent}
+            onDoubleClick={ignoreEvent}
+            onMouseDown={willDragNode}
+            onMouseUp={selectNode}
+            transform={`translate(0,${pinSize})`}
+            width={computedWidth}
+          >
+            <div
+              style={{backgroundColor: color.body}}
+            >
+              <p
+                style={{
+                  marginLeft: pinSize,
+                  marginRight: pinSize,
+                  pointerEvents: 'none'
+                }}
+              >
+                {text}
+              </p>
+            </div>
+          </foreignObject>
+        )
+        */
+
+        // Heuristic value, based on Courier font.
+        var margin = fontSize * 0.2;
+
         return _react2.default.createElement(
-          'p',
+          'text',
           {
-            style: {
-              marginLeft: pinSize,
-              marginRight: pinSize,
-              pointerEvents: 'none'
-            }
+            x: pinSize,
+            y: bodyHeight + pinSize - margin
           },
           text
         );
@@ -137,7 +170,7 @@
         var y = _props2.y;
 
 
-        var body = this.getBody();
+        var bodyContent = this.getBody();
 
         var computedWidth = (0, _computeNodeWidth2.default)({
           bodyHeight: bodyHeight,
@@ -160,13 +193,14 @@
             transform: 'translate(' + x + ',' + y + ')'
           },
           _react2.default.createElement('rect', {
-            stroke: selected || dragged ? color.selected : color.border,
-            strokeWidth: selected ? 3 : 2,
+            fillOpacity: 0,
             height: bodyHeight + 2 * pinSize,
+            stroke: selected || dragged ? color.selected : color.bar,
+            strokeWidth: 1,
             width: computedWidth
           }),
           _react2.default.createElement('rect', {
-            fill: color.bar,
+            fill: selected || dragged ? color.selected : color.bar,
             height: pinSize,
             width: computedWidth
           }),
@@ -192,27 +226,9 @@
               width: pinSize
             });
           }),
-          _react2.default.createElement(
-            'foreignObject',
-            {
-              height: bodyHeight,
-              onClick: _ignoreEvent2.default,
-              onDoubleClick: _ignoreEvent2.default,
-              onMouseDown: willDragNode,
-              onMouseUp: selectNode,
-              transform: 'translate(0,' + pinSize + ')',
-              width: computedWidth
-            },
-            _react2.default.createElement(
-              'div',
-              {
-                style: { backgroundColor: color.body }
-              },
-              body
-            )
-          ),
+          bodyContent,
           _react2.default.createElement('rect', {
-            fill: color.bar,
+            fill: selected || dragged ? color.selected : color.bar,
             height: pinSize,
             transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
             width: computedWidth

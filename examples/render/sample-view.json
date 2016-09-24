@@ -4,7 +4,7 @@
   "node": {
     "a": {
       "text": "your engine",
-      "outs": ["out"],
+      "outs": ["out0", "out1"],
       "x": 70,
       "y": 10
     },
@@ -17,7 +17,8 @@
     },
     "c": {
       "text": "a cool app!",
-      "ins": ["in"],
+      "ins": ["in0", "in1", "in2"],
+      "outs": ["out"],
       "x": 100,
       "y": 170
     }

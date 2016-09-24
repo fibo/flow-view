@@ -7,6 +7,7 @@
 [Description](#description) |
 [Installation](#installation) |
 [API](#api) |
+[Examples](#examples) |
 [License](#license)
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
@@ -122,6 +123,33 @@ canvas.render({
 })
 ```
 
+## Examples
+
+Clone this repo and install dependencies to run examples
+
+```bash
+git clone https://github.com/fibo/flow-view
+cd flow-view
+npm install
+```
+
+Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is run by
+
+```bash
+npm run example:basic:usage
+```
+
+Available examples are:
+
+* [basic/usage.js][example_basic_usage] `npm run example:basic:usage`
+* [event/emitter.js][example_event_emitter]: `npm run example:event:emitter`
+* [empty/canvas.js][example_empty_canvas]: `npm run example:empty:canvas`
+* [render/serverside.js][example_render_serverside]: `npm run example:render:serverside`
+
+Note that examples are intended to be used for development, hence there
+is an overhead at start time.
+For instance: client side examples use hot reload, and are transpiled on the fly; also server side example will launch babel before starting.
+
 ## License
 
 [MIT](http://g14n.info/mit-license)
@@ -129,5 +157,8 @@ canvas.render({
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
+[example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
+[example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
+[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

@@ -44,6 +44,13 @@ class FlowViewCanvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
   render (view, callback) {
+    view = Object.assign({}, {
+      height: 400,
+      link: {},
+      node: {},
+      width: 400
+    }, view)
+
     const container = this.container
     const item = this.item
 

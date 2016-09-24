@@ -19,6 +19,13 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
+## [v2.6.0]
+
+### Added
+
+- Add or remove input and output pins.
+- Emit events to let integrate with other libraries.
+
 ## [v2.5.0] - 2016-09-24
 
 ### Added

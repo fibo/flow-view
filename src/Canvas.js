@@ -1,14 +1,18 @@
 import React from 'react'
 import { render } from 'react-dom'
 import Canvas from './components/Canvas'
+import EventEmitter from 'events'
+import no from 'not-defined'
 import randomString from './utils/randomString'
 import renderSVGx from 'svgx'
 
 // TODO find a better way to generate ids.
 const idLength = 3
 
-class FlowViewCanvas {
+class FlowViewCanvas extends EventEmitter {
   constructor (containerId, item) {
+    super()
+
     this.container = null
 
     // Check that containerId is a string.
@@ -18,7 +22,7 @@ class FlowViewCanvas {
 
     // If we are in browser context, get the document element containing
     // the canvas or create it.
-    if (typeof document !== 'undefined') {
+    if (document) {
       var container = document.getElementById(containerId)
 
       if (container === null) {
@@ -43,6 +47,30 @@ class FlowViewCanvas {
     const container = this.container
     const item = this.item
 
+    const addInputPin = (nodeId, pin) => {
+      var ins = view.node[nodeId].ins
+
+      if (no(ins)) view.node[nodeId].ins = ins = []
+
+      const position = ins.length
+
+      if (no(pin)) pin = `in${position}`
+
+      view.node[nodeId].ins.push(pin)
+    }
+
+    const addOutputPin = (nodeId, pin) => {
+      var outs = view.node[nodeId].outs
+
+      if (no(outs)) view.node[nodeId].outs = outs = []
+
+      const position = outs.length
+
+      if (no(pin)) pin = `out${position}`
+
+      view.node[nodeId].outs.push(pin)
+    }
+
     const createLink = (link) => {
       function generateId () {
         const id = randomString(idLength)
@@ -52,6 +80,8 @@ class FlowViewCanvas {
       const id = generateId()
 
       view.link[id] = link
+
+      this.emit('createLink', link, id)
 
       return id
     }
@@ -65,10 +95,16 @@ class FlowViewCanvas {
       const id = generateId()
 
       view.node[id] = node
+
+      this.emit('createNode', node, id)
+
+      return id
     }
 
     const deleteLink = (id) => {
       delete view.link[id]
+
+      this.emit('deleteLink', id)
     }
 
     const deleteNode = (id) => {
@@ -77,11 +113,22 @@ class FlowViewCanvas {
         const from = view.link[linkId].from
         const to = view.link[linkId].to
 
-        if (from && from[0] === id) delete view.link[linkId]
-        if (to && to[0] === id) delete view.link[linkId]
+        if (from && from[0] === id) {
+          delete view.link[linkId]
+
+          this.emit('deleteLink', linkId)
+        }
+
+        if (to && to[0] === id) {
+          delete view.link[linkId]
+
+          this.emit('deleteLink', linkId)
+        }
       })
 
       delete view.node[id]
+
+      this.emit('deleteNode', id)
     }
 
     const dragItems = (dragginDelta, draggedItems) => {
@@ -93,18 +140,42 @@ class FlowViewCanvas {
       })
     }
 
+    const removeInputPin = (nodeId, position) => {
+      var ins = view.node[nodeId].ins
+
+      if (no(ins)) view.node[nodeId].ins = ins = []
+
+      if (no(position)) position = ins.length - 1
+
+      view.node[nodeId].ins.splice(position, 1)
+    }
+
+    const removeOutputPin = (nodeId, position) => {
+      var outs = view.node[nodeId].outs
+
+      if (no(outs)) view.node[nodeId].outs = outs = []
+
+      if (no(position)) position = outs.length - 1
+
+      view.node[nodeId].outs.splice(position, 1)
+    }
+
     const updateLink = (id, link) => {
       view.link[id] = Object.assign(view.link[id], link)
     }
 
     const component = (
       <Canvas
+        addInputPin={addInputPin}
+        addOutputPin={addOutputPin}
         createLink={createLink}
         createNode={createNode}
         deleteLink={deleteLink}
         deleteNode={deleteNode}
         dragItems={dragItems}
         item={item}
+        removeInputPin={removeInputPin}
+        removeOutputPin={removeOutputPin}
         updateLink={updateLink}
         view={view}
       />

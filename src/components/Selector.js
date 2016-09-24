@@ -50,11 +50,11 @@ class Selector extends Component {
 
 Selector.propTypes = {
   createNode: PropTypes.func.isRequired,
-  show: PropTypes.bool.isRequired,
   pointer: PropTypes.shape({
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired
-  })
+  }),
+  show: PropTypes.bool.isRequired
 }
 
 Selector.defaultProps = {

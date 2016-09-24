@@ -4,9 +4,13 @@ import ignoreEvent from '../utils/ignoreEvent'
 class Inspector extends Component {
   render () {
     const {
+      addInputPin,
+      addOutputPin,
       deleteLink,
       deleteNode,
       height,
+      removeInputPin,
+      removeOutputPin,
       selectedItems,
       view,
       width,
@@ -40,9 +44,26 @@ class Inspector extends Component {
       }
 
       if (node) {
-        const click = () => {
-          console.log('click')
-        }
+        const ins = node.ins || []
+        const outs = node.outs || []
+
+        const lastInputPosition = ins.length - 1
+        const lastOutputPosition = outs.length - 1
+
+        var lastInputIsConnected = false
+        var lastOutputIsConnected = false
+
+        Object.keys(view.link).forEach((linkId) => {
+          const link = view.link[linkId]
+
+          if ((link.to[0] === itemId) && (link.to[1] === lastInputPosition)) {
+            lastInputIsConnected = true
+          }
+
+          if ((link.from[0] === itemId) && (link.from[1] === lastOutputPosition)) {
+            lastOutputIsConnected = true
+          }
+        })
 
         item = (
           <div>
@@ -61,14 +82,22 @@ class Inspector extends Component {
             <div>
               ins
               <button
-                onClick={click}
+                disabled={(ins.length === 0) || lastInputIsConnected}
+                onClick={() => { removeInputPin(itemId) }}
               >-</button>
-              <button>+</button>
+              <button
+                onClick={() => { addInputPin(itemId) }}
+              >+</button>
             </div>
             <div>
               outs
-              <button>-</button>
-              <button>+</button>
+              <button
+                disabled={(outs.length === 0) || lastOutputIsConnected}
+                onClick={() => { removeOutputPin(itemId) }}
+              >-</button>
+              <button
+                onClick={() => { addOutputPin(itemId) }}
+              >+</button>
             </div>
             <button
               onClick={() => {
@@ -99,9 +128,13 @@ class Inspector extends Component {
 }
 
 Inspector.propTypes = {
+  addInputPin: PropTypes.func.isRequired,
+  addOutputPin: PropTypes.func.isRequired,
   deleteLink: PropTypes.func.isRequired,
   deleteNode: PropTypes.func.isRequired,
   height: PropTypes.number.isRequired,
+  removeInputPin: PropTypes.func.isRequired,
+  removeOutputPin: PropTypes.func.isRequired,
   selectedItems: PropTypes.array.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
@@ -113,8 +146,12 @@ Inspector.propTypes = {
 }
 
 Inspector.defaultProps = {
+  addInputPin: Function.prototype,
+  addOutputPin: Function.prototype,
   deleteLink: Function.prototype,
   deleteNode: Function.prototype,
+  removeInputPin: Function.prototype,
+  removeOutputPin: Function.prototype,
   width: 200,
   x: 0,
   y: 0

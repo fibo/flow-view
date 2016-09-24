@@ -116,9 +116,12 @@ class FlowViewCanvas extends EventEmitter {
     }
 
     const deleteLink = (id) => {
-      delete view.link[id]
+      // Trigger a deleteLink event only if it is not a dragged link.
+      if (view.link[id].to) {
+        this.emit('deleteLink', id)
+      }
 
-      this.emit('deleteLink', id)
+      delete view.link[id]
     }
 
     const deleteNode = (id) => {

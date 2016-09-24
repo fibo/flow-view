@@ -54,6 +54,8 @@ npm install flow-view
 
 ## API
 
+<a name="canvas"></a>
+
 ### `new Canvas('drawing')`
 
 > flow-view Canvas constructor
@@ -129,7 +131,8 @@ canvas.render({
 
 ### Events
 
-The following events are emitted:
+See [event/emitter.js][example_event_emitter] example.
+The following events are emitted by [canvas](#canvas):
 
 | name              | arguments             |
 |-------------------|-----------------------|
@@ -179,7 +182,7 @@ cd flow-view
 npm install
 ```
 
-Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is run by
+Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is launched by command
 
 ```bash
 npm run example:basic:usage

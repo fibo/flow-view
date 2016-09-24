@@ -58,6 +58,8 @@ npm install flow-view
 
 ## API
 
+<a name="canvas"></a>
+
 ### `new Canvas('drawing')`
 
 > flow-view Canvas constructor
@@ -133,7 +135,8 @@ canvas.render({
 
 ### Events
 
-The following events are emitted:
+See [event/emitter.js][example_event_emitter] example.
+The following events are emitted by [canvas](#canvas):
 
 | name              | arguments             |
 |-------------------|-----------------------|
@@ -150,12 +153,12 @@ The following events are emitted:
 
 A node describes an element and has the following attributes:
 
-* **@param* `Number` *x* coordinate of top left vertex
-* **@param* `Number` *y* coordinate of top left vertex
-* **@param* `String` *text*
-* **@param* `Array` *ins* list of input pins
-* **@param* `Array` *outs* list of output pins
-* **@param* `Number` *[width]*, defaults to a value depending on text lenght and number of pins.
+* **@param** `Number` *x* coordinate of top left vertex
+* **@param** `Number` *y* coordinate of top left vertex
+* **@param** `String` *text*
+* **@param** `Array` *ins* list of input pins
+* **@param** `Array` *outs* list of output pins
+* **@param** `Number` *[width]*, defaults to a value depending on text lenght and number of pins.
 
 An pin can be either a string or an object with the `name` attribute which must be a string.
 Input pins default to string `in${position}`.
@@ -165,13 +168,13 @@ Output pins default to string `out${position}`.
 
 A link describes a connection between elements and has the following attributes:
 
-* **@param* `Array` *from* has exactly two elements
-* **@param* `String` *from[0]* is the key of the source node
-* **@param* `Number` *from[1]* is the output pin position
-* **@param* `Array` *to* has exactly two elements
-* **@param* `Array` *to* has exactly two elements
-* **@param* `String` *to[0]* is the key of the target node
-* **@param* `Number` *to[1]* is the input pin position
+* **@param** `Array` *from* has exactly two elements
+* **@param** `String` *from[0]* is the key of the source node
+* **@param** `Number` *from[1]* is the output pin position
+* **@param** `Array` *to* has exactly two elements
+* **@param** `Array` *to* has exactly two elements
+* **@param** `String` *to[0]* is the key of the target node
+* **@param** `Number` *to[1]* is the input pin position
 
 ## Examples
 
@@ -183,7 +186,7 @@ cd flow-view
 npm install
 ```
 
-Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is run by
+Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is launched by command
 
 ```bash
 npm run example:basic:usage

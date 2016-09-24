@@ -1,4 +1,6 @@
 {
+  "width": 400,
+  "height": 220,
   "node": {
     "a": {
       "text": "your engine",

@@ -58,7 +58,7 @@ class Node extends Component {
         x={pinSize}
         y={bodyHeight + pinSize - margin}
       >
-        {text}
+        <tspan>{text}</tspan>
       </text>
     )
   }
@@ -91,8 +91,7 @@ class Node extends Component {
       bodyHeight,
       pinSize,
       fontSize,
-      text,
-      width
+      node: { ins, outs, text, width }
     })
 
     return (

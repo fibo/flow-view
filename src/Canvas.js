@@ -22,7 +22,7 @@ class FlowViewCanvas extends EventEmitter {
 
     // If we are in browser context, get the document element containing
     // the canvas or create it.
-    if (document) {
+    if (typeof document !== 'undefined') {
       var container = document.getElementById(containerId)
 
       if (container === null) {

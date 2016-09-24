@@ -21,8 +21,12 @@
     var bodyHeight = _ref.bodyHeight;
     var pinSize = _ref.pinSize;
     var fontSize = _ref.fontSize;
-    var text = _ref.text;
-    var width = _ref.width;
+    var node = _ref.node;
+
+    var ins = node.ins || [];
+    var outs = node.outs || [];
+    var text = node.text;
+    var width = node.width;
 
     // Node shape defaults to a square.
     var defaultWidth = width || bodyHeight + pinSize * 2;
@@ -30,7 +34,16 @@
     // Heuristic value, based on Courier font.
     var fontAspectRatio = 0.64;
 
-    var dynamicWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio;
+    // The with required to fit the node text.
+    var textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio;
+
+    // The greatest number of pins, by type (ins or outs).
+    var numPins = Math.max(ins.length, outs.length);
+
+    // The width required to fit the most numerous pins.
+    var pinsWidth = numPins * pinSize * 2;
+
+    var dynamicWidth = Math.max(textWidth, pinsWidth);
 
     var computedWidth = Math.max(defaultWidth, dynamicWidth);
 

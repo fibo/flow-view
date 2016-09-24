@@ -140,11 +140,11 @@
 
   Selector.propTypes = {
     createNode: _react.PropTypes.func.isRequired,
-    show: _react.PropTypes.bool.isRequired,
     pointer: _react.PropTypes.shape({
       x: _react.PropTypes.number.isRequired,
       y: _react.PropTypes.number.isRequired
-    })
+    }),
+    show: _react.PropTypes.bool.isRequired
   };
 
   Selector.defaultProps = {

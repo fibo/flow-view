@@ -125,8 +125,8 @@
         var _this2 = this;
 
         var _props = this.props;
-        var addInputPin = _props.addInputPin;
-        var addOutputPin = _props.addOutputPin;
+        var createInputPin = _props.createInputPin;
+        var createOutputPin = _props.createOutputPin;
         var createLink = _props.createLink;
         var _createNode = _props.createNode;
         var deleteLink = _props.deleteLink;
@@ -138,8 +138,8 @@
         var lineWidth = _props.lineWidth;
         var nodeBodyHeight = _props.nodeBodyHeight;
         var pinSize = _props.pinSize;
-        var removeInputPin = _props.removeInputPin;
-        var removeOutputPin = _props.removeOutputPin;
+        var deleteInputPin = _props.deleteInputPin;
+        var deleteOutputPin = _props.deleteOutputPin;
         var style = _props.style;
         var updateLink = _props.updateLink;
         var view = _props.view;
@@ -374,17 +374,6 @@
             style: style,
             width: width
           },
-          _react2.default.createElement(_Inspector2.default, {
-            addInputPin: addInputPin,
-            addOutputPin: addOutputPin,
-            deleteLink: deleteLink,
-            deleteNode: deleteNode,
-            height: height,
-            removeInputPin: removeInputPin,
-            removeOutputPin: removeOutputPin,
-            items: Object.assign([], selectedItems, draggedItems),
-            view: view
-          }),
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
             var _view$node$id = view.node[id];
             var height = _view$node$id.height;
@@ -490,6 +479,16 @@
               y2: y2
             });
           }),
+          _react2.default.createElement(_Inspector2.default, {
+            createInputPin: createInputPin,
+            createOutputPin: createOutputPin,
+            deleteLink: deleteLink,
+            deleteNode: deleteNode,
+            deleteInputPin: deleteInputPin,
+            deleteOutputPin: deleteOutputPin,
+            items: Object.assign([], selectedItems, draggedItems),
+            view: view
+          }),
           _react2.default.createElement(_Selector2.default, {
             createNode: function createNode(node) {
               _createNode(node);
@@ -517,8 +516,8 @@
   }(_react.Component);
 
   Canvas.propTypes = {
-    addInputPin: _react.PropTypes.func.isRequired,
-    addOutputPin: _react.PropTypes.func.isRequired,
+    createInputPin: _react.PropTypes.func.isRequired,
+    createOutputPin: _react.PropTypes.func.isRequired,
     createLink: _react.PropTypes.func.isRequired,
     createNode: _react.PropTypes.func.isRequired,
     deleteLink: _react.PropTypes.func.isRequired,
@@ -533,8 +532,8 @@
     nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
     pinSize: _react.PropTypes.number.isRequired,
-    removeInputPin: _react.PropTypes.func.isRequired,
-    removeOutputPin: _react.PropTypes.func.isRequired,
+    deleteInputPin: _react.PropTypes.func.isRequired,
+    deleteOutputPin: _react.PropTypes.func.isRequired,
     style: _react.PropTypes.object.isRequired,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
@@ -546,8 +545,8 @@
   };
 
   Canvas.defaultProps = {
-    addInputPin: Function.prototype,
-    addOutputPin: Function.prototype,
+    createInputPin: Function.prototype,
+    createOutputPin: Function.prototype,
     createLink: Function.prototype,
     createNode: Function.prototype,
     deleteLink: Function.prototype,
@@ -562,8 +561,8 @@
     lineWidth: _theme2.default.lineWidth,
     nodeBodyHeight: _theme2.default.nodeBodyHeight,
     pinSize: _theme2.default.pinSize,
-    removeInputPin: Function.prototype,
-    removeOutputPin: Function.prototype,
+    deleteInputPin: Function.prototype,
+    deleteOutputPin: Function.prototype,
     style: { border: '1px solid black' },
     updateLink: Function.prototype,
     view: {

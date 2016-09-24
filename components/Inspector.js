@@ -88,13 +88,12 @@
       key: 'render',
       value: function render() {
         var _props = this.props;
-        var addInputPin = _props.addInputPin;
-        var addOutputPin = _props.addOutputPin;
+        var createInputPin = _props.createInputPin;
+        var createOutputPin = _props.createOutputPin;
         var deleteLink = _props.deleteLink;
         var deleteNode = _props.deleteNode;
-        var height = _props.height;
-        var removeInputPin = _props.removeInputPin;
-        var removeOutputPin = _props.removeOutputPin;
+        var deleteInputPin = _props.deleteInputPin;
+        var deleteOutputPin = _props.deleteOutputPin;
         var items = _props.items;
         var view = _props.view;
         var width = _props.width;
@@ -124,7 +123,7 @@
                     deleteLink(itemId);
                   }
                 },
-                'remove link'
+                'delete link'
               )
             );
           }
@@ -182,7 +181,7 @@
                     {
                       disabled: ins.length === 0 || lastInputIsConnected,
                       onClick: function onClick() {
-                        removeInputPin(itemId);
+                        deleteInputPin(itemId);
                       }
                     },
                     '-'
@@ -191,7 +190,7 @@
                     'button',
                     {
                       onClick: function onClick() {
-                        addInputPin(itemId);
+                        createInputPin(itemId);
                       }
                     },
                     '+'
@@ -206,7 +205,7 @@
                     {
                       disabled: outs.length === 0 || lastOutputIsConnected,
                       onClick: function onClick() {
-                        removeOutputPin(itemId);
+                        deleteOutputPin(itemId);
                       }
                     },
                     '-'
@@ -215,7 +214,7 @@
                     'button',
                     {
                       onClick: function onClick() {
-                        addOutputPin(itemId);
+                        createOutputPin(itemId);
                       }
                     },
                     '+'
@@ -228,7 +227,7 @@
                       deleteNode(itemId);
                     }
                   },
-                  'remove node'
+                  'delete node'
                 )
               );
             })();
@@ -238,7 +237,6 @@
         return _react2.default.createElement(
           'foreignObject',
           {
-            height: height,
             onDoubleClick: _ignoreEvent2.default,
             onMouseDown: _ignoreEvent2.default,
             onMouseUp: _ignoreEvent2.default,
@@ -255,13 +253,12 @@
   }(_react.Component);
 
   Inspector.propTypes = {
-    addInputPin: _react.PropTypes.func.isRequired,
-    addOutputPin: _react.PropTypes.func.isRequired,
+    createInputPin: _react.PropTypes.func.isRequired,
+    createOutputPin: _react.PropTypes.func.isRequired,
     deleteLink: _react.PropTypes.func.isRequired,
     deleteNode: _react.PropTypes.func.isRequired,
-    height: _react.PropTypes.number.isRequired,
-    removeInputPin: _react.PropTypes.func.isRequired,
-    removeOutputPin: _react.PropTypes.func.isRequired,
+    deleteInputPin: _react.PropTypes.func.isRequired,
+    deleteOutputPin: _react.PropTypes.func.isRequired,
     items: _react.PropTypes.array.isRequired,
     view: _react.PropTypes.shape({
       link: _react.PropTypes.object.isRequired,
@@ -273,13 +270,13 @@
   };
 
   Inspector.defaultProps = {
-    addInputPin: Function.prototype,
-    addOutputPin: Function.prototype,
+    createInputPin: Function.prototype,
+    createOutputPin: Function.prototype,
     deleteLink: Function.prototype,
     deleteNode: Function.prototype,
     items: [],
-    removeInputPin: Function.prototype,
-    removeOutputPin: Function.prototype,
+    deleteInputPin: Function.prototype,
+    deleteOutputPin: Function.prototype,
     width: 200,
     x: 0,
     y: 0

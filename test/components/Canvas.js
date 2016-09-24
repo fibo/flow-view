@@ -9,15 +9,17 @@ const render = reactDom.renderToStaticMarkup
 test('Canvas component', (t) => {
   const height = 100
   const width = 100
-  const nodes = []
-  const links = []
+
+  const view = {
+    height,
+    link: {},
+    node: {},
+    width
+  }
 
   const el = (
     <Canvas
-      nodes={nodes}
-      links={links}
-      width={width}
-      height={height}
+      view={view}
     />
   )
 

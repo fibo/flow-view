@@ -5,6 +5,7 @@ import DefaultLink from './Link'
 import DefaultNode from './Node'
 import defaultTheme from './theme'
 import ignoreEvent from '../utils/ignoreEvent'
+
 import Inspector from './Inspector'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
@@ -38,6 +39,7 @@ class Canvas extends Component {
       createLink,
       createNode,
       deleteLink,
+      deleteNode,
       dragItems,
       fontFamily,
       fontSize,
@@ -274,8 +276,11 @@ class Canvas extends Component {
         width={width}
       >
         <Inspector
-          selectedItems={selectedItems}
+          deleteLink={deleteLink}
+          deleteNode={deleteNode}
           height={height}
+          selectedItems={selectedItems}
+          view={view}
         />
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
           const {
@@ -400,7 +405,6 @@ class Canvas extends Component {
               showSelector: false
             })
           }}
-          fontFamily={fontFamily}
           pointer={pointer}
           show={showSelector}
         />
@@ -413,6 +417,7 @@ Canvas.propTypes = {
   createLink: PropTypes.func.isRequired,
   createNode: PropTypes.func.isRequired,
   deleteLink: PropTypes.func.isRequired,
+  deleteNode: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
@@ -437,6 +442,7 @@ Canvas.defaultProps = {
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
+  deleteNode: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored

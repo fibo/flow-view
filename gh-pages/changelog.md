@@ -19,7 +19,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
-## [v2.5.0]
+## [v2.5.0] - 2016-09-24
 
 ### Added
 
@@ -30,7 +30,7 @@ New g14n.info layouts, with link Changelog page
 
 - No Redux, using React local state is fine.
 
-## [v2.4.0] 2016-08-23
+## [v2.4.0] - 2016-08-23
 
 ### Changed
 
@@ -41,7 +41,7 @@ New g14n.info layouts, with link Changelog page
 
 - Fixed changelog links.
 
-## [v2.3.0] 2016-06-25
+## [v2.3.0] - 2016-06-25
 
 ### Added
 

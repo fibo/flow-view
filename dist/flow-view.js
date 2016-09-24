@@ -55182,6 +55182,19 @@ var FlowViewCanvas = function () {
         delete view.link[id];
       };
 
+      var deleteNode = function deleteNode(id) {
+        // Remove links connected to given node.
+        Object.keys(view.link).forEach(function (linkId) {
+          var from = view.link[linkId].from;
+          var to = view.link[linkId].to;
+
+          if (from && from[0] === id) delete view.link[linkId];
+          if (to && to[0] === id) delete view.link[linkId];
+        });
+
+        delete view.node[id];
+      };
+
       var dragItems = function dragItems(dragginDelta, draggedItems) {
         Object.keys(view.node).filter(function (id) {
           return draggedItems.indexOf(id) > -1;
@@ -55199,6 +55212,7 @@ var FlowViewCanvas = function () {
         createLink: createLink,
         createNode: createNode,
         deleteLink: deleteLink,
+        deleteNode: deleteNode,
         dragItems: dragItems,
         item: item,
         updateLink: updateLink,
@@ -55348,6 +55362,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var createLink = _props.createLink;
       var _createNode = _props.createNode;
       var deleteLink = _props.deleteLink;
+      var deleteNode = _props.deleteNode;
       var dragItems = _props.dragItems;
       var fontFamily = _props.fontFamily;
       var fontSize = _props.fontSize;
@@ -55403,9 +55418,19 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var onUpdateLink = function onUpdateLink(id, link) {
         updateLink(id, link);
 
-        setState({
-          draggedLink: null
-        });
+        var disconnectingLink = link.to === null;
+
+        if (disconnectingLink) {
+          link.id = id;
+
+          setState({
+            draggedLink: link
+          });
+        } else {
+          setState({
+            draggedLink: null
+          });
+        }
       };
 
       var onDoubleClick = function onDoubleClick(e) {
@@ -55579,8 +55604,11 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           width: width
         },
         _react3.default.createElement(_Inspector2.default, {
+          deleteLink: deleteLink,
+          deleteNode: deleteNode,
+          height: height,
           selectedItems: selectedItems,
-          height: height
+          view: view
         }),
         Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
           var _view$node$id = view.node[id];
@@ -55705,7 +55733,6 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
               showSelector: false
             });
           },
-          fontFamily: fontFamily,
           pointer: pointer,
           show: showSelector
         })
@@ -55720,6 +55747,7 @@ Canvas.propTypes = {
   createLink: _react2.PropTypes.func.isRequired,
   createNode: _react2.PropTypes.func.isRequired,
   deleteLink: _react2.PropTypes.func.isRequired,
+  deleteNode: _react2.PropTypes.func.isRequired,
   dragItems: _react2.PropTypes.func.isRequired,
   fontFamily: _react2.PropTypes.string.isRequired,
   fontSize: _react2.PropTypes.number.isRequired,
@@ -55744,6 +55772,7 @@ Canvas.defaultProps = {
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
+  deleteNode: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: _theme2.default.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
@@ -55782,6 +55811,10 @@ var _babelTransform = require('livereactload/babel-transform');
 var _babelTransform2 = _interopRequireDefault(_babelTransform);
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ignoreEvent = require('../utils/ignoreEvent');
+
+var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55823,32 +55856,122 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
     key: 'render',
     value: function render() {
       var _props = this.props;
+      var deleteLink = _props.deleteLink;
+      var deleteNode = _props.deleteNode;
       var height = _props.height;
       var selectedItems = _props.selectedItems;
+      var view = _props.view;
       var width = _props.width;
       var x = _props.x;
       var y = _props.y;
 
+      // TODO implement multiple item selection.
+
+      var item = null;
+      var itemId = null;
+
+      if (selectedItems.length === 1) {
+        itemId = selectedItems[0];
+
+        var link = view.link[itemId];
+        var node = view.node[itemId];
+
+        if (link) {
+          item = _react3.default.createElement(
+            'div',
+            null,
+            'link',
+            _react3.default.createElement(
+              'button',
+              {
+                onClick: function onClick() {
+                  deleteLink(itemId);
+                }
+              },
+              'remove link'
+            )
+          );
+        }
+
+        if (node) {
+          var click = function click() {
+            console.log('click');
+          };
+
+          item = _react3.default.createElement(
+            'div',
+            null,
+            _react3.default.createElement(
+              'label',
+              {
+                htmlFor: 'name'
+              },
+              'node'
+            ),
+            _react3.default.createElement('input', {
+              type: 'text',
+              id: 'name',
+              disabled: true,
+              style: { outline: 'none' },
+              value: node.text
+            }),
+            _react3.default.createElement(
+              'div',
+              null,
+              'ins',
+              _react3.default.createElement(
+                'button',
+                {
+                  onClick: click
+                },
+                '-'
+              ),
+              _react3.default.createElement(
+                'button',
+                null,
+                '+'
+              )
+            ),
+            _react3.default.createElement(
+              'div',
+              null,
+              'outs',
+              _react3.default.createElement(
+                'button',
+                null,
+                '-'
+              ),
+              _react3.default.createElement(
+                'button',
+                null,
+                '+'
+              )
+            ),
+            _react3.default.createElement(
+              'button',
+              {
+                onClick: function onClick() {
+                  deleteNode(itemId);
+                }
+              },
+              'remove node'
+            )
+          );
+        }
+      }
 
       return _react3.default.createElement(
         'foreignObject',
         {
           height: height,
+          onDoubleClick: _ignoreEvent2.default,
+          onMouseDown: _ignoreEvent2.default,
+          onMouseUp: _ignoreEvent2.default,
           width: width,
           x: x,
           y: y
         },
-        _react3.default.createElement(
-          'p',
-          null,
-          'Halo inspektor'
-        ),
-        _react3.default.createElement(
-          'p',
-          null,
-          'items ',
-          selectedItems
-        )
+        item
       );
     }
   }]);
@@ -55857,13 +55980,22 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
 }(_react2.Component));
 
 Inspector.propTypes = {
+  deleteLink: _react2.PropTypes.func.isRequired,
+  deleteNode: _react2.PropTypes.func.isRequired,
   height: _react2.PropTypes.number.isRequired,
+  selectedItems: _react2.PropTypes.array.isRequired,
+  view: _react2.PropTypes.shape({
+    link: _react2.PropTypes.object.isRequired,
+    node: _react2.PropTypes.object.isRequired
+  }).isRequired,
   width: _react2.PropTypes.number.isRequired,
   x: _react2.PropTypes.number.isRequired,
   y: _react2.PropTypes.number.isRequired
 };
 
 Inspector.defaultProps = {
+  deleteLink: Function.prototype,
+  deleteNode: Function.prototype,
   width: 200,
   x: 0,
   y: 0
@@ -55871,7 +56003,7 @@ Inspector.defaultProps = {
 
 exports.default = Inspector;
 
-},{"livereactload/babel-transform":85,"react":394}],413:[function(require,module,exports){
+},{"../utils/ignoreEvent":419,"livereactload/babel-transform":85,"react":394}],413:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -56387,7 +56519,6 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
 
       var _props = this.props;
       var createNode = _props.createNode;
-      var fontFamily = _props.fontFamily;
       var height = _props.height;
       var pointer = _props.pointer;
       var show = _props.show;
@@ -56424,7 +56555,7 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
           ref: function ref(input) {
             if (input !== null) input.focus();
           },
-          style: { outline: 'none', fontFamily: fontFamily },
+          style: { outline: 'none' },
           onKeyPress: onKeyPress
         })
       );
@@ -56436,7 +56567,6 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
 
 Selector.propTypes = {
   createNode: _react2.PropTypes.func.isRequired,
-  fontFamily: _react2.PropTypes.string.isRequired,
   show: _react2.PropTypes.bool.isRequired,
   pointer: _react2.PropTypes.shape({
     x: _react2.PropTypes.number.isRequired,

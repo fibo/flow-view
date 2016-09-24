@@ -92,7 +92,6 @@
 
         var _props = this.props;
         var createNode = _props.createNode;
-        var fontFamily = _props.fontFamily;
         var height = _props.height;
         var pointer = _props.pointer;
         var show = _props.show;
@@ -129,7 +128,7 @@
             ref: function ref(input) {
               if (input !== null) input.focus();
             },
-            style: { outline: 'none', fontFamily: fontFamily },
+            style: { outline: 'none' },
             onKeyPress: onKeyPress
           })
         );
@@ -141,7 +140,6 @@
 
   Selector.propTypes = {
     createNode: _react.PropTypes.func.isRequired,
-    fontFamily: _react.PropTypes.string.isRequired,
     show: _react.PropTypes.bool.isRequired,
     pointer: _react.PropTypes.shape({
       x: _react.PropTypes.number.isRequired,

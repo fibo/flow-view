@@ -128,6 +128,19 @@
           delete view.link[id];
         };
 
+        var deleteNode = function deleteNode(id) {
+          // Remove links connected to given node.
+          Object.keys(view.link).forEach(function (linkId) {
+            var from = view.link[linkId].from;
+            var to = view.link[linkId].to;
+
+            if (from && from[0] === id) delete view.link[linkId];
+            if (to && to[0] === id) delete view.link[linkId];
+          });
+
+          delete view.node[id];
+        };
+
         var dragItems = function dragItems(dragginDelta, draggedItems) {
           Object.keys(view.node).filter(function (id) {
             return draggedItems.indexOf(id) > -1;
@@ -145,6 +158,7 @@
           createLink: createLink,
           createNode: createNode,
           deleteLink: deleteLink,
+          deleteNode: deleteNode,
           dragItems: dragItems,
           item: item,
           updateLink: updateLink,

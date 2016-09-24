@@ -7,7 +7,6 @@ class Selector extends Component {
   render () {
     const {
       createNode,
-      fontFamily,
       height,
       pointer,
       show,
@@ -41,7 +40,7 @@ class Selector extends Component {
         <input
           type='text'
           ref={(input) => { if (input !== null) input.focus() }}
-          style={{ outline: 'none', fontFamily }}
+          style={{ outline: 'none' }}
           onKeyPress={onKeyPress}
         />
       </foreignObject>
@@ -51,7 +50,6 @@ class Selector extends Component {
 
 Selector.propTypes = {
   createNode: PropTypes.func.isRequired,
-  fontFamily: PropTypes.string.isRequired,
   show: PropTypes.bool.isRequired,
   pointer: PropTypes.shape({
     x: PropTypes.number.isRequired,

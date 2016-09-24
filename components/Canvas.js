@@ -128,6 +128,7 @@
         var createLink = _props.createLink;
         var _createNode = _props.createNode;
         var deleteLink = _props.deleteLink;
+        var deleteNode = _props.deleteNode;
         var dragItems = _props.dragItems;
         var fontFamily = _props.fontFamily;
         var fontSize = _props.fontSize;
@@ -183,9 +184,19 @@
         var onUpdateLink = function onUpdateLink(id, link) {
           updateLink(id, link);
 
-          setState({
-            draggedLink: null
-          });
+          var disconnectingLink = link.to === null;
+
+          if (disconnectingLink) {
+            link.id = id;
+
+            setState({
+              draggedLink: link
+            });
+          } else {
+            setState({
+              draggedLink: null
+            });
+          }
         };
 
         var onDoubleClick = function onDoubleClick(e) {
@@ -359,8 +370,11 @@
             width: width
           },
           _react2.default.createElement(_Inspector2.default, {
+            deleteLink: deleteLink,
+            deleteNode: deleteNode,
+            height: height,
             selectedItems: selectedItems,
-            height: height
+            view: view
           }),
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
             var _view$node$id = view.node[id];
@@ -485,7 +499,6 @@
                 showSelector: false
               });
             },
-            fontFamily: fontFamily,
             pointer: pointer,
             show: showSelector
           })
@@ -500,6 +513,7 @@
     createLink: _react.PropTypes.func.isRequired,
     createNode: _react.PropTypes.func.isRequired,
     deleteLink: _react.PropTypes.func.isRequired,
+    deleteNode: _react.PropTypes.func.isRequired,
     dragItems: _react.PropTypes.func.isRequired,
     fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
@@ -524,6 +538,7 @@
     createLink: Function.prototype,
     createNode: Function.prototype,
     deleteLink: Function.prototype,
+    deleteNode: Function.prototype,
     dragItems: Function.prototype,
     fontFamily: _theme2.default.fontFamily,
     fontSize: 17, // FIXME fontSize seems to be ignored

@@ -71,13 +71,26 @@ class FlowViewCanvas {
       delete view.link[id]
     }
 
+    const deleteNode = (id) => {
+      // Remove links connected to given node.
+      Object.keys(view.link).forEach((linkId) => {
+        const from = view.link[linkId].from
+        const to = view.link[linkId].to
+
+        if (from && from[0] === id) delete view.link[linkId]
+        if (to && to[0] === id) delete view.link[linkId]
+      })
+
+      delete view.node[id]
+    }
+
     const dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
-            .filter((id) => (draggedItems.indexOf(id) > -1))
-            .forEach((id) => {
-              view.node[id].x += dragginDelta.x
-              view.node[id].y += dragginDelta.y
-            })
+      .filter((id) => (draggedItems.indexOf(id) > -1))
+      .forEach((id) => {
+        view.node[id].x += dragginDelta.x
+        view.node[id].y += dragginDelta.y
+      })
     }
 
     const updateLink = (id, link) => {
@@ -89,6 +102,7 @@ class FlowViewCanvas {
         createLink={createLink}
         createNode={createNode}
         deleteLink={deleteLink}
+        deleteNode={deleteNode}
         dragItems={dragItems}
         item={item}
         updateLink={updateLink}

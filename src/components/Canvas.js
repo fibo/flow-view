@@ -93,9 +93,19 @@ class Canvas extends Component {
     const onUpdateLink = (id, link) => {
       updateLink(id, link)
 
-      setState({
-        draggedLink: null
-      })
+      const disconnectingLink = (link.to === null)
+
+      if (disconnectingLink) {
+        link.id = id
+
+        setState({
+          draggedLink: link
+        })
+      } else {
+        setState({
+          draggedLink: null
+        })
+      }
     }
 
     const onDoubleClick = (e) => {

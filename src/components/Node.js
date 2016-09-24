@@ -7,6 +7,8 @@ import defaultTheme from './theme'
 class Node extends Component {
   getBody () {
     const {
+      bodyHeight,
+      fontSize,
       pinSize,
       text
     } = this.props
@@ -14,16 +16,50 @@ class Node extends Component {
     // TODO place an id in the div wrapping the body and try to
     // resolve bodyHeight from its content.
 
+    /*
+
+    TODO The following code works and it is ok for custom nodes.
+
+    BUT it os not ok for server side rendering cause foreignobject
+       not supported in image context.
+
     return (
-      <p
-        style={{
-          marginLeft: pinSize,
-          marginRight: pinSize,
-          pointerEvents: 'none'
-        }}
+      <foreignObject
+        height={bodyHeight}
+        onClick={ignoreEvent}
+        onDoubleClick={ignoreEvent}
+        onMouseDown={willDragNode}
+        onMouseUp={selectNode}
+        transform={`translate(0,${pinSize})`}
+        width={computedWidth}
+      >
+        <div
+          style={{backgroundColor: color.body}}
+        >
+          <p
+            style={{
+              marginLeft: pinSize,
+              marginRight: pinSize,
+              pointerEvents: 'none'
+            }}
+          >
+            {text}
+          </p>
+        </div>
+      </foreignObject>
+    )
+    */
+
+    // Heuristic value, based on Courier font.
+    const margin = fontSize * 0.2
+
+    return (
+      <text
+        x={pinSize}
+        y={bodyHeight + pinSize - margin}
       >
         {text}
-      </p>
+      </text>
     )
   }
 
@@ -49,7 +85,7 @@ class Node extends Component {
       y
     } = this.props
 
-    const body = this.getBody()
+    const bodyContent = this.getBody()
 
     const computedWidth = computeNodeWidth({
       bodyHeight,
@@ -71,13 +107,14 @@ class Node extends Component {
         transform={`translate(${x},${y})`}
       >
         <rect
-          stroke={(selected || dragged) ? color.selected : color.border}
-          strokeWidth={selected ? 3 : 2}
+          fillOpacity={0}
           height={bodyHeight + 2 * pinSize}
+          stroke={(selected || dragged) ? color.selected : color.bar}
+          strokeWidth={1}
           width={computedWidth}
         />
         <rect
-          fill={color.bar}
+          fill={(selected || dragged) ? color.selected : color.bar}
           height={pinSize}
           width={computedWidth}
         />
@@ -105,23 +142,9 @@ class Node extends Component {
             />
           )
         })}
-        <foreignObject
-          height={bodyHeight}
-          onClick={ignoreEvent}
-          onDoubleClick={ignoreEvent}
-          onMouseDown={willDragNode}
-          onMouseUp={selectNode}
-          transform={`translate(0,${pinSize})`}
-          width={computedWidth}
-        >
-          <div
-            style={{backgroundColor: color.body}}
-          >
-            {body}
-          </div>
-        </foreignObject>
+        {bodyContent}
         <rect
-          fill={color.bar}
+          fill={(selected || dragged) ? color.selected : color.bar}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}

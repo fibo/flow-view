@@ -1,12 +1,33 @@
 {
   "node": {
     "a": {
+      "text": "your engine",
+      "outs": ["out"],
+      "x": 70,
+      "y": 10
+    },
+    "b": {
       "text": "flow-view",
       "ins": ["in"],
       "outs": ["out"],
-      "x": 10,
-      "y": 10
+      "x": 100,
+      "y": 100
+    },
+    "c": {
+      "text": "a cool app!",
+      "ins": ["in"],
+      "x": 100,
+      "y": 170
     }
   },
-  "link": {}
+  "link": {
+    "l": {
+      "from": ["a", 0],
+      "to": ["b", 0]
+    },
+    "i": {
+      "from": ["b", 0],
+      "to": ["c", 0]
+    }
+  }
 }

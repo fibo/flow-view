@@ -36,8 +36,8 @@ class Canvas extends Component {
 
   render () {
     const {
-      addInputPin,
-      addOutputPin,
+      createInputPin,
+      createOutputPin,
       createLink,
       createNode,
       deleteLink,
@@ -49,8 +49,8 @@ class Canvas extends Component {
       lineWidth,
       nodeBodyHeight,
       pinSize,
-      removeInputPin,
-      removeOutputPin,
+      deleteInputPin,
+      deleteOutputPin,
       style,
       updateLink,
       view
@@ -280,17 +280,6 @@ class Canvas extends Component {
         style={style}
         width={width}
       >
-        <Inspector
-          addInputPin={addInputPin}
-          addOutputPin={addOutputPin}
-          deleteLink={deleteLink}
-          deleteNode={deleteNode}
-          height={height}
-          removeInputPin={removeInputPin}
-          removeOutputPin={removeOutputPin}
-          items={(Object.assign([], selectedItems, draggedItems))}
-          view={view}
-        />
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
           const {
             height,
@@ -396,6 +385,16 @@ class Canvas extends Component {
             />
           )
         })}
+        <Inspector
+          createInputPin={createInputPin}
+          createOutputPin={createOutputPin}
+          deleteLink={deleteLink}
+          deleteNode={deleteNode}
+          deleteInputPin={deleteInputPin}
+          deleteOutputPin={deleteOutputPin}
+          items={(Object.assign([], selectedItems, draggedItems))}
+          view={view}
+        />
         <Selector
           createNode={(node) => {
             createNode(node)
@@ -421,8 +420,8 @@ class Canvas extends Component {
 }
 
 Canvas.propTypes = {
-  addInputPin: PropTypes.func.isRequired,
-  addOutputPin: PropTypes.func.isRequired,
+  createInputPin: PropTypes.func.isRequired,
+  createOutputPin: PropTypes.func.isRequired,
   createLink: PropTypes.func.isRequired,
   createNode: PropTypes.func.isRequired,
   deleteLink: PropTypes.func.isRequired,
@@ -437,8 +436,8 @@ Canvas.propTypes = {
   nodeBodyHeight: PropTypes.number.isRequired,
   lineWidth: PropTypes.number.isRequired,
   pinSize: PropTypes.number.isRequired,
-  removeInputPin: PropTypes.func.isRequired,
-  removeOutputPin: PropTypes.func.isRequired,
+  deleteInputPin: PropTypes.func.isRequired,
+  deleteOutputPin: PropTypes.func.isRequired,
   style: PropTypes.object.isRequired,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
@@ -450,8 +449,8 @@ Canvas.propTypes = {
 }
 
 Canvas.defaultProps = {
-  addInputPin: Function.prototype,
-  addOutputPin: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
@@ -466,8 +465,8 @@ Canvas.defaultProps = {
   lineWidth: defaultTheme.lineWidth,
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,
-  removeInputPin: Function.prototype,
-  removeOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteOutputPin: Function.prototype,
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {

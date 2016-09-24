@@ -4,13 +4,12 @@ import ignoreEvent from '../utils/ignoreEvent'
 class Inspector extends Component {
   render () {
     const {
-      addInputPin,
-      addOutputPin,
+      createInputPin,
+      createOutputPin,
       deleteLink,
       deleteNode,
-      height,
-      removeInputPin,
-      removeOutputPin,
+      deleteInputPin,
+      deleteOutputPin,
       items,
       view,
       width,
@@ -37,7 +36,7 @@ class Inspector extends Component {
                 deleteLink(itemId)
               }}
             >
-              remove link
+              delete link
             </button>
           </div>
         )
@@ -83,20 +82,20 @@ class Inspector extends Component {
               ins
               <button
                 disabled={(ins.length === 0) || lastInputIsConnected}
-                onClick={() => { removeInputPin(itemId) }}
+                onClick={() => { deleteInputPin(itemId) }}
               >-</button>
               <button
-                onClick={() => { addInputPin(itemId) }}
+                onClick={() => { createInputPin(itemId) }}
               >+</button>
             </div>
             <div>
               outs
               <button
                 disabled={(outs.length === 0) || lastOutputIsConnected}
-                onClick={() => { removeOutputPin(itemId) }}
+                onClick={() => { deleteOutputPin(itemId) }}
               >-</button>
               <button
-                onClick={() => { addOutputPin(itemId) }}
+                onClick={() => { createOutputPin(itemId) }}
               >+</button>
             </div>
             <button
@@ -104,7 +103,7 @@ class Inspector extends Component {
                 deleteNode(itemId)
               }}
             >
-              remove node
+              delete node
             </button>
           </div>
         )
@@ -113,7 +112,6 @@ class Inspector extends Component {
 
     return (
       <foreignObject
-        height={height}
         onDoubleClick={ignoreEvent}
         onMouseDown={ignoreEvent}
         onMouseUp={ignoreEvent}
@@ -128,13 +126,12 @@ class Inspector extends Component {
 }
 
 Inspector.propTypes = {
-  addInputPin: PropTypes.func.isRequired,
-  addOutputPin: PropTypes.func.isRequired,
+  createInputPin: PropTypes.func.isRequired,
+  createOutputPin: PropTypes.func.isRequired,
   deleteLink: PropTypes.func.isRequired,
   deleteNode: PropTypes.func.isRequired,
-  height: PropTypes.number.isRequired,
-  removeInputPin: PropTypes.func.isRequired,
-  removeOutputPin: PropTypes.func.isRequired,
+  deleteInputPin: PropTypes.func.isRequired,
+  deleteOutputPin: PropTypes.func.isRequired,
   items: PropTypes.array.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
@@ -146,13 +143,13 @@ Inspector.propTypes = {
 }
 
 Inspector.defaultProps = {
-  addInputPin: Function.prototype,
-  addOutputPin: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   deleteLink: Function.prototype,
   deleteNode: Function.prototype,
   items: [],
-  removeInputPin: Function.prototype,
-  removeOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteOutputPin: Function.prototype,
   width: 200,
   x: 0,
   y: 0

@@ -127,6 +127,21 @@ canvas.render({
 })
 ```
 
+### Events
+
+The following events are emitted:
+
+| name              | arguments             |
+|-------------------|-----------------------|
+| `createLink`      | link, linkId          |
+| `createNode`      | node, nodeId          |
+| `createInputPin`  | nodeId, position, pin |
+| `createOutputPin` | nodeId, position, pin |
+| `deleteLink`      | linkId                |
+| `deleteNode`      | nodeId                |
+| `deleteInputPin`  | nodeId, position      |
+| `deleteOutputPin` | nodeId, position      |
+
 ### Node spec
 
 A node describes an element and has the following attributes:

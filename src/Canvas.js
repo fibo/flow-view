@@ -54,7 +54,7 @@ class FlowViewCanvas extends EventEmitter {
     const container = this.container
     const item = this.item
 
-    const addInputPin = (nodeId, pin) => {
+    const createInputPin = (nodeId, pin) => {
       var ins = view.node[nodeId].ins
 
       if (no(ins)) view.node[nodeId].ins = ins = []
@@ -63,10 +63,12 @@ class FlowViewCanvas extends EventEmitter {
 
       if (no(pin)) pin = `in${position}`
 
+      this.emit('createInputPin', nodeId, position, pin)
+
       view.node[nodeId].ins.push(pin)
     }
 
-    const addOutputPin = (nodeId, pin) => {
+    const createOutputPin = (nodeId, pin) => {
       var outs = view.node[nodeId].outs
 
       if (no(outs)) view.node[nodeId].outs = outs = []
@@ -74,6 +76,8 @@ class FlowViewCanvas extends EventEmitter {
       const position = outs.length
 
       if (no(pin)) pin = `out${position}`
+
+      this.emit('createOutputPin', nodeId, position, pin)
 
       view.node[nodeId].outs.push(pin)
     }
@@ -88,7 +92,10 @@ class FlowViewCanvas extends EventEmitter {
 
       view.link[id] = link
 
-      this.emit('createLink', link, id)
+      // Do not fire createLink event if it is a dragging link.
+      if (link.to) {
+        this.emit('createLink', link, id)
+      }
 
       return id
     }
@@ -115,7 +122,7 @@ class FlowViewCanvas extends EventEmitter {
     }
 
     const deleteNode = (id) => {
-      // Remove links connected to given node.
+      // delete links connected to given node.
       Object.keys(view.link).forEach((linkId) => {
         const from = view.link[linkId].from
         const to = view.link[linkId].to
@@ -147,42 +154,53 @@ class FlowViewCanvas extends EventEmitter {
       })
     }
 
-    const removeInputPin = (nodeId, position) => {
+    const deleteInputPin = (nodeId, position) => {
       var ins = view.node[nodeId].ins
 
       if (no(ins)) view.node[nodeId].ins = ins = []
 
       if (no(position)) position = ins.length - 1
 
+      this.emit('deleteInputPin', nodeId, position)
+
       view.node[nodeId].ins.splice(position, 1)
     }
 
-    const removeOutputPin = (nodeId, position) => {
+    const deleteOutputPin = (nodeId, position) => {
       var outs = view.node[nodeId].outs
 
       if (no(outs)) view.node[nodeId].outs = outs = []
 
       if (no(position)) position = outs.length - 1
 
+      this.emit('deleteOutputPin', nodeId, position)
+
       view.node[nodeId].outs.splice(position, 1)
     }
 
     const updateLink = (id, link) => {
+      // Trigger a createLink event if it is a connected link.
+      if (link.to) {
+        this.emit('createLink', link, id)
+      } else {
+        this.emit('deleteLink', link, id)
+      }
+
       view.link[id] = Object.assign(view.link[id], link)
     }
 
     const component = (
       <Canvas
-        addInputPin={addInputPin}
-        addOutputPin={addOutputPin}
+        createInputPin={createInputPin}
+        createOutputPin={createOutputPin}
         createLink={createLink}
         createNode={createNode}
         deleteLink={deleteLink}
         deleteNode={deleteNode}
         dragItems={dragItems}
         item={item}
-        removeInputPin={removeInputPin}
-        removeOutputPin={removeOutputPin}
+        deleteInputPin={deleteInputPin}
+        deleteOutputPin={deleteOutputPin}
         updateLink={updateLink}
         view={view}
       />

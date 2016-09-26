@@ -233,8 +233,12 @@ class Canvas extends Component {
       const index = selectedItems.indexOf(id)
 
       if (index === -1) {
-        selectedItems = [id]
-        // TODO if CTRL key pressed: selectedItems.push(id)
+        // CTRL key allows multiple selection.
+        if (e.ctrlKey) {
+          selectedItems.push(id)
+        } else {
+          selectedItems = [id]
+        }
       } else {
         selectedItems.splice(index, 1)
       }
@@ -254,8 +258,12 @@ class Canvas extends Component {
       const index = draggedItems.indexOf(id)
 
       if (index === -1) {
-        draggedItems = [id]
-        // TODO if CTRL key pressed: draggedItems.push(id)
+        // CTRL key allows multiple selection.
+        if (e.ctrlKey) {
+          draggedItems.push(id)
+        } else {
+          draggedItems = [id]
+        }
       }
 
       setState({

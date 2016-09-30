@@ -172,7 +172,6 @@ A link describes a connection between elements and has the following attributes:
 * **@param** `String` *from[0]* is the key of the source node
 * **@param** `Number` *from[1]* is the output pin position
 * **@param** `Array` *to* has exactly two elements
-* **@param** `Array` *to* has exactly two elements
 * **@param** `String` *to[0]* is the key of the target node
 * **@param** `Number` *to[1]* is the input pin position
 

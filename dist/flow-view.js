@@ -8182,7 +8182,8 @@ function is(x, y) {
   if (x === y) {
     // Steps 1-5, 7-10
     // Steps 6.b-6.e: +0 != -0
-    return x !== 0 || 1 / x === 1 / y;
+    // Added the nonzero y check to make Flow happy, but it is redundant
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
   } else {
     // Step 6.a: NaN == NaN
     return x !== x && y !== y;
@@ -31894,7 +31895,7 @@ module.exports = keys;
 },{"./_arrayLikeKeys":114,"./_baseKeys":135,"./isArrayLike":219}],228:[function(require,module,exports){
 var MapCache = require('./_MapCache');
 
-/** Used as the `TypeError` message for "Functions" methods. */
+/** Error message constants. */
 var FUNC_ERROR_TEXT = 'Expected a function';
 
 /**
@@ -55674,8 +55675,12 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           var index = selectedItems.indexOf(id);
 
           if (index === -1) {
-            selectedItems = [id];
-            // TODO if CTRL key pressed: selectedItems.push(id)
+            // CTRL key allows multiple selection.
+            if (e.ctrlKey) {
+              selectedItems.push(id);
+            } else {
+              selectedItems = [id];
+            }
           } else {
             selectedItems.splice(index, 1);
           }
@@ -55697,8 +55702,12 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           var index = draggedItems.indexOf(id);
 
           if (index === -1) {
-            draggedItems = [id];
-            // TODO if CTRL key pressed: draggedItems.push(id)
+            // CTRL key allows multiple selection.
+            if (e.ctrlKey) {
+              draggedItems.push(id);
+            } else {
+              draggedItems = [id];
+            }
           }
 
           setState({

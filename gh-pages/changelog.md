@@ -19,9 +19,12 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
+## [v2.6.1] - 2016-09-30
+
 ### Fixed
 
-Minor bug when adding an input to a node in a previous empty canvas.
+- Relaxed dependencies.
+- Minor bug when adding an input to a node in a previous empty canvas.
 
 ## [v2.6.0] - 2016-09-25
 

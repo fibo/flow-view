@@ -19,6 +19,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
+### Fixed
+
+- When dragging started from an input it was not possible to end it.
+
 ## [v2.6.1] - 2016-09-30
 
 ### Fixed

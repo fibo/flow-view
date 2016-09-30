@@ -121,6 +121,13 @@ class Node extends Component {
           // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
+          // TODO
+          // const onMouseDown = (e) => {
+          //   e.preventDefault()
+          //   e.stopPropagation()
+          //   onCreateLink({ from: null, to: [ id, i ] })
+          // }
+
           const onMouseUp = (e) => {
             e.preventDefault()
             e.stopPropagation()
@@ -135,6 +142,7 @@ class Node extends Component {
               key={i}
               fill={color.pin}
               height={pinSize}
+              onMouseDown={ignoreEvent}
               onMouseUp={onMouseUp}
               transform={`translate(${x},0)`}
               width={pinSize}

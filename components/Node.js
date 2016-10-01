@@ -211,6 +211,13 @@
             // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
             var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
+            // TODO
+            // const onMouseDown = (e) => {
+            //   e.preventDefault()
+            //   e.stopPropagation()
+            //   onCreateLink({ from: null, to: [ id, i ] })
+            // }
+
             var onMouseUp = function onMouseUp(e) {
               e.preventDefault();
               e.stopPropagation();
@@ -224,6 +231,7 @@
               key: i,
               fill: color.pin,
               height: pinSize,
+              onMouseDown: _ignoreEvent2.default,
               onMouseUp: onMouseUp,
               transform: 'translate(' + x + ',0)',
               width: pinSize

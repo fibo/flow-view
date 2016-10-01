@@ -99,8 +99,8 @@ On server side it generates an SVG output like the one you see on top of this RE
 see [render/serverside.js example][example_render_serverside].
 
 * **@param** `{Object}` *[view]* can be empty
-* **@param** `{Number}` *view.height* defaults to 400
-* **@param** `{Number}` *view.width* defaults to 400
+* **@param** `{Number}` *view.height* defaults to container height or 400
+* **@param** `{Number}` *view.width* defaults to container width or 400
 * **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
 * **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
 * **@param** `{Object}` *[callback]* called on serverside context

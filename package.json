@@ -91,7 +91,7 @@
     "react-proxy": "1.x",
     "rimraf": "2.x",
     "standard": "8.x",
-    "tape": "4.x",
+    "tape": "^4.6.2",
     "uglify-js": "^2.6.4"
   }
 }

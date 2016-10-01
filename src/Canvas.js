@@ -6,6 +6,10 @@ import no from 'not-defined'
 import randomString from './utils/randomString'
 import renderSVGx from 'svgx'
 
+import DefaultInspector from './components/Inspector'
+import DefaultLink from './components/Link'
+import DefaultNode from './components/Node'
+
 // TODO find a better way to generate ids.
 const idLength = 3
 
@@ -48,7 +52,12 @@ class FlowViewCanvas extends EventEmitter {
    */
   render (view, callback) {
     const container = this.container
-    const item = this.item
+    const item = Object.assign({},
+      { inspector: { DefaultInspector } },
+      { link: { DefaultLink } },
+      { node: { DefaultNode } },
+      this.item
+    )
 
     // Default values for height and width.
     var height = 400

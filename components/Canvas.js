@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', '../utils/computeNodeWidth', './Link', './Node', './theme', '../utils/ignoreEvent', './Inspector', '../utils/xOfPin', './Selector'], factory);
+    define(['module', 'exports', 'react', 'react-dom', '../utils/computeNodeWidth', './Inspector', './Link', './Node', './theme', '../utils/ignoreEvent', '../utils/xOfPin', './Selector'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('../utils/computeNodeWidth'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('./Inspector'), require('../utils/xOfPin'), require('./Selector'));
+    factory(module, exports, require('react'), require('react-dom'), require('../utils/computeNodeWidth'), require('./Inspector'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('./Selector'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Link, global.Node, global.theme, global.ignoreEvent, global.Inspector, global.xOfPin, global.Selector);
+    factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Inspector, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Link, _Node, _theme, _ignoreEvent, _Inspector, _xOfPin, _Selector) {
+})(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Inspector, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -21,6 +21,8 @@
 
   var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
+  var _Inspector2 = _interopRequireDefault(_Inspector);
+
   var _Link2 = _interopRequireDefault(_Link);
 
   var _Node2 = _interopRequireDefault(_Node);
@@ -28,8 +30,6 @@
   var _theme2 = _interopRequireDefault(_theme);
 
   var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
-  var _Inspector2 = _interopRequireDefault(_Inspector);
 
   var _xOfPin2 = _interopRequireDefault(_xOfPin);
 
@@ -155,6 +155,7 @@
         var height = view.height;
         var width = view.width;
 
+        var Inspector = item.inspector.DefaultInspector;
         var Link = item.link.DefaultLink;
         var Node = item.node.DefaultNode;
 
@@ -218,7 +219,7 @@
           e.preventDefault();
           e.stopPropagation();
 
-          // TODO CTRL key for multiple selection.
+          // TODO Shift key for multiple selection.
 
           setState({
             selectedItems: []
@@ -277,6 +278,7 @@
             });
           } else {
             setState({
+              draggedItems: [],
               selectedItems: [],
               pointer: null
             });
@@ -323,8 +325,9 @@
             var index = selectedItems.indexOf(id);
 
             if (index === -1) {
-              // CTRL key allows multiple selection.
-              if (e.ctrlKey) {
+              // Shift key allows multiple selection.
+              if (e.shiftKey) {
+                // TODO it does not work.
                 selectedItems.push(id);
               } else {
                 selectedItems = [id];
@@ -350,8 +353,9 @@
             var index = draggedItems.indexOf(id);
 
             if (index === -1) {
-              // CTRL key allows multiple selection.
-              if (e.ctrlKey) {
+              // Shift key allows multiple selection.
+              if (e.shiftKey) {
+                // TODO it does not work.
                 draggedItems.push(id);
               } else {
                 draggedItems = [id];
@@ -487,7 +491,7 @@
               y2: y2
             });
           }),
-          _react2.default.createElement(_Inspector2.default, {
+          _react2.default.createElement(Inspector, {
             createInputPin: createInputPin,
             createOutputPin: createOutputPin,
             deleteLink: deleteLink,
@@ -534,6 +538,7 @@
     fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     item: _react.PropTypes.shape({
+      inspector: _react.PropTypes.object.isRequired,
       link: _react.PropTypes.object.isRequired,
       node: _react.PropTypes.object.isRequired
     }).isRequired,
@@ -563,6 +568,7 @@
     fontFamily: _theme2.default.fontFamily,
     fontSize: 17, // FIXME fontSize seems to be ignored
     item: {
+      inspector: { DefaultInspector: _Inspector2.default },
       link: { DefaultLink: _Link2.default },
       node: { DefaultNode: _Node2.default }
     },

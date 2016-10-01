@@ -88,12 +88,6 @@
       key: 'render',
       value: function render() {
         var _props = this.props;
-        var createInputPin = _props.createInputPin;
-        var createOutputPin = _props.createOutputPin;
-        var deleteLink = _props.deleteLink;
-        var deleteNode = _props.deleteNode;
-        var deleteInputPin = _props.deleteInputPin;
-        var deleteOutputPin = _props.deleteOutputPin;
         var items = _props.items;
         var view = _props.view;
         var width = _props.width;
@@ -112,125 +106,11 @@
           var node = view.node[itemId];
 
           if (link) {
-            item = _react2.default.createElement(
-              'div',
-              null,
-              'link',
-              _react2.default.createElement(
-                'button',
-                {
-                  onClick: function onClick() {
-                    deleteLink(itemId);
-                  }
-                },
-                'delete link'
-              )
-            );
+            item = this.renderLink(itemId, link);
           }
 
           if (node) {
-            var lastInputIsConnected;
-            var lastOutputIsConnected;
-
-            (function () {
-              var ins = node.ins || [];
-              var outs = node.outs || [];
-
-              var lastInputPosition = ins.length - 1;
-              var lastOutputPosition = outs.length - 1;
-
-              lastInputIsConnected = false;
-              lastOutputIsConnected = false;
-
-
-              Object.keys(view.link).forEach(function (linkId) {
-                var link = view.link[linkId];
-
-                if (link.to && link.to[0] === itemId && link.to[1] === lastInputPosition) {
-                  lastInputIsConnected = true;
-                }
-
-                if (link.from[0] === itemId && link.from[1] === lastOutputPosition) {
-                  lastOutputIsConnected = true;
-                }
-              });
-
-              item = _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(
-                  'label',
-                  {
-                    htmlFor: 'name'
-                  },
-                  'node'
-                ),
-                _react2.default.createElement('input', {
-                  type: 'text',
-                  id: 'name',
-                  disabled: true,
-                  style: { outline: 'none' },
-                  value: node.text
-                }),
-                _react2.default.createElement(
-                  'div',
-                  null,
-                  'ins',
-                  _react2.default.createElement(
-                    'button',
-                    {
-                      disabled: ins.length === 0 || lastInputIsConnected,
-                      onClick: function onClick() {
-                        deleteInputPin(itemId);
-                      }
-                    },
-                    '-'
-                  ),
-                  _react2.default.createElement(
-                    'button',
-                    {
-                      onClick: function onClick() {
-                        createInputPin(itemId);
-                      }
-                    },
-                    '+'
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  null,
-                  'outs',
-                  _react2.default.createElement(
-                    'button',
-                    {
-                      disabled: outs.length === 0 || lastOutputIsConnected,
-                      onClick: function onClick() {
-                        deleteOutputPin(itemId);
-                      }
-                    },
-                    '-'
-                  ),
-                  _react2.default.createElement(
-                    'button',
-                    {
-                      onClick: function onClick() {
-                        createOutputPin(itemId);
-                      }
-                    },
-                    '+'
-                  )
-                ),
-                _react2.default.createElement(
-                  'button',
-                  {
-                    onClick: function onClick() {
-                      deleteNode(itemId);
-                    }
-                  },
-                  'delete node'
-                )
-              );
-            })();
+            item = this.renderNode(itemId, node);
           }
         }
 
@@ -245,6 +125,135 @@
             y: y
           },
           item
+        );
+      }
+    }, {
+      key: 'renderLink',
+      value: function renderLink(linkId, link) {
+        var deleteLink = this.props.deleteLink;
+
+        return _react2.default.createElement(
+          'div',
+          null,
+          'link',
+          _react2.default.createElement(
+            'button',
+            {
+              onClick: function onClick() {
+                deleteLink(linkId);
+              }
+            },
+            'delete link'
+          )
+        );
+      }
+    }, {
+      key: 'renderNode',
+      value: function renderNode(nodeId, node) {
+        var _props2 = this.props;
+        var createInputPin = _props2.createInputPin;
+        var createOutputPin = _props2.createOutputPin;
+        var deleteNode = _props2.deleteNode;
+        var deleteInputPin = _props2.deleteInputPin;
+        var deleteOutputPin = _props2.deleteOutputPin;
+        var view = _props2.view;
+
+
+        var ins = node.ins || [];
+        var outs = node.outs || [];
+
+        var lastInputPosition = ins.length - 1;
+        var lastOutputPosition = outs.length - 1;
+
+        var lastInputIsConnected = false;
+        var lastOutputIsConnected = false;
+
+        Object.keys(view.link).forEach(function (linkId) {
+          var link = view.link[linkId];
+
+          if (link.to && link.to[0] === nodeId && link.to[1] === lastInputPosition) {
+            lastInputIsConnected = true;
+          }
+
+          if (link.from[0] === nodeId && link.from[1] === lastOutputPosition) {
+            lastOutputIsConnected = true;
+          }
+        });
+
+        return _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'label',
+            {
+              htmlFor: 'name'
+            },
+            'node'
+          ),
+          _react2.default.createElement('input', {
+            type: 'text',
+            id: 'name',
+            disabled: true,
+            style: { outline: 'none' },
+            value: node.text
+          }),
+          _react2.default.createElement(
+            'div',
+            null,
+            'ins',
+            _react2.default.createElement(
+              'button',
+              {
+                disabled: ins.length === 0 || lastInputIsConnected,
+                onClick: function onClick() {
+                  deleteInputPin(nodeId);
+                }
+              },
+              '-'
+            ),
+            _react2.default.createElement(
+              'button',
+              {
+                onClick: function onClick() {
+                  createInputPin(nodeId);
+                }
+              },
+              '+'
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            'outs',
+            _react2.default.createElement(
+              'button',
+              {
+                disabled: outs.length === 0 || lastOutputIsConnected,
+                onClick: function onClick() {
+                  deleteOutputPin(nodeId);
+                }
+              },
+              '-'
+            ),
+            _react2.default.createElement(
+              'button',
+              {
+                onClick: function onClick() {
+                  createOutputPin(nodeId);
+                }
+              },
+              '+'
+            )
+          ),
+          _react2.default.createElement(
+            'button',
+            {
+              onClick: function onClick() {
+                deleteNode(nodeId);
+              }
+            },
+            'delete node'
+          )
         );
       }
     }]);

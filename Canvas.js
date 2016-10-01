@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', './components/Canvas', 'events', 'not-defined', './utils/randomString', 'svgx'], factory);
+    define(['module', 'exports', 'react', 'react-dom', './components/Canvas', 'events', 'not-defined', './utils/randomString', 'svgx', './components/Inspector', './components/Link', './components/Node'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('./components/Canvas'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'));
+    factory(module, exports, require('react'), require('react-dom'), require('./components/Canvas'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'), require('./components/Inspector'), require('./components/Link'), require('./components/Node'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.Canvas, global.events, global.notDefined, global.randomString, global.svgx);
+    factory(mod, mod.exports, global.react, global.reactDom, global.Canvas, global.events, global.notDefined, global.randomString, global.svgx, global.Inspector, global.Link, global.Node);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _Canvas, _events, _notDefined, _randomString, _svgx) {
+})(this, function (module, exports, _react, _reactDom, _Canvas, _events, _notDefined, _randomString, _svgx, _Inspector, _Link, _Node) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -28,6 +28,12 @@
   var _randomString2 = _interopRequireDefault(_randomString);
 
   var _svgx2 = _interopRequireDefault(_svgx);
+
+  var _Inspector2 = _interopRequireDefault(_Inspector);
+
+  var _Link2 = _interopRequireDefault(_Link);
+
+  var _Node2 = _interopRequireDefault(_Node);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -136,7 +142,7 @@
         var _this2 = this;
 
         var container = this.container;
-        var item = this.item;
+        var item = Object.assign({}, { inspector: { DefaultInspector: _Inspector2.default } }, { link: { DefaultLink: _Link2.default } }, { node: { DefaultNode: _Node2.default } }, this.item);
 
         // Default values for height and width.
         var height = 400;

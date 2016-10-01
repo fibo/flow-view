@@ -4,12 +4,6 @@ import ignoreEvent from '../utils/ignoreEvent'
 class Inspector extends Component {
   render () {
     const {
-      createInputPin,
-      createOutputPin,
-      deleteLink,
-      deleteNode,
-      deleteInputPin,
-      deleteOutputPin,
       items,
       view,
       width,
@@ -28,85 +22,11 @@ class Inspector extends Component {
       const node = view.node[itemId]
 
       if (link) {
-        item = (
-          <div>
-            link
-            <button
-              onClick={() => {
-                deleteLink(itemId)
-              }}
-            >
-              delete link
-            </button>
-          </div>
-        )
+        item = this.renderLink(itemId, link)
       }
 
       if (node) {
-        const ins = node.ins || []
-        const outs = node.outs || []
-
-        const lastInputPosition = ins.length - 1
-        const lastOutputPosition = outs.length - 1
-
-        var lastInputIsConnected = false
-        var lastOutputIsConnected = false
-
-        Object.keys(view.link).forEach((linkId) => {
-          const link = view.link[linkId]
-
-          if (link.to && (link.to[0] === itemId) && (link.to[1] === lastInputPosition)) {
-            lastInputIsConnected = true
-          }
-
-          if ((link.from[0] === itemId) && (link.from[1] === lastOutputPosition)) {
-            lastOutputIsConnected = true
-          }
-        })
-
-        item = (
-          <div>
-            <label
-              htmlFor='name'
-            >
-              node
-            </label>
-            <input
-              type='text'
-              id='name'
-              disabled
-              style={{ outline: 'none' }}
-              value={node.text}
-            />
-            <div>
-              ins
-              <button
-                disabled={(ins.length === 0) || lastInputIsConnected}
-                onClick={() => { deleteInputPin(itemId) }}
-              >-</button>
-              <button
-                onClick={() => { createInputPin(itemId) }}
-              >+</button>
-            </div>
-            <div>
-              outs
-              <button
-                disabled={(outs.length === 0) || lastOutputIsConnected}
-                onClick={() => { deleteOutputPin(itemId) }}
-              >-</button>
-              <button
-                onClick={() => { createOutputPin(itemId) }}
-              >+</button>
-            </div>
-            <button
-              onClick={() => {
-                deleteNode(itemId)
-              }}
-            >
-              delete node
-            </button>
-          </div>
-        )
+        item = this.renderNode(itemId, node)
       }
     }
 
@@ -121,6 +41,99 @@ class Inspector extends Component {
       >
         {item}
       </foreignObject>
+    )
+  }
+
+  renderLink (linkId, link) {
+    const deleteLink = this.props.deleteLink
+
+    return (
+      <div>
+        link
+        <button
+          onClick={() => {
+            deleteLink(linkId)
+          }}
+        >
+          delete link
+        </button>
+      </div>
+    )
+  }
+
+  renderNode (nodeId, node) {
+    const {
+      createInputPin,
+      createOutputPin,
+      deleteNode,
+      deleteInputPin,
+      deleteOutputPin,
+      view
+    } = this.props
+
+    const ins = node.ins || []
+    const outs = node.outs || []
+
+    const lastInputPosition = ins.length - 1
+    const lastOutputPosition = outs.length - 1
+
+    var lastInputIsConnected = false
+    var lastOutputIsConnected = false
+
+    Object.keys(view.link).forEach((linkId) => {
+      const link = view.link[linkId]
+
+      if (link.to && (link.to[0] === nodeId) && (link.to[1] === lastInputPosition)) {
+        lastInputIsConnected = true
+      }
+
+      if ((link.from[0] === nodeId) && (link.from[1] === lastOutputPosition)) {
+        lastOutputIsConnected = true
+      }
+    })
+
+    return (
+      <div>
+        <label
+          htmlFor='name'
+        >
+          node
+        </label>
+        <input
+          type='text'
+          id='name'
+          disabled
+          style={{ outline: 'none' }}
+          value={node.text}
+        />
+        <div>
+          ins
+          <button
+            disabled={(ins.length === 0) || lastInputIsConnected}
+            onClick={() => { deleteInputPin(nodeId) }}
+          >-</button>
+          <button
+            onClick={() => { createInputPin(nodeId) }}
+          >+</button>
+        </div>
+        <div>
+          outs
+          <button
+            disabled={(outs.length === 0) || lastOutputIsConnected}
+            onClick={() => { deleteOutputPin(nodeId) }}
+          >-</button>
+          <button
+            onClick={() => { createOutputPin(nodeId) }}
+          >+</button>
+        </div>
+        <button
+          onClick={() => {
+            deleteNode(nodeId)
+          }}
+        >
+          delete node
+        </button>
+      </div>
     )
   }
 }

@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
 import computeNodeWidth from '../utils/computeNodeWidth'
+import DefaultInspector from './Inspector'
 import DefaultLink from './Link'
 import DefaultNode from './Node'
 import defaultTheme from './theme'
 import ignoreEvent from '../utils/ignoreEvent'
 
-import Inspector from './Inspector'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
@@ -68,6 +68,7 @@ class Canvas extends Component {
     const height = view.height
     const width = view.width
 
+    const Inspector = item.inspector.DefaultInspector
     const Link = item.link.DefaultLink
     const Node = item.node.DefaultNode
 
@@ -441,6 +442,7 @@ Canvas.propTypes = {
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   item: PropTypes.shape({
+    inspector: PropTypes.object.isRequired,
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
   }).isRequired,
@@ -470,6 +472,7 @@ Canvas.defaultProps = {
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
+    inspector: { DefaultInspector },
     link: { DefaultLink },
     node: { DefaultNode }
   },

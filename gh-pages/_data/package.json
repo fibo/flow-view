@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -91,7 +91,7 @@
     "react-proxy": "1.x",
     "rimraf": "2.x",
     "standard": "8.x",
-    "tape": "4.x",
+    "tape": "^4.6.2",
     "uglify-js": "^2.6.4"
   }
 }

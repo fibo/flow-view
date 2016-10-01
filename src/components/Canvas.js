@@ -129,7 +129,7 @@ class Canvas extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      // TODO CTRL key for multiple selection.
+      // TODO Shift key for multiple selection.
 
       setState({
         selectedItems: []
@@ -188,6 +188,7 @@ class Canvas extends Component {
         })
       } else {
         setState({
+          draggedItems: [],
           selectedItems: [],
           pointer: null
         })
@@ -233,8 +234,9 @@ class Canvas extends Component {
       const index = selectedItems.indexOf(id)
 
       if (index === -1) {
-        // CTRL key allows multiple selection.
-        if (e.ctrlKey) {
+        // Shift key allows multiple selection.
+        if (e.shiftKey) {
+          // TODO it does not work.
           selectedItems.push(id)
         } else {
           selectedItems = [id]
@@ -258,8 +260,9 @@ class Canvas extends Component {
       const index = draggedItems.indexOf(id)
 
       if (index === -1) {
-        // CTRL key allows multiple selection.
-        if (e.ctrlKey) {
+        // Shift key allows multiple selection.
+        if (e.shiftKey) {
+          // TODO it does not work.
           draggedItems.push(id)
         } else {
           draggedItems = [id]

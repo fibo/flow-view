@@ -109,6 +109,9 @@
         if (container === null) {
           container = document.createElement('div');
           container.id = containerId;
+
+          // Set height and width, including borders (400+1+1).
+          container.setAttribute('style', 'height: 402px; width: 402px;');
           document.body.appendChild(container);
         }
 
@@ -132,15 +135,27 @@
       value: function render(view, callback) {
         var _this2 = this;
 
-        view = Object.assign({}, {
-          height: 400,
-          link: {},
-          node: {},
-          width: 400
-        }, view);
-
         var container = this.container;
         var item = this.item;
+
+        // Default values for height and width.
+        var height = 400;
+        var width = 400;
+
+        // Try to get height and width from container.
+        if (container) {
+          var rect = container.getBoundingClientRect();
+
+          height = rect.height;
+          width = rect.width;
+        }
+
+        view = Object.assign({}, {
+          height: height,
+          link: {},
+          node: {},
+          width: width
+        }, view);
 
         var createInputPin = function createInputPin(nodeId, pin) {
           var ins = view.node[nodeId].ins;

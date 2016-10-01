@@ -28,6 +28,9 @@ class FlowViewCanvas extends EventEmitter {
       if (container === null) {
         container = document.createElement('div')
         container.id = containerId
+
+        // Set height and width, including borders (400+1+1).
+        container.setAttribute('style', 'height: 402px; width: 402px;')
         document.body.appendChild(container)
       }
 
@@ -44,15 +47,27 @@ class FlowViewCanvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
   render (view, callback) {
-    view = Object.assign({}, {
-      height: 400,
-      link: {},
-      node: {},
-      width: 400
-    }, view)
-
     const container = this.container
     const item = this.item
+
+    // Default values for height and width.
+    var height = 400
+    var width = 400
+
+    // Try to get height and width from container.
+    if (container) {
+      var rect = container.getBoundingClientRect()
+
+      height = rect.height
+      width = rect.width
+    }
+
+    view = Object.assign({}, {
+      height,
+      link: {},
+      node: {},
+      width
+    }, view)
 
     const createInputPin = (nodeId, pin) => {
       var ins = view.node[nodeId].ins

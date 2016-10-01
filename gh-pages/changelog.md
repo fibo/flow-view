@@ -19,6 +19,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
+### Added
+
+- Set default height and width, try to get them from container.
+
 ### Fixed
 
 - When dragging started from an input it was not possible to end it.

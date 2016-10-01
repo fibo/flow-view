@@ -22,6 +22,7 @@ New g14n.info layouts, with link Changelog page
 ### Added
 
 - Set default height and width, try to get them from container.
+- Custom Inspector, used in dflow.
 
 ### Fixed
 

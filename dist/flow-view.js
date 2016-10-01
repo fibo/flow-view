@@ -55117,6 +55117,18 @@ var _svgx = require('svgx');
 
 var _svgx2 = _interopRequireDefault(_svgx);
 
+var _Inspector = require('./components/Inspector');
+
+var _Inspector2 = _interopRequireDefault(_Inspector);
+
+var _Link = require('./components/Link');
+
+var _Link2 = _interopRequireDefault(_Link);
+
+var _Node = require('./components/Node');
+
+var _Node2 = _interopRequireDefault(_Node);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -55178,7 +55190,7 @@ var FlowViewCanvas = function (_EventEmitter) {
       var _this2 = this;
 
       var container = this.container;
-      var item = this.item;
+      var item = Object.assign({}, { inspector: { DefaultInspector: _Inspector2.default } }, { link: { DefaultLink: _Link2.default } }, { node: { DefaultNode: _Node2.default } }, this.item);
 
       // Default values for height and width.
       var height = 400;
@@ -55378,7 +55390,7 @@ var FlowViewCanvas = function (_EventEmitter) {
 
 exports.default = FlowViewCanvas;
 
-},{"./components/Canvas":412,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
+},{"./components/Canvas":412,"./components/Inspector":413,"./components/Link":414,"./components/Node":415,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -55401,6 +55413,10 @@ var _computeNodeWidth = require('../utils/computeNodeWidth');
 
 var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
+var _Inspector = require('./Inspector');
+
+var _Inspector2 = _interopRequireDefault(_Inspector);
+
 var _Link = require('./Link');
 
 var _Link2 = _interopRequireDefault(_Link);
@@ -55416,10 +55432,6 @@ var _theme2 = _interopRequireDefault(_theme);
 var _ignoreEvent = require('../utils/ignoreEvent');
 
 var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
-var _Inspector = require('./Inspector');
-
-var _Inspector2 = _interopRequireDefault(_Inspector);
 
 var _xOfPin = require('../utils/xOfPin');
 
@@ -55522,6 +55534,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
       var height = view.height;
       var width = view.width;
 
+      var Inspector = item.inspector.DefaultInspector;
       var Link = item.link.DefaultLink;
       var Node = item.node.DefaultNode;
 
@@ -55585,7 +55598,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
         e.preventDefault();
         e.stopPropagation();
 
-        // TODO CTRL key for multiple selection.
+        // TODO Shift key for multiple selection.
 
         setState({
           selectedItems: []
@@ -55644,6 +55657,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           });
         } else {
           setState({
+            draggedItems: [],
             selectedItems: [],
             pointer: null
           });
@@ -55690,8 +55704,9 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           var index = selectedItems.indexOf(id);
 
           if (index === -1) {
-            // CTRL key allows multiple selection.
-            if (e.ctrlKey) {
+            // Shift key allows multiple selection.
+            if (e.shiftKey) {
+              // TODO it does not work.
               selectedItems.push(id);
             } else {
               selectedItems = [id];
@@ -55717,8 +55732,9 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           var index = draggedItems.indexOf(id);
 
           if (index === -1) {
-            // CTRL key allows multiple selection.
-            if (e.ctrlKey) {
+            // Shift key allows multiple selection.
+            if (e.shiftKey) {
+              // TODO it does not work.
               draggedItems.push(id);
             } else {
               draggedItems = [id];
@@ -55854,7 +55870,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
             y2: y2
           });
         }),
-        _react3.default.createElement(_Inspector2.default, {
+        _react3.default.createElement(Inspector, {
           createInputPin: createInputPin,
           createOutputPin: createOutputPin,
           deleteLink: deleteLink,
@@ -55901,6 +55917,7 @@ Canvas.propTypes = {
   fontFamily: _react2.PropTypes.string.isRequired,
   fontSize: _react2.PropTypes.number.isRequired,
   item: _react2.PropTypes.shape({
+    inspector: _react2.PropTypes.object.isRequired,
     link: _react2.PropTypes.object.isRequired,
     node: _react2.PropTypes.object.isRequired
   }).isRequired,
@@ -55930,6 +55947,7 @@ Canvas.defaultProps = {
   fontFamily: _theme2.default.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
+    inspector: { DefaultInspector: _Inspector2.default },
     link: { DefaultLink: _Link2.default },
     node: { DefaultNode: _Node2.default }
   },
@@ -56011,12 +56029,6 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
     key: 'render',
     value: function render() {
       var _props = this.props;
-      var createInputPin = _props.createInputPin;
-      var createOutputPin = _props.createOutputPin;
-      var deleteLink = _props.deleteLink;
-      var deleteNode = _props.deleteNode;
-      var deleteInputPin = _props.deleteInputPin;
-      var deleteOutputPin = _props.deleteOutputPin;
       var items = _props.items;
       var view = _props.view;
       var width = _props.width;
@@ -56035,125 +56047,11 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
         var node = view.node[itemId];
 
         if (link) {
-          item = _react3.default.createElement(
-            'div',
-            null,
-            'link',
-            _react3.default.createElement(
-              'button',
-              {
-                onClick: function onClick() {
-                  deleteLink(itemId);
-                }
-              },
-              'delete link'
-            )
-          );
+          item = this.renderLink(itemId, link);
         }
 
         if (node) {
-          var lastInputIsConnected;
-          var lastOutputIsConnected;
-
-          (function () {
-            var ins = node.ins || [];
-            var outs = node.outs || [];
-
-            var lastInputPosition = ins.length - 1;
-            var lastOutputPosition = outs.length - 1;
-
-            lastInputIsConnected = false;
-            lastOutputIsConnected = false;
-
-
-            Object.keys(view.link).forEach(function (linkId) {
-              var link = view.link[linkId];
-
-              if (link.to && link.to[0] === itemId && link.to[1] === lastInputPosition) {
-                lastInputIsConnected = true;
-              }
-
-              if (link.from[0] === itemId && link.from[1] === lastOutputPosition) {
-                lastOutputIsConnected = true;
-              }
-            });
-
-            item = _react3.default.createElement(
-              'div',
-              null,
-              _react3.default.createElement(
-                'label',
-                {
-                  htmlFor: 'name'
-                },
-                'node'
-              ),
-              _react3.default.createElement('input', {
-                type: 'text',
-                id: 'name',
-                disabled: true,
-                style: { outline: 'none' },
-                value: node.text
-              }),
-              _react3.default.createElement(
-                'div',
-                null,
-                'ins',
-                _react3.default.createElement(
-                  'button',
-                  {
-                    disabled: ins.length === 0 || lastInputIsConnected,
-                    onClick: function onClick() {
-                      deleteInputPin(itemId);
-                    }
-                  },
-                  '-'
-                ),
-                _react3.default.createElement(
-                  'button',
-                  {
-                    onClick: function onClick() {
-                      createInputPin(itemId);
-                    }
-                  },
-                  '+'
-                )
-              ),
-              _react3.default.createElement(
-                'div',
-                null,
-                'outs',
-                _react3.default.createElement(
-                  'button',
-                  {
-                    disabled: outs.length === 0 || lastOutputIsConnected,
-                    onClick: function onClick() {
-                      deleteOutputPin(itemId);
-                    }
-                  },
-                  '-'
-                ),
-                _react3.default.createElement(
-                  'button',
-                  {
-                    onClick: function onClick() {
-                      createOutputPin(itemId);
-                    }
-                  },
-                  '+'
-                )
-              ),
-              _react3.default.createElement(
-                'button',
-                {
-                  onClick: function onClick() {
-                    deleteNode(itemId);
-                  }
-                },
-                'delete node'
-              )
-            );
-          })();
+          item = this.renderNode(itemId, node);
         }
       }
 
@@ -56168,6 +56066,135 @@ var Inspector = _wrapComponent('Inspector')(function (_Component) {
           y: y
         },
         item
+      );
+    }
+  }, {
+    key: 'renderLink',
+    value: function renderLink(linkId, link) {
+      var deleteLink = this.props.deleteLink;
+
+      return _react3.default.createElement(
+        'div',
+        null,
+        'link',
+        _react3.default.createElement(
+          'button',
+          {
+            onClick: function onClick() {
+              deleteLink(linkId);
+            }
+          },
+          'delete link'
+        )
+      );
+    }
+  }, {
+    key: 'renderNode',
+    value: function renderNode(nodeId, node) {
+      var _props2 = this.props;
+      var createInputPin = _props2.createInputPin;
+      var createOutputPin = _props2.createOutputPin;
+      var deleteNode = _props2.deleteNode;
+      var deleteInputPin = _props2.deleteInputPin;
+      var deleteOutputPin = _props2.deleteOutputPin;
+      var view = _props2.view;
+
+
+      var ins = node.ins || [];
+      var outs = node.outs || [];
+
+      var lastInputPosition = ins.length - 1;
+      var lastOutputPosition = outs.length - 1;
+
+      var lastInputIsConnected = false;
+      var lastOutputIsConnected = false;
+
+      Object.keys(view.link).forEach(function (linkId) {
+        var link = view.link[linkId];
+
+        if (link.to && link.to[0] === nodeId && link.to[1] === lastInputPosition) {
+          lastInputIsConnected = true;
+        }
+
+        if (link.from[0] === nodeId && link.from[1] === lastOutputPosition) {
+          lastOutputIsConnected = true;
+        }
+      });
+
+      return _react3.default.createElement(
+        'div',
+        null,
+        _react3.default.createElement(
+          'label',
+          {
+            htmlFor: 'name'
+          },
+          'node'
+        ),
+        _react3.default.createElement('input', {
+          type: 'text',
+          id: 'name',
+          disabled: true,
+          style: { outline: 'none' },
+          value: node.text
+        }),
+        _react3.default.createElement(
+          'div',
+          null,
+          'ins',
+          _react3.default.createElement(
+            'button',
+            {
+              disabled: ins.length === 0 || lastInputIsConnected,
+              onClick: function onClick() {
+                deleteInputPin(nodeId);
+              }
+            },
+            '-'
+          ),
+          _react3.default.createElement(
+            'button',
+            {
+              onClick: function onClick() {
+                createInputPin(nodeId);
+              }
+            },
+            '+'
+          )
+        ),
+        _react3.default.createElement(
+          'div',
+          null,
+          'outs',
+          _react3.default.createElement(
+            'button',
+            {
+              disabled: outs.length === 0 || lastOutputIsConnected,
+              onClick: function onClick() {
+                deleteOutputPin(nodeId);
+              }
+            },
+            '-'
+          ),
+          _react3.default.createElement(
+            'button',
+            {
+              onClick: function onClick() {
+                createOutputPin(nodeId);
+              }
+            },
+            '+'
+          )
+        ),
+        _react3.default.createElement(
+          'button',
+          {
+            onClick: function onClick() {
+              deleteNode(nodeId);
+            }
+          },
+          'delete node'
+        )
       );
     }
   }]);

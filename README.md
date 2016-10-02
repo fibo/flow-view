@@ -64,11 +64,20 @@ npm install flow-view
 
 <a name="canvas"></a>
 
-### `new Canvas('drawing')`
+### `new Canvas()`
 
 > flow-view Canvas constructor
 
 * **@param** `{String}` containerId
+* **@param** `{Object}` [item] collection to be customized
+* **@param** `{Object}` [item.inspector]
+* **@param** `{Object}` [item.inspector.DefaultInspector]
+* **@param** `{Object}` [item.link]
+* **@param** `{Object}` [item.link.DefaultLink]
+* **@param** `{Object}` [item.node]
+* **@param** `{Object}` [item.node.DefaultNode]
+* **@param** `{Object}` [item.util]
+* **@param** `{Function}` [item.util.typeOfNode]
 * **@returns** `{Object}` canvas
 
 Suppose your *containerId* is `drawing`.

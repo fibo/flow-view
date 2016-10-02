@@ -142,7 +142,6 @@
         var nodeBodyHeight = _props.nodeBodyHeight;
         var pinSize = _props.pinSize;
         var style = _props.style;
-        var typeOfNode = _props.typeOfNode;
         var updateLink = _props.updateLink;
         var view = _props.view;
         var _state = this.state;
@@ -156,6 +155,8 @@
 
         var height = view.height;
         var width = view.width;
+
+        var typeOfNode = item.util.typeOfNode;
 
         var Inspector = item.inspector.DefaultInspector;
         var Link = item.link.DefaultLink;
@@ -539,7 +540,10 @@
     item: _react.PropTypes.shape({
       inspector: _react.PropTypes.object.isRequired,
       link: _react.PropTypes.object.isRequired,
-      node: _react.PropTypes.object.isRequired
+      node: _react.PropTypes.object.isRequired,
+      util: _react.PropTypes.shape({
+        typeOfNode: _react.PropTypes.func.isRequired
+      })
     }).isRequired,
     nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
@@ -547,7 +551,6 @@
     deleteOutputPin: _react.PropTypes.func.isRequired,
     pinSize: _react.PropTypes.number.isRequired,
     style: _react.PropTypes.object.isRequired,
-    typeOfNode: _react.PropTypes.func.isRequired,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
       height: _react.PropTypes.number.isRequired,
@@ -572,15 +575,17 @@
     item: {
       inspector: { DefaultInspector: _Inspector2.default },
       link: { DefaultLink: _Link2.default },
-      node: { DefaultNode: _Node2.default }
+      node: { DefaultNode: _Node2.default },
+      util: {
+        typeOfNode: function typeOfNode(node) {
+          return 'DefaultNode';
+        }
+      }
     },
     lineWidth: _theme2.default.lineWidth,
     nodeBodyHeight: _theme2.default.nodeBodyHeight,
     pinSize: _theme2.default.pinSize,
     style: { border: '1px solid black' },
-    typeOfNode: function typeOfNode(node) {
-      return 'DefaultNode';
-    },
     updateLink: Function.prototype,
     view: {
       height: 400,

@@ -6,10 +6,6 @@ import no from 'not-defined'
 import randomString from './utils/randomString'
 import renderSVGx from 'svgx'
 
-import DefaultInspector from './components/Inspector'
-import DefaultLink from './components/Link'
-import DefaultNode from './components/Node'
-
 // TODO find a better way to generate ids.
 const idLength = 3
 
@@ -53,10 +49,19 @@ class Canvas extends EventEmitter {
    */
   render (view, model, callback) {
     const container = this.container
+
+    const defaultItem = Frame.defaultProps.item
+
+    const DefaultInspector = defaultItem.inspector.DefaultInspector
+    const DefaultLink = defaultItem.link.DefaultLink
+    const DefaultNode = defaultItem.node.DefaultNode
+    const typeOfNode = defaultItem.util.typeOfNode
+
     const item = Object.assign({},
       { inspector: { DefaultInspector } },
       { link: { DefaultLink } },
       { node: { DefaultNode } },
+      { util: { typeOfNode } },
       this.item
     )
 

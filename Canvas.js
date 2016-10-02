@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', './components/Frame', 'events', 'not-defined', './utils/randomString', 'svgx', './components/Inspector', './components/Link', './components/Node'], factory);
+    define(['module', 'exports', 'react', 'react-dom', './components/Frame', 'events', 'not-defined', './utils/randomString', 'svgx'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('./components/Frame'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'), require('./components/Inspector'), require('./components/Link'), require('./components/Node'));
+    factory(module, exports, require('react'), require('react-dom'), require('./components/Frame'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.Frame, global.events, global.notDefined, global.randomString, global.svgx, global.Inspector, global.Link, global.Node);
+    factory(mod, mod.exports, global.react, global.reactDom, global.Frame, global.events, global.notDefined, global.randomString, global.svgx);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _Frame, _events, _notDefined, _randomString, _svgx, _Inspector, _Link, _Node) {
+})(this, function (module, exports, _react, _reactDom, _Frame, _events, _notDefined, _randomString, _svgx) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -28,12 +28,6 @@
   var _randomString2 = _interopRequireDefault(_randomString);
 
   var _svgx2 = _interopRequireDefault(_svgx);
-
-  var _Inspector2 = _interopRequireDefault(_Inspector);
-
-  var _Link2 = _interopRequireDefault(_Link);
-
-  var _Node2 = _interopRequireDefault(_Node);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -143,7 +137,15 @@
         var _this2 = this;
 
         var container = this.container;
-        var item = Object.assign({}, { inspector: { DefaultInspector: _Inspector2.default } }, { link: { DefaultLink: _Link2.default } }, { node: { DefaultNode: _Node2.default } }, this.item);
+
+        var defaultItem = _Frame2.default.defaultProps.item;
+
+        var DefaultInspector = defaultItem.inspector.DefaultInspector;
+        var DefaultLink = defaultItem.link.DefaultLink;
+        var DefaultNode = defaultItem.node.DefaultNode;
+        var typeOfNode = defaultItem.util.typeOfNode;
+
+        var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
         // Default values for height and width.
         var height = 400;

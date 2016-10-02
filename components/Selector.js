@@ -79,10 +79,13 @@
   var Selector = function (_Component) {
     _inherits(Selector, _Component);
 
-    function Selector() {
+    function Selector(props) {
       _classCallCheck(this, Selector);
 
-      return _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this, props));
+
+      _this.state = { text: '' };
+      return _this;
     }
 
     _createClass(Selector, [{
@@ -98,6 +101,13 @@
         var width = _props.width;
 
 
+        var text = this.state.text;
+
+        var onChange = function onChange(e) {
+          var text = e.target.value.trim();
+          _this2.setState({ text: text });
+        };
+
         var onKeyPress = function onKeyPress(e) {
           var text = e.target.value.trim();
           var pointer = _this2.props.pointer;
@@ -105,12 +115,16 @@
           var pressedEnter = e.key === 'Enter';
           var textIsNotBlank = text.length > 0;
 
-          if (pressedEnter && textIsNotBlank) {
-            createNode({
-              text: text,
-              x: pointer.x,
-              y: pointer.y
-            });
+          if (pressedEnter) {
+            if (textIsNotBlank) {
+              createNode({
+                text: text,
+                x: pointer.x,
+                y: pointer.y
+              });
+            }
+
+            _this2.setState({ text: '' });
           }
         };
 
@@ -129,7 +143,9 @@
               if (input !== null) input.focus();
             },
             style: { outline: 'none' },
-            onKeyPress: onKeyPress
+            onChange: onChange,
+            onKeyPress: onKeyPress,
+            value: text
           })
         );
       }

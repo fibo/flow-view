@@ -107,8 +107,11 @@ see [render/serverside.js example][example_render_serverside].
 * **@param** `{Number}` *view.width* defaults to container width or 400
 * **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
 * **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
+* **@param** `{Object}` *[model]*, can be used for custom items
 * **@param** `{Object}` *[callback]* called on serverside context
 * **@returns** `{void}`
+
+Follow a basic example.
 
 ```javascript
 canvas.render({

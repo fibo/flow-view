@@ -41,17 +41,19 @@ class Frame extends Component {
       createLink,
       createNode,
       deleteLink,
+      deleteInputPin,
       deleteNode,
+      deleteOutputPin,
       dragItems,
       fontFamily,
       fontSize,
       item,
       lineWidth,
+      model,
       nodeBodyHeight,
       pinSize,
-      deleteInputPin,
-      deleteOutputPin,
       style,
+      typeOfNode,
       updateLink,
       view
     } = this.props
@@ -70,7 +72,6 @@ class Frame extends Component {
 
     const Inspector = item.inspector.DefaultInspector
     const Link = item.link.DefaultLink
-    const Node = item.node.DefaultNode
 
     const setState = this.setState.bind(this)
 
@@ -293,6 +294,8 @@ class Frame extends Component {
         width={width}
       >
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+          const node = view.node[id]
+
           const {
             height,
             ins,
@@ -301,7 +304,10 @@ class Frame extends Component {
             width,
             x,
             y
-          } = view.node[id]
+          } = node
+
+          const nodeType = typeOfNode(node)
+          const Node = item.node[nodeType]
 
           return (
             <Node
@@ -312,6 +318,7 @@ class Frame extends Component {
               height={height}
               id={id}
               ins={ins}
+              model={model}
               onCreateLink={onCreateLink}
               outs={outs}
               pinSize={pinSize}
@@ -441,10 +448,11 @@ Frame.propTypes = {
   }).isRequired,
   nodeBodyHeight: PropTypes.number.isRequired,
   lineWidth: PropTypes.number.isRequired,
-  pinSize: PropTypes.number.isRequired,
   deleteInputPin: PropTypes.func.isRequired,
   deleteOutputPin: PropTypes.func.isRequired,
+  pinSize: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
+  typeOfNode: PropTypes.func.isRequired,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
     height: PropTypes.number.isRequired,
@@ -460,7 +468,9 @@ Frame.defaultProps = {
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
+  deleteInputPin: Function.prototype,
   deleteNode: Function.prototype,
+  deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
@@ -472,9 +482,8 @@ Frame.defaultProps = {
   lineWidth: defaultTheme.lineWidth,
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,
-  deleteInputPin: Function.prototype,
-  deleteOutputPin: Function.prototype,
   style: { border: '1px solid black' },
+  typeOfNode: function (node) { return 'DefaultNode' },
   updateLink: Function.prototype,
   view: {
     height: 400,

@@ -4,6 +4,12 @@ const hidden = { display: 'none', overflow: 'hidden' }
 const visible = { display: 'inline', overflow: 'visible' }
 
 class Selector extends Component {
+  constructor (props) {
+    super(props)
+
+    this.state = { text: '' }
+  }
+
   render () {
     const {
       createNode,
@@ -13,6 +19,13 @@ class Selector extends Component {
       width
     } = this.props
 
+    const text = this.state.text
+
+    const onChange = (e) => {
+      const text = e.target.value.trim()
+      this.setState({ text })
+    }
+
     const onKeyPress = (e) => {
       const text = e.target.value.trim()
       const pointer = this.props.pointer
@@ -20,12 +33,16 @@ class Selector extends Component {
       const pressedEnter = (e.key === 'Enter')
       const textIsNotBlank = text.length > 0
 
-      if (pressedEnter && textIsNotBlank) {
-        createNode({
-          text,
-          x: pointer.x,
-          y: pointer.y
-        })
+      if (pressedEnter) {
+        if (textIsNotBlank) {
+          createNode({
+            text,
+            x: pointer.x,
+            y: pointer.y
+          })
+        }
+
+        this.setState({ text: '' })
       }
     }
 
@@ -39,9 +56,13 @@ class Selector extends Component {
       >
         <input
           type='text'
-          ref={(input) => { if (input !== null) input.focus() }}
+          ref={(input) => {
+            if (input !== null) input.focus()
+          }}
           style={{ outline: 'none' }}
+          onChange={onChange}
           onKeyPress={onKeyPress}
+          value={text}
         />
       </foreignObject>
     )

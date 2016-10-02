@@ -53,7 +53,6 @@ class Frame extends Component {
       nodeBodyHeight,
       pinSize,
       style,
-      typeOfNode,
       updateLink,
       view
     } = this.props
@@ -69,6 +68,8 @@ class Frame extends Component {
 
     const height = view.height
     const width = view.width
+
+    const typeOfNode = item.util.typeOfNode
 
     const Inspector = item.inspector.DefaultInspector
     const Link = item.link.DefaultLink
@@ -444,7 +445,10 @@ Frame.propTypes = {
   item: PropTypes.shape({
     inspector: PropTypes.object.isRequired,
     link: PropTypes.object.isRequired,
-    node: PropTypes.object.isRequired
+    node: PropTypes.object.isRequired,
+    util: PropTypes.shape({
+      typeOfNode: PropTypes.func.isRequired
+    })
   }).isRequired,
   nodeBodyHeight: PropTypes.number.isRequired,
   lineWidth: PropTypes.number.isRequired,
@@ -452,7 +456,6 @@ Frame.propTypes = {
   deleteOutputPin: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
-  typeOfNode: PropTypes.func.isRequired,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
     height: PropTypes.number.isRequired,
@@ -477,13 +480,15 @@ Frame.defaultProps = {
   item: {
     inspector: { DefaultInspector },
     link: { DefaultLink },
-    node: { DefaultNode }
+    node: { DefaultNode },
+    util: {
+      typeOfNode: function (node) { return 'DefaultNode' }
+    }
   },
   lineWidth: defaultTheme.lineWidth,
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,
   style: { border: '1px solid black' },
-  typeOfNode: function (node) { return 'DefaultNode' },
   updateLink: Function.prototype,
   view: {
     height: 400,

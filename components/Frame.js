@@ -130,17 +130,19 @@
         var createLink = _props.createLink;
         var _createNode = _props.createNode;
         var deleteLink = _props.deleteLink;
+        var deleteInputPin = _props.deleteInputPin;
         var deleteNode = _props.deleteNode;
+        var deleteOutputPin = _props.deleteOutputPin;
         var dragItems = _props.dragItems;
         var fontFamily = _props.fontFamily;
         var fontSize = _props.fontSize;
         var item = _props.item;
         var lineWidth = _props.lineWidth;
+        var model = _props.model;
         var nodeBodyHeight = _props.nodeBodyHeight;
         var pinSize = _props.pinSize;
-        var deleteInputPin = _props.deleteInputPin;
-        var deleteOutputPin = _props.deleteOutputPin;
         var style = _props.style;
+        var typeOfNode = _props.typeOfNode;
         var updateLink = _props.updateLink;
         var view = _props.view;
         var _state = this.state;
@@ -157,7 +159,6 @@
 
         var Inspector = item.inspector.DefaultInspector;
         var Link = item.link.DefaultLink;
-        var Node = item.node.DefaultNode;
 
         var setState = this.setState.bind(this);
 
@@ -387,15 +388,19 @@
             width: width
           },
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
-            var _view$node$id = view.node[id];
-            var height = _view$node$id.height;
-            var ins = _view$node$id.ins;
-            var outs = _view$node$id.outs;
-            var text = _view$node$id.text;
-            var width = _view$node$id.width;
-            var x = _view$node$id.x;
-            var y = _view$node$id.y;
+            var node = view.node[id];
 
+            var height = node.height;
+            var ins = node.ins;
+            var outs = node.outs;
+            var text = node.text;
+            var width = node.width;
+            var x = node.x;
+            var y = node.y;
+
+
+            var nodeType = typeOfNode(node);
+            var Node = item.node[nodeType];
 
             return _react2.default.createElement(Node, {
               key: i,
@@ -405,6 +410,7 @@
               height: height,
               id: id,
               ins: ins,
+              model: model,
               onCreateLink: onCreateLink,
               outs: outs,
               pinSize: pinSize,
@@ -537,10 +543,11 @@
     }).isRequired,
     nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
-    pinSize: _react.PropTypes.number.isRequired,
     deleteInputPin: _react.PropTypes.func.isRequired,
     deleteOutputPin: _react.PropTypes.func.isRequired,
+    pinSize: _react.PropTypes.number.isRequired,
     style: _react.PropTypes.object.isRequired,
+    typeOfNode: _react.PropTypes.func.isRequired,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
       height: _react.PropTypes.number.isRequired,
@@ -556,7 +563,9 @@
     createLink: Function.prototype,
     createNode: Function.prototype,
     deleteLink: Function.prototype,
+    deleteInputPin: Function.prototype,
     deleteNode: Function.prototype,
+    deleteOutputPin: Function.prototype,
     dragItems: Function.prototype,
     fontFamily: _theme2.default.fontFamily,
     fontSize: 17, // FIXME fontSize seems to be ignored
@@ -568,9 +577,10 @@
     lineWidth: _theme2.default.lineWidth,
     nodeBodyHeight: _theme2.default.nodeBodyHeight,
     pinSize: _theme2.default.pinSize,
-    deleteInputPin: Function.prototype,
-    deleteOutputPin: Function.prototype,
     style: { border: '1px solid black' },
+    typeOfNode: function typeOfNode(node) {
+      return 'DefaultNode';
+    },
     updateLink: Function.prototype,
     view: {
       height: 400,

@@ -27,6 +27,7 @@ New g14n.info layouts, with link Changelog page
 ### Changed
 
 - Renamed component Canvas to Frame to avoid confusion with Canvas class.
+- canvas.render() accepts an optional *model* argument, needed for custom items.
 
 ### Fixed
 
@@ -38,6 +39,7 @@ New g14n.info layouts, with link Changelog page
 
 - Relaxed dependencies.
 - Minor bug when adding an input to a node in a previous empty canvas.
+- Selector reset its text on hide.
 
 ## [v2.6.0] - 2016-09-25
 

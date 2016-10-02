@@ -48,9 +48,10 @@ class Canvas extends EventEmitter {
    * Render to SVG.
    *
    * @param {Object} view
+   * @param {Object} [model]
    * @param {Function} [callback] run server side
    */
-  render (view, callback) {
+  render (view, model, callback) {
     const container = this.container
     const item = Object.assign({},
       { inspector: { DefaultInspector } },
@@ -223,11 +224,12 @@ class Canvas extends EventEmitter {
         createLink={createLink}
         createNode={createNode}
         deleteLink={deleteLink}
+        deleteInputPin={deleteInputPin}
         deleteNode={deleteNode}
+        deleteOutputPin={deleteOutputPin}
         dragItems={dragItems}
         item={item}
-        deleteInputPin={deleteInputPin}
-        deleteOutputPin={deleteOutputPin}
+        model={model}
         updateLink={updateLink}
         view={view}
       />

@@ -132,13 +132,14 @@
      * Render to SVG.
      *
      * @param {Object} view
+     * @param {Object} [model]
      * @param {Function} [callback] run server side
      */
 
 
     _createClass(Canvas, [{
       key: 'render',
-      value: function render(view, callback) {
+      value: function render(view, model, callback) {
         var _this2 = this;
 
         var container = this.container;
@@ -307,11 +308,12 @@
           createLink: createLink,
           createNode: createNode,
           deleteLink: deleteLink,
+          deleteInputPin: deleteInputPin,
           deleteNode: deleteNode,
+          deleteOutputPin: deleteOutputPin,
           dragItems: dragItems,
           item: item,
-          deleteInputPin: deleteInputPin,
-          deleteOutputPin: deleteOutputPin,
+          model: model,
           updateLink: updateLink,
           view: view
         });

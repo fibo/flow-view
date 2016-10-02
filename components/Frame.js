@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Inspector, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
-    global.Canvas = mod.exports;
+    global.Frame = mod.exports;
   }
 })(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Inspector, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
   'use strict';
@@ -89,13 +89,13 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  var Canvas = function (_Component) {
-    _inherits(Canvas, _Component);
+  var Frame = function (_Component) {
+    _inherits(Frame, _Component);
 
-    function Canvas(props) {
-      _classCallCheck(this, Canvas);
+    function Frame(props) {
+      _classCallCheck(this, Frame);
 
-      var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, props));
+      var _this = _possibleConstructorReturn(this, (Frame.__proto__ || Object.getPrototypeOf(Frame)).call(this, props));
 
       _this.state = {
         draggedLink: null,
@@ -107,7 +107,7 @@
       return _this;
     }
 
-    _createClass(Canvas, [{
+    _createClass(Frame, [{
       key: 'componentDidMount',
       value: function componentDidMount() {
         var container = (0, _reactDom.findDOMNode)(this).parentNode;
@@ -505,13 +505,6 @@
             createNode: function createNode(node) {
               _createNode(node);
 
-              // TODO It should be better to have emit('createNode', node)
-              // in the Selector and
-              // on('createNode', () => {
-              //   setState({ showSelector: false })
-              // })
-              // in the Canvas.
-
               // Need to change state to force React rendering.
               setState({
                 showSelector: false
@@ -524,10 +517,10 @@
       }
     }]);
 
-    return Canvas;
+    return Frame;
   }(_react.Component);
 
-  Canvas.propTypes = {
+  Frame.propTypes = {
     createInputPin: _react.PropTypes.func.isRequired,
     createOutputPin: _react.PropTypes.func.isRequired,
     createLink: _react.PropTypes.func.isRequired,
@@ -557,7 +550,7 @@
     }).isRequired
   };
 
-  Canvas.defaultProps = {
+  Frame.defaultProps = {
     createInputPin: Function.prototype,
     createOutputPin: Function.prototype,
     createLink: Function.prototype,
@@ -587,6 +580,6 @@
     }
   };
 
-  exports.default = Canvas;
+  exports.default = Frame;
   module.exports = exports['default'];
 });

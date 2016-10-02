@@ -55097,9 +55097,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = require('react-dom');
 
-var _Canvas = require('./components/Canvas');
+var _Frame = require('./components/Frame');
 
-var _Canvas2 = _interopRequireDefault(_Canvas);
+var _Frame2 = _interopRequireDefault(_Frame);
 
 var _events = require('events');
 
@@ -55140,13 +55140,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // TODO find a better way to generate ids.
 var idLength = 3;
 
-var FlowViewCanvas = function (_EventEmitter) {
-  _inherits(FlowViewCanvas, _EventEmitter);
+var Canvas = function (_EventEmitter) {
+  _inherits(Canvas, _EventEmitter);
 
-  function FlowViewCanvas(containerId, item) {
-    _classCallCheck(this, FlowViewCanvas);
+  function Canvas(containerId, item) {
+    _classCallCheck(this, Canvas);
 
-    var _this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this));
+    var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this));
 
     _this.container = null;
 
@@ -55184,7 +55184,7 @@ var FlowViewCanvas = function (_EventEmitter) {
    */
 
 
-  _createClass(FlowViewCanvas, [{
+  _createClass(Canvas, [{
     key: 'render',
     value: function render(view, callback) {
       var _this2 = this;
@@ -55349,7 +55349,7 @@ var FlowViewCanvas = function (_EventEmitter) {
         view.link[id] = Object.assign(view.link[id], link);
       };
 
-      var component = _react2.default.createElement(_Canvas2.default, {
+      var component = _react2.default.createElement(_Frame2.default, {
         createInputPin: createInputPin,
         createOutputPin: createOutputPin,
         createLink: createLink,
@@ -55371,7 +55371,7 @@ var FlowViewCanvas = function (_EventEmitter) {
         // Server side rendering.
 
         var opts = { doctype: true, xmlns: true };
-        var jsx = _react2.default.createElement(_Canvas2.default, {
+        var jsx = _react2.default.createElement(_Frame2.default, {
           item: item,
           view: view
         });
@@ -55385,12 +55385,12 @@ var FlowViewCanvas = function (_EventEmitter) {
     }
   }]);
 
-  return FlowViewCanvas;
+  return Canvas;
 }(_events2.default);
 
-exports.default = FlowViewCanvas;
+exports.default = Canvas;
 
-},{"./components/Canvas":412,"./components/Inspector":413,"./components/Link":414,"./components/Node":415,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
+},{"./components/Frame":412,"./components/Inspector":413,"./components/Link":414,"./components/Node":415,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -55450,13 +55450,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _components = {
-  Canvas: {
-    displayName: 'Canvas'
+  Frame: {
+    displayName: 'Frame'
   }
 };
 
 var _livereactloadBabelTransform2 = (0, _babelTransform2.default)({
-  filename: '/Users/gcasati/github.com/fibo/flow-view/src/components/Canvas.js',
+  filename: '/Users/gcasati/github.com/fibo/flow-view/src/components/Frame.js',
   components: _components,
   locals: [],
   imports: [_react3.default]
@@ -55468,13 +55468,13 @@ function _wrapComponent(id) {
   };
 }
 
-var Canvas = _wrapComponent('Canvas')(function (_Component) {
-  _inherits(Canvas, _Component);
+var Frame = _wrapComponent('Frame')(function (_Component) {
+  _inherits(Frame, _Component);
 
-  function Canvas(props) {
-    _classCallCheck(this, Canvas);
+  function Frame(props) {
+    _classCallCheck(this, Frame);
 
-    var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Frame.__proto__ || Object.getPrototypeOf(Frame)).call(this, props));
 
     _this.state = {
       draggedLink: null,
@@ -55486,7 +55486,7 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
     return _this;
   }
 
-  _createClass(Canvas, [{
+  _createClass(Frame, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var container = (0, _reactDom.findDOMNode)(this).parentNode;
@@ -55884,13 +55884,6 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
           createNode: function createNode(node) {
             _createNode(node);
 
-            // TODO It should be better to have emit('createNode', node)
-            // in the Selector and
-            // on('createNode', () => {
-            //   setState({ showSelector: false })
-            // })
-            // in the Canvas.
-
             // Need to change state to force React rendering.
             setState({
               showSelector: false
@@ -55903,10 +55896,10 @@ var Canvas = _wrapComponent('Canvas')(function (_Component) {
     }
   }]);
 
-  return Canvas;
+  return Frame;
 }(_react2.Component));
 
-Canvas.propTypes = {
+Frame.propTypes = {
   createInputPin: _react2.PropTypes.func.isRequired,
   createOutputPin: _react2.PropTypes.func.isRequired,
   createLink: _react2.PropTypes.func.isRequired,
@@ -55936,7 +55929,7 @@ Canvas.propTypes = {
   }).isRequired
 };
 
-Canvas.defaultProps = {
+Frame.defaultProps = {
   createInputPin: Function.prototype,
   createOutputPin: Function.prototype,
   createLink: Function.prototype,
@@ -55966,7 +55959,7 @@ Canvas.defaultProps = {
   }
 };
 
-exports.default = Canvas;
+exports.default = Frame;
 
 },{"../utils/computeNodeWidth":419,"../utils/ignoreEvent":420,"../utils/xOfPin":422,"./Inspector":413,"./Link":414,"./Node":415,"./Selector":416,"./theme":418,"livereactload/babel-transform":85,"react":395,"react-dom":242}],413:[function(require,module,exports){
 'use strict';
@@ -56829,11 +56822,11 @@ exports.default = Selector;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Selector = exports.Node = exports.Link = exports.Inspector = exports.Canvas = undefined;
+exports.Selector = exports.Node = exports.Link = exports.Inspector = exports.Frame = undefined;
 
-var _Canvas = require('./Canvas');
+var _Frame = require('./Frame');
 
-var _Canvas2 = _interopRequireDefault(_Canvas);
+var _Frame2 = _interopRequireDefault(_Frame);
 
 var _Link = require('./Link');
 
@@ -56853,13 +56846,13 @@ var _Selector2 = _interopRequireDefault(_Selector);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.Canvas = _Canvas2.default;
+exports.Frame = _Frame2.default;
 exports.Inspector = _Inspector2.default;
 exports.Link = _Link2.default;
 exports.Node = _Node2.default;
 exports.Selector = _Selector2.default;
 
-},{"./Canvas":412,"./Inspector":413,"./Link":414,"./Node":415,"./Selector":416}],418:[function(require,module,exports){
+},{"./Frame":412,"./Inspector":413,"./Link":414,"./Node":415,"./Selector":416}],418:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

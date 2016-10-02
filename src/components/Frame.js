@@ -10,7 +10,7 @@ import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
-class Canvas extends Component {
+class Frame extends Component {
   constructor (props) {
     super(props)
 
@@ -411,13 +411,6 @@ class Canvas extends Component {
           createNode={(node) => {
             createNode(node)
 
-            // TODO It should be better to have emit('createNode', node)
-            // in the Selector and
-            // on('createNode', () => {
-            //   setState({ showSelector: false })
-            // })
-            // in the Canvas.
-
             // Need to change state to force React rendering.
             setState({
               showSelector: false
@@ -431,7 +424,7 @@ class Canvas extends Component {
   }
 }
 
-Canvas.propTypes = {
+Frame.propTypes = {
   createInputPin: PropTypes.func.isRequired,
   createOutputPin: PropTypes.func.isRequired,
   createLink: PropTypes.func.isRequired,
@@ -461,7 +454,7 @@ Canvas.propTypes = {
   }).isRequired
 }
 
-Canvas.defaultProps = {
+Frame.defaultProps = {
   createInputPin: Function.prototype,
   createOutputPin: Function.prototype,
   createLink: Function.prototype,
@@ -491,4 +484,4 @@ Canvas.defaultProps = {
   }
 }
 
-export default Canvas
+export default Frame

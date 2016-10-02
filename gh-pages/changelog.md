@@ -24,6 +24,10 @@ New g14n.info layouts, with link Changelog page
 - Set default height and width, try to get them from container.
 - Custom Inspector, used in dflow.
 
+### Changed
+
+- Renamed component Canvas to Frame to avoid confusion with Canvas class.
+
 ### Fixed
 
 - When dragging started from an input it was not possible to end it.

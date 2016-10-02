@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', './components/Canvas', 'events', 'not-defined', './utils/randomString', 'svgx', './components/Inspector', './components/Link', './components/Node'], factory);
+    define(['module', 'exports', 'react', 'react-dom', './components/Frame', 'events', 'not-defined', './utils/randomString', 'svgx', './components/Inspector', './components/Link', './components/Node'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('./components/Canvas'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'), require('./components/Inspector'), require('./components/Link'), require('./components/Node'));
+    factory(module, exports, require('react'), require('react-dom'), require('./components/Frame'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'), require('./components/Inspector'), require('./components/Link'), require('./components/Node'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.Canvas, global.events, global.notDefined, global.randomString, global.svgx, global.Inspector, global.Link, global.Node);
+    factory(mod, mod.exports, global.react, global.reactDom, global.Frame, global.events, global.notDefined, global.randomString, global.svgx, global.Inspector, global.Link, global.Node);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _Canvas, _events, _notDefined, _randomString, _svgx, _Inspector, _Link, _Node) {
+})(this, function (module, exports, _react, _reactDom, _Frame, _events, _notDefined, _randomString, _svgx, _Inspector, _Link, _Node) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,7 +19,7 @@
 
   var _react2 = _interopRequireDefault(_react);
 
-  var _Canvas2 = _interopRequireDefault(_Canvas);
+  var _Frame2 = _interopRequireDefault(_Frame);
 
   var _events2 = _interopRequireDefault(_events);
 
@@ -92,13 +92,13 @@
   // TODO find a better way to generate ids.
   var idLength = 3;
 
-  var FlowViewCanvas = function (_EventEmitter) {
-    _inherits(FlowViewCanvas, _EventEmitter);
+  var Canvas = function (_EventEmitter) {
+    _inherits(Canvas, _EventEmitter);
 
-    function FlowViewCanvas(containerId, item) {
-      _classCallCheck(this, FlowViewCanvas);
+    function Canvas(containerId, item) {
+      _classCallCheck(this, Canvas);
 
-      var _this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this));
+      var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this));
 
       _this.container = null;
 
@@ -136,7 +136,7 @@
      */
 
 
-    _createClass(FlowViewCanvas, [{
+    _createClass(Canvas, [{
       key: 'render',
       value: function render(view, callback) {
         var _this2 = this;
@@ -301,7 +301,7 @@
           view.link[id] = Object.assign(view.link[id], link);
         };
 
-        var component = _react2.default.createElement(_Canvas2.default, {
+        var component = _react2.default.createElement(_Frame2.default, {
           createInputPin: createInputPin,
           createOutputPin: createOutputPin,
           createLink: createLink,
@@ -323,7 +323,7 @@
           // Server side rendering.
 
           var opts = { doctype: true, xmlns: true };
-          var jsx = _react2.default.createElement(_Canvas2.default, {
+          var jsx = _react2.default.createElement(_Frame2.default, {
             item: item,
             view: view
           });
@@ -337,9 +337,9 @@
       }
     }]);
 
-    return FlowViewCanvas;
+    return Canvas;
   }(_events2.default);
 
-  exports.default = FlowViewCanvas;
+  exports.default = Canvas;
   module.exports = exports['default'];
 });

@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
-import Canvas from './components/Canvas'
+import Frame from './components/Frame'
 import EventEmitter from 'events'
 import no from 'not-defined'
 import randomString from './utils/randomString'
@@ -13,7 +13,7 @@ import DefaultNode from './components/Node'
 // TODO find a better way to generate ids.
 const idLength = 3
 
-class FlowViewCanvas extends EventEmitter {
+class Canvas extends EventEmitter {
   constructor (containerId, item) {
     super()
 
@@ -217,7 +217,7 @@ class FlowViewCanvas extends EventEmitter {
     }
 
     const component = (
-      <Canvas
+      <Frame
         createInputPin={createInputPin}
         createOutputPin={createOutputPin}
         createLink={createLink}
@@ -241,7 +241,7 @@ class FlowViewCanvas extends EventEmitter {
 
       const opts = { doctype: true, xmlns: true }
       const jsx = (
-        <Canvas
+        <Frame
           item={item}
           view={view}
         />
@@ -256,4 +256,4 @@ class FlowViewCanvas extends EventEmitter {
   }
 }
 
-export default FlowViewCanvas
+export default Canvas

@@ -1,12 +1,12 @@
 import dom from 'cheerio'
 import React from 'react'
 import reactDom from 'react-dom/server'
-import Canvas from 'components/Canvas'
+import Frame from 'components/Frame'
 import test from 'tape'
 
 const render = reactDom.renderToStaticMarkup
 
-test('Canvas component', (t) => {
+test('Frame component', (t) => {
   const height = 100
   const width = 100
 
@@ -18,7 +18,7 @@ test('Canvas component', (t) => {
   }
 
   const el = (
-    <Canvas
+    <Frame
       view={view}
     />
   )

@@ -68,11 +68,20 @@ npm install flow-view
 
 <a name="canvas"></a>
 
-### `new Canvas('drawing')`
+### `new Canvas()`
 
 > flow-view Canvas constructor
 
 * **@param** `{String}` containerId
+* **@param** `{Object}` [item] collection to be customized
+* **@param** `{Object}` [item.inspector]
+* **@param** `{Object}` [item.inspector.DefaultInspector]
+* **@param** `{Object}` [item.link]
+* **@param** `{Object}` [item.link.DefaultLink]
+* **@param** `{Object}` [item.node]
+* **@param** `{Object}` [item.node.DefaultNode]
+* **@param** `{Object}` [item.util]
+* **@param** `{Function}` [item.util.typeOfNode]
 * **@returns** `{Object}` canvas
 
 Suppose your *containerId* is `drawing`.
@@ -111,8 +120,11 @@ see [render/serverside.js example][example_render_serverside].
 * **@param** `{Number}` *view.width* defaults to container width or 400
 * **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
 * **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
+* **@param** `{Object}` *[model]*, can be used for custom items
 * **@param** `{Object}` *[callback]* called on serverside context
 * **@returns** `{void}`
+
+Follow a basic example.
 
 ```javascript
 canvas.render({

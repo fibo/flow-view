@@ -55117,18 +55117,6 @@ var _svgx = require('svgx');
 
 var _svgx2 = _interopRequireDefault(_svgx);
 
-var _Inspector = require('./components/Inspector');
-
-var _Inspector2 = _interopRequireDefault(_Inspector);
-
-var _Link = require('./components/Link');
-
-var _Link2 = _interopRequireDefault(_Link);
-
-var _Node = require('./components/Node');
-
-var _Node2 = _interopRequireDefault(_Node);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -55180,17 +55168,26 @@ var Canvas = function (_EventEmitter) {
    * Render to SVG.
    *
    * @param {Object} view
+   * @param {Object} [model]
    * @param {Function} [callback] run server side
    */
 
 
   _createClass(Canvas, [{
     key: 'render',
-    value: function render(view, callback) {
+    value: function render(view, model, callback) {
       var _this2 = this;
 
       var container = this.container;
-      var item = Object.assign({}, { inspector: { DefaultInspector: _Inspector2.default } }, { link: { DefaultLink: _Link2.default } }, { node: { DefaultNode: _Node2.default } }, this.item);
+
+      var defaultItem = _Frame2.default.defaultProps.item;
+
+      var DefaultInspector = defaultItem.inspector.DefaultInspector;
+      var DefaultLink = defaultItem.link.DefaultLink;
+      var DefaultNode = defaultItem.node.DefaultNode;
+      var typeOfNode = defaultItem.util.typeOfNode;
+
+      var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
       // Default values for height and width.
       var height = 400;
@@ -55355,11 +55352,12 @@ var Canvas = function (_EventEmitter) {
         createLink: createLink,
         createNode: createNode,
         deleteLink: deleteLink,
+        deleteInputPin: deleteInputPin,
         deleteNode: deleteNode,
+        deleteOutputPin: deleteOutputPin,
         dragItems: dragItems,
         item: item,
-        deleteInputPin: deleteInputPin,
-        deleteOutputPin: deleteOutputPin,
+        model: model,
         updateLink: updateLink,
         view: view
       });
@@ -55390,7 +55388,7 @@ var Canvas = function (_EventEmitter) {
 
 exports.default = Canvas;
 
-},{"./components/Frame":412,"./components/Inspector":413,"./components/Link":414,"./components/Node":415,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
+},{"./components/Frame":412,"./utils/randomString":421,"events":47,"not-defined":234,"react":395,"react-dom":242,"svgx":409}],412:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -55509,16 +55507,17 @@ var Frame = _wrapComponent('Frame')(function (_Component) {
       var createLink = _props.createLink;
       var _createNode = _props.createNode;
       var deleteLink = _props.deleteLink;
+      var deleteInputPin = _props.deleteInputPin;
       var deleteNode = _props.deleteNode;
+      var deleteOutputPin = _props.deleteOutputPin;
       var dragItems = _props.dragItems;
       var fontFamily = _props.fontFamily;
       var fontSize = _props.fontSize;
       var item = _props.item;
       var lineWidth = _props.lineWidth;
+      var model = _props.model;
       var nodeBodyHeight = _props.nodeBodyHeight;
       var pinSize = _props.pinSize;
-      var deleteInputPin = _props.deleteInputPin;
-      var deleteOutputPin = _props.deleteOutputPin;
       var style = _props.style;
       var updateLink = _props.updateLink;
       var view = _props.view;
@@ -55534,9 +55533,10 @@ var Frame = _wrapComponent('Frame')(function (_Component) {
       var height = view.height;
       var width = view.width;
 
+      var typeOfNode = item.util.typeOfNode;
+
       var Inspector = item.inspector.DefaultInspector;
       var Link = item.link.DefaultLink;
-      var Node = item.node.DefaultNode;
 
       var setState = this.setState.bind(this);
 
@@ -55766,15 +55766,19 @@ var Frame = _wrapComponent('Frame')(function (_Component) {
           width: width
         },
         Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
-          var _view$node$id = view.node[id];
-          var height = _view$node$id.height;
-          var ins = _view$node$id.ins;
-          var outs = _view$node$id.outs;
-          var text = _view$node$id.text;
-          var width = _view$node$id.width;
-          var x = _view$node$id.x;
-          var y = _view$node$id.y;
+          var node = view.node[id];
 
+          var height = node.height;
+          var ins = node.ins;
+          var outs = node.outs;
+          var text = node.text;
+          var width = node.width;
+          var x = node.x;
+          var y = node.y;
+
+
+          var nodeType = typeOfNode(node);
+          var Node = item.node[nodeType];
 
           return _react3.default.createElement(Node, {
             key: i,
@@ -55784,6 +55788,7 @@ var Frame = _wrapComponent('Frame')(function (_Component) {
             height: height,
             id: id,
             ins: ins,
+            model: model,
             onCreateLink: onCreateLink,
             outs: outs,
             pinSize: pinSize,
@@ -55912,13 +55917,16 @@ Frame.propTypes = {
   item: _react2.PropTypes.shape({
     inspector: _react2.PropTypes.object.isRequired,
     link: _react2.PropTypes.object.isRequired,
-    node: _react2.PropTypes.object.isRequired
+    node: _react2.PropTypes.object.isRequired,
+    util: _react2.PropTypes.shape({
+      typeOfNode: _react2.PropTypes.func.isRequired
+    })
   }).isRequired,
   nodeBodyHeight: _react2.PropTypes.number.isRequired,
   lineWidth: _react2.PropTypes.number.isRequired,
-  pinSize: _react2.PropTypes.number.isRequired,
   deleteInputPin: _react2.PropTypes.func.isRequired,
   deleteOutputPin: _react2.PropTypes.func.isRequired,
+  pinSize: _react2.PropTypes.number.isRequired,
   style: _react2.PropTypes.object.isRequired,
   updateLink: _react2.PropTypes.func.isRequired,
   view: _react2.PropTypes.shape({
@@ -55935,20 +55943,25 @@ Frame.defaultProps = {
   createLink: Function.prototype,
   createNode: Function.prototype,
   deleteLink: Function.prototype,
+  deleteInputPin: Function.prototype,
   deleteNode: Function.prototype,
+  deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
   fontFamily: _theme2.default.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     inspector: { DefaultInspector: _Inspector2.default },
     link: { DefaultLink: _Link2.default },
-    node: { DefaultNode: _Node2.default }
+    node: { DefaultNode: _Node2.default },
+    util: {
+      typeOfNode: function typeOfNode(node) {
+        return 'DefaultNode';
+      }
+    }
   },
   lineWidth: _theme2.default.lineWidth,
   nodeBodyHeight: _theme2.default.nodeBodyHeight,
   pinSize: _theme2.default.pinSize,
-  deleteInputPin: Function.prototype,
-  deleteOutputPin: Function.prototype,
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {
@@ -56741,10 +56754,13 @@ var visible = { display: 'inline', overflow: 'visible' };
 var Selector = _wrapComponent('Selector')(function (_Component) {
   _inherits(Selector, _Component);
 
-  function Selector() {
+  function Selector(props) {
     _classCallCheck(this, Selector);
 
-    return _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this, props));
+
+    _this.state = { text: '' };
+    return _this;
   }
 
   _createClass(Selector, [{
@@ -56760,6 +56776,13 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
       var width = _props.width;
 
 
+      var text = this.state.text;
+
+      var onChange = function onChange(e) {
+        var text = e.target.value.trim();
+        _this2.setState({ text: text });
+      };
+
       var onKeyPress = function onKeyPress(e) {
         var text = e.target.value.trim();
         var pointer = _this2.props.pointer;
@@ -56767,12 +56790,16 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
         var pressedEnter = e.key === 'Enter';
         var textIsNotBlank = text.length > 0;
 
-        if (pressedEnter && textIsNotBlank) {
-          createNode({
-            text: text,
-            x: pointer.x,
-            y: pointer.y
-          });
+        if (pressedEnter) {
+          if (textIsNotBlank) {
+            createNode({
+              text: text,
+              x: pointer.x,
+              y: pointer.y
+            });
+          }
+
+          _this2.setState({ text: '' });
         }
       };
 
@@ -56791,7 +56818,9 @@ var Selector = _wrapComponent('Selector')(function (_Component) {
             if (input !== null) input.focus();
           },
           style: { outline: 'none' },
-          onKeyPress: onKeyPress
+          onChange: onChange,
+          onKeyPress: onKeyPress,
+          value: text
         })
       );
     }

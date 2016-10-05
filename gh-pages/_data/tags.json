@@ -1,5 +1,14 @@
 [
   {
+    "name": "v2.7.1",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.7.1",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.7.1",
+    "commit": {
+      "sha": "7b1afbad17cf987ac4c73be536558ed970f39f6e",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/7b1afbad17cf987ac4c73be536558ed970f39f6e"
+    }
+  },
+  {
     "name": "v2.7.0",
     "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v2.7.0",
     "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v2.7.0",

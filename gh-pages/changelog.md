@@ -19,6 +19,17 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link Changelog page
 
+## [v2.8.0] -
+
+### Added
+
+- Rename node event.
+- Node is selected automatically when created by selector.
+
+### Fixed
+
+- Data sent by createLink and deleteLink events.
+
 ## [v2.7.1] - 2016-10-05
 
 ### Added

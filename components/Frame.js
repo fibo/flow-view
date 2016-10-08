@@ -89,6 +89,10 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
+  var getTime = function getTime() {
+    return new Date() / 1;
+  };
+
   var Frame = function (_Component) {
     _inherits(Frame, _Component);
 
@@ -98,11 +102,12 @@
       var _this = _possibleConstructorReturn(this, (Frame.__proto__ || Object.getPrototypeOf(Frame)).call(this, props));
 
       _this.state = {
-        draggedLink: null,
+        draggedLinkId: null,
         draggedItems: [],
         pointer: null,
         showSelector: false,
-        selectedItems: []
+        selectedItems: [],
+        whenUpdated: getTime() // this attribute is used to force React render.
       };
       return _this;
     }
@@ -141,12 +146,13 @@
         var model = _props.model;
         var nodeBodyHeight = _props.nodeBodyHeight;
         var pinSize = _props.pinSize;
+        var _renameNode = _props.renameNode;
         var style = _props.style;
         var updateLink = _props.updateLink;
         var view = _props.view;
         var _state = this.state;
         var draggedItems = _state.draggedItems;
-        var draggedLink = _state.draggedLink;
+        var draggedLinkId = _state.draggedLinkId;
         var offset = _state.offset;
         var pointer = _state.pointer;
         var selectedItems = _state.selectedItems;
@@ -174,19 +180,13 @@
           e.preventDefault();
           e.stopPropagation();
 
-          setState({
-            showSelector: false
-          });
+          setState({ showSelector: false });
         };
 
         var onCreateLink = function onCreateLink(link) {
-          var id = createLink(link);
+          var draggedLinkId = createLink(link);
 
-          link.id = id;
-
-          setState({
-            draggedLink: link
-          });
+          setState({ draggedLinkId: draggedLinkId });
         };
 
         var onUpdateLink = function onUpdateLink(id, link) {
@@ -197,13 +197,9 @@
           if (disconnectingLink) {
             link.id = id;
 
-            setState({
-              draggedLink: link
-            });
+            setState({ draggedLinkId: id });
           } else {
-            setState({
-              draggedLink: null
-            });
+            setState({ draggedLinkId: null });
           }
         };
 
@@ -232,12 +228,12 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var draggedLink = _this2.state.draggedLink;
-          if (draggedLink) deleteLink(draggedLink.id);
+          var draggedLinkId = _this2.state.draggedLinkId;
+          if (draggedLinkId) deleteLink(draggedLinkId);
 
           setState({
             draggedItems: [],
-            draggedLink: null,
+            draggedLinkId: null,
             pointer: null,
             showSelector: false
           });
@@ -269,13 +265,13 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var draggedLink = _this2.state.draggedLink;
+          var draggedLinkId = _this2.state.draggedLinkId;
 
-          if (draggedLink) {
-            deleteLink(draggedLink.id);
+          if (draggedLinkId) {
+            deleteLink(draggedLinkId);
 
             setState({
-              draggedLink: null,
+              draggedLinkId: null,
               pointer: null
             });
           } else {
@@ -310,13 +306,13 @@
 
             // Do not select items when releasing a dragging link.
 
-            var draggedLink = _this2.state.draggedLink;
+            var draggedLinkId = _this2.state.draggedLinkId;
 
-            if (draggedLink) {
-              deleteLink(draggedLink.id);
+            if (draggedLinkId) {
+              deleteLink(draggedLinkId);
 
               setState({
-                draggedLink: null
+                draggedLinkId: null
               });
 
               return;
@@ -343,6 +339,12 @@
               selectedItems: selectedItems
             });
           };
+        };
+
+        var startDraggingLink = function startDraggingLink(id) {
+          delete view.link[id].to;
+
+          setState({ draggedLinkId: id });
         };
 
         var willDragItem = function willDragItem(id) {
@@ -406,7 +408,7 @@
             return _react2.default.createElement(Node, {
               key: i,
               dragged: draggedItems.indexOf(id) > -1,
-              draggedLink: draggedLink,
+              draggedLinkId: draggedLinkId,
               fontSize: fontSize,
               height: height,
               id: id,
@@ -487,7 +489,7 @@
               lineWidth: lineWidth,
               id: id,
               onCreateLink: onCreateLink,
-              onUpdateLink: onUpdateLink,
+              startDraggingLink: startDraggingLink,
               pinSize: pinSize,
               selected: selectedItems.indexOf(id) > -1,
               selectLink: selectItem(id),
@@ -506,15 +508,21 @@
             deleteInputPin: deleteInputPin,
             deleteOutputPin: deleteOutputPin,
             items: Object.assign([], selectedItems, draggedItems),
+            renameNode: function renameNode(nodeId, text) {
+              _renameNode(nodeId, text);
+
+              setState({ whenUpdated: getTime() });
+            },
             view: view
           }),
           _react2.default.createElement(_Selector2.default, {
             createNode: function createNode(node) {
-              _createNode(node);
+              var id = _createNode(node);
 
-              // Need to change state to force React rendering.
               setState({
-                showSelector: false
+                selectedItems: [id],
+                showSelector: false,
+                whenUpdated: getTime()
               });
             },
             pointer: pointer,
@@ -533,7 +541,9 @@
     createLink: _react.PropTypes.func.isRequired,
     createNode: _react.PropTypes.func.isRequired,
     deleteLink: _react.PropTypes.func.isRequired,
+    deleteInputPin: _react.PropTypes.func.isRequired,
     deleteNode: _react.PropTypes.func.isRequired,
+    deleteOutputPin: _react.PropTypes.func.isRequired,
     dragItems: _react.PropTypes.func.isRequired,
     fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
@@ -545,11 +555,10 @@
         typeOfNode: _react.PropTypes.func.isRequired
       })
     }).isRequired,
-    nodeBodyHeight: _react.PropTypes.number.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
-    deleteInputPin: _react.PropTypes.func.isRequired,
-    deleteOutputPin: _react.PropTypes.func.isRequired,
+    nodeBodyHeight: _react.PropTypes.number.isRequired,
     pinSize: _react.PropTypes.number.isRequired,
+    renameNode: _react.PropTypes.func.isRequired,
     style: _react.PropTypes.object.isRequired,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
@@ -585,6 +594,7 @@
     lineWidth: _theme2.default.lineWidth,
     nodeBodyHeight: _theme2.default.nodeBodyHeight,
     pinSize: _theme2.default.pinSize,
+    renameNode: Function.prototype,
     style: { border: '1px solid black' },
     updateLink: Function.prototype,
     view: {

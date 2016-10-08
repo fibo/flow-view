@@ -156,7 +156,7 @@
         var _props2 = this.props;
         var bodyHeight = _props2.bodyHeight;
         var dragged = _props2.dragged;
-        var draggedLink = _props2.draggedLink;
+        var draggedLinkId = _props2.draggedLinkId;
         var color = _props2.color;
         var fontSize = _props2.fontSize;
         var id = _props2.id;
@@ -222,8 +222,8 @@
               e.preventDefault();
               e.stopPropagation();
 
-              if (draggedLink) {
-                updateLink(draggedLink.id, { to: [id, i] });
+              if (draggedLinkId) {
+                updateLink(draggedLinkId, { to: [id, i] });
               }
             };
 
@@ -275,7 +275,7 @@
   Node.propTypes = {
     bodyHeight: _react.PropTypes.number.isRequired,
     dragged: _react.PropTypes.bool.isRequired,
-    draggedLink: _react.PropTypes.object,
+    draggedLinkId: _react.PropTypes.string,
     color: _react.PropTypes.shape({
       bar: _react.PropTypes.string.isRequired,
       body: _react.PropTypes.string.isRequired,
@@ -309,7 +309,7 @@
       // Actually we have
       // whitesmoke < lightgray < darkgray < gray
     },
-    draggedLink: null,
+    draggedLinkId: null,
     ins: [],
     onCreateLink: Function.prototype,
     outs: [],

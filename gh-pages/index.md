@@ -6,7 +6,7 @@ flow: /empty.json
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
-![sample view][sample_view_svg]
+[![sample view][sample_view_svg]][online_example]
 
 [Description](#description) |
 [Installation](#installation) |
@@ -168,6 +168,7 @@ The following events are emitted by [canvas](#canvas):
 | `deleteNode`      | nodeId                |
 | `deleteInputPin`  | nodeId, position      |
 | `deleteOutputPin` | nodeId, position      |
+| `renameNode`      | nodeId, text          |
 
 ### Node spec
 
@@ -197,7 +198,9 @@ A link describes a connection between elements and has the following attributes:
 
 ## Examples
 
-Clone this repo and install dependencies to run examples
+Try [online example][online_example].
+
+You can also clone this repo and install dependencies to run examples locally
 
 ```bash
 git clone https://github.com/fibo/flow-view
@@ -233,4 +236,5 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
+[online_example]: "http://g14n.info/flow-view/example" "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

@@ -67,7 +67,7 @@ class Node extends Component {
     const {
       bodyHeight,
       dragged,
-      draggedLink,
+      draggedLinkId,
       color,
       fontSize,
       id,
@@ -132,8 +132,8 @@ class Node extends Component {
             e.preventDefault()
             e.stopPropagation()
 
-            if (draggedLink) {
-              updateLink(draggedLink.id, { to: [id, i] })
+            if (draggedLinkId) {
+              updateLink(draggedLinkId, { to: [id, i] })
             }
           }
 
@@ -187,7 +187,7 @@ class Node extends Component {
 Node.propTypes = {
   bodyHeight: PropTypes.number.isRequired,
   dragged: PropTypes.bool.isRequired,
-  draggedLink: PropTypes.object,
+  draggedLinkId: PropTypes.string,
   color: PropTypes.shape({
     bar: PropTypes.string.isRequired,
     body: PropTypes.string.isRequired,
@@ -221,7 +221,7 @@ Node.defaultProps = {
     // Actually we have
     // whitesmoke < lightgray < darkgray < gray
   },
-  draggedLink: null,
+  draggedLinkId: null,
   ins: [],
   onCreateLink: Function.prototype,
   outs: [],

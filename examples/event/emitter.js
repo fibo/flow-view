@@ -34,6 +34,10 @@ canvas.on('deleteOutputPin', (nodeId, position) => {
   console.log('deleteOutputPin', nodeId, position)
 })
 
+canvas.on('renameNode', (nodeId, text) => {
+  console.log('renameNode', nodeId, text)
+})
+
 canvas.render({
   node: {
     a: {

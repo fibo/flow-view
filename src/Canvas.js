@@ -112,30 +112,31 @@ class Canvas extends EventEmitter {
       view.node[nodeId].outs.push(pin)
     }
 
+    function generateId () {
+      const id = randomString(idLength)
+
+      return (view.link[id] || view.node[id]) ? generateId() : id
+    }
+
     const createLink = (link) => {
-      function generateId () {
-        const id = randomString(idLength)
-        return link[id] ? generateId() : id
-      }
+      const from = link.from
+      const to = link.to
 
       const id = generateId()
 
-      view.link[id] = link
-
       // Do not fire createLink event if it is a dragging link.
-      if (link.to) {
-        this.emit('createLink', link, id)
+      if (no(to)) {
+        view.link[id] = { from }
+      } else {
+        view.link[id] = { from, to }
+
+        this.emit('createLink', { from, to }, id)
       }
 
       return id
     }
 
     const createNode = (node) => {
-      function generateId () {
-        const id = randomString(idLength)
-        return node[id] ? generateId() : id
-      }
-
       const id = generateId()
 
       view.node[id] = node
@@ -161,15 +162,11 @@ class Canvas extends EventEmitter {
         const to = view.link[linkId].to
 
         if (from && from[0] === id) {
-          delete view.link[linkId]
-
-          this.emit('deleteLink', linkId)
+          deleteLink(linkId)
         }
 
         if (to && to[0] === id) {
-          delete view.link[linkId]
-
-          this.emit('deleteLink', linkId)
+          deleteLink(linkId)
         }
       })
 
@@ -211,15 +208,20 @@ class Canvas extends EventEmitter {
       view.node[nodeId].outs.splice(position, 1)
     }
 
-    const updateLink = (id, link) => {
-      // Trigger a createLink event if it is a connected link.
-      if (link.to) {
-        this.emit('createLink', link, id)
-      } else {
-        this.emit('deleteLink', link, id)
-      }
+    const renameNode = (nodeId, text) => {
+      view.node[nodeId].text = text
+    }
 
-      view.link[id] = Object.assign(view.link[id], link)
+    const updateLink = (id, link) => {
+      const to = link.to
+      const from = link.from
+
+      // Trigger a createLink event if it is a connected link.
+      if (no(from)) {
+        view.link[id].to = to
+
+        this.emit('createLink', view.link[id], id)
+      }
     }
 
     const component = (
@@ -235,6 +237,7 @@ class Canvas extends EventEmitter {
         dragItems={dragItems}
         item={item}
         model={model}
+        renameNode={renameNode}
         updateLink={updateLink}
         view={view}
       />

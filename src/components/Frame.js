@@ -10,16 +10,19 @@ import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
+const getTime = () => (new Date() / 1)
+
 class Frame extends Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      draggedLink: null,
+      draggedLinkId: null,
       draggedItems: [],
       pointer: null,
       showSelector: false,
-      selectedItems: []
+      selectedItems: [],
+      whenUpdated: getTime() // this attribute is used to force React render.
     }
   }
 
@@ -52,6 +55,7 @@ class Frame extends Component {
       model,
       nodeBodyHeight,
       pinSize,
+      renameNode,
       style,
       updateLink,
       view
@@ -59,7 +63,7 @@ class Frame extends Component {
 
     const {
       draggedItems,
-      draggedLink,
+      draggedLinkId,
       offset,
       pointer,
       selectedItems,
@@ -85,19 +89,13 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      setState({
-        showSelector: false
-      })
+      setState({ showSelector: false })
     }
 
     const onCreateLink = (link) => {
-      const id = createLink(link)
+      const draggedLinkId = createLink(link)
 
-      link.id = id
-
-      setState({
-        draggedLink: link
-      })
+      setState({ draggedLinkId })
     }
 
     const onUpdateLink = (id, link) => {
@@ -108,13 +106,9 @@ class Frame extends Component {
       if (disconnectingLink) {
         link.id = id
 
-        setState({
-          draggedLink: link
-        })
+        setState({ draggedLinkId: id })
       } else {
-        setState({
-          draggedLink: null
-        })
+        setState({ draggedLinkId: null })
       }
     }
 
@@ -143,12 +137,12 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      const draggedLink = this.state.draggedLink
-      if (draggedLink) deleteLink(draggedLink.id)
+      const draggedLinkId = this.state.draggedLinkId
+      if (draggedLinkId) deleteLink(draggedLinkId)
 
       setState({
         draggedItems: [],
-        draggedLink: null,
+        draggedLinkId: null,
         pointer: null,
         showSelector: false
       })
@@ -180,13 +174,13 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      const draggedLink = this.state.draggedLink
+      const draggedLinkId = this.state.draggedLinkId
 
-      if (draggedLink) {
-        deleteLink(draggedLink.id)
+      if (draggedLinkId) {
+        deleteLink(draggedLinkId)
 
         setState({
-          draggedLink: null,
+          draggedLinkId: null,
           pointer: null
         })
       } else {
@@ -220,13 +214,13 @@ class Frame extends Component {
 
       // Do not select items when releasing a dragging link.
 
-      const draggedLink = this.state.draggedLink
+      const draggedLinkId = this.state.draggedLinkId
 
-      if (draggedLink) {
-        deleteLink(draggedLink.id)
+      if (draggedLinkId) {
+        deleteLink(draggedLinkId)
 
         setState({
-          draggedLink: null
+          draggedLinkId: null
         })
 
         return
@@ -252,6 +246,12 @@ class Frame extends Component {
         draggedItems: [],
         selectedItems
       })
+    }
+
+    const startDraggingLink = (id) => {
+      delete view.link[id].to
+
+      setState({ draggedLinkId: id })
     }
 
     const willDragItem = (id) => (e) => {
@@ -314,7 +314,7 @@ class Frame extends Component {
             <Node
               key={i}
               dragged={(draggedItems.indexOf(id) > -1)}
-              draggedLink={draggedLink}
+              draggedLinkId={draggedLinkId}
               fontSize={fontSize}
               height={height}
               id={id}
@@ -393,7 +393,7 @@ class Frame extends Component {
               lineWidth={lineWidth}
               id={id}
               onCreateLink={onCreateLink}
-              onUpdateLink={onUpdateLink}
+              startDraggingLink={startDraggingLink}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
               selectLink={selectItem(id)}
@@ -413,15 +413,21 @@ class Frame extends Component {
           deleteInputPin={deleteInputPin}
           deleteOutputPin={deleteOutputPin}
           items={(Object.assign([], selectedItems, draggedItems))}
+          renameNode={(nodeId, text) => {
+            renameNode(nodeId, text)
+
+            setState({ whenUpdated: getTime() })
+          }}
           view={view}
         />
         <Selector
           createNode={(node) => {
-            createNode(node)
+            const id = createNode(node)
 
-            // Need to change state to force React rendering.
             setState({
-              showSelector: false
+              selectedItems: [id],
+              showSelector: false,
+              whenUpdated: getTime()
             })
           }}
           pointer={pointer}
@@ -438,7 +444,9 @@ Frame.propTypes = {
   createLink: PropTypes.func.isRequired,
   createNode: PropTypes.func.isRequired,
   deleteLink: PropTypes.func.isRequired,
+  deleteInputPin: PropTypes.func.isRequired,
   deleteNode: PropTypes.func.isRequired,
+  deleteOutputPin: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
   fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
@@ -450,11 +458,10 @@ Frame.propTypes = {
       typeOfNode: PropTypes.func.isRequired
     })
   }).isRequired,
-  nodeBodyHeight: PropTypes.number.isRequired,
   lineWidth: PropTypes.number.isRequired,
-  deleteInputPin: PropTypes.func.isRequired,
-  deleteOutputPin: PropTypes.func.isRequired,
+  nodeBodyHeight: PropTypes.number.isRequired,
   pinSize: PropTypes.number.isRequired,
+  renameNode: PropTypes.func.isRequired,
   style: PropTypes.object.isRequired,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
@@ -488,6 +495,7 @@ Frame.defaultProps = {
   lineWidth: defaultTheme.lineWidth,
   nodeBodyHeight: defaultTheme.nodeBodyHeight,
   pinSize: defaultTheme.pinSize,
+  renameNode: Function.prototype,
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {

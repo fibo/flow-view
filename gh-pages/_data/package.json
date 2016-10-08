@@ -12,8 +12,8 @@
   "scripts": {
     "babel": "BABEL_ENV=umd babel --out-dir . src/",
     "browserify": "for x in example dist; do npm run browserify:$x; done",
-    "browserify:example": "NODE_PATH=. browserify --no-bundle-external examples/render/clientside.js -o gh-pages/example/bundle.js",
-    "browserify:dist": "browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
+    "browserify:example": "NODE_ENV=production NODE_PATH=. browserify --no-bundle-external examples/render/clientside.js -o gh-pages/example/bundle.js",
+    "browserify:dist": "NODE_ENV=production browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "build": "npm run example:render:serverside; npm run browserify && npm run minify; npm run jekyll; git status",
     "check-deps": "npm outdated",
     "example:basic:usage": "BABEL_ENV=development NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify -p livereactload",
@@ -66,11 +66,18 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-register": "^6.16.3",
+    "budo": "^9.2.1",
     "events": "1.x",
+    "livereactload": "^3.0.1",
     "not-defined": "1.x",
-    "react": "15.x",
-    "react-dom": "15.x",
-    "svgx": "^0.6.0"
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "standard": "^8.3.0",
+    "svgx": "^0.6.1"
   },
   "devDependencies": {
     "babel-cli": "6.x",

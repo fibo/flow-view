@@ -2,6 +2,14 @@ import React, { Component, PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
 
 class Inspector extends Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      newNodeText: null
+    }
+  }
+
   render () {
     const {
       items,
@@ -32,6 +40,10 @@ class Inspector extends Component {
 
     return (
       <foreignObject
+        onClick={() => {
+          // Remove focus from input.
+          document.activeElement.blur()
+        }}
         onDoubleClick={ignoreEvent}
         onMouseDown={ignoreEvent}
         onMouseUp={ignoreEvent}
@@ -61,24 +73,16 @@ class Inspector extends Component {
     )
   }
 
-  renderNode (nodeId, node) {
+  renderInsControls (nodeId, node) {
     const {
       createInputPin,
-      createOutputPin,
-      deleteNode,
       deleteInputPin,
-      deleteOutputPin,
       view
     } = this.props
 
     const ins = node.ins || []
-    const outs = node.outs || []
-
     const lastInputPosition = ins.length - 1
-    const lastOutputPosition = outs.length - 1
-
     var lastInputIsConnected = false
-    var lastOutputIsConnected = false
 
     Object.keys(view.link).forEach((linkId) => {
       const link = view.link[linkId]
@@ -86,11 +90,95 @@ class Inspector extends Component {
       if (link.to && (link.to[0] === nodeId) && (link.to[1] === lastInputPosition)) {
         lastInputIsConnected = true
       }
+    })
+
+    return (
+      <div>
+        ins
+        <button
+          disabled={(ins.length === 0) || lastInputIsConnected}
+          onClick={() => { deleteInputPin(nodeId) }}
+        >-</button>
+        <button
+          onClick={() => { createInputPin(nodeId) }}
+        >+</button>
+      </div>
+    )
+  }
+
+  renderOutsControls (nodeId, node) {
+    const {
+      createOutputPin,
+      deleteOutputPin,
+      view
+    } = this.props
+
+    const outs = node.outs || []
+    const lastOutputPosition = outs.length - 1
+    var lastOutputIsConnected = false
+
+    Object.keys(view.link).forEach((linkId) => {
+      const link = view.link[linkId]
 
       if ((link.from[0] === nodeId) && (link.from[1] === lastOutputPosition)) {
         lastOutputIsConnected = true
       }
     })
+
+    return (
+      <div>
+        outs
+        <button
+          disabled={(outs.length === 0) || lastOutputIsConnected}
+          onClick={() => { deleteOutputPin(nodeId) }}
+        >-</button>
+        <button
+          onClick={() => { createOutputPin(nodeId) }}
+        >+</button>
+      </div>
+    )
+  }
+
+  renderNode (nodeId, node) {
+    const {
+      deleteNode,
+      renameNode
+    } = this.props
+
+    const setState = this.setState.bind(this)
+
+    const newNodeText = this.state.newNodeText
+
+    const nodeText = newNodeText || node.text
+
+    const onChange = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const text = e.target.value
+
+      setState({ newNodeText: text })
+    }
+
+    const onKeyPress = (e) => {
+      const text = nodeText.trim()
+
+      const pressedEnter = (e.key === 'Enter')
+      const textIsNotBlank = text.length > 0
+
+      if (pressedEnter && textIsNotBlank) {
+        setState({ newNodeText: null })
+
+        renameNode(nodeId, text)
+      }
+    }
+
+    const getFocus = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      e.target.focus()
+    }
 
     return (
       <div>
@@ -101,31 +189,25 @@ class Inspector extends Component {
         </label>
         <input
           type='text'
-          id='name'
-          disabled
+          onBlur={() => {
+            const text = nodeText.trim()
+
+            const textIsNotBlank = text.length > 0
+
+            if (textIsNotBlank) {
+              renameNode(nodeId, text)
+            }
+
+            setState({ newNodeText: text })
+          }}
+          onChange={onChange}
+          onClick={getFocus}
+          onKeyPress={onKeyPress}
+          value={nodeText}
           style={{ outline: 'none' }}
-          value={node.text}
         />
-        <div>
-          ins
-          <button
-            disabled={(ins.length === 0) || lastInputIsConnected}
-            onClick={() => { deleteInputPin(nodeId) }}
-          >-</button>
-          <button
-            onClick={() => { createInputPin(nodeId) }}
-          >+</button>
-        </div>
-        <div>
-          outs
-          <button
-            disabled={(outs.length === 0) || lastOutputIsConnected}
-            onClick={() => { deleteOutputPin(nodeId) }}
-          >-</button>
-          <button
-            onClick={() => { createOutputPin(nodeId) }}
-          >+</button>
-        </div>
+        {this.renderInsControls(nodeId, node)}
+        {this.renderOutsControls(nodeId, node)}
         <button
           onClick={() => {
             deleteNode(nodeId)
@@ -146,6 +228,7 @@ Inspector.propTypes = {
   deleteInputPin: PropTypes.func.isRequired,
   deleteOutputPin: PropTypes.func.isRequired,
   items: PropTypes.array.isRequired,
+  renameNode: PropTypes.func.isRequired,
   view: PropTypes.shape({
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired
@@ -163,6 +246,7 @@ Inspector.defaultProps = {
   items: [],
   deleteInputPin: Function.prototype,
   deleteOutputPin: Function.prototype,
+  renameNode: Function.prototype,
   width: 200,
   x: 0,
   y: 0

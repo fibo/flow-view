@@ -94,7 +94,7 @@
         var fill = _props.fill;
         var from = _props.from;
         var onCreateLink = _props.onCreateLink;
-        var onUpdateLink = _props.onUpdateLink;
+        var startDraggingLink = _props.startDraggingLink;
         var pinSize = _props.pinSize;
         var selected = _props.selected;
         var selectLink = _props.selectLink;
@@ -117,7 +117,7 @@
           e.preventDefault();
           e.stopPropagation();
 
-          onUpdateLink(id, { from: from, to: null });
+          startDraggingLink(id);
         };
 
         return _react2.default.createElement(
@@ -163,7 +163,7 @@
     fill: _react.PropTypes.string.isRequired,
     from: _react.PropTypes.array,
     onCreateLink: _react.PropTypes.func.isRequired,
-    onUpdateLink: _react.PropTypes.func.isRequired,
+    startDraggingLink: _react.PropTypes.func.isRequired,
     pinSize: _react.PropTypes.number.isRequired,
     selected: _react.PropTypes.bool.isRequired,
     selectLink: _react.PropTypes.func.isRequired,
@@ -178,7 +178,7 @@
   Link.defaultProps = {
     fill: 'gray',
     onCreateLink: Function.prototype,
-    onUpdateLink: Function.prototype,
+    startDraggingLink: Function.prototype,
     pinSize: _theme2.default.pinSize,
     selected: false,
     selectLink: Function.prototype,

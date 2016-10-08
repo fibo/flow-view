@@ -194,30 +194,31 @@
           view.node[nodeId].outs.push(pin);
         };
 
+        function generateId() {
+          var id = (0, _randomString2.default)(idLength);
+
+          return view.link[id] || view.node[id] ? generateId() : id;
+        }
+
         var createLink = function createLink(link) {
-          function generateId() {
-            var id = (0, _randomString2.default)(idLength);
-            return link[id] ? generateId() : id;
-          }
+          var from = link.from;
+          var to = link.to;
 
           var id = generateId();
 
-          view.link[id] = link;
-
           // Do not fire createLink event if it is a dragging link.
-          if (link.to) {
-            _this2.emit('createLink', link, id);
+          if ((0, _notDefined2.default)(to)) {
+            view.link[id] = { from: from };
+          } else {
+            view.link[id] = { from: from, to: to };
+
+            _this2.emit('createLink', { from: from, to: to }, id);
           }
 
           return id;
         };
 
         var createNode = function createNode(node) {
-          function generateId() {
-            var id = (0, _randomString2.default)(idLength);
-            return node[id] ? generateId() : id;
-          }
-
           var id = generateId();
 
           view.node[id] = node;
@@ -243,15 +244,11 @@
             var to = view.link[linkId].to;
 
             if (from && from[0] === id) {
-              delete view.link[linkId];
-
-              _this2.emit('deleteLink', linkId);
+              deleteLink(linkId);
             }
 
             if (to && to[0] === id) {
-              delete view.link[linkId];
-
-              _this2.emit('deleteLink', linkId);
+              deleteLink(linkId);
             }
           });
 
@@ -293,15 +290,20 @@
           view.node[nodeId].outs.splice(position, 1);
         };
 
-        var updateLink = function updateLink(id, link) {
-          // Trigger a createLink event if it is a connected link.
-          if (link.to) {
-            _this2.emit('createLink', link, id);
-          } else {
-            _this2.emit('deleteLink', link, id);
-          }
+        var renameNode = function renameNode(nodeId, text) {
+          view.node[nodeId].text = text;
+        };
 
-          view.link[id] = Object.assign(view.link[id], link);
+        var updateLink = function updateLink(id, link) {
+          var to = link.to;
+          var from = link.from;
+
+          // Trigger a createLink event if it is a connected link.
+          if ((0, _notDefined2.default)(from)) {
+            view.link[id].to = to;
+
+            _this2.emit('createLink', view.link[id], id);
+          }
         };
 
         var component = _react2.default.createElement(_Frame2.default, {
@@ -316,6 +318,7 @@
           dragItems: dragItems,
           item: item,
           model: model,
+          renameNode: renameNode,
           updateLink: updateLink,
           view: view
         });

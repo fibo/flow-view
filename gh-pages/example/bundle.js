@@ -9,8 +9,8 @@ canvas.render(view)
 
 },{"./sample-view.json":2,"flow-view":undefined}],2:[function(require,module,exports){
 module.exports={
-  "width": 400,
-  "height": 220,
+  "width": 720,
+  "height": 400,
   "node": {
     "a": {
       "text": "your engine",

@@ -25,6 +25,7 @@ New g14n.info layouts, with link Changelog page
 
 - Rename node event.
 - Node is selected automatically when created by selector.
+- Online example.
 
 ### Fixed
 

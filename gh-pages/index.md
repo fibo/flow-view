@@ -6,6 +6,9 @@ flow: /empty.json
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
+The image below is an SVG generated server side by [flow-view Canvas](#canvas): click it to
+see [online example][online_example].
+
 [![sample view][sample_view_svg]][online_example]
 
 [Description](#description) |
@@ -21,6 +24,8 @@ flow: /empty.json
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
 [![NPM](https://nodei.co/npm-dl/flow-view.png)](https://nodei.co/npm-dl/flow-view/)
+
+<p><a href="http://codepen.io/fibo/pen/qNNmdd/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
 ## Description
 
@@ -40,8 +45,6 @@ The followign features are implemented:
 > Let's give Node.js a common visual interface. Use *flow-view*!
 
 Any feedback is welcome!
-
-<p><a href="http://codepen.io/fibo/pen/qNNmdd/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
 
 ## Installation
 
@@ -236,5 +239,5 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
-[online_example]: "http://g14n.info/flow-view/example" "Online example"
+[online_example]: http://g14n.info/flow-view/example "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

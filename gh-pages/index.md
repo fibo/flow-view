@@ -29,17 +29,14 @@ see [online example][online_example].
 
 ## Description
 
-This document refers to *flow-view* v2, which is implemented
-in React, yeah! Previous version is still available [here](https://github.com/fibo/flow-view/tree/v1.2.1).
-
 *flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project.
 I am using it for a minimal Dataflow programming engine: [dflow].
 
-The followign features are implemented:
+The following features are implemented:
 
-* Create nodes and links visually.
+* Create nodes and links using a visual interface.
 * SVG server side rendering.
-* Custom items: nodes, links, inspector can be customized.
+* Custom items: nodes, links, inspector can be customized using React.
 * Events are emitted to achieve integration with other packages.
 
 > Let's give Node.js a common visual interface. Use *flow-view*!

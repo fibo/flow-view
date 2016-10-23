@@ -1,6 +1,7 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict'
 
+exports.byteLength = byteLength
 exports.toByteArray = toByteArray
 exports.fromByteArray = fromByteArray
 
@@ -8,23 +9,17 @@ var lookup = []
 var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-function init () {
-  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  for (var i = 0, len = code.length; i < len; ++i) {
-    lookup[i] = code[i]
-    revLookup[code.charCodeAt(i)] = i
-  }
-
-  revLookup['-'.charCodeAt(0)] = 62
-  revLookup['_'.charCodeAt(0)] = 63
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
 }
 
-init()
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
 
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
+function placeHoldersCount (b64) {
   var len = b64.length
-
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
@@ -34,9 +29,19 @@ function toByteArray (b64) {
   // represent one byte
   // if there is only one, then the three characters before it represent 2 bytes
   // this is just a cheap hack to not do indexOf twice
-  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
 
+function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
   arr = new Arr(len * 3 / 4 - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
@@ -4101,8 +4106,15 @@ exports.isHtml = function(str) {
 module.exports={
   "_args": [
     [
-      "cheerio@^0.22.0",
-      "/home/io/github.com/fibo/flow-view"
+      {
+        "name": "cheerio",
+        "raw": "cheerio@^0.22.0",
+        "rawSpec": "^0.22.0",
+        "scope": null,
+        "spec": ">=0.22.0 <0.23.0",
+        "type": "range"
+      },
+      "/Users/gcasati/github.com/fibo/flow-view/node_modules/svgx"
     ]
   ],
   "_from": "cheerio@>=0.22.0 <0.23.0",
@@ -4130,13 +4142,14 @@ module.exports={
     "type": "range"
   },
   "_requiredBy": [
-    "#DEV:/"
+    "#DEV:/",
+    "/svgx"
   ],
   "_resolved": "https://registry.npmjs.org/cheerio/-/cheerio-0.22.0.tgz",
   "_shasum": "a9baa860a3f9b595a6b81b1a86873121ed3a269e",
   "_shrinkwrap": null,
   "_spec": "cheerio@^0.22.0",
-  "_where": "/home/io/github.com/fibo/flow-view",
+  "_where": "/Users/gcasati/github.com/fibo/flow-view/node_modules/svgx",
   "author": {
     "email": "mattmuelle@gmail.com",
     "name": "Matt Mueller",
@@ -9769,7 +9782,7 @@ WritableStream.prototype._write = function(chunk, encoding, cb){
 	this._parser.write(chunk);
 	cb();
 };
-},{"./Parser.js":75,"buffer":5,"inherits":82,"readable-stream":3,"stream":252,"string_decoder":264}],80:[function(require,module,exports){
+},{"./Parser.js":75,"buffer":5,"inherits":82,"readable-stream":3,"stream":263,"string_decoder":264}],80:[function(require,module,exports){
 var Parser = require("./Parser.js"),
     DomHandler = require("domhandler");
 
@@ -28304,25 +28317,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -28343,6 +28371,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -47776,138 +47809,9 @@ module.exports = validateDOMNesting;
 module.exports = require('./lib/React');
 
 },{"./lib/React":131}],252:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-module.exports = Stream;
-
-var EE = require('events').EventEmitter;
-var inherits = require('inherits');
-
-inherits(Stream, EE);
-Stream.Readable = require('readable-stream/readable.js');
-Stream.Writable = require('readable-stream/writable.js');
-Stream.Duplex = require('readable-stream/duplex.js');
-Stream.Transform = require('readable-stream/transform.js');
-Stream.PassThrough = require('readable-stream/passthrough.js');
-
-// Backwards-compat with node 0.4.x
-Stream.Stream = Stream;
-
-
-
-// old-style streams.  Note that the pipe method (the only relevant
-// part of this class) is overridden in the Readable class.
-
-function Stream() {
-  EE.call(this);
-}
-
-Stream.prototype.pipe = function(dest, options) {
-  var source = this;
-
-  function ondata(chunk) {
-    if (dest.writable) {
-      if (false === dest.write(chunk) && source.pause) {
-        source.pause();
-      }
-    }
-  }
-
-  source.on('data', ondata);
-
-  function ondrain() {
-    if (source.readable && source.resume) {
-      source.resume();
-    }
-  }
-
-  dest.on('drain', ondrain);
-
-  // If the 'end' option is not supplied, dest.end() will be called when
-  // source gets the 'end' or 'close' events.  Only dest.end() once.
-  if (!dest._isStdio && (!options || options.end !== false)) {
-    source.on('end', onend);
-    source.on('close', onclose);
-  }
-
-  var didOnEnd = false;
-  function onend() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest.end();
-  }
-
-
-  function onclose() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    if (typeof dest.destroy === 'function') dest.destroy();
-  }
-
-  // don't leave dangling pipes when there are errors.
-  function onerror(er) {
-    cleanup();
-    if (EE.listenerCount(this, 'error') === 0) {
-      throw er; // Unhandled stream error in pipe.
-    }
-  }
-
-  source.on('error', onerror);
-  dest.on('error', onerror);
-
-  // remove all the event listeners that were added.
-  function cleanup() {
-    source.removeListener('data', ondata);
-    dest.removeListener('drain', ondrain);
-
-    source.removeListener('end', onend);
-    source.removeListener('close', onclose);
-
-    source.removeListener('error', onerror);
-    dest.removeListener('error', onerror);
-
-    source.removeListener('end', cleanup);
-    source.removeListener('close', cleanup);
-
-    dest.removeListener('close', cleanup);
-  }
-
-  source.on('end', cleanup);
-  source.on('close', cleanup);
-
-  dest.on('close', cleanup);
-
-  dest.emit('pipe', source);
-
-  // Allow for unix-like usage: A.pipe(B).pipe(C)
-  return dest;
-};
-
-},{"events":47,"inherits":82,"readable-stream/duplex.js":253,"readable-stream/passthrough.js":260,"readable-stream/readable.js":261,"readable-stream/transform.js":262,"readable-stream/writable.js":263}],253:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":254}],254:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":253}],253:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -47983,7 +47887,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":256,"./_stream_writable":258,"core-util-is":17,"inherits":82,"process-nextick-args":102}],255:[function(require,module,exports){
+},{"./_stream_readable":255,"./_stream_writable":257,"core-util-is":17,"inherits":82,"process-nextick-args":102}],254:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -48010,7 +47914,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":257,"core-util-is":17,"inherits":82}],256:[function(require,module,exports){
+},{"./_stream_transform":256,"core-util-is":17,"inherits":82}],255:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -48950,7 +48854,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":254,"./internal/streams/BufferList":259,"_process":103,"buffer":5,"buffer-shims":4,"core-util-is":17,"events":47,"inherits":82,"isarray":84,"process-nextick-args":102,"string_decoder/":264,"util":3}],257:[function(require,module,exports){
+},{"./_stream_duplex":253,"./internal/streams/BufferList":258,"_process":103,"buffer":5,"buffer-shims":4,"core-util-is":17,"events":47,"inherits":82,"isarray":84,"process-nextick-args":102,"string_decoder/":264,"util":3}],256:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -49131,7 +49035,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":254,"core-util-is":17,"inherits":82}],258:[function(require,module,exports){
+},{"./_stream_duplex":253,"core-util-is":17,"inherits":82}],257:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -49660,7 +49564,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":254,"_process":103,"buffer":5,"buffer-shims":4,"core-util-is":17,"events":47,"inherits":82,"process-nextick-args":102,"util-deprecate":266}],259:[function(require,module,exports){
+},{"./_stream_duplex":253,"_process":103,"buffer":5,"buffer-shims":4,"core-util-is":17,"events":47,"inherits":82,"process-nextick-args":102,"util-deprecate":266}],258:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -49725,10 +49629,10 @@ BufferList.prototype.concat = function (n) {
   }
   return ret;
 };
-},{"buffer":5,"buffer-shims":4}],260:[function(require,module,exports){
+},{"buffer":5,"buffer-shims":4}],259:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":255}],261:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":254}],260:[function(require,module,exports){
 (function (process){
 var Stream = (function (){
   try {
@@ -49748,13 +49652,142 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":254,"./lib/_stream_passthrough.js":255,"./lib/_stream_readable.js":256,"./lib/_stream_transform.js":257,"./lib/_stream_writable.js":258,"_process":103}],262:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":253,"./lib/_stream_passthrough.js":254,"./lib/_stream_readable.js":255,"./lib/_stream_transform.js":256,"./lib/_stream_writable.js":257,"_process":103}],261:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":257}],263:[function(require,module,exports){
+},{"./lib/_stream_transform.js":256}],262:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":258}],264:[function(require,module,exports){
+},{"./lib/_stream_writable.js":257}],263:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+module.exports = Stream;
+
+var EE = require('events').EventEmitter;
+var inherits = require('inherits');
+
+inherits(Stream, EE);
+Stream.Readable = require('readable-stream/readable.js');
+Stream.Writable = require('readable-stream/writable.js');
+Stream.Duplex = require('readable-stream/duplex.js');
+Stream.Transform = require('readable-stream/transform.js');
+Stream.PassThrough = require('readable-stream/passthrough.js');
+
+// Backwards-compat with node 0.4.x
+Stream.Stream = Stream;
+
+
+
+// old-style streams.  Note that the pipe method (the only relevant
+// part of this class) is overridden in the Readable class.
+
+function Stream() {
+  EE.call(this);
+}
+
+Stream.prototype.pipe = function(dest, options) {
+  var source = this;
+
+  function ondata(chunk) {
+    if (dest.writable) {
+      if (false === dest.write(chunk) && source.pause) {
+        source.pause();
+      }
+    }
+  }
+
+  source.on('data', ondata);
+
+  function ondrain() {
+    if (source.readable && source.resume) {
+      source.resume();
+    }
+  }
+
+  dest.on('drain', ondrain);
+
+  // If the 'end' option is not supplied, dest.end() will be called when
+  // source gets the 'end' or 'close' events.  Only dest.end() once.
+  if (!dest._isStdio && (!options || options.end !== false)) {
+    source.on('end', onend);
+    source.on('close', onclose);
+  }
+
+  var didOnEnd = false;
+  function onend() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest.end();
+  }
+
+
+  function onclose() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    if (typeof dest.destroy === 'function') dest.destroy();
+  }
+
+  // don't leave dangling pipes when there are errors.
+  function onerror(er) {
+    cleanup();
+    if (EE.listenerCount(this, 'error') === 0) {
+      throw er; // Unhandled stream error in pipe.
+    }
+  }
+
+  source.on('error', onerror);
+  dest.on('error', onerror);
+
+  // remove all the event listeners that were added.
+  function cleanup() {
+    source.removeListener('data', ondata);
+    dest.removeListener('drain', ondrain);
+
+    source.removeListener('end', onend);
+    source.removeListener('close', onclose);
+
+    source.removeListener('error', onerror);
+    dest.removeListener('error', onerror);
+
+    source.removeListener('end', cleanup);
+    source.removeListener('close', cleanup);
+
+    dest.removeListener('close', cleanup);
+  }
+
+  source.on('end', cleanup);
+  source.on('close', cleanup);
+
+  dest.on('close', cleanup);
+
+  dest.emit('pipe', source);
+
+  // Allow for unix-like usage: A.pipe(B).pipe(C)
+  return dest;
+};
+
+},{"events":47,"inherits":82,"readable-stream/duplex.js":252,"readable-stream/passthrough.js":259,"readable-stream/readable.js":260,"readable-stream/transform.js":261,"readable-stream/writable.js":262}],264:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -50294,10 +50327,7 @@ var Canvas = function (_EventEmitter) {
       };
 
       var deleteLink = function deleteLink(id) {
-        // Trigger a deleteLink event only if it is not a dragged link.
-        if (view.link[id].to) {
-          _this2.emit('deleteLink', id);
-        }
+        _this2.emit('deleteLink', id);
 
         delete view.link[id];
       };
@@ -50609,7 +50639,7 @@ var Frame = function (_Component) {
         e.stopPropagation();
 
         var draggedLinkId = _this2.state.draggedLinkId;
-        if (draggedLinkId) deleteLink(draggedLinkId);
+        if (draggedLinkId) delete view.link[draggedLinkId];
 
         setState({
           draggedItems: [],
@@ -50648,7 +50678,7 @@ var Frame = function (_Component) {
         var draggedLinkId = _this2.state.draggedLinkId;
 
         if (draggedLinkId) {
-          deleteLink(draggedLinkId);
+          delete view.link[draggedLinkId];
 
           setState({
             draggedLinkId: null,
@@ -50689,7 +50719,7 @@ var Frame = function (_Component) {
           var draggedLinkId = _this2.state.draggedLinkId;
 
           if (draggedLinkId) {
-            deleteLink(draggedLinkId);
+            delete view.link[draggedLinkId];
 
             setState({
               draggedLinkId: null
@@ -50721,10 +50751,18 @@ var Frame = function (_Component) {
         };
       };
 
-      var startDraggingLink = function startDraggingLink(id) {
-        delete view.link[id].to;
+      var startDraggingLinkTarget = function startDraggingLinkTarget(id) {
+        // Remember link source.
+        var from = view.link[id].from;
 
-        setState({ draggedLinkId: id });
+        // Delete dragged link so the 'deleteLink' event is triggered.
+        deleteLink(id);
+
+        // Create a brand new link, this is the right choice to avoid
+        // conflicts, for example the user could start dragging the link
+        // target and then drop it again in the same target.
+        var draggedLinkId = createLink({ from: from });
+        setState({ draggedLinkId: draggedLinkId });
       };
 
       var willDragItem = function willDragItem(id) {
@@ -50869,7 +50907,7 @@ var Frame = function (_Component) {
             lineWidth: lineWidth,
             id: id,
             onCreateLink: onCreateLink,
-            startDraggingLink: startDraggingLink,
+            startDraggingLinkTarget: startDraggingLinkTarget,
             pinSize: pinSize,
             selected: selectedItems.indexOf(id) > -1,
             selectLink: selectItem(id),
@@ -51355,7 +51393,7 @@ var Link = function (_Component) {
       var fill = _props.fill;
       var from = _props.from;
       var onCreateLink = _props.onCreateLink;
-      var startDraggingLink = _props.startDraggingLink;
+      var startDraggingLinkTarget = _props.startDraggingLinkTarget;
       var pinSize = _props.pinSize;
       var selected = _props.selected;
       var selectLink = _props.selectLink;
@@ -51378,7 +51416,7 @@ var Link = function (_Component) {
         e.preventDefault();
         e.stopPropagation();
 
-        startDraggingLink(id);
+        startDraggingLinkTarget(id);
       };
 
       return _react2.default.createElement(
@@ -51424,7 +51462,7 @@ Link.propTypes = {
   fill: _react.PropTypes.string.isRequired,
   from: _react.PropTypes.array,
   onCreateLink: _react.PropTypes.func.isRequired,
-  startDraggingLink: _react.PropTypes.func.isRequired,
+  startDraggingLinkTarget: _react.PropTypes.func.isRequired,
   pinSize: _react.PropTypes.number.isRequired,
   selected: _react.PropTypes.bool.isRequired,
   selectLink: _react.PropTypes.func.isRequired,
@@ -51439,7 +51477,7 @@ Link.propTypes = {
 Link.defaultProps = {
   fill: 'gray',
   onCreateLink: Function.prototype,
-  startDraggingLink: Function.prototype,
+  startDraggingLinkTarget: Function.prototype,
   pinSize: _theme2.default.pinSize,
   selected: false,
   selectLink: Function.prototype,

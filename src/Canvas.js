@@ -147,10 +147,7 @@ class Canvas extends EventEmitter {
     }
 
     const deleteLink = (id) => {
-      // Trigger a deleteLink event only if it is not a dragged link.
-      if (view.link[id].to) {
-        this.emit('deleteLink', id)
-      }
+      this.emit('deleteLink', id)
 
       delete view.link[id]
     }

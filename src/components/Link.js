@@ -9,7 +9,7 @@ class Link extends Component {
       fill,
       from,
       onCreateLink,
-      startDraggingLink,
+      startDraggingLinkTarget,
       pinSize,
       selected,
       selectLink,
@@ -32,7 +32,7 @@ class Link extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      startDraggingLink(id)
+      startDraggingLinkTarget(id)
     }
 
     return (
@@ -77,7 +77,7 @@ Link.propTypes = {
   fill: PropTypes.string.isRequired,
   from: PropTypes.array,
   onCreateLink: PropTypes.func.isRequired,
-  startDraggingLink: PropTypes.func.isRequired,
+  startDraggingLinkTarget: PropTypes.func.isRequired,
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectLink: PropTypes.func.isRequired,
@@ -92,7 +92,7 @@ Link.propTypes = {
 Link.defaultProps = {
   fill: 'gray',
   onCreateLink: Function.prototype,
-  startDraggingLink: Function.prototype,
+  startDraggingLinkTarget: Function.prototype,
   pinSize: defaultTheme.pinSize,
   selected: false,
   selectLink: Function.prototype,

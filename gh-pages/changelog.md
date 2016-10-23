@@ -13,11 +13,17 @@ All notable changes to this project will be documented in this file.
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
+## TODO
+
+New g14n.info layouts, with link to Changelog page
+
 ## [Unreleased]
 
-### TODO
+## [v2.8.1] - 2016-10-23
 
-New g14n.info layouts, with link Changelog page
+### Fixed
+
+- Start dragging a link source now creates a brand new link, to avoid conflicts.
 
 ## [v2.8.0] - 2016-10-08
 

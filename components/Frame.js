@@ -229,7 +229,7 @@
           e.stopPropagation();
 
           var draggedLinkId = _this2.state.draggedLinkId;
-          if (draggedLinkId) deleteLink(draggedLinkId);
+          if (draggedLinkId) delete view.link[draggedLinkId];
 
           setState({
             draggedItems: [],
@@ -268,7 +268,7 @@
           var draggedLinkId = _this2.state.draggedLinkId;
 
           if (draggedLinkId) {
-            deleteLink(draggedLinkId);
+            delete view.link[draggedLinkId];
 
             setState({
               draggedLinkId: null,
@@ -309,7 +309,7 @@
             var draggedLinkId = _this2.state.draggedLinkId;
 
             if (draggedLinkId) {
-              deleteLink(draggedLinkId);
+              delete view.link[draggedLinkId];
 
               setState({
                 draggedLinkId: null
@@ -341,10 +341,18 @@
           };
         };
 
-        var startDraggingLink = function startDraggingLink(id) {
-          delete view.link[id].to;
+        var startDraggingLinkTarget = function startDraggingLinkTarget(id) {
+          // Remember link source.
+          var from = view.link[id].from;
 
-          setState({ draggedLinkId: id });
+          // Delete dragged link so the 'deleteLink' event is triggered.
+          deleteLink(id);
+
+          // Create a brand new link, this is the right choice to avoid
+          // conflicts, for example the user could start dragging the link
+          // target and then drop it again in the same target.
+          var draggedLinkId = createLink({ from: from });
+          setState({ draggedLinkId: draggedLinkId });
         };
 
         var willDragItem = function willDragItem(id) {
@@ -489,7 +497,7 @@
               lineWidth: lineWidth,
               id: id,
               onCreateLink: onCreateLink,
-              startDraggingLink: startDraggingLink,
+              startDraggingLinkTarget: startDraggingLinkTarget,
               pinSize: pinSize,
               selected: selectedItems.indexOf(id) > -1,
               selectLink: selectItem(id),

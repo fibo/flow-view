@@ -138,7 +138,7 @@ class Frame extends Component {
       e.stopPropagation()
 
       const draggedLinkId = this.state.draggedLinkId
-      if (draggedLinkId) deleteLink(draggedLinkId)
+      if (draggedLinkId) delete view.link[draggedLinkId]
 
       setState({
         draggedItems: [],
@@ -177,7 +177,7 @@ class Frame extends Component {
       const draggedLinkId = this.state.draggedLinkId
 
       if (draggedLinkId) {
-        deleteLink(draggedLinkId)
+        delete view.link[draggedLinkId]
 
         setState({
           draggedLinkId: null,
@@ -217,7 +217,7 @@ class Frame extends Component {
       const draggedLinkId = this.state.draggedLinkId
 
       if (draggedLinkId) {
-        deleteLink(draggedLinkId)
+        delete view.link[draggedLinkId]
 
         setState({
           draggedLinkId: null
@@ -248,10 +248,18 @@ class Frame extends Component {
       })
     }
 
-    const startDraggingLink = (id) => {
-      delete view.link[id].to
+    const startDraggingLinkTarget = (id) => {
+      // Remember link source.
+      const from = view.link[id].from
 
-      setState({ draggedLinkId: id })
+      // Delete dragged link so the 'deleteLink' event is triggered.
+      deleteLink(id)
+
+      // Create a brand new link, this is the right choice to avoid
+      // conflicts, for example the user could start dragging the link
+      // target and then drop it again in the same target.
+      const draggedLinkId = createLink({ from })
+      setState({ draggedLinkId })
     }
 
     const willDragItem = (id) => (e) => {
@@ -393,7 +401,7 @@ class Frame extends Component {
               lineWidth={lineWidth}
               id={id}
               onCreateLink={onCreateLink}
-              startDraggingLink={startDraggingLink}
+              startDraggingLinkTarget={startDraggingLinkTarget}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
               selectLink={selectItem(id)}

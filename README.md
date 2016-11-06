@@ -55,7 +55,7 @@ If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 
 In a working tree with all modifications committed, launch
 
-```
+```bash
 git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 ```
 
@@ -63,12 +63,12 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 
 ### singlepage
 
-Use it for a single page [microsite].
+Use it for a single page [microsite]. See [example page](http://g14n.info/example-layout/singlepage/).
 
 Requires
 
 * Exists resource `//style.css`.
-* Variables `page.title`, `page.author`, `page.keywords` and `page.description`.
+* Variables `page.title`, `page.keywords` and `page.description`.
 
 Follows a sample YAML frontmatter
 
@@ -78,7 +78,6 @@ description: example
 keywords:
   - pizza
   - mafia
-author: Gianluca Casati
 ```
 
 ### responsive-side-menu.html

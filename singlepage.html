@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta name="description" content="{{ page.description | strip_newlines }}">
+  <meta name="keywords" content="{{ page.keywords | join: ',' }}">
+  <meta name="author" content="{{ page.author }}">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>{{ page.title }}</title>
+
+  <link rel="stylesheet" href="//style.css">
+</head>
+<body>
+  {{ content }}
+
+  {% include common/analytics.html %}
+</body>
+</html>

@@ -2,6 +2,10 @@
 
 > is a git subtree containing Jekyll layouts used across my personal website
 
+## Microsite
+
+By **microsite** I mean a subset of a website. For example `http://example.org/my-microsite`.
+
 The following g14n.info microsites are involved:
 
 <!--
@@ -12,6 +16,7 @@ The following g14n.info microsites are involved:
 * [iper](http://g14n.info/iper)
 -->
 * [tris3d-canvas](http://g14n.info/tris3d-canvas)
+* [Sul-problema-di-Apollonio](http://g14n.info/Sul-problema-di-Apollonio)
 
 ## Setup
 
@@ -34,13 +39,13 @@ layout: common/page
 
 ### Add remote
 
-```
+```bash
 git remote add common_layouts git@github.com:fibo/g14n.info-jekyll-layouts.git
 ```
 
 ### Add subtree
 
-```
+```bash
 git subtree add --prefix=gh-pages/_layouts/common/ common_layouts master
 ```
 
@@ -55,6 +60,26 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 ```
 
 ## Content
+
+### singlepage
+
+Use it for a single page [microsite].
+
+Requires
+
+* Exists resource `//style.css`.
+* Variables `page.title`, `page.author`, `page.keywords` and `page.description`.
+
+Follows a sample YAML frontmatter
+
+```yaml
+title: My title
+description: example
+keywords:
+  - pizza
+  - mafia
+author: Gianluca Casati
+```
 
 ### responsive-side-menu.html
 
@@ -71,4 +96,5 @@ Example: example
 API: '#api'
 ```
 
+[microsite](#microsite)
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

@@ -63,7 +63,7 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 
 ### singlepage
 
-Use it for a single page [microsite]. See [example page](http://g14n.info/example-layout/singlepage/).
+Use it for a single page [microsite]. See [example page](http://g14n.info/templates/singlepage/).
 
 Requires
 

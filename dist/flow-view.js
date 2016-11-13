@@ -4107,10 +4107,11 @@ module.exports={
   "_args": [
     [
       {
-        "name": "cheerio",
         "raw": "cheerio@^0.22.0",
-        "rawSpec": "^0.22.0",
         "scope": null,
+        "escapedName": "cheerio",
+        "name": "cheerio",
+        "rawSpec": "^0.22.0",
         "spec": ">=0.22.0 <0.23.0",
         "type": "range"
       },
@@ -4120,7 +4121,6 @@ module.exports={
   "_from": "cheerio@>=0.22.0 <0.23.0",
   "_id": "cheerio@0.22.0",
   "_inCache": true,
-  "_installable": true,
   "_location": "/cheerio",
   "_nodeVersion": "6.2.2",
   "_npmOperationalInternal": {
@@ -4128,16 +4128,17 @@ module.exports={
     "tmp": "tmp/cheerio-0.22.0.tgz_1471954900169_0.12557715992443264"
   },
   "_npmUser": {
-    "email": "mattmuelle@gmail.com",
-    "name": "mattmueller"
+    "name": "mattmueller",
+    "email": "mattmuelle@gmail.com"
   },
   "_npmVersion": "3.10.6",
   "_phantomChildren": {},
   "_requested": {
-    "name": "cheerio",
     "raw": "cheerio@^0.22.0",
-    "rawSpec": "^0.22.0",
     "scope": null,
+    "escapedName": "cheerio",
+    "name": "cheerio",
+    "rawSpec": "^0.22.0",
     "spec": ">=0.22.0 <0.23.0",
     "type": "range"
   },
@@ -4151,8 +4152,8 @@ module.exports={
   "_spec": "cheerio@^0.22.0",
   "_where": "/Users/gcasati/github.com/fibo/flow-view/node_modules/svgx",
   "author": {
-    "email": "mattmuelle@gmail.com",
     "name": "Matt Mueller",
+    "email": "mattmuelle@gmail.com",
     "url": "mat.io"
   },
   "bugs": {
@@ -4214,20 +4215,20 @@ module.exports={
   "main": "./index.js",
   "maintainers": [
     {
-      "email": "mattmuelle@gmail.com",
-      "name": "mattmueller"
+      "name": "mattmueller",
+      "email": "mattmuelle@gmail.com"
     },
     {
-      "email": "dc@davidchambers.me",
-      "name": "davidchambers"
+      "name": "davidchambers",
+      "email": "dc@davidchambers.me"
     },
     {
-      "email": "mike@mikepennisi.com",
-      "name": "jugglinmike"
+      "name": "jugglinmike",
+      "email": "mike@mikepennisi.com"
     },
     {
-      "email": "me@feedic.com",
-      "name": "feedic"
+      "name": "feedic",
+      "email": "me@feedic.com"
     }
   ],
   "name": "cheerio",
@@ -9449,8 +9450,8 @@ Tokenizer.prototype._stateInHexEntity = function(c){
 Tokenizer.prototype._cleanup = function (){
 	if(this._sectionStart < 0){
 		this._buffer = "";
-		this._index = 0;
 		this._bufferOffset += this._index;
+		this._index = 0;
 	} else if(this._running){
 		if(this._state === TEXT){
 			if(this._sectionStart !== this._index){
@@ -47928,6 +47929,10 @@ var processNextTick = require('process-nextick-args');
 var isArray = require('isarray');
 /*</replacement>*/
 
+/*<replacement>*/
+var Duplex;
+/*</replacement>*/
+
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
@@ -47975,6 +47980,8 @@ var StringDecoder;
 util.inherits(Readable, Stream);
 
 function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
   if (typeof emitter.prependListener === 'function') {
     return emitter.prependListener(event, fn);
   } else {
@@ -47986,7 +47993,6 @@ function prependListener(emitter, event, fn) {
   }
 }
 
-var Duplex;
 function ReadableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -48056,7 +48062,6 @@ function ReadableState(options, stream) {
   }
 }
 
-var Duplex;
 function Readable(options) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -48379,7 +48384,7 @@ function maybeReadMore_(stream, state) {
 // for virtual (non-string, non-buffer) streams, "length" is somewhat
 // arbitrary, and perhaps not very meaningful.
 Readable.prototype._read = function (n) {
-  this.emit('error', new Error('not implemented'));
+  this.emit('error', new Error('_read() is not implemented'));
 };
 
 Readable.prototype.pipe = function (dest, pipeOpts) {
@@ -48557,16 +48562,16 @@ Readable.prototype.unpipe = function (dest) {
     state.pipesCount = 0;
     state.flowing = false;
 
-    for (var _i = 0; _i < len; _i++) {
-      dests[_i].emit('unpipe', this);
+    for (var i = 0; i < len; i++) {
+      dests[i].emit('unpipe', this);
     }return this;
   }
 
   // try to find the right one.
-  var i = indexOf(state.pipes, dest);
-  if (i === -1) return this;
+  var index = indexOf(state.pipes, dest);
+  if (index === -1) return this;
 
-  state.pipes.splice(i, 1);
+  state.pipes.splice(index, 1);
   state.pipesCount -= 1;
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
 
@@ -48951,7 +48956,6 @@ function Transform(options) {
 
   this._transformState = new TransformState(this);
 
-  // when the writable side finishes, then flush out anything remaining.
   var stream = this;
 
   // start out asking for a readable event once data is transformed.
@@ -48968,9 +48972,10 @@ function Transform(options) {
     if (typeof options.flush === 'function') this._flush = options.flush;
   }
 
+  // When the writable side finishes, then flush out anything remaining.
   this.once('prefinish', function () {
-    if (typeof this._flush === 'function') this._flush(function (er) {
-      done(stream, er);
+    if (typeof this._flush === 'function') this._flush(function (er, data) {
+      done(stream, er, data);
     });else done(stream);
   });
 }
@@ -48991,7 +48996,7 @@ Transform.prototype.push = function (chunk, encoding) {
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
 Transform.prototype._transform = function (chunk, encoding, cb) {
-  throw new Error('Not implemented');
+  throw new Error('_transform() is not implemented');
 };
 
 Transform.prototype._write = function (chunk, encoding, cb) {
@@ -49021,8 +49026,10 @@ Transform.prototype._read = function (n) {
   }
 };
 
-function done(stream, er) {
+function done(stream, er, data) {
   if (er) return stream.emit('error', er);
+
+  if (data !== null && data !== undefined) stream.push(data);
 
   // if there's nothing in the write buffer, then that means
   // that nothing more will ever be provided
@@ -49051,6 +49058,10 @@ var processNextTick = require('process-nextick-args');
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
+/*</replacement>*/
+
+/*<replacement>*/
+var Duplex;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
@@ -49093,7 +49104,6 @@ function WriteReq(chunk, encoding, cb) {
   this.next = null;
 }
 
-var Duplex;
 function WritableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
 
@@ -49115,6 +49125,7 @@ function WritableState(options, stream) {
   // cast to ints.
   this.highWaterMark = ~ ~this.highWaterMark;
 
+  // drain event flag.
   this.needDrain = false;
   // at the start of calling end()
   this.ending = false;
@@ -49189,7 +49200,7 @@ function WritableState(options, stream) {
   this.corkedRequestsFree = new CorkedRequest(this);
 }
 
-WritableState.prototype.getBuffer = function writableStateGetBuffer() {
+WritableState.prototype.getBuffer = function getBuffer() {
   var current = this.bufferedRequest;
   var out = [];
   while (current) {
@@ -49209,13 +49220,37 @@ WritableState.prototype.getBuffer = function writableStateGetBuffer() {
   } catch (_) {}
 })();
 
-var Duplex;
+// Test _writableState for inheritance to account for Duplex streams,
+// whose prototype chain only points to Readable.
+var realHasInstance;
+if (typeof Symbol === 'function' && Symbol.hasInstance) {
+  realHasInstance = Function.prototype[Symbol.hasInstance];
+  Object.defineProperty(Writable, Symbol.hasInstance, {
+    value: function (object) {
+      if (realHasInstance.call(this, object)) return true;
+
+      return object && object._writableState instanceof WritableState;
+    }
+  });
+} else {
+  realHasInstance = function (object) {
+    return object instanceof this;
+  };
+}
+
 function Writable(options) {
   Duplex = Duplex || require('./_stream_duplex');
 
-  // Writable ctor is applied to Duplexes, though they're not
-  // instanceof Writable, they're instanceof Readable.
-  if (!(this instanceof Writable) && !(this instanceof Duplex)) return new Writable(options);
+  // Writable ctor is applied to Duplexes, too.
+  // `realHasInstance` is necessary because using plain `instanceof`
+  // would return false, as no `_writableState` property is attached.
+
+  // Trying to use the custom `instanceof` for Writable here will also break the
+  // Node.js LazyTransform implementation, which has a non-trivial getter for
+  // `_writableState` that would lead to infinite recursion.
+  if (!realHasInstance.call(Writable, this) && !(this instanceof Duplex)) {
+    return new Writable(options);
+  }
 
   this._writableState = new WritableState(options, this);
 
@@ -49475,7 +49510,7 @@ function clearBuffer(stream, state) {
 }
 
 Writable.prototype._write = function (chunk, encoding, cb) {
-  cb(new Error('not implemented'));
+  cb(new Error('_write() is not implemented'));
 };
 
 Writable.prototype._writev = null;
@@ -50539,34 +50574,34 @@ var Frame = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props;
-      var createInputPin = _props.createInputPin;
-      var createOutputPin = _props.createOutputPin;
-      var createLink = _props.createLink;
-      var _createNode = _props.createNode;
-      var deleteLink = _props.deleteLink;
-      var deleteInputPin = _props.deleteInputPin;
-      var deleteNode = _props.deleteNode;
-      var deleteOutputPin = _props.deleteOutputPin;
-      var dragItems = _props.dragItems;
-      var fontFamily = _props.fontFamily;
-      var fontSize = _props.fontSize;
-      var item = _props.item;
-      var lineWidth = _props.lineWidth;
-      var model = _props.model;
-      var nodeBodyHeight = _props.nodeBodyHeight;
-      var pinSize = _props.pinSize;
-      var _renameNode = _props.renameNode;
-      var style = _props.style;
-      var updateLink = _props.updateLink;
-      var view = _props.view;
-      var _state = this.state;
-      var draggedItems = _state.draggedItems;
-      var draggedLinkId = _state.draggedLinkId;
-      var offset = _state.offset;
-      var pointer = _state.pointer;
-      var selectedItems = _state.selectedItems;
-      var showSelector = _state.showSelector;
+      var _props = this.props,
+          createInputPin = _props.createInputPin,
+          createOutputPin = _props.createOutputPin,
+          createLink = _props.createLink,
+          _createNode = _props.createNode,
+          deleteLink = _props.deleteLink,
+          deleteInputPin = _props.deleteInputPin,
+          deleteNode = _props.deleteNode,
+          deleteOutputPin = _props.deleteOutputPin,
+          dragItems = _props.dragItems,
+          fontFamily = _props.fontFamily,
+          fontSize = _props.fontSize,
+          item = _props.item,
+          lineWidth = _props.lineWidth,
+          model = _props.model,
+          nodeBodyHeight = _props.nodeBodyHeight,
+          pinSize = _props.pinSize,
+          _renameNode = _props.renameNode,
+          style = _props.style,
+          updateLink = _props.updateLink,
+          view = _props.view;
+      var _state = this.state,
+          draggedItems = _state.draggedItems,
+          draggedLinkId = _state.draggedLinkId,
+          offset = _state.offset,
+          pointer = _state.pointer,
+          selectedItems = _state.selectedItems,
+          showSelector = _state.showSelector;
 
 
       var height = view.height;
@@ -50811,13 +50846,13 @@ var Frame = function (_Component) {
         Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
           var node = view.node[id];
 
-          var height = node.height;
-          var ins = node.ins;
-          var outs = node.outs;
-          var text = node.text;
-          var width = node.width;
-          var x = node.x;
-          var y = node.y;
+          var height = node.height,
+              ins = node.ins,
+              outs = node.outs,
+              text = node.text,
+              width = node.width,
+              x = node.x,
+              y = node.y;
 
 
           var nodeType = typeOfNode(node);
@@ -50846,9 +50881,9 @@ var Frame = function (_Component) {
           });
         }),
         Object.keys(view.link).map(function (id, i) {
-          var _view$link$id = view.link[id];
-          var from = _view$link$id.from;
-          var to = _view$link$id.to;
+          var _view$link$id = view.link[id],
+              from = _view$link$id.from,
+              to = _view$link$id.to;
 
 
           var x1 = null;
@@ -51067,12 +51102,12 @@ var Inspector = function (_Component) {
   _createClass(Inspector, [{
     key: 'render',
     value: function render() {
-      var _props = this.props;
-      var items = _props.items;
-      var view = _props.view;
-      var width = _props.width;
-      var x = _props.x;
-      var y = _props.y;
+      var _props = this.props,
+          items = _props.items,
+          view = _props.view,
+          width = _props.width,
+          x = _props.x,
+          y = _props.y;
 
       // TODO implement multiple item selection.
 
@@ -51134,10 +51169,10 @@ var Inspector = function (_Component) {
   }, {
     key: 'renderInsControls',
     value: function renderInsControls(nodeId, node) {
-      var _props2 = this.props;
-      var createInputPin = _props2.createInputPin;
-      var deleteInputPin = _props2.deleteInputPin;
-      var view = _props2.view;
+      var _props2 = this.props,
+          createInputPin = _props2.createInputPin,
+          deleteInputPin = _props2.deleteInputPin,
+          view = _props2.view;
 
 
       var ins = node.ins || [];
@@ -51180,10 +51215,10 @@ var Inspector = function (_Component) {
   }, {
     key: 'renderOutsControls',
     value: function renderOutsControls(nodeId, node) {
-      var _props3 = this.props;
-      var createOutputPin = _props3.createOutputPin;
-      var deleteOutputPin = _props3.deleteOutputPin;
-      var view = _props3.view;
+      var _props3 = this.props,
+          createOutputPin = _props3.createOutputPin,
+          deleteOutputPin = _props3.deleteOutputPin,
+          view = _props3.view;
 
 
       var outs = node.outs || [];
@@ -51226,9 +51261,9 @@ var Inspector = function (_Component) {
   }, {
     key: 'renderNode',
     value: function renderNode(nodeId, node) {
-      var _props4 = this.props;
-      var deleteNode = _props4.deleteNode;
-      var renameNode = _props4.renameNode;
+      var _props4 = this.props,
+          deleteNode = _props4.deleteNode,
+          renameNode = _props4.renameNode;
 
 
       var setState = this.setState.bind(this);
@@ -51388,21 +51423,21 @@ var Link = function (_Component) {
   _createClass(Link, [{
     key: 'render',
     value: function render() {
-      var _props = this.props;
-      var id = _props.id;
-      var fill = _props.fill;
-      var from = _props.from;
-      var onCreateLink = _props.onCreateLink;
-      var startDraggingLinkTarget = _props.startDraggingLinkTarget;
-      var pinSize = _props.pinSize;
-      var selected = _props.selected;
-      var selectLink = _props.selectLink;
-      var to = _props.to;
-      var width = _props.width;
-      var x1 = _props.x1;
-      var y1 = _props.y1;
-      var x2 = _props.x2;
-      var y2 = _props.y2;
+      var _props = this.props,
+          id = _props.id,
+          fill = _props.fill,
+          from = _props.from,
+          onCreateLink = _props.onCreateLink,
+          startDraggingLinkTarget = _props.startDraggingLinkTarget,
+          pinSize = _props.pinSize,
+          selected = _props.selected,
+          selectLink = _props.selectLink,
+          to = _props.to,
+          width = _props.width,
+          x1 = _props.x1,
+          y1 = _props.y1,
+          x2 = _props.x2,
+          y2 = _props.y2;
 
 
       var onSourceMouseDown = function onSourceMouseDown(e) {
@@ -51535,11 +51570,11 @@ var Node = function (_Component) {
   _createClass(Node, [{
     key: 'getBody',
     value: function getBody() {
-      var _props = this.props;
-      var bodyHeight = _props.bodyHeight;
-      var fontSize = _props.fontSize;
-      var pinSize = _props.pinSize;
-      var text = _props.text;
+      var _props = this.props,
+          bodyHeight = _props.bodyHeight,
+          fontSize = _props.fontSize,
+          pinSize = _props.pinSize,
+          text = _props.text;
 
       // TODO place an id in the div wrapping the body and try to
       // resolve bodyHeight from its content.
@@ -51595,25 +51630,25 @@ var Node = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _props2 = this.props;
-      var bodyHeight = _props2.bodyHeight;
-      var dragged = _props2.dragged;
-      var draggedLinkId = _props2.draggedLinkId;
-      var color = _props2.color;
-      var fontSize = _props2.fontSize;
-      var id = _props2.id;
-      var ins = _props2.ins;
-      var onCreateLink = _props2.onCreateLink;
-      var outs = _props2.outs;
-      var pinSize = _props2.pinSize;
-      var selected = _props2.selected;
-      var selectNode = _props2.selectNode;
-      var text = _props2.text;
-      var updateLink = _props2.updateLink;
-      var width = _props2.width;
-      var willDragNode = _props2.willDragNode;
-      var x = _props2.x;
-      var y = _props2.y;
+      var _props2 = this.props,
+          bodyHeight = _props2.bodyHeight,
+          dragged = _props2.dragged,
+          draggedLinkId = _props2.draggedLinkId,
+          color = _props2.color,
+          fontSize = _props2.fontSize,
+          id = _props2.id,
+          ins = _props2.ins,
+          onCreateLink = _props2.onCreateLink,
+          outs = _props2.outs,
+          pinSize = _props2.pinSize,
+          selected = _props2.selected,
+          selectNode = _props2.selectNode,
+          text = _props2.text,
+          updateLink = _props2.updateLink,
+          width = _props2.width,
+          willDragNode = _props2.willDragNode,
+          x = _props2.x,
+          y = _props2.y;
 
 
       var bodyContent = this.getBody();
@@ -51806,18 +51841,18 @@ var Selector = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props;
-      var createNode = _props.createNode;
-      var height = _props.height;
-      var pointer = _props.pointer;
-      var show = _props.show;
-      var width = _props.width;
+      var _props = this.props,
+          createNode = _props.createNode,
+          height = _props.height,
+          pointer = _props.pointer,
+          show = _props.show,
+          width = _props.width;
 
 
       var text = this.state.text;
 
       var onChange = function onChange(e) {
-        var text = e.target.value.trim();
+        var text = e.target.value;
         _this2.setState({ text: text });
       };
 
@@ -51943,10 +51978,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var computeNodeWidth = function computeNodeWidth(_ref) {
-  var bodyHeight = _ref.bodyHeight;
-  var pinSize = _ref.pinSize;
-  var fontSize = _ref.fontSize;
-  var node = _ref.node;
+  var bodyHeight = _ref.bodyHeight,
+      pinSize = _ref.pinSize,
+      fontSize = _ref.fontSize,
+      node = _ref.node;
 
   var ins = node.ins || [];
   var outs = node.outs || [];

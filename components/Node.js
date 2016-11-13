@@ -93,11 +93,11 @@
     _createClass(Node, [{
       key: 'getBody',
       value: function getBody() {
-        var _props = this.props;
-        var bodyHeight = _props.bodyHeight;
-        var fontSize = _props.fontSize;
-        var pinSize = _props.pinSize;
-        var text = _props.text;
+        var _props = this.props,
+            bodyHeight = _props.bodyHeight,
+            fontSize = _props.fontSize,
+            pinSize = _props.pinSize,
+            text = _props.text;
 
 
         // TODO place an id in the div wrapping the body and try to
@@ -153,25 +153,25 @@
     }, {
       key: 'render',
       value: function render() {
-        var _props2 = this.props;
-        var bodyHeight = _props2.bodyHeight;
-        var dragged = _props2.dragged;
-        var draggedLinkId = _props2.draggedLinkId;
-        var color = _props2.color;
-        var fontSize = _props2.fontSize;
-        var id = _props2.id;
-        var ins = _props2.ins;
-        var onCreateLink = _props2.onCreateLink;
-        var outs = _props2.outs;
-        var pinSize = _props2.pinSize;
-        var selected = _props2.selected;
-        var selectNode = _props2.selectNode;
-        var text = _props2.text;
-        var updateLink = _props2.updateLink;
-        var width = _props2.width;
-        var willDragNode = _props2.willDragNode;
-        var x = _props2.x;
-        var y = _props2.y;
+        var _props2 = this.props,
+            bodyHeight = _props2.bodyHeight,
+            dragged = _props2.dragged,
+            draggedLinkId = _props2.draggedLinkId,
+            color = _props2.color,
+            fontSize = _props2.fontSize,
+            id = _props2.id,
+            ins = _props2.ins,
+            onCreateLink = _props2.onCreateLink,
+            outs = _props2.outs,
+            pinSize = _props2.pinSize,
+            selected = _props2.selected,
+            selectNode = _props2.selectNode,
+            text = _props2.text,
+            updateLink = _props2.updateLink,
+            width = _props2.width,
+            willDragNode = _props2.willDragNode,
+            x = _props2.x,
+            y = _props2.y;
 
 
         var bodyContent = this.getBody();

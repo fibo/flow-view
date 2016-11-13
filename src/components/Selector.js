@@ -22,7 +22,7 @@ class Selector extends Component {
     const text = this.state.text
 
     const onChange = (e) => {
-      const text = e.target.value.trim()
+      const text = e.target.value
       this.setState({ text })
     }
 

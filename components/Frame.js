@@ -129,34 +129,34 @@
       value: function render() {
         var _this2 = this;
 
-        var _props = this.props;
-        var createInputPin = _props.createInputPin;
-        var createOutputPin = _props.createOutputPin;
-        var createLink = _props.createLink;
-        var _createNode = _props.createNode;
-        var deleteLink = _props.deleteLink;
-        var deleteInputPin = _props.deleteInputPin;
-        var deleteNode = _props.deleteNode;
-        var deleteOutputPin = _props.deleteOutputPin;
-        var dragItems = _props.dragItems;
-        var fontFamily = _props.fontFamily;
-        var fontSize = _props.fontSize;
-        var item = _props.item;
-        var lineWidth = _props.lineWidth;
-        var model = _props.model;
-        var nodeBodyHeight = _props.nodeBodyHeight;
-        var pinSize = _props.pinSize;
-        var _renameNode = _props.renameNode;
-        var style = _props.style;
-        var updateLink = _props.updateLink;
-        var view = _props.view;
-        var _state = this.state;
-        var draggedItems = _state.draggedItems;
-        var draggedLinkId = _state.draggedLinkId;
-        var offset = _state.offset;
-        var pointer = _state.pointer;
-        var selectedItems = _state.selectedItems;
-        var showSelector = _state.showSelector;
+        var _props = this.props,
+            createInputPin = _props.createInputPin,
+            createOutputPin = _props.createOutputPin,
+            createLink = _props.createLink,
+            _createNode = _props.createNode,
+            deleteLink = _props.deleteLink,
+            deleteInputPin = _props.deleteInputPin,
+            deleteNode = _props.deleteNode,
+            deleteOutputPin = _props.deleteOutputPin,
+            dragItems = _props.dragItems,
+            fontFamily = _props.fontFamily,
+            fontSize = _props.fontSize,
+            item = _props.item,
+            lineWidth = _props.lineWidth,
+            model = _props.model,
+            nodeBodyHeight = _props.nodeBodyHeight,
+            pinSize = _props.pinSize,
+            _renameNode = _props.renameNode,
+            style = _props.style,
+            updateLink = _props.updateLink,
+            view = _props.view;
+        var _state = this.state,
+            draggedItems = _state.draggedItems,
+            draggedLinkId = _state.draggedLinkId,
+            offset = _state.offset,
+            pointer = _state.pointer,
+            selectedItems = _state.selectedItems,
+            showSelector = _state.showSelector;
 
 
         var height = view.height;
@@ -401,13 +401,13 @@
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
             var node = view.node[id];
 
-            var height = node.height;
-            var ins = node.ins;
-            var outs = node.outs;
-            var text = node.text;
-            var width = node.width;
-            var x = node.x;
-            var y = node.y;
+            var height = node.height,
+                ins = node.ins,
+                outs = node.outs,
+                text = node.text,
+                width = node.width,
+                x = node.x,
+                y = node.y;
 
 
             var nodeType = typeOfNode(node);
@@ -436,9 +436,9 @@
             });
           }),
           Object.keys(view.link).map(function (id, i) {
-            var _view$link$id = view.link[id];
-            var from = _view$link$id.from;
-            var to = _view$link$id.to;
+            var _view$link$id = view.link[id],
+                from = _view$link$id.from,
+                to = _view$link$id.to;
 
 
             var x1 = null;

@@ -93,18 +93,18 @@
       value: function render() {
         var _this2 = this;
 
-        var _props = this.props;
-        var createNode = _props.createNode;
-        var height = _props.height;
-        var pointer = _props.pointer;
-        var show = _props.show;
-        var width = _props.width;
+        var _props = this.props,
+            createNode = _props.createNode,
+            height = _props.height,
+            pointer = _props.pointer,
+            show = _props.show,
+            width = _props.width;
 
 
         var text = this.state.text;
 
         var onChange = function onChange(e) {
-          var text = e.target.value.trim();
+          var text = e.target.value;
           _this2.setState({ text: text });
         };
 

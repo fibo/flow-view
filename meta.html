@@ -3,8 +3,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 {% assign package = site.data.package %}
-{% assign description = page.description || package.description %}
+
+{% assign description = page.description %}
+{% unless description %}{% assign description = package.description %}{% endunless %}
+{% unless description %}{% assign description = site.description %}{% endunless %}
+
 {% assign keywords = page.keywords || package.keywords %}
+{% unless keywords %}{% assign keywords = package.keywords %}{% endunless %}
+{% unless keywords %}{% assign keywords = site.keywords %}{% endunless %}
+
+{% assign title = page.title %}
+{% unless title %}{% assign title = package.name %}{% endunless %}
 
 <meta name="description" content="{{ description | strip_newlines }}">
 <meta name="keywords" content="{{ keywords | join: ',' }}">
@@ -12,4 +21,4 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>{{ page.title }}</title>
+<title>{{ title }}</title>

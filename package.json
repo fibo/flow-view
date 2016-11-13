@@ -93,7 +93,7 @@
     "budo": "9.x",
     "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
-    "dot-editorconfig": "^0.2.0",
+    "dot-editorconfig": "^0.3.0",
     "livereactload": "3.x",
     "pre-commit": "1.x",
     "react-proxy": "1.x",

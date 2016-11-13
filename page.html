@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+{% assign lang = page.lang || site.lang || "en" %}
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
 
@@ -19,7 +20,9 @@
 <body>
   {% include common/nav.html %}
 
-  {{ content }}
+  <div class="container">
+    {{ content }}
+  </div>
 
   {% include common/analytics.html %}
 </body>

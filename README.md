@@ -56,8 +56,10 @@ Use it for every [microsite] basic page. See [example page](http://g14n.info/tem
 Requires
 
 * Exists resource `//style.css`.
-* Variables `page.title`, `page.keywords` and `page.description`.
-* Optional `nav` hash with menu items. If `page.nav` is not found, it will look for `site.nav`.
+* Variable `page.title`, or `site.data.package.name`
+* List of `keywords` in `page` or `site.data.package`.
+* Variable `description` in `page` or `site.data.package`.
+* A `nav` hash with menu items. If `page.nav` is not found, it will look for `site.nav`.
 
 Follows a sample YAML frontmatter
 

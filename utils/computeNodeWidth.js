@@ -18,10 +18,10 @@
   });
 
   var computeNodeWidth = function computeNodeWidth(_ref) {
-    var bodyHeight = _ref.bodyHeight;
-    var pinSize = _ref.pinSize;
-    var fontSize = _ref.fontSize;
-    var node = _ref.node;
+    var bodyHeight = _ref.bodyHeight,
+        pinSize = _ref.pinSize,
+        fontSize = _ref.fontSize,
+        node = _ref.node;
 
     var ins = node.ins || [];
     var outs = node.outs || [];

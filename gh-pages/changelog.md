@@ -19,6 +19,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Fixed
+
+- Trim spaces in Selector only on enter.
+
 ## [v2.8.1] - 2016-10-23
 
 ### Fixed

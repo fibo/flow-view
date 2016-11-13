@@ -92,12 +92,12 @@
     _createClass(Inspector, [{
       key: 'render',
       value: function render() {
-        var _props = this.props;
-        var items = _props.items;
-        var view = _props.view;
-        var width = _props.width;
-        var x = _props.x;
-        var y = _props.y;
+        var _props = this.props,
+            items = _props.items,
+            view = _props.view,
+            width = _props.width,
+            x = _props.x,
+            y = _props.y;
 
 
         // TODO implement multiple item selection.
@@ -159,10 +159,10 @@
     }, {
       key: 'renderInsControls',
       value: function renderInsControls(nodeId, node) {
-        var _props2 = this.props;
-        var createInputPin = _props2.createInputPin;
-        var deleteInputPin = _props2.deleteInputPin;
-        var view = _props2.view;
+        var _props2 = this.props,
+            createInputPin = _props2.createInputPin,
+            deleteInputPin = _props2.deleteInputPin,
+            view = _props2.view;
 
 
         var ins = node.ins || [];
@@ -205,10 +205,10 @@
     }, {
       key: 'renderOutsControls',
       value: function renderOutsControls(nodeId, node) {
-        var _props3 = this.props;
-        var createOutputPin = _props3.createOutputPin;
-        var deleteOutputPin = _props3.deleteOutputPin;
-        var view = _props3.view;
+        var _props3 = this.props,
+            createOutputPin = _props3.createOutputPin,
+            deleteOutputPin = _props3.deleteOutputPin,
+            view = _props3.view;
 
 
         var outs = node.outs || [];
@@ -251,9 +251,9 @@
     }, {
       key: 'renderNode',
       value: function renderNode(nodeId, node) {
-        var _props4 = this.props;
-        var deleteNode = _props4.deleteNode;
-        var renameNode = _props4.renameNode;
+        var _props4 = this.props,
+            deleteNode = _props4.deleteNode,
+            renameNode = _props4.renameNode;
 
 
         var setState = this.setState.bind(this);

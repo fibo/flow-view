@@ -89,21 +89,21 @@
     _createClass(Link, [{
       key: 'render',
       value: function render() {
-        var _props = this.props;
-        var id = _props.id;
-        var fill = _props.fill;
-        var from = _props.from;
-        var onCreateLink = _props.onCreateLink;
-        var startDraggingLinkTarget = _props.startDraggingLinkTarget;
-        var pinSize = _props.pinSize;
-        var selected = _props.selected;
-        var selectLink = _props.selectLink;
-        var to = _props.to;
-        var width = _props.width;
-        var x1 = _props.x1;
-        var y1 = _props.y1;
-        var x2 = _props.x2;
-        var y2 = _props.y2;
+        var _props = this.props,
+            id = _props.id,
+            fill = _props.fill,
+            from = _props.from,
+            onCreateLink = _props.onCreateLink,
+            startDraggingLinkTarget = _props.startDraggingLinkTarget,
+            pinSize = _props.pinSize,
+            selected = _props.selected,
+            selectLink = _props.selectLink,
+            to = _props.to,
+            width = _props.width,
+            x1 = _props.x1,
+            y1 = _props.y1,
+            x2 = _props.x2,
+            y2 = _props.y2;
 
 
         var onSourceMouseDown = function onSourceMouseDown(e) {

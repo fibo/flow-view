@@ -6,18 +6,6 @@
 
 By **microsite** I mean a subset of a website. For example `http://example.org/my-microsite`.
 
-The following g14n.info microsites are involved:
-
-<!--
-* [algebra](http://g14n.info/algebra)
-* [dflow](http://g14n.info/dflow)
-* [flow-view](http://g14n.info/flow-view)
-* [geohash-neighbours](http://g14n.info/geohash-neighbours)
-* [iper](http://g14n.info/iper)
--->
-* [tris3d-canvas](http://g14n.info/tris3d-canvas)
-* [Sul-problema-di-Apollonio](http://g14n.info/Sul-problema-di-Apollonio)
-
 ## Setup
 
 First of all, make sure you have already imported [g14n.info-jekyll-includes].
@@ -61,14 +49,15 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 
 ## Content
 
-### singlepage
+### page
 
-Use it for a single page [microsite]. See [example page](http://g14n.info/templates/singlepage/).
+Use it for every [microsite] basic page. See [example page](http://g14n.info/templates/page/).
 
 Requires
 
 * Exists resource `//style.css`.
 * Variables `page.title`, `page.keywords` and `page.description`.
+* Optional `nav` hash with menu items. If `page.nav` is not found, it will look for `site.nav`.
 
 Follows a sample YAML frontmatter
 
@@ -78,21 +67,10 @@ description: example
 keywords:
   - pizza
   - mafia
-```
-
-### responsive-side-menu.html
-
-Requires
-
-* variable `site.domain`.
-* file *_data/package.json* containing attribute *name*.
-* file *_data/menu.yml* containing menu entries and their href.
-
-Follows a sample *menu.yml*
-
-```yaml
-Example: example
-API: '#api'
+nav:
+  Pizza: /pizza
+  Mafia: '#mafia'
+  Mandolino: //g14n.info
 ```
 
 [microsite](#microsite)

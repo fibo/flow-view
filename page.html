@@ -1,19 +1,11 @@
 <!DOCTYPE html>
-{% assign lang = page.lang || site.lang || "en" %}
-<html lang="{{ lang }}">
+{% if site.lang %}
+  <html lang="{{ site.lang }}">
+{% else %}
+  <html lang="en">
+{% endif %}
 <head>
-  <meta charset="utf-8">
-
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-  <meta name="description" content="{{ page.description | strip_newlines }}">
-  <meta name="keywords" content="{{ page.keywords | join: ',' }}">
-  <meta name="author" content="Gianluca Casati">
-
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <title>{{ page.title }}</title>
-
+  {% include common/meta.html %}
   {% include common/favicon.html %}
   {% include common/style.html %}
 </head>

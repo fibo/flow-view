@@ -56,7 +56,7 @@ Use it for every [microsite] basic page. See [example page](http://g14n.info/tem
 Requires
 
 * Exists resource `//style.css`.
-* Optional `page.lang` or `site.lang`, defaults to *en*.
+* Optional `site.lang`, defaults to *en*.
 * Variable `page.title`, or `site.data.package.name`
 * List of `keywords` in `page` or `site.data.package`.
 * Variable `description` in `page` or `site.data.package`.

@@ -66,18 +66,15 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "dependencies": {
-    "babel-cli": "^6.16.0",
-    "babel-preset-es2015": "^6.16.0",
-    "babel-preset-react": "^6.16.0",
-    "babel-register": "^6.16.3",
-    "budo": "^9.2.1",
+    "babel-cli": "6.x",
+    "babel-preset-es2015": "6.x",
+    "babel-preset-react": "6.x",
+    "babel-register": "6.x",
     "events": "1.x",
-    "livereactload": "^3.0.1",
     "not-defined": "1.x",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
-    "standard": "^8.3.0",
-    "svgx": "^0.6.1"
+    "react": "15.x",
+    "react-dom": "15.x",
+    "svgx": "0.x"
   },
   "devDependencies": {
     "babel-cli": "6.x",
@@ -93,7 +90,7 @@
     "budo": "9.x",
     "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
-    "dot-editorconfig": "^0.2.0",
+    "dot-editorconfig": "^0.3.0",
     "livereactload": "3.x",
     "pre-commit": "1.x",
     "react-proxy": "1.x",

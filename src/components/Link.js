@@ -35,19 +35,30 @@ class Link extends Component {
       startDraggingLinkTarget(id)
     }
 
+    const startX = x1 + pinSize / 2
+    const startY = y1 + pinSize / 2
+    const endX = x2 + pinSize / 2
+    const endY = y2 + pinSize / 2
+
+    const midPointY = (startY + endY) / 2
+    const verticalDistance = (endY - startY) / 2
+
+    const controlPointX1 = startX
+    const controlPointY1 = verticalDistance > 0 ? midPointY : startY - verticalDistance * 2
+    const controlPointX2 = endX
+    const controlPointY2 = verticalDistance > 0 ? midPointY : endY + verticalDistance * 2
+
     return (
       <g
         onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
       >
-        <line
+        <path
+          d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
+          fill='transparent'
           onMouseUp={selectLink}
           stroke={selected ? defaultTheme.highlightColor : fill}
           strokeWidth={width}
-          x1={x1 + pinSize / 2}
-          y1={y1 + pinSize / 2}
-          x2={x2 + pinSize / 2}
-          y2={y2 + pinSize / 2}
         />
         <rect
           fill={fill}

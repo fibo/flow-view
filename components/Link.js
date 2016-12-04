@@ -120,20 +120,31 @@
           startDraggingLinkTarget(id);
         };
 
+        var startX = x1 + pinSize / 2;
+        var startY = y1 + pinSize / 2;
+        var endX = x2 + pinSize / 2;
+        var endY = y2 + pinSize / 2;
+
+        var midPointY = (startY + endY) / 2;
+        var verticalDistance = (endY - startY) / 2;
+
+        var controlPointX1 = startX;
+        var controlPointY1 = verticalDistance > 0 ? midPointY : startY - verticalDistance * 2;
+        var controlPointX2 = endX;
+        var controlPointY2 = verticalDistance > 0 ? midPointY : endY + verticalDistance * 2;
+
         return _react2.default.createElement(
           'g',
           {
             onClick: _ignoreEvent2.default,
             onDoubleClick: _ignoreEvent2.default
           },
-          _react2.default.createElement('line', {
+          _react2.default.createElement('path', {
+            d: 'M ' + startX + ' ' + startY + ' C ' + controlPointX1 + ' ' + controlPointY1 + ', ' + controlPointX2 + ' ' + controlPointY2 + ' ,' + endX + ' ' + endY,
+            fill: 'transparent',
             onMouseUp: selectLink,
             stroke: selected ? _theme2.default.highlightColor : fill,
-            strokeWidth: width,
-            x1: x1 + pinSize / 2,
-            y1: y1 + pinSize / 2,
-            x2: x2 + pinSize / 2,
-            y2: y2 + pinSize / 2
+            strokeWidth: width
           }),
           _react2.default.createElement('rect', {
             fill: fill,

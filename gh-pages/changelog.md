@@ -19,6 +19,12 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.9.0] - 2016-12-04
+
+### Added
+
+- Links are bezier curves instead of lines.
+
 ### Fixed
 
 - Trim spaces in Selector only on enter.

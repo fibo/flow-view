@@ -151,6 +151,21 @@ canvas.render({
 })
 ```
 
+### Theme
+
+Theme is a prop which defaults to
+
+```javascript
+  fontFamily: 'Courier',
+  frameBorder: '1px solid black',
+  highlightColor: 'lightsteelblue',
+  lineWidth: 3,
+  nodeBarColor: 'lightgray',
+  nodeBodyHeight: 20,
+  pinColor: 'darkgray',
+  pinSize: 10
+```
+
 ### Events
 
 See [event/emitter.js][example_event_emitter] example.

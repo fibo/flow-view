@@ -165,15 +165,11 @@
             deleteNode = _props.deleteNode,
             deleteOutputPin = _props.deleteOutputPin,
             dragItems = _props.dragItems,
-            fontFamily = _props.fontFamily,
             fontSize = _props.fontSize,
             item = _props.item,
-            lineWidth = _props.lineWidth,
             model = _props.model,
-            nodeBodyHeight = _props.nodeBodyHeight,
-            pinSize = _props.pinSize,
             _renameNode = _props.renameNode,
-            style = _props.style,
+            theme = _props.theme,
             updateLink = _props.updateLink,
             view = _props.view;
         var _state = this.state,
@@ -183,6 +179,11 @@
             dynamicView = _state.dynamicView,
             selectedItems = _state.selectedItems,
             showSelector = _state.showSelector;
+        var frameBorder = theme.frameBorder,
+            fontFamily = theme.fontFamily,
+            lineWidth = theme.lineWidth,
+            nodeBodyHeight = theme.nodeBodyHeight,
+            pinSize = theme.pinSize;
 
 
         var height = dynamicView.height || view.height;
@@ -426,7 +427,7 @@
             onMouseMove: onMouseMove,
             onMouseUp: onMouseUp,
             textAnchor: 'start',
-            style: style,
+            style: { border: frameBorder },
             width: width
           },
           Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
@@ -546,7 +547,7 @@
             deleteNode: deleteNode,
             deleteInputPin: deleteInputPin,
             deleteOutputPin: deleteOutputPin,
-            items: Object.assign([], selectedItems, draggedItems),
+            items: Object.assign([], selectedItems),
             renameNode: function renameNode(nodeId, text) {
               _renameNode(nodeId, text);
 
@@ -584,7 +585,6 @@
     deleteNode: _react.PropTypes.func.isRequired,
     deleteOutputPin: _react.PropTypes.func.isRequired,
     dragItems: _react.PropTypes.func.isRequired,
-    fontFamily: _react.PropTypes.string.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     item: _react.PropTypes.shape({
       inspector: _react.PropTypes.object.isRequired,
@@ -594,11 +594,8 @@
         typeOfNode: _react.PropTypes.func.isRequired
       })
     }).isRequired,
-    lineWidth: _react.PropTypes.number.isRequired,
-    nodeBodyHeight: _react.PropTypes.number.isRequired,
-    pinSize: _react.PropTypes.number.isRequired,
     renameNode: _react.PropTypes.func.isRequired,
-    style: _react.PropTypes.object.isRequired,
+    theme: _theme2.default.propTypes,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
       height: _react.PropTypes.number.isRequired,
@@ -618,7 +615,6 @@
     deleteNode: Function.prototype,
     deleteOutputPin: Function.prototype,
     dragItems: Function.prototype,
-    fontFamily: _theme2.default.fontFamily,
     fontSize: 17, // FIXME fontSize seems to be ignored
     item: {
       inspector: { DefaultInspector: _Inspector2.default },
@@ -630,11 +626,8 @@
         }
       }
     },
-    lineWidth: _theme2.default.lineWidth,
-    nodeBodyHeight: _theme2.default.nodeBodyHeight,
-    pinSize: _theme2.default.pinSize,
     renameNode: Function.prototype,
-    style: { border: '1px solid black' },
+    theme: _theme2.default.defaultProps,
     updateLink: Function.prototype,
     view: {
       link: {},

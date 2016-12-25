@@ -1,4 +1,3 @@
-
 const computeNodeWidth = ({
   bodyHeight,
   pinSize,

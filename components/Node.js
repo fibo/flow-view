@@ -94,11 +94,13 @@
       key: 'getBody',
       value: function getBody() {
         var _props = this.props,
-            bodyHeight = _props.bodyHeight,
             fontSize = _props.fontSize,
-            pinSize = _props.pinSize,
+            theme = _props.theme,
             text = _props.text;
+        var pinSize = theme.pinSize;
 
+
+        var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
 
         // TODO place an id in the div wrapping the body and try to
         // resolve bodyHeight from its content.
@@ -106,7 +108,7 @@
         /*
          TODO The following code works and it is ok for custom nodes.
          BUT it os not ok for server side rendering cause foreignobject
-           not supported in image context.
+            is not supported in image context.
          return (
           <foreignObject
             height={bodyHeight}
@@ -154,25 +156,29 @@
       key: 'render',
       value: function render() {
         var _props2 = this.props,
-            bodyHeight = _props2.bodyHeight,
             dragged = _props2.dragged,
             draggedLinkId = _props2.draggedLinkId,
-            color = _props2.color,
             fontSize = _props2.fontSize,
             id = _props2.id,
             ins = _props2.ins,
             onCreateLink = _props2.onCreateLink,
             outs = _props2.outs,
-            pinSize = _props2.pinSize,
             selected = _props2.selected,
             selectNode = _props2.selectNode,
             text = _props2.text,
+            theme = _props2.theme,
             updateLink = _props2.updateLink,
             width = _props2.width,
             willDragNode = _props2.willDragNode,
             x = _props2.x,
             y = _props2.y;
+        var highlightColor = theme.highlightColor,
+            nodeBarColor = theme.nodeBarColor,
+            pinColor = theme.pinColor,
+            pinSize = theme.pinSize;
 
+
+        var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
 
         var bodyContent = this.getBody();
 
@@ -198,12 +204,12 @@
           _react2.default.createElement('rect', {
             fillOpacity: 0,
             height: bodyHeight + 2 * pinSize,
-            stroke: selected || dragged ? color.selected : color.bar,
+            stroke: selected || dragged ? highlightColor : nodeBarColor,
             strokeWidth: 1,
             width: computedWidth
           }),
           _react2.default.createElement('rect', {
-            fill: selected || dragged ? color.selected : color.bar,
+            fill: selected || dragged ? highlightColor : nodeBarColor,
             height: pinSize,
             width: computedWidth
           }),
@@ -229,7 +235,7 @@
 
             return _react2.default.createElement('rect', {
               key: i,
-              fill: color.pin,
+              fill: pinColor,
               height: pinSize,
               onMouseDown: _ignoreEvent2.default,
               onMouseUp: onMouseUp,
@@ -239,7 +245,7 @@
           }),
           bodyContent,
           _react2.default.createElement('rect', {
-            fill: selected || dragged ? color.selected : color.bar,
+            fill: selected || dragged ? highlightColor : nodeBarColor,
             height: pinSize,
             transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
             width: computedWidth
@@ -256,7 +262,7 @@
 
             return _react2.default.createElement('rect', {
               key: i,
-              fill: color.pin,
+              fill: pinColor,
               height: pinSize,
               onClick: _ignoreEvent2.default,
               onMouseLeave: _ignoreEvent2.default,
@@ -273,23 +279,18 @@
   }(_react.Component);
 
   Node.propTypes = {
-    bodyHeight: _react.PropTypes.number.isRequired,
+    bodyHeight: _react.PropTypes.number,
     dragged: _react.PropTypes.bool.isRequired,
     draggedLinkId: _react.PropTypes.string,
-    color: _react.PropTypes.shape({
-      bar: _react.PropTypes.string.isRequired,
-      body: _react.PropTypes.string.isRequired,
-      pin: _react.PropTypes.string.isRequired
-    }).isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     id: _react.PropTypes.string,
     ins: _react.PropTypes.array.isRequired,
     outs: _react.PropTypes.array.isRequired,
     onCreateLink: _react.PropTypes.func.isRequired,
-    pinSize: _react.PropTypes.number.isRequired,
     selected: _react.PropTypes.bool.isRequired,
     selectNode: _react.PropTypes.func.isRequired,
     text: _react.PropTypes.string.isRequired,
+    theme: _theme2.default.propTypes,
     updateLink: _react.PropTypes.func.isRequired,
     width: _react.PropTypes.number,
     willDragNode: _react.PropTypes.func.isRequired,
@@ -298,25 +299,15 @@
   };
 
   Node.defaultProps = {
-    bodyHeight: _theme2.default.nodeBodyHeight,
-    dragged: false,
-    color: {
-      bar: 'lightgray',
-      body: 'whitesmoke',
-      border: 'gray',
-      pin: 'darkgray', // Ahahah darkgray is not darker than gray
-      selected: _theme2.default.highlightColor
-      // Actually we have
-      // whitesmoke < lightgray < darkgray < gray
-    },
+    dragged: false, // TODO looks more like a state
     draggedLinkId: null,
     ins: [],
     onCreateLink: Function.prototype,
     outs: [],
-    pinSize: _theme2.default.pinSize,
     selected: false,
     selectNode: Function.prototype,
     text: 'Node',
+    theme: _theme2.default.defaultProps,
     updateLink: Function.prototype,
     willDragNode: Function.prototype
   };

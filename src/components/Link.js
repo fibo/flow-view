@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
-import defaultTheme from './theme'
+import theme from './theme'
 
 class Link extends Component {
   render () {
@@ -10,16 +10,21 @@ class Link extends Component {
       from,
       onCreateLink,
       startDraggingLinkTarget,
-      pinSize,
       selected,
       selectLink,
+      theme,
       to,
-      width,
       x1,
       y1,
       x2,
       y2
     } = this.props
+
+    const {
+      highlightColor,
+      lineWidth,
+      pinSize
+    } = theme
 
     const onSourceMouseDown = (e) => {
       e.preventDefault()
@@ -57,8 +62,8 @@ class Link extends Component {
           d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
           fill='transparent'
           onMouseUp={selectLink}
-          stroke={selected ? defaultTheme.highlightColor : fill}
-          strokeWidth={width}
+          stroke={selected ? highlightColor : fill}
+          strokeWidth={lineWidth}
         />
         <rect
           fill={fill}
@@ -92,8 +97,8 @@ Link.propTypes = {
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectLink: PropTypes.func.isRequired,
+  theme: theme.propTypes,
   to: PropTypes.array,
-  width: PropTypes.number.isRequired,
   x1: PropTypes.number.isRequired,
   y1: PropTypes.number.isRequired,
   x2: PropTypes.number.isRequired,
@@ -104,10 +109,9 @@ Link.defaultProps = {
   fill: 'gray',
   onCreateLink: Function.prototype,
   startDraggingLinkTarget: Function.prototype,
-  pinSize: defaultTheme.pinSize,
   selected: false,
   selectLink: Function.prototype,
-  width: defaultTheme.lineWidth
+  theme: theme.defaultProps
 }
 
 export default Link

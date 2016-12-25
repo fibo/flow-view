@@ -19,12 +19,15 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
-## [v2.9.0] - 2016-12-04
+## [v2.9.1] - 2016-12-25
 
 ### Fixed
 
+- Improved theme implementation.
 - Scroll issue.
 - Handle resize event.
+
+## [v2.9.0] - 2016-12-04
 
 ### Added
 

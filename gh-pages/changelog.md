@@ -21,6 +21,11 @@ New g14n.info layouts, with link to Changelog page
 
 ## [v2.9.0] - 2016-12-04
 
+### Fixed
+
+- Scroll issue.
+- Handle resize event.
+
 ### Added
 
 - Links are bezier curves instead of lines.

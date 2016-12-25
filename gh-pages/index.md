@@ -116,8 +116,8 @@ On server side it generates an SVG output like the one you see on top of this RE
 see [render/serverside.js example][example_render_serverside].
 
 * **@param** `{Object}` *[view]* can be empty
-* **@param** `{Number}` *view.height* defaults to container height or 400
-* **@param** `{Number}` *view.width* defaults to container width or 400
+* **@param** `{Number}` *view.height* defaults to container height
+* **@param** `{Number}` *view.width* defaults to container width
 * **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
 * **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
 * **@param** `{Object}` *[model]*, can be used for custom items
@@ -128,8 +128,6 @@ Follow a basic example.
 
 ```javascript
 canvas.render({
-  width: 400,
-  height: 300,
   node: {
     a: {
       x: 80, y: 100,

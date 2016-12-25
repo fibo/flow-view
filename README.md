@@ -156,6 +156,7 @@ Theme is a prop which defaults to
   frameBorder: '1px solid black',
   highlightColor: 'lightsteelblue',
   lineWidth: 3,
+  linkColor: 'gray',
   nodeBarColor: 'lightgray',
   nodeBodyHeight: 20,
   pinColor: 'darkgray',

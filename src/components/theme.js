@@ -5,6 +5,7 @@ const defaultProps = {
   frameBorder: '1px solid black',
   highlightColor: 'lightsteelblue',
   lineWidth: 3,
+  linkColor: 'gray',
   nodeBarColor: 'lightgray',
   nodeBodyHeight: 20,
   pinColor: 'darkgray', // Ahahah darkgray is not darker than gray!
@@ -17,6 +18,7 @@ const propTypes = PropTypes.shape({
   fontFamily: PropTypes.string.isRequired,
   highlightColor: PropTypes.string.isRequired,
   lineWidth: PropTypes.number.isRequired,
+  linkColor: PropTypes.string.isRequired,
   nodeBarColor: PropTypes.string.isRequired,
   nodeBodyHeight: PropTypes.number.isRequired,
   pinColor: PropTypes.string.isRequired,

@@ -6,7 +6,6 @@ class Link extends Component {
   render () {
     const {
       id,
-      fill,
       from,
       onCreateLink,
       startDraggingLinkTarget,
@@ -22,6 +21,7 @@ class Link extends Component {
 
     const {
       highlightColor,
+      linkColor,
       lineWidth,
       pinSize
     } = theme
@@ -61,11 +61,11 @@ class Link extends Component {
           d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
           fill='transparent'
           onMouseUp={selectLink}
-          stroke={selected ? highlightColor : fill}
+          stroke={selected ? highlightColor : linkColor}
           strokeWidth={lineWidth}
         />
         <rect
-          fill={fill}
+          fill={linkColor}
           height={pinSize}
           onMouseDown={onSourceMouseDown}
           width={pinSize}
@@ -74,7 +74,7 @@ class Link extends Component {
         />
         {to ? (
           <rect
-            fill={fill}
+            fill={linkColor}
             height={pinSize}
             onMouseDown={onTargetMouseDown}
             width={pinSize}
@@ -89,7 +89,6 @@ class Link extends Component {
 
 Link.propTypes = {
   id: PropTypes.string,
-  fill: PropTypes.string.isRequired,
   from: PropTypes.array,
   onCreateLink: PropTypes.func.isRequired,
   startDraggingLinkTarget: PropTypes.func.isRequired,
@@ -105,7 +104,6 @@ Link.propTypes = {
 }
 
 Link.defaultProps = {
-  fill: 'gray',
   onCreateLink: Function.prototype,
   startDraggingLinkTarget: Function.prototype,
   selected: false,

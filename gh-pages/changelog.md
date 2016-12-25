@@ -19,6 +19,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Added
+
+- Dragged link is straight.
+
 ## [v2.9.1] - 2016-12-25
 
 ### Fixed

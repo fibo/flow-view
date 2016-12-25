@@ -20,8 +20,8 @@ class Inspector extends Component {
     } = this.props
 
     // TODO implement multiple item selection.
-    var item = null
-    var itemId = null
+    let item = null
+    let itemId = null
 
     if (items.length === 1) {
       itemId = items[0]

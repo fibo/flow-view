@@ -4,7 +4,7 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import DefaultInspector from './Inspector'
 import DefaultLink from './Link'
 import DefaultNode from './Node'
-import defaultTheme from './theme'
+import theme from './theme'
 import ignoreEvent from '../utils/ignoreEvent'
 
 import xOfPin from '../utils/xOfPin'
@@ -74,15 +74,11 @@ class Frame extends Component {
       deleteNode,
       deleteOutputPin,
       dragItems,
-      fontFamily,
       fontSize,
       item,
-      lineWidth,
       model,
-      nodeBodyHeight,
-      pinSize,
       renameNode,
-      style,
+      theme,
       updateLink,
       view
     } = this.props
@@ -95,6 +91,14 @@ class Frame extends Component {
       selectedItems,
       showSelector
     } = this.state
+
+    const {
+      frameBorder,
+      fontFamily,
+      lineWidth,
+      nodeBodyHeight,
+      pinSize
+    } = theme
 
     const height = dynamicView.height || view.height
     const width = dynamicView.width || view.width
@@ -332,7 +336,7 @@ class Frame extends Component {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         textAnchor='start'
-        style={style}
+        style={{border: frameBorder}}
         width={width}
       >
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
@@ -453,7 +457,7 @@ class Frame extends Component {
           deleteNode={deleteNode}
           deleteInputPin={deleteInputPin}
           deleteOutputPin={deleteOutputPin}
-          items={(Object.assign([], selectedItems, draggedItems))}
+          items={(Object.assign([], selectedItems))}
           renameNode={(nodeId, text) => {
             renameNode(nodeId, text)
 
@@ -489,7 +493,6 @@ Frame.propTypes = {
   deleteNode: PropTypes.func.isRequired,
   deleteOutputPin: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
-  fontFamily: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
   item: PropTypes.shape({
     inspector: PropTypes.object.isRequired,
@@ -499,11 +502,8 @@ Frame.propTypes = {
       typeOfNode: PropTypes.func.isRequired
     })
   }).isRequired,
-  lineWidth: PropTypes.number.isRequired,
-  nodeBodyHeight: PropTypes.number.isRequired,
-  pinSize: PropTypes.number.isRequired,
   renameNode: PropTypes.func.isRequired,
-  style: PropTypes.object.isRequired,
+  theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
     height: PropTypes.number.isRequired,
@@ -523,7 +523,6 @@ Frame.defaultProps = {
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
-  fontFamily: defaultTheme.fontFamily,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     inspector: { DefaultInspector },
@@ -533,11 +532,8 @@ Frame.defaultProps = {
       typeOfNode: function (node) { return 'DefaultNode' }
     }
   },
-  lineWidth: defaultTheme.lineWidth,
-  nodeBodyHeight: defaultTheme.nodeBodyHeight,
-  pinSize: defaultTheme.pinSize,
   renameNode: Function.prototype,
-  style: { border: '1px solid black' },
+  theme: theme.defaultProps,
   updateLink: Function.prototype,
   view: {
     link: {},

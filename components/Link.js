@@ -95,15 +95,17 @@
             from = _props.from,
             onCreateLink = _props.onCreateLink,
             startDraggingLinkTarget = _props.startDraggingLinkTarget,
-            pinSize = _props.pinSize,
             selected = _props.selected,
             selectLink = _props.selectLink,
+            theme = _props.theme,
             to = _props.to,
-            width = _props.width,
             x1 = _props.x1,
             y1 = _props.y1,
             x2 = _props.x2,
             y2 = _props.y2;
+        var highlightColor = theme.highlightColor,
+            lineWidth = theme.lineWidth,
+            pinSize = theme.pinSize;
 
 
         var onSourceMouseDown = function onSourceMouseDown(e) {
@@ -143,8 +145,8 @@
             d: 'M ' + startX + ' ' + startY + ' C ' + controlPointX1 + ' ' + controlPointY1 + ', ' + controlPointX2 + ' ' + controlPointY2 + ' ,' + endX + ' ' + endY,
             fill: 'transparent',
             onMouseUp: selectLink,
-            stroke: selected ? _theme2.default.highlightColor : fill,
-            strokeWidth: width
+            stroke: selected ? highlightColor : fill,
+            strokeWidth: lineWidth
           }),
           _react2.default.createElement('rect', {
             fill: fill,
@@ -178,8 +180,8 @@
     pinSize: _react.PropTypes.number.isRequired,
     selected: _react.PropTypes.bool.isRequired,
     selectLink: _react.PropTypes.func.isRequired,
+    theme: _theme2.default.propTypes,
     to: _react.PropTypes.array,
-    width: _react.PropTypes.number.isRequired,
     x1: _react.PropTypes.number.isRequired,
     y1: _react.PropTypes.number.isRequired,
     x2: _react.PropTypes.number.isRequired,
@@ -190,10 +192,9 @@
     fill: 'gray',
     onCreateLink: Function.prototype,
     startDraggingLinkTarget: Function.prototype,
-    pinSize: _theme2.default.pinSize,
     selected: false,
     selectLink: Function.prototype,
-    width: _theme2.default.lineWidth
+    theme: _theme2.default.defaultProps
   };
 
   exports.default = Link;

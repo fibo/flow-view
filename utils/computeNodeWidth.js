@@ -16,7 +16,6 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-
   var computeNodeWidth = function computeNodeWidth(_ref) {
     var bodyHeight = _ref.bodyHeight,
         pinSize = _ref.pinSize,

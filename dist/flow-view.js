@@ -49932,8 +49932,8 @@ var Canvas = function (_EventEmitter) {
         container = document.createElement('div');
         container.id = containerId;
 
-        // Set height and width, including borders (400+1+1).
-        container.setAttribute('style', 'height: 402px; width: 402px;');
+        container.setAttribute('style', 'display: inline-block; height: 400px; width: 100%;');
+
         document.body.appendChild(container);
       }
 
@@ -49952,7 +49952,6 @@ var Canvas = function (_EventEmitter) {
    * @param {Function} [callback] run server side
    */
 
-
   _createClass(Canvas, [{
     key: 'render',
     value: function render(view, model, callback) {
@@ -49969,16 +49968,16 @@ var Canvas = function (_EventEmitter) {
 
       var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
-      // Default values for height and width.
-      var height = 400;
-      var width = 400;
+      var height = view.height;
+      var width = view.width;
 
-      // Try to get height and width from container.
+      // Get height and width from container, if any.
       if (container) {
+        var border = 1; // TODO could be configurable in style prop
         var rect = container.getBoundingClientRect();
 
-        height = rect.height;
-        width = rect.width;
+        height = rect.height - 2 * border;
+        width = rect.width - 2 * border;
       }
 
       view = Object.assign({}, {
@@ -50236,9 +50235,12 @@ var Frame = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Frame.__proto__ || Object.getPrototypeOf(Frame)).call(this, props));
 
     _this.state = {
+      dynamicView: { height: null, width: null },
       draggedLinkId: null,
       draggedItems: [],
+      offset: { x: 0, y: 0 },
       pointer: null,
+      scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
       whenUpdated: getTime() // this attribute is used to force React render.
@@ -50249,14 +50251,37 @@ var Frame = function (_Component) {
   _createClass(Frame, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var setState = this.setState.bind(this);
+
       var container = (0, _reactDom.findDOMNode)(this).parentNode;
+
+      window.addEventListener('scroll', function () {
+        setState({ scroll: {
+            x: window.scrollX,
+            y: window.scrollY
+          } });
+      });
+
+      window.addEventListener('resize', function () {
+        var rect = container.getBoundingClientRect();
+
+        setState({ dynamicView: {
+            height: rect.height,
+            width: rect.width
+          } });
+      });
 
       var offset = {
         x: container.offsetLeft,
         y: container.offsetTop
       };
 
-      this.setState({ offset: offset });
+      var scroll = {
+        x: window.scrollX,
+        y: window.scrollY
+      };
+
+      setState({ offset: offset, scroll: scroll });
     }
   }, {
     key: 'render',
@@ -50287,14 +50312,14 @@ var Frame = function (_Component) {
       var _state = this.state,
           draggedItems = _state.draggedItems,
           draggedLinkId = _state.draggedLinkId,
-          offset = _state.offset,
           pointer = _state.pointer,
+          dynamicView = _state.dynamicView,
           selectedItems = _state.selectedItems,
           showSelector = _state.showSelector;
 
 
-      var height = view.height;
-      var width = view.width;
+      var height = dynamicView.height || view.height;
+      var width = dynamicView.width || view.width;
 
       var typeOfNode = item.util.typeOfNode;
 
@@ -50304,9 +50329,14 @@ var Frame = function (_Component) {
       var setState = this.setState.bind(this);
 
       var getCoordinates = function getCoordinates(e) {
+        var _state2 = _this2.state,
+            offset = _state2.offset,
+            scroll = _state2.scroll;
+
+
         return {
-          x: e.clientX - offset.x,
-          y: e.clientY - offset.y
+          x: e.clientX - offset.x + scroll.x,
+          y: e.clientY - offset.y + scroll.y
         };
       };
 
@@ -50740,10 +50770,8 @@ Frame.defaultProps = {
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {
-    height: 400,
     link: {},
-    node: {},
-    width: 400
+    node: {}
   }
 };
 

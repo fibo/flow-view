@@ -23,14 +23,14 @@ class Canvas extends EventEmitter {
     // If we are in browser context, get the document element containing
     // the canvas or create it.
     if (typeof document !== 'undefined') {
-      var container = document.getElementById(containerId)
+      let container = document.getElementById(containerId)
 
       if (container === null) {
         container = document.createElement('div')
         container.id = containerId
 
-        // Set height and width, including borders (400+1+1).
-        container.setAttribute('style', 'height: 402px; width: 402px;')
+        container.setAttribute('style', 'display: inline-block; height: 400px; width: 100%;')
+
         document.body.appendChild(container)
       }
 
@@ -47,6 +47,7 @@ class Canvas extends EventEmitter {
    * @param {Object} [model]
    * @param {Function} [callback] run server side
    */
+
   render (view, model, callback) {
     const container = this.container
 
@@ -65,16 +66,16 @@ class Canvas extends EventEmitter {
       this.item
     )
 
-    // Default values for height and width.
-    var height = 400
-    var width = 400
+    let height = view.height
+    let width = view.width
 
-    // Try to get height and width from container.
+    // Get height and width from container, if any.
     if (container) {
-      var rect = container.getBoundingClientRect()
+      const border = 1 // TODO could be configurable in style prop
+      const rect = container.getBoundingClientRect()
 
-      height = rect.height
-      width = rect.width
+      height = rect.height - 2 * border
+      width = rect.width - 2 * border
     }
 
     view = Object.assign({}, {

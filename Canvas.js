@@ -110,8 +110,8 @@
           container = document.createElement('div');
           container.id = containerId;
 
-          // Set height and width, including borders (400+1+1).
-          container.setAttribute('style', 'height: 402px; width: 402px;');
+          container.setAttribute('style', 'display: inline-block; height: 400px; width: 100%;');
+
           document.body.appendChild(container);
         }
 
@@ -130,7 +130,6 @@
      * @param {Function} [callback] run server side
      */
 
-
     _createClass(Canvas, [{
       key: 'render',
       value: function render(view, model, callback) {
@@ -147,16 +146,16 @@
 
         var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
-        // Default values for height and width.
-        var height = 400;
-        var width = 400;
+        var height = view.height;
+        var width = view.width;
 
-        // Try to get height and width from container.
+        // Get height and width from container, if any.
         if (container) {
+          var border = 1; // TODO could be configurable in style prop
           var rect = container.getBoundingClientRect();
 
-          height = rect.height;
-          width = rect.width;
+          height = rect.height - 2 * border;
+          width = rect.width - 2 * border;
         }
 
         view = Object.assign({}, {

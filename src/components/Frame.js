@@ -17,9 +17,12 @@ class Frame extends Component {
     super(props)
 
     this.state = {
+      dynamicView: { height: null, width: null },
       draggedLinkId: null,
       draggedItems: [],
+      offset: { x: 0, y: 0 },
       pointer: null,
+      scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
       whenUpdated: getTime() // this attribute is used to force React render.
@@ -27,14 +30,37 @@ class Frame extends Component {
   }
 
   componentDidMount () {
+    const setState = this.setState.bind(this)
+
     const container = findDOMNode(this).parentNode
+
+    window.addEventListener('scroll', () => {
+      setState({ scroll: {
+        x: window.scrollX,
+        y: window.scrollY
+      }})
+    })
+
+    window.addEventListener('resize', () => {
+      const rect = container.getBoundingClientRect()
+
+      setState({ dynamicView: {
+        height: rect.height,
+        width: rect.width
+      }})
+    })
 
     const offset = {
       x: container.offsetLeft,
       y: container.offsetTop
     }
 
-    this.setState({ offset })
+    const scroll = {
+      x: window.scrollX,
+      y: window.scrollY
+    }
+
+    setState({ offset, scroll })
   }
 
   render () {
@@ -64,14 +90,14 @@ class Frame extends Component {
     const {
       draggedItems,
       draggedLinkId,
-      offset,
       pointer,
+      dynamicView,
       selectedItems,
       showSelector
     } = this.state
 
-    const height = view.height
-    const width = view.width
+    const height = dynamicView.height || view.height
+    const width = dynamicView.width || view.width
 
     const typeOfNode = item.util.typeOfNode
 
@@ -80,10 +106,17 @@ class Frame extends Component {
 
     const setState = this.setState.bind(this)
 
-    const getCoordinates = (e) => ({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y
-    })
+    const getCoordinates = (e) => {
+      const {
+        offset,
+        scroll
+      } = this.state
+
+      return {
+        x: e.clientX - offset.x + scroll.x,
+        y: e.clientY - offset.y + scroll.y
+      }
+    }
 
     const onClick = (e) => {
       e.preventDefault()
@@ -507,10 +540,8 @@ Frame.defaultProps = {
   style: { border: '1px solid black' },
   updateLink: Function.prototype,
   view: {
-    height: 400,
     link: {},
-    node: {},
-    width: 400
+    node: {}
   }
 }
 

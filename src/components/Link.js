@@ -46,12 +46,11 @@ class Link extends Component {
     const endY = y2 + pinSize / 2
 
     const midPointY = (startY + endY) / 2
-    const verticalDistance = (endY - startY) / 2
 
     const controlPointX1 = startX
-    const controlPointY1 = verticalDistance > 0 ? midPointY : startY - verticalDistance * 2
+    const controlPointY1 = to ? midPointY : startY
     const controlPointX2 = endX
-    const controlPointY2 = verticalDistance > 0 ? midPointY : endY + verticalDistance * 2
+    const controlPointY2 = to ? midPointY : endY
 
     return (
       <g

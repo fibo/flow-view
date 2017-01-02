@@ -15,21 +15,21 @@ module.exports={
     "a": {
       "text": "your engine",
       "outs": ["out0", "out1"],
-      "x": 470,
+      "x": 270,
       "y": 10
     },
     "b": {
       "text": "flow-view",
       "ins": ["in"],
       "outs": ["out"],
-      "x": 500,
+      "x": 300,
       "y": 100
     },
     "c": {
       "text": "a cool app!",
       "ins": ["in0", "in1", "in2"],
       "outs": ["out"],
-      "x": 500,
+      "x": 300,
       "y": 170
     }
   },

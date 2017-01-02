@@ -43,7 +43,11 @@ canvas.render({
     a: {
       x: 10,
       y: 10,
-      text: 'Open JavaScript console'
+      text: 'Events are printed below'
     }
   }
 })
+
+var consoleLogDiv = document.createElement('script')
+consoleLogDiv.src = 'https://rawgit.com/bahmutov/console-log-div/master/console-log-div.js'
+document.body.appendChild(consoleLogDiv)

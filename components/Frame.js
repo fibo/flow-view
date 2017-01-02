@@ -110,6 +110,7 @@
         scroll: { x: 0, y: 0 },
         showSelector: false,
         selectedItems: [],
+        selectionBoundingBox: null,
         whenUpdated: getTime() // this attribute is used to force React render.
       };
       return _this;
@@ -178,6 +179,7 @@
             pointer = _state.pointer,
             dynamicView = _state.dynamicView,
             selectedItems = _state.selectedItems,
+            selectionBoundingBox = _state.selectionBoundingBox,
             showSelector = _state.showSelector;
         var frameBorder = theme.frameBorder,
             fontFamily = theme.fontFamily,
@@ -195,6 +197,63 @@
         var Link = item.link.DefaultLink;
 
         var setState = this.setState.bind(this);
+
+        var coordinatesOfLink = function coordinatesOfLink(_ref) {
+          var from = _ref.from,
+              to = _ref.to;
+
+          var x1 = null;
+          var y1 = null;
+          var x2 = null;
+          var y2 = null;
+
+          var nodeIds = Object.keys(view.node);
+          var idEquals = function idEquals(x) {
+            return function (id) {
+              return id === x[0];
+            };
+          };
+          var sourceId = from ? nodeIds.find(idEquals(from)) : null;
+          var targetId = to ? nodeIds.find(idEquals(to)) : null;
+
+          var computedWidth = null;
+
+          if (sourceId) {
+            var source = view.node[sourceId];
+
+            computedWidth = (0, _computeNodeWidth2.default)({
+              bodyHeight: nodeBodyHeight,
+              pinSize: pinSize,
+              fontSize: fontSize,
+              node: source
+            });
+
+            x1 = source.x + (0, _xOfPin2.default)(pinSize, computedWidth, source.outs.length, from[1]);
+            y1 = source.y + pinSize + nodeBodyHeight;
+          }
+
+          if (targetId) {
+            var target = view.node[targetId];
+
+            computedWidth = (0, _computeNodeWidth2.default)({
+              bodyHeight: nodeBodyHeight,
+              pinSize: pinSize,
+              fontSize: fontSize,
+              node: target
+            });
+
+            x2 = target.x + (0, _xOfPin2.default)(pinSize, computedWidth, target.ins.length, to[1]);
+            y2 = target.y;
+          } else {
+            // FIXME at first, pointer is null. This trick works, but,
+            // it should be reviosioned when implementing creating links
+            // in the opposite direction.
+            x2 = pointer ? pointer.x - pinSize / 2 : x1;
+            y2 = pointer ? pointer.y - pinSize : y1;
+          }
+
+          return { x1: x1, y1: y1, x2: x2, y2: y2 };
+        };
 
         var getCoordinates = function getCoordinates(e) {
           var _state2 = _this2.state,
@@ -336,6 +395,8 @@
             e.preventDefault();
             e.stopPropagation();
 
+            var boundingBox = null;
+
             // Do not select items when releasing a dragging link.
 
             var draggedLinkId = _this2.state.draggedLinkId;
@@ -366,9 +427,35 @@
               selectedItems.splice(index, 1);
             }
 
+            selectedItems.forEach(function (id) {
+              var link = view.link[id];
+              var node = view.node[id];
+
+              if (node) {
+                var computedWidth = (0, _computeNodeWidth2.default)({
+                  bodyHeight: nodeBodyHeight,
+                  pinSize: pinSize,
+                  fontSize: fontSize,
+                  node: node
+                });
+
+                boundingBox = {
+                  x1: node.x,
+                  y1: node.y,
+                  x2: computedWidth + node.x,
+                  y2: nodeBodyHeight + node.y
+                };
+              }
+
+              if (link) {
+                boundingBox = coordinatesOfLink(link);
+              }
+            });
+
             setState({
               draggedItems: [],
-              selectedItems: selectedItems
+              selectedItems: selectedItems,
+              selectionBoundingBox: boundingBox
             });
           };
         };
@@ -473,55 +560,7 @@
                 to = _view$link$id.to;
 
 
-            var x1 = null;
-            var y1 = null;
-            var x2 = null;
-            var y2 = null;
-
-            var nodeIds = Object.keys(view.node);
-            var idEquals = function idEquals(x) {
-              return function (id) {
-                return id === x[0];
-              };
-            };
-            var sourceId = from ? nodeIds.find(idEquals(from)) : null;
-            var targetId = to ? nodeIds.find(idEquals(to)) : null;
-
-            var computedWidth = null;
-
-            if (sourceId) {
-              var source = view.node[sourceId];
-
-              computedWidth = (0, _computeNodeWidth2.default)({
-                bodyHeight: nodeBodyHeight, // TODO custom nodes height
-                pinSize: pinSize,
-                fontSize: fontSize,
-                node: source
-              });
-
-              x1 = source.x + (0, _xOfPin2.default)(pinSize, computedWidth, source.outs.length, from[1]);
-              y1 = source.y + pinSize + nodeBodyHeight;
-            }
-
-            if (targetId) {
-              var target = view.node[targetId];
-
-              computedWidth = (0, _computeNodeWidth2.default)({
-                bodyHeight: nodeBodyHeight, // TODO custom nodes height
-                pinSize: pinSize,
-                fontSize: fontSize,
-                node: target
-              });
-
-              x2 = target.x + (0, _xOfPin2.default)(pinSize, computedWidth, target.ins.length, to[1]);
-              y2 = target.y;
-            } else {
-              // FIXME at first, pointer is null. This trick works, but,
-              // it should be reviosioned when implementing creating links
-              // in the opposite direction.
-              x2 = pointer ? pointer.x - pinSize / 2 : x1;
-              y2 = pointer ? pointer.y - pinSize : y1;
-            }
+            var coord = coordinatesOfLink(view.link[id]);
 
             return _react2.default.createElement(Link, {
               key: i,
@@ -534,10 +573,10 @@
               selected: selectedItems.indexOf(id) > -1,
               selectLink: selectItem(id),
               to: to,
-              x1: x1,
-              y1: y1,
-              x2: x2,
-              y2: y2
+              x1: coord.x1,
+              y1: coord.y1,
+              x2: coord.x2,
+              y2: coord.y2
             });
           }),
           _react2.default.createElement(Inspector, {
@@ -553,7 +592,9 @@
 
               setState({ whenUpdated: getTime() });
             },
-            view: view
+            view: view,
+            x: selectionBoundingBox ? selectionBoundingBox.x2 : 0,
+            y: selectionBoundingBox ? selectionBoundingBox.y1 : 0
           }),
           _react2.default.createElement(_Selector2.default, {
             createNode: function createNode(node) {

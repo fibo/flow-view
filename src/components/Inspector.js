@@ -1,13 +1,19 @@
 import React, { Component, PropTypes } from 'react'
 import ignoreEvent from '../utils/ignoreEvent'
 
+const pinButtonStyle = {
+  borderRadius: '50%'
+}
+
+const deleteItemButtonStyle = {
+  borderRadius: '2px'
+}
+
 class Inspector extends Component {
   constructor (props) {
     super(props)
 
-    this.state = {
-      newNodeText: null
-    }
+    this.state = { newNodeText: null }
   }
 
   render () {
@@ -66,6 +72,7 @@ class Inspector extends Component {
           onClick={() => {
             deleteLink(linkId)
           }}
+          style={deleteItemButtonStyle}
         >
           delete link
         </button>
@@ -98,9 +105,11 @@ class Inspector extends Component {
         <button
           disabled={(ins.length === 0) || lastInputIsConnected}
           onClick={() => { deleteInputPin(nodeId) }}
+          style={pinButtonStyle}
         >-</button>
         <button
           onClick={() => { createInputPin(nodeId) }}
+          style={pinButtonStyle}
         >+</button>
       </div>
     )
@@ -131,9 +140,11 @@ class Inspector extends Component {
         <button
           disabled={(outs.length === 0) || lastOutputIsConnected}
           onClick={() => { deleteOutputPin(nodeId) }}
+          style={pinButtonStyle}
         >-</button>
         <button
           onClick={() => { createOutputPin(nodeId) }}
+          style={pinButtonStyle}
         >+</button>
       </div>
     )
@@ -212,6 +223,7 @@ class Inspector extends Component {
           onClick={() => {
             deleteNode(nodeId)
           }}
+          style={deleteItemButtonStyle}
         >
           delete node
         </button>

@@ -51191,7 +51191,6 @@ var Link = function (_Component) {
     value: function render() {
       var _props = this.props,
           id = _props.id,
-          fill = _props.fill,
           from = _props.from,
           onCreateLink = _props.onCreateLink,
           startDraggingLinkTarget = _props.startDraggingLinkTarget,
@@ -51204,6 +51203,7 @@ var Link = function (_Component) {
           x2 = _props.x2,
           y2 = _props.y2;
       var highlightColor = theme.highlightColor,
+          linkColor = theme.linkColor,
           lineWidth = theme.lineWidth,
           pinSize = theme.pinSize;
 
@@ -51228,12 +51228,11 @@ var Link = function (_Component) {
       var endY = y2 + pinSize / 2;
 
       var midPointY = (startY + endY) / 2;
-      var verticalDistance = (endY - startY) / 2;
 
       var controlPointX1 = startX;
-      var controlPointY1 = verticalDistance > 0 ? midPointY : startY - verticalDistance * 2;
+      var controlPointY1 = to ? midPointY : startY;
       var controlPointX2 = endX;
-      var controlPointY2 = verticalDistance > 0 ? midPointY : endY + verticalDistance * 2;
+      var controlPointY2 = to ? midPointY : endY;
 
       return _react2.default.createElement(
         'g',
@@ -51245,11 +51244,11 @@ var Link = function (_Component) {
           d: 'M ' + startX + ' ' + startY + ' C ' + controlPointX1 + ' ' + controlPointY1 + ', ' + controlPointX2 + ' ' + controlPointY2 + ' ,' + endX + ' ' + endY,
           fill: 'transparent',
           onMouseUp: selectLink,
-          stroke: selected ? highlightColor : fill,
+          stroke: selected ? highlightColor : linkColor,
           strokeWidth: lineWidth
         }),
         _react2.default.createElement('rect', {
-          fill: fill,
+          fill: linkColor,
           height: pinSize,
           onMouseDown: onSourceMouseDown,
           width: pinSize,
@@ -51257,7 +51256,7 @@ var Link = function (_Component) {
           y: y1
         }),
         to ? _react2.default.createElement('rect', {
-          fill: fill,
+          fill: linkColor,
           height: pinSize,
           onMouseDown: onTargetMouseDown,
           width: pinSize,
@@ -51273,7 +51272,6 @@ var Link = function (_Component) {
 
 Link.propTypes = {
   id: _react.PropTypes.string,
-  fill: _react.PropTypes.string.isRequired,
   from: _react.PropTypes.array,
   onCreateLink: _react.PropTypes.func.isRequired,
   startDraggingLinkTarget: _react.PropTypes.func.isRequired,
@@ -51289,7 +51287,6 @@ Link.propTypes = {
 };
 
 Link.defaultProps = {
-  fill: 'gray',
   onCreateLink: Function.prototype,
   startDraggingLinkTarget: Function.prototype,
   selected: false,
@@ -51737,6 +51734,7 @@ var defaultProps = {
   frameBorder: '1px solid black',
   highlightColor: 'lightsteelblue',
   lineWidth: 3,
+  linkColor: 'gray',
   nodeBarColor: 'lightgray',
   nodeBodyHeight: 20,
   pinColor: 'darkgray', // Ahahah darkgray is not darker than gray!
@@ -51749,6 +51747,7 @@ var propTypes = _React.PropTypes.shape({
   fontFamily: _React.PropTypes.string.isRequired,
   highlightColor: _React.PropTypes.string.isRequired,
   lineWidth: _React.PropTypes.number.isRequired,
+  linkColor: _React.PropTypes.string.isRequired,
   nodeBarColor: _React.PropTypes.string.isRequired,
   nodeBodyHeight: _React.PropTypes.number.isRequired,
   pinColor: _React.PropTypes.string.isRequired,

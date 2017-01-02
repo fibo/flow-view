@@ -23,6 +23,7 @@
     frameBorder: '1px solid black',
     highlightColor: 'lightsteelblue',
     lineWidth: 3,
+    linkColor: 'gray',
     nodeBarColor: 'lightgray',
     nodeBodyHeight: 20,
     pinColor: 'darkgray', // Ahahah darkgray is not darker than gray!
@@ -35,6 +36,7 @@
     fontFamily: _React.PropTypes.string.isRequired,
     highlightColor: _React.PropTypes.string.isRequired,
     lineWidth: _React.PropTypes.number.isRequired,
+    linkColor: _React.PropTypes.string.isRequired,
     nodeBarColor: _React.PropTypes.string.isRequired,
     nodeBodyHeight: _React.PropTypes.number.isRequired,
     pinColor: _React.PropTypes.string.isRequired,

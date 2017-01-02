@@ -22,7 +22,7 @@ const propTypes = PropTypes.shape({
   nodeBarColor: PropTypes.string.isRequired,
   nodeBodyHeight: PropTypes.number.isRequired,
   pinColor: PropTypes.string.isRequired,
-  pinSize: PropTypes.number.isRequired,
+  pinSize: PropTypes.number.isRequired
 }).isRequired
 
 export default {

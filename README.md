@@ -221,15 +221,15 @@ npm install
 Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is launched by command
 
 ```bash
-npm run example:basic:usage
+npm run example_basic_usage
 ```
 
 Available examples are:
 
-* [basic/usage.js][example_basic_usage] `npm run example:basic:usage`
-* [event/emitter.js][example_event_emitter]: `npm run example:event:emitter`
-* [empty/canvas.js][example_empty_canvas]: `npm run example:empty:canvas`
-* [render/serverside.js][example_render_serverside]: `npm run example:render:serverside`
+* [basic/usage.js][example_basic_usage] `npm run example_basic_usage`
+* [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
+* [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
+* [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
 
 Note that examples are intended to be used for development, hence there
 is an overhead at start time.

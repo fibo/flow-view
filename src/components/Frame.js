@@ -25,6 +25,7 @@ class Frame extends Component {
       scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
+      selectionBoundingBox: null,
       whenUpdated: getTime() // this attribute is used to force React render.
     }
   }
@@ -89,6 +90,7 @@ class Frame extends Component {
       pointer,
       dynamicView,
       selectedItems,
+      selectionBoundingBox,
       showSelector
     } = this.state
 
@@ -109,6 +111,56 @@ class Frame extends Component {
     const Link = item.link.DefaultLink
 
     const setState = this.setState.bind(this)
+
+    const coordinatesOfLink = ({ from, to }) => {
+      var x1 = null
+      var y1 = null
+      var x2 = null
+      var y2 = null
+
+      const nodeIds = Object.keys(view.node)
+      const idEquals = (x) => (id) => (id === x[0])
+      const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
+      const targetId = (to ? nodeIds.find(idEquals(to)) : null)
+
+      var computedWidth = null
+
+      if (sourceId) {
+        const source = view.node[sourceId]
+
+        computedWidth = computeNodeWidth({
+          bodyHeight: nodeBodyHeight,
+          pinSize,
+          fontSize,
+          node: source
+        })
+
+        x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
+        y1 = source.y + pinSize + nodeBodyHeight
+      }
+
+      if (targetId) {
+        const target = view.node[targetId]
+
+        computedWidth = computeNodeWidth({
+          bodyHeight: nodeBodyHeight,
+          pinSize,
+          fontSize,
+          node: target
+        })
+
+        x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
+        y2 = target.y
+      } else {
+        // FIXME at first, pointer is null. This trick works, but,
+        // it should be reviosioned when implementing creating links
+        // in the opposite direction.
+        x2 = pointer ? (pointer.x - pinSize / 2) : x1
+        y2 = pointer ? (pointer.y - pinSize) : y1
+      }
+
+      return { x1, y1, x2, y2 }
+    }
 
     const getCoordinates = (e) => {
       const {
@@ -249,6 +301,8 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      let boundingBox = null
+
       // Do not select items when releasing a dragging link.
 
       const draggedLinkId = this.state.draggedLinkId
@@ -279,9 +333,35 @@ class Frame extends Component {
         selectedItems.splice(index, 1)
       }
 
+      selectedItems.forEach((id) => {
+        var link = view.link[id]
+        var node = view.node[id]
+
+        if (node) {
+          const computedWidth = computeNodeWidth({
+            bodyHeight: nodeBodyHeight,
+            pinSize,
+            fontSize,
+            node
+          })
+
+          boundingBox = {
+            x1: node.x,
+            y1: node.y,
+            x2: computedWidth + node.x,
+            y2: nodeBodyHeight + node.y
+          }
+        }
+
+        if (link) {
+          boundingBox = coordinatesOfLink(link)
+        }
+      })
+
       setState({
         draggedItems: [],
-        selectedItems
+        selectedItems,
+        selectionBoundingBox: boundingBox
       })
     }
 
@@ -385,51 +465,7 @@ class Frame extends Component {
             to
           } = view.link[id]
 
-          var x1 = null
-          var y1 = null
-          var x2 = null
-          var y2 = null
-
-          const nodeIds = Object.keys(view.node)
-          const idEquals = (x) => (id) => (id === x[0])
-          const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
-          const targetId = (to ? nodeIds.find(idEquals(to)) : null)
-
-          var computedWidth = null
-
-          if (sourceId) {
-            const source = view.node[sourceId]
-
-            computedWidth = computeNodeWidth({
-              bodyHeight: nodeBodyHeight, // TODO custom nodes height
-              pinSize,
-              fontSize,
-              node: source
-            })
-
-            x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
-            y1 = source.y + pinSize + nodeBodyHeight
-          }
-
-          if (targetId) {
-            const target = view.node[targetId]
-
-            computedWidth = computeNodeWidth({
-              bodyHeight: nodeBodyHeight, // TODO custom nodes height
-              pinSize,
-              fontSize,
-              node: target
-            })
-
-            x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
-            y2 = target.y
-          } else {
-            // FIXME at first, pointer is null. This trick works, but,
-            // it should be reviosioned when implementing creating links
-            // in the opposite direction.
-            x2 = pointer ? (pointer.x - pinSize / 2) : x1
-            y2 = pointer ? (pointer.y - pinSize) : y1
-          }
+          var coord = coordinatesOfLink(view.link[id])
 
           return (
             <Link
@@ -443,10 +479,10 @@ class Frame extends Component {
               selected={(selectedItems.indexOf(id) > -1)}
               selectLink={selectItem(id)}
               to={to}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              x1={coord.x1}
+              y1={coord.y1}
+              x2={coord.x2}
+              y2={coord.y2}
             />
           )
         })}
@@ -464,6 +500,8 @@ class Frame extends Component {
             setState({ whenUpdated: getTime() })
           }}
           view={view}
+          x={selectionBoundingBox ? selectionBoundingBox.x2 : 0}
+          y={selectionBoundingBox ? selectionBoundingBox.y1 : 0}
         />
         <Selector
           createNode={(node) => {

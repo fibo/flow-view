@@ -19,10 +19,13 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.10.0] - 2017-01-02
+
 ### Added
 
 - Dragged link is straight.
 - Custom item example.
+- Selector position aside selected item.
 
 ## [v2.9.1] - 2016-12-25
 

@@ -1,5 +1,5 @@
 const computeNodeWidth = ({
-  bodyHeight,
+  bodyHeight, // It is used only to make shapes default to square.
   pinSize,
   fontSize,
   node

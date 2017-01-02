@@ -75,6 +75,14 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
+  var pinButtonStyle = {
+    borderRadius: '50%'
+  };
+
+  var deleteItemButtonStyle = {
+    borderRadius: '2px'
+  };
+
   var Inspector = function (_Component) {
     _inherits(Inspector, _Component);
 
@@ -83,9 +91,7 @@
 
       var _this = _possibleConstructorReturn(this, (Inspector.__proto__ || Object.getPrototypeOf(Inspector)).call(this, props));
 
-      _this.state = {
-        newNodeText: null
-      };
+      _this.state = { newNodeText: null };
       return _this;
     }
 
@@ -150,7 +156,8 @@
             {
               onClick: function onClick() {
                 deleteLink(linkId);
-              }
+              },
+              style: deleteItemButtonStyle
             },
             'delete link'
           )
@@ -187,7 +194,8 @@
               disabled: ins.length === 0 || lastInputIsConnected,
               onClick: function onClick() {
                 deleteInputPin(nodeId);
-              }
+              },
+              style: pinButtonStyle
             },
             '-'
           ),
@@ -196,7 +204,8 @@
             {
               onClick: function onClick() {
                 createInputPin(nodeId);
-              }
+              },
+              style: pinButtonStyle
             },
             '+'
           )
@@ -233,7 +242,8 @@
               disabled: outs.length === 0 || lastOutputIsConnected,
               onClick: function onClick() {
                 deleteOutputPin(nodeId);
-              }
+              },
+              style: pinButtonStyle
             },
             '-'
           ),
@@ -242,7 +252,8 @@
             {
               onClick: function onClick() {
                 createOutputPin(nodeId);
-              }
+              },
+              style: pinButtonStyle
             },
             '+'
           )
@@ -327,7 +338,8 @@
             {
               onClick: function onClick() {
                 deleteNode(nodeId);
-              }
+              },
+              style: deleteItemButtonStyle
             },
             'delete node'
           )

@@ -78,13 +78,9 @@
     "svgx": "0.x"
   },
   "devDependencies": {
-    "babel-cli": "6.x",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-react-transform": "2.x",
     "babel-plugin-transform-es2015-modules-umd": "6.x",
-    "babel-preset-es2015": "6.x",
-    "babel-preset-react": "6.x",
-    "babel-register": "6.x",
     "babelify": "7.x",
     "brfs": "^1.4.3",
     "browserify": "13.x",

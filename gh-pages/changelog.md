@@ -25,7 +25,7 @@ New g14n.info layouts, with link to Changelog page
 
 - Dragged link is straight.
 - Custom item example.
-- Selector position aside selected item.
+- Inspector position aside selected item.
 
 ## [v2.9.1] - 2016-12-25
 

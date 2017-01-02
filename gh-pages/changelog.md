@@ -22,6 +22,7 @@ New g14n.info layouts, with link to Changelog page
 ### Added
 
 - Dragged link is straight.
+- Custom item example.
 
 ## [v2.9.1] - 2016-12-25
 

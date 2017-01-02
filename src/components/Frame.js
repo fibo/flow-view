@@ -529,7 +529,9 @@ Frame.defaultProps = {
     link: { DefaultLink },
     node: { DefaultNode },
     util: {
-      typeOfNode: function (node) { return 'DefaultNode' }
+      typeOfNode: function (node) {
+        return 'DefaultNode'
+      }
     }
   },
   renameNode: Function.prototype,

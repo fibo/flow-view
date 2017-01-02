@@ -17,6 +17,7 @@
     "build": "npm run example_render_serverside; npm run browserify && npm run minify; npm run jekyll; git status",
     "check-deps": "npm outdated",
     "example_basic_usage": "BABEL_ENV=development NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify -p livereactload",
+    "example_custom_item": "BABEL_ENV=development NODE_PATH=. budo --open examples/custom/item.js -- -t babelify -p livereactload",
     "example_empty_canvas": "BABEL_ENV=development NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify -p livereactload",
     "example_event_emitter": "BABEL_ENV=development NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify -p livereactload",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > gh-pages/svg/sample-view.svg",

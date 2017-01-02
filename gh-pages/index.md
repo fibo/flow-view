@@ -160,6 +160,7 @@ Theme is a prop which defaults to
   frameBorder: '1px solid black',
   highlightColor: 'lightsteelblue',
   lineWidth: 3,
+  linkColor: 'gray',
   nodeBarColor: 'lightgray',
   nodeBodyHeight: 20,
   pinColor: 'darkgray',
@@ -224,15 +225,16 @@ npm install
 Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is launched by command
 
 ```bash
-npm run example:basic:usage
+npm run example_basic_usage
 ```
 
 Available examples are:
 
-* [basic/usage.js][example_basic_usage] `npm run example:basic:usage`
-* [event/emitter.js][example_event_emitter]: `npm run example:event:emitter`
-* [empty/canvas.js][example_empty_canvas]: `npm run example:empty:canvas`
-* [render/serverside.js][example_render_serverside]: `npm run example:render:serverside`
+* [basic/usage.js][example_basic_usage] `npm run example_basic_usage`
+* [custom/item.js][example_custom_item] `npm run example_custom_item`
+* [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
+* [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
+* [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
 
 Note that examples are intended to be used for development, hence there
 is an overhead at start time.
@@ -246,6 +248,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [React]: https://facebook.github.io/react/
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
+[example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js

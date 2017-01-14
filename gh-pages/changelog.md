@@ -19,6 +19,13 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.10.1] - 2017-01-14
+
+### Fixed
+
+- Build was broken, cause travis could not find React dep.
+- Using caret versions.
+
 ## [v2.10.0] - 2017-01-02
 
 ### Added

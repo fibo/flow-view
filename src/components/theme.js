@@ -1,4 +1,4 @@
-import { PropTypes } from 'React'
+import { PropTypes } from 'react'
 
 const defaultProps = {
   fontFamily: 'Courier',

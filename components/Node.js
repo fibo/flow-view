@@ -102,40 +102,6 @@
 
         var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
 
-        // TODO place an id in the div wrapping the body and try to
-        // resolve bodyHeight from its content.
-
-        /*
-         TODO The following code works and it is ok for custom nodes.
-         BUT it os not ok for server side rendering cause foreignobject
-            is not supported in image context.
-         return (
-          <foreignObject
-            height={bodyHeight}
-            onClick={ignoreEvent}
-            onDoubleClick={ignoreEvent}
-            onMouseDown={willDragNode}
-            onMouseUp={selectNode}
-            transform={`translate(0,${pinSize})`}
-            width={computedWidth}
-          >
-            <div
-              style={{backgroundColor: color.body}}
-            >
-              <p
-                style={{
-                  marginLeft: pinSize,
-                  marginRight: pinSize,
-                  pointerEvents: 'none'
-                }}
-              >
-                {text}
-              </p>
-            </div>
-          </foreignObject>
-        )
-        */
-
         // Heuristic value, based on Courier font.
         var margin = fontSize * 0.2;
 
@@ -156,6 +122,11 @@
       key: 'render',
       value: function render() {
         var _props2 = this.props,
+            createInputPin = _props2.createInputPin,
+            createOutputPin = _props2.createOutputPin,
+            deleteInputPin = _props2.deleteInputPin,
+            deleteNode = _props2.deleteNode,
+            deleteOutputPin = _props2.deleteOutputPin,
             dragged = _props2.dragged,
             draggedLinkId = _props2.draggedLinkId,
             fontSize = _props2.fontSize,
@@ -192,7 +163,6 @@
         return _react2.default.createElement(
           'g',
           {
-            onClick: _ignoreEvent2.default,
             onDoubleClick: _ignoreEvent2.default,
             onMouseDown: willDragNode,
             onMouseUp: selectNode,
@@ -201,6 +171,46 @@
             },
             transform: 'translate(' + x + ',' + y + ')'
           },
+          selected ? _react2.default.createElement('path', {
+            d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+            fill: highlightColor,
+            transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
+            onMouseDown: function onMouseDown() {
+              return deleteNode(id);
+            }
+          }) : null,
+          selected ? _react2.default.createElement('path', {
+            d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+            transform: 'translate(' + (computedWidth + 2) + ',0)',
+            onMouseDown: function onMouseDown() {
+              return deleteInputPin(id);
+            },
+            fill: highlightColor
+          }) : null,
+          selected ? _react2.default.createElement('path', {
+            d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+            transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)',
+            onMouseDown: function onMouseDown() {
+              return createInputPin(id);
+            },
+            fill: highlightColor
+          }) : null,
+          selected ? _react2.default.createElement('path', {
+            d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+            transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')',
+            onMouseDown: function onMouseDown() {
+              return deleteOutputPin(id);
+            },
+            fill: highlightColor
+          }) : null,
+          selected ? _react2.default.createElement('path', {
+            d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+            transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')',
+            onMouseDown: function onMouseDown() {
+              return createOutputPin(id);
+            },
+            fill: highlightColor
+          }) : null,
           _react2.default.createElement('rect', {
             fillOpacity: 0,
             height: bodyHeight + 2 * pinSize,
@@ -214,15 +224,7 @@
             width: computedWidth
           }),
           ins.map(function (pin, i, array) {
-            // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
             var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
-
-            // TODO
-            // const onMouseDown = (e) => {
-            //   e.preventDefault()
-            //   e.stopPropagation()
-            //   onCreateLink({ from: null, to: [ id, i ] })
-            // }
 
             var onMouseUp = function onMouseUp(e) {
               e.preventDefault();
@@ -280,6 +282,11 @@
 
   Node.propTypes = {
     bodyHeight: _react.PropTypes.number,
+    createInputPin: _react.PropTypes.func.isRequired,
+    createOutputPin: _react.PropTypes.func.isRequired,
+    deleteInputPin: _react.PropTypes.func.isRequired,
+    deleteNode: _react.PropTypes.func.isRequired,
+    deleteOutputPin: _react.PropTypes.func.isRequired,
     dragged: _react.PropTypes.bool.isRequired,
     draggedLinkId: _react.PropTypes.string,
     fontSize: _react.PropTypes.number.isRequired,
@@ -299,6 +306,11 @@
   };
 
   Node.defaultProps = {
+    createInputPin: Function.prototype,
+    createOutputPin: Function.prototype,
+    deleteInputPin: Function.prototype,
+    deleteNode: Function.prototype,
+    deleteOutputPin: Function.prototype,
     dragged: false, // TODO looks more like a state
     draggedLinkId: null,
     ins: [],

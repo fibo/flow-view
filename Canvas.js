@@ -139,12 +139,11 @@
 
         var defaultItem = _Frame2.default.defaultProps.item;
 
-        var DefaultInspector = defaultItem.inspector.DefaultInspector;
         var DefaultLink = defaultItem.link.DefaultLink;
         var DefaultNode = defaultItem.node.DefaultNode;
         var typeOfNode = defaultItem.util.typeOfNode;
 
-        var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
+        var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
         var height = view.height;
         var width = view.width;

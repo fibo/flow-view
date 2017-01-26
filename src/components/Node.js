@@ -18,43 +18,6 @@ class Node extends Component {
 
     const bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight
 
-    // TODO place an id in the div wrapping the body and try to
-    // resolve bodyHeight from its content.
-
-    /*
-
-    TODO The following code works and it is ok for custom nodes.
-
-    BUT it os not ok for server side rendering cause foreignobject
-        is not supported in image context.
-
-    return (
-      <foreignObject
-        height={bodyHeight}
-        onClick={ignoreEvent}
-        onDoubleClick={ignoreEvent}
-        onMouseDown={willDragNode}
-        onMouseUp={selectNode}
-        transform={`translate(0,${pinSize})`}
-        width={computedWidth}
-      >
-        <div
-          style={{backgroundColor: color.body}}
-        >
-          <p
-            style={{
-              marginLeft: pinSize,
-              marginRight: pinSize,
-              pointerEvents: 'none'
-            }}
-          >
-            {text}
-          </p>
-        </div>
-      </foreignObject>
-    )
-    */
-
     // Heuristic value, based on Courier font.
     const margin = fontSize * 0.2
 
@@ -70,6 +33,11 @@ class Node extends Component {
 
   render () {
     const {
+      createInputPin,
+      createOutputPin,
+      deleteInputPin,
+      deleteNode,
+      deleteOutputPin,
       dragged,
       draggedLinkId,
       fontSize,
@@ -108,7 +76,6 @@ class Node extends Component {
 
     return (
       <g
-        onClick={ignoreEvent}
         onDoubleClick={ignoreEvent}
         onMouseDown={willDragNode}
         onMouseUp={selectNode}
@@ -117,6 +84,46 @@ class Node extends Component {
         }}
         transform={`translate(${x},${y})`}
       >
+        {selected ? (
+          <path
+            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+            fill={highlightColor}
+            transform={`translate(${pinSize / 2},${pinSize / 2}) rotate(45) translate(${-3 * pinSize / 2},${pinSize / 2})`}
+            onMouseDown={() => deleteNode(id)}
+          />
+        ) : null}
+        {selected ? (
+          <path
+            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+            transform={`translate(${computedWidth + 2},0)`}
+            onMouseDown={() => deleteInputPin(id)}
+            fill={highlightColor}
+          />
+        ) : null}
+        {selected ? (
+          <path
+            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+            transform={`translate(${computedWidth + 4 + pinSize},0)`}
+            onMouseDown={() => createInputPin(id)}
+            fill={highlightColor}
+          />
+        ) : null}
+        {selected ? (
+          <path
+            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+            transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
+            onMouseDown={() => deleteOutputPin(id)}
+            fill={highlightColor}
+          />
+        ) : null}
+        {selected ? (
+          <path
+            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+            transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
+            onMouseDown={() => createOutputPin(id)}
+            fill={highlightColor}
+          />
+        ) : null}
         <rect
           fillOpacity={0}
           height={bodyHeight + 2 * pinSize}
@@ -130,15 +137,7 @@ class Node extends Component {
           width={computedWidth}
         />
         {ins.map((pin, i, array) => {
-          // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           const x = xOfPin(pinSize, computedWidth, array.length, i)
-
-          // TODO
-          // const onMouseDown = (e) => {
-          //   e.preventDefault()
-          //   e.stopPropagation()
-          //   onCreateLink({ from: null, to: [ id, i ] })
-          // }
 
           const onMouseUp = (e) => {
             e.preventDefault()
@@ -198,6 +197,11 @@ class Node extends Component {
 
 Node.propTypes = {
   bodyHeight: PropTypes.number,
+  createInputPin: PropTypes.func.isRequired,
+  createOutputPin: PropTypes.func.isRequired,
+  deleteInputPin: PropTypes.func.isRequired,
+  deleteNode: PropTypes.func.isRequired,
+  deleteOutputPin: PropTypes.func.isRequired,
   dragged: PropTypes.bool.isRequired,
   draggedLinkId: PropTypes.string,
   fontSize: PropTypes.number.isRequired,
@@ -217,6 +221,11 @@ Node.propTypes = {
 }
 
 Node.defaultProps = {
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteNode: Function.prototype,
+  deleteOutputPin: Function.prototype,
   dragged: false, // TODO looks more like a state
   draggedLinkId: null,
   ins: [],

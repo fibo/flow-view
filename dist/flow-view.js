@@ -4115,7 +4115,7 @@ module.exports={
         "spec": ">=0.22.0 <0.23.0",
         "type": "range"
       },
-      "/home/io/github.com/fibo/flow-view"
+      "/Users/gcasati/github.com/fibo/flow-view/node_modules/svgx"
     ]
   ],
   "_from": "cheerio@>=0.22.0 <0.23.0",
@@ -4143,13 +4143,14 @@ module.exports={
     "type": "range"
   },
   "_requiredBy": [
-    "#DEV:/"
+    "#DEV:/",
+    "/svgx"
   ],
   "_resolved": "https://registry.npmjs.org/cheerio/-/cheerio-0.22.0.tgz",
   "_shasum": "a9baa860a3f9b595a6b81b1a86873121ed3a269e",
   "_shrinkwrap": null,
   "_spec": "cheerio@^0.22.0",
-  "_where": "/home/io/github.com/fibo/flow-view",
+  "_where": "/Users/gcasati/github.com/fibo/flow-view/node_modules/svgx",
   "author": {
     "name": "Matt Mueller",
     "email": "mattmuelle@gmail.com",
@@ -32142,6 +32143,17 @@ var fourArgumentPooler = function (a1, a2, a3, a4) {
   }
 };
 
+var fiveArgumentPooler = function (a1, a2, a3, a4, a5) {
+  var Klass = this;
+  if (Klass.instancePool.length) {
+    var instance = Klass.instancePool.pop();
+    Klass.call(instance, a1, a2, a3, a4, a5);
+    return instance;
+  } else {
+    return new Klass(a1, a2, a3, a4, a5);
+  }
+};
+
 var standardReleaser = function (instance) {
   var Klass = this;
   !(instance instanceof Klass) ? "production" !== 'production' ? invariant(false, 'Trying to release an instance into a pool of a different type.') : _prodInvariant('25') : void 0;
@@ -32181,7 +32193,8 @@ var PooledClass = {
   oneArgumentPooler: oneArgumentPooler,
   twoArgumentPooler: twoArgumentPooler,
   threeArgumentPooler: threeArgumentPooler,
-  fourArgumentPooler: fourArgumentPooler
+  fourArgumentPooler: fourArgumentPooler,
+  fiveArgumentPooler: fiveArgumentPooler
 };
 
 module.exports = PooledClass;
@@ -32980,7 +32993,7 @@ var ReactCompositeComponent = {
       // Since plain JS classes are defined without any special initialization
       // logic, we can not catch common errors early. Therefore, we have to
       // catch them here, at initialization time, instead.
-      "production" !== 'production' ? warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved || inst.state, 'getInitialState was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Did you mean to define a state property instead?', this.getName() || 'a component') : void 0;
+      "production" !== 'production' ? warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved, 'getInitialState was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Did you mean to define a state property instead?', this.getName() || 'a component') : void 0;
       "production" !== 'production' ? warning(!inst.getDefaultProps || inst.getDefaultProps.isReactClassApproved, 'getDefaultProps was defined on %s, a plain JavaScript class. ' + 'This is only supported for classes created using React.createClass. ' + 'Use a static property to define defaultProps instead.', this.getName() || 'a component') : void 0;
       "production" !== 'production' ? warning(!inst.propTypes, 'propTypes was defined as an instance property on %s. Use a static ' + 'property to define propTypes instead.', this.getName() || 'a component') : void 0;
       "production" !== 'production' ? warning(!inst.contextTypes, 'contextTypes was defined as an instance property on %s. Use a ' + 'static property to define contextTypes instead.', this.getName() || 'a component') : void 0;
@@ -34442,18 +34455,12 @@ ReactDOMComponent.Mixin = {
     } else {
       var contentToUse = CONTENT_TYPES[typeof props.children] ? props.children : null;
       var childrenToUse = contentToUse != null ? null : props.children;
-      // TODO: Validate that text is allowed as a child of this node
       if (contentToUse != null) {
-        // Avoid setting textContent when the text is empty. In IE11 setting
-        // textContent on a text area will cause the placeholder to not
-        // show within the textarea until it has been focused and blurred again.
-        // https://github.com/facebook/react/issues/6731#issuecomment-254874553
-        if (contentToUse !== '') {
-          if ("production" !== 'production') {
-            setAndValidateContentChildDev.call(this, contentToUse);
-          }
-          DOMLazyTree.queueText(lazyTree, contentToUse);
+        // TODO: Validate that text is allowed as a child of this node
+        if ("production" !== 'production') {
+          setAndValidateContentChildDev.call(this, contentToUse);
         }
+        DOMLazyTree.queueText(lazyTree, contentToUse);
       } else if (childrenToUse != null) {
         var mountImages = this.mountChildren(childrenToUse, transaction, context);
         for (var i = 0; i < mountImages.length; i++) {
@@ -34803,13 +34810,6 @@ var Flags = ReactDOMComponentFlags;
 var internalInstanceKey = '__reactInternalInstance$' + Math.random().toString(36).slice(2);
 
 /**
- * Check if a given node should be cached.
- */
-function shouldPrecacheNode(node, nodeID) {
-  return node.nodeType === 1 && node.getAttribute(ATTR_NAME) === String(nodeID) || node.nodeType === 8 && node.nodeValue === ' react-text: ' + nodeID + ' ' || node.nodeType === 8 && node.nodeValue === ' react-empty: ' + nodeID + ' ';
-}
-
-/**
  * Drill down (through composites and empty components) until we get a host or
  * host text component.
  *
@@ -34874,7 +34874,7 @@ function precacheChildNodes(inst, node) {
     }
     // We assume the child nodes are in the same order as the child instances.
     for (; childNode !== null; childNode = childNode.nextSibling) {
-      if (shouldPrecacheNode(childNode, childID)) {
+      if (childNode.nodeType === 1 && childNode.getAttribute(ATTR_NAME) === String(childID) || childNode.nodeType === 8 && childNode.nodeValue === ' react-text: ' + childID + ' ' || childNode.nodeType === 8 && childNode.nodeValue === ' react-empty: ' + childID + ' ') {
         precacheNode(childInst, childNode);
         continue outer;
       }
@@ -35278,17 +35278,7 @@ var ReactDOMInput = {
       }
     } else {
       if (props.value == null && props.defaultValue != null) {
-        // In Chrome, assigning defaultValue to certain input types triggers input validation.
-        // For number inputs, the display value loses trailing decimal points. For email inputs,
-        // Chrome raises "The specified value <x> is not a valid email address".
-        //
-        // Here we check to see if the defaultValue has actually changed, avoiding these problems
-        // when the user is inputting text
-        //
-        // https://github.com/facebook/react/issues/7253
-        if (node.defaultValue !== '' + props.defaultValue) {
-          node.defaultValue = '' + props.defaultValue;
-        }
+        node.defaultValue = '' + props.defaultValue;
       }
       if (props.checked == null && props.defaultChecked != null) {
         node.defaultChecked = !!props.defaultChecked;
@@ -36397,15 +36387,9 @@ var ReactDOMTextarea = {
     // This is in postMount because we need access to the DOM node, which is not
     // available until after the component has mounted.
     var node = ReactDOMComponentTree.getNodeFromInstance(inst);
-    var textContent = node.textContent;
 
-    // Only set node.value if textContent is equal to the expected
-    // initial value. In IE10/IE11 there is a bug where the placeholder attribute
-    // will populate textContent as well.
-    // https://developer.microsoft.com/microsoft-edge/platform/issues/101525/
-    if (textContent === inst._wrapperState.initialValue) {
-      node.value = textContent;
-    }
+    // Warning: node.value may be the empty string at this point (IE11) if placeholder is set.
+    node.value = node.textContent; // Detach value from defaultValue
   }
 };
 
@@ -37530,11 +37514,14 @@ module.exports = ReactFeatureFlags;
 
 'use strict';
 
-var _prodInvariant = require('./reactProdInvariant');
+var _prodInvariant = require('./reactProdInvariant'),
+    _assign = require('object-assign');
 
 var invariant = require('fbjs/lib/invariant');
 
 var genericComponentClass = null;
+// This registry keeps track of wrapper classes around host tags.
+var tagToComponentClass = {};
 var textComponentClass = null;
 
 var ReactHostComponentInjection = {
@@ -37547,6 +37534,11 @@ var ReactHostComponentInjection = {
   // rendered as props.
   injectTextComponentClass: function (componentClass) {
     textComponentClass = componentClass;
+  },
+  // This accepts a keyed object with classes as values. Each key represents a
+  // tag. That particular tag will use this class instead of the generic one.
+  injectComponentClasses: function (componentClasses) {
+    _assign(tagToComponentClass, componentClasses);
   }
 };
 
@@ -37585,7 +37577,7 @@ var ReactHostComponent = {
 };
 
 module.exports = ReactHostComponent;
-},{"./reactProdInvariant":225,"fbjs/lib/invariant":63}],161:[function(require,module,exports){
+},{"./reactProdInvariant":225,"fbjs/lib/invariant":63,"object-assign":99}],161:[function(require,module,exports){
 /**
  * Copyright 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -40366,7 +40358,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '15.4.2';
+module.exports = '15.4.1';
 },{}],184:[function(require,module,exports){
 /**
  * Copyright 2013-present, Facebook, Inc.
@@ -43375,17 +43367,7 @@ function instantiateReactComponent(node, shouldHaveDebugID) {
     instance = ReactEmptyComponent.create(instantiateReactComponent);
   } else if (typeof node === 'object') {
     var element = node;
-    var type = element.type;
-    if (typeof type !== 'function' && typeof type !== 'string') {
-      var info = '';
-      if ("production" !== 'production') {
-        if (type === undefined || typeof type === 'object' && type !== null && Object.keys(type).length === 0) {
-          info += ' You likely forgot to export your component from the file ' + 'it\'s defined in.';
-        }
-      }
-      info += getDeclarationErrorAddendum(element._owner);
-      !false ? "production" !== 'production' ? invariant(false, 'Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s', type == null ? type : typeof type, info) : _prodInvariant('130', type == null ? type : typeof type, info) : void 0;
-    }
+    !(element && (typeof element.type === 'function' || typeof element.type === 'string')) ? "production" !== 'production' ? invariant(false, 'Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s', element.type == null ? element.type : typeof element.type, getDeclarationErrorAddendum(element._owner)) : _prodInvariant('130', element.type == null ? element.type : typeof element.type, getDeclarationErrorAddendum(element._owner)) : void 0;
 
     // Special case string values
     if (typeof element.type === 'string') {
@@ -46544,14 +46526,7 @@ var ReactElementValidator = {
     // We warn in this case but don't throw. We expect the element creation to
     // succeed and there will likely be errors in render.
     if (!validType) {
-      if (typeof type !== 'function' && typeof type !== 'string') {
-        var info = '';
-        if (type === undefined || typeof type === 'object' && type !== null && Object.keys(type).length === 0) {
-          info += ' You likely forgot to export your component from the file ' + 'it\'s defined in.';
-        }
-        info += getDeclarationErrorAddendum();
-        "production" !== 'production' ? warning(false, 'React.createElement: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', type == null ? type : typeof type, info) : void 0;
-      }
+      "production" !== 'production' ? warning(false, 'React.createElement: type should not be null, undefined, boolean, or ' + 'number. It should be a string (for DOM elements) or a ReactClass ' + '(for composite components).%s', getDeclarationErrorAddendum()) : void 0;
     }
 
     var element = ReactElement.createElement.apply(this, arguments);
@@ -49797,7 +49772,7 @@ function base64DetectIncompleteChar(buffer) {
 
   var doctype = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
   var render = function render(jsx) {
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     var svgx = _server2.default.renderToStaticMarkup(jsx);
 
@@ -49992,12 +49967,11 @@ var Canvas = function (_EventEmitter) {
 
       var defaultItem = _Frame2.default.defaultProps.item;
 
-      var DefaultInspector = defaultItem.inspector.DefaultInspector;
       var DefaultLink = defaultItem.link.DefaultLink;
       var DefaultNode = defaultItem.node.DefaultNode;
       var typeOfNode = defaultItem.util.typeOfNode;
 
-      var item = Object.assign({}, { inspector: { DefaultInspector: DefaultInspector } }, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
+      var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
 
       var height = view.height;
       var width = view.width;
@@ -50198,7 +50172,7 @@ var Canvas = function (_EventEmitter) {
 
 exports.default = Canvas;
 
-},{"./components/Frame":274,"./utils/randomString":283,"events":47,"not-defined":95,"react":257,"react-dom":102,"svgx":271}],274:[function(require,module,exports){
+},{"./components/Frame":274,"./utils/randomString":282,"events":47,"not-defined":95,"react":257,"react-dom":102,"svgx":271}],274:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -50216,10 +50190,6 @@ var _reactDom = require('react-dom');
 var _computeNodeWidth = require('../utils/computeNodeWidth');
 
 var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
-
-var _Inspector = require('./Inspector');
-
-var _Inspector2 = _interopRequireDefault(_Inspector);
 
 var _Link = require('./Link');
 
@@ -50322,18 +50292,17 @@ var Frame = function (_Component) {
 
       var _props = this.props,
           createInputPin = _props.createInputPin,
-          createOutputPin = _props.createOutputPin,
           createLink = _props.createLink,
           _createNode = _props.createNode,
-          deleteLink = _props.deleteLink,
+          createOutputPin = _props.createOutputPin,
           deleteInputPin = _props.deleteInputPin,
+          deleteLink = _props.deleteLink,
           deleteNode = _props.deleteNode,
           deleteOutputPin = _props.deleteOutputPin,
           dragItems = _props.dragItems,
           fontSize = _props.fontSize,
           item = _props.item,
           model = _props.model,
-          _renameNode = _props.renameNode,
           theme = _props.theme,
           updateLink = _props.updateLink,
           view = _props.view;
@@ -50343,7 +50312,6 @@ var Frame = function (_Component) {
           pointer = _state.pointer,
           dynamicView = _state.dynamicView,
           selectedItems = _state.selectedItems,
-          selectionBoundingBox = _state.selectionBoundingBox,
           showSelector = _state.showSelector;
       var frameBorder = theme.frameBorder,
           fontFamily = theme.fontFamily,
@@ -50357,7 +50325,6 @@ var Frame = function (_Component) {
 
       var typeOfNode = item.util.typeOfNode;
 
-      var Inspector = item.inspector.DefaultInspector;
       var Link = item.link.DefaultLink;
 
       var setState = this.setState.bind(this);
@@ -50696,10 +50663,14 @@ var Frame = function (_Component) {
           var nodeType = typeOfNode(node);
           var Node = item.node[nodeType];
 
-          return _react2.default.createElement(Node, {
-            key: i,
+          return _react2.default.createElement(Node, { key: i,
+            createInputPin: createInputPin,
+            createOutputPin: createOutputPin,
             dragged: draggedItems.indexOf(id) > -1,
             draggedLinkId: draggedLinkId,
+            deleteInputPin: deleteInputPin,
+            deleteNode: deleteNode,
+            deleteOutputPin: deleteOutputPin,
             fontSize: fontSize,
             height: height,
             id: id,
@@ -50743,23 +50714,6 @@ var Frame = function (_Component) {
             y2: coord.y2
           });
         }),
-        _react2.default.createElement(Inspector, {
-          createInputPin: createInputPin,
-          createOutputPin: createOutputPin,
-          deleteLink: deleteLink,
-          deleteNode: deleteNode,
-          deleteInputPin: deleteInputPin,
-          deleteOutputPin: deleteOutputPin,
-          items: Object.assign([], selectedItems),
-          renameNode: function renameNode(nodeId, text) {
-            _renameNode(nodeId, text);
-
-            setState({ whenUpdated: getTime() });
-          },
-          view: view,
-          x: selectionBoundingBox ? selectionBoundingBox.x2 : 0,
-          y: selectionBoundingBox ? selectionBoundingBox.y1 : 0
-        }),
         _react2.default.createElement(_Selector2.default, {
           createNode: function createNode(node) {
             var id = _createNode(node);
@@ -50792,14 +50746,12 @@ Frame.propTypes = {
   dragItems: _react.PropTypes.func.isRequired,
   fontSize: _react.PropTypes.number.isRequired,
   item: _react.PropTypes.shape({
-    inspector: _react.PropTypes.object.isRequired,
     link: _react.PropTypes.object.isRequired,
     node: _react.PropTypes.object.isRequired,
     util: _react.PropTypes.shape({
       typeOfNode: _react.PropTypes.func.isRequired
     })
   }).isRequired,
-  renameNode: _react.PropTypes.func.isRequired,
   theme: _theme2.default.propTypes,
   updateLink: _react.PropTypes.func.isRequired,
   view: _react.PropTypes.shape({
@@ -50811,18 +50763,17 @@ Frame.propTypes = {
 };
 
 Frame.defaultProps = {
-  createInputPin: Function.prototype,
-  createOutputPin: Function.prototype,
   createLink: Function.prototype,
   createNode: Function.prototype,
-  deleteLink: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   deleteInputPin: Function.prototype,
+  deleteLink: Function.prototype,
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
-    inspector: { DefaultInspector: _Inspector2.default },
     link: { DefaultLink: _Link2.default },
     node: { DefaultNode: _Node2.default },
     util: {
@@ -50831,7 +50782,6 @@ Frame.defaultProps = {
       }
     }
   },
-  renameNode: Function.prototype,
   theme: _theme2.default.defaultProps,
   updateLink: Function.prototype,
   view: {
@@ -50842,341 +50792,7 @@ Frame.defaultProps = {
 
 exports.default = Frame;
 
-},{"../utils/computeNodeWidth":281,"../utils/ignoreEvent":282,"../utils/xOfPin":284,"./Inspector":275,"./Link":276,"./Node":277,"./Selector":278,"./theme":280,"react":257,"react-dom":102}],275:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _ignoreEvent = require('../utils/ignoreEvent');
-
-var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var pinButtonStyle = {
-  borderRadius: '50%'
-};
-
-var deleteItemButtonStyle = {
-  borderRadius: '2px'
-};
-
-var Inspector = function (_Component) {
-  _inherits(Inspector, _Component);
-
-  function Inspector(props) {
-    _classCallCheck(this, Inspector);
-
-    var _this = _possibleConstructorReturn(this, (Inspector.__proto__ || Object.getPrototypeOf(Inspector)).call(this, props));
-
-    _this.state = { newNodeText: null };
-    return _this;
-  }
-
-  _createClass(Inspector, [{
-    key: 'render',
-    value: function render() {
-      var _props = this.props,
-          items = _props.items,
-          view = _props.view,
-          width = _props.width,
-          x = _props.x,
-          y = _props.y;
-
-      // TODO implement multiple item selection.
-
-      var item = null;
-      var itemId = null;
-
-      if (items.length === 1) {
-        itemId = items[0];
-
-        var link = view.link[itemId];
-        var node = view.node[itemId];
-
-        if (link) {
-          item = this.renderLink(itemId, link);
-        }
-
-        if (node) {
-          item = this.renderNode(itemId, node);
-        }
-      }
-
-      return _react2.default.createElement(
-        'foreignObject',
-        {
-          onClick: function onClick() {
-            // Remove focus from input.
-            document.activeElement.blur();
-          },
-          onDoubleClick: _ignoreEvent2.default,
-          onMouseDown: _ignoreEvent2.default,
-          onMouseUp: _ignoreEvent2.default,
-          width: width,
-          x: x,
-          y: y
-        },
-        item
-      );
-    }
-  }, {
-    key: 'renderLink',
-    value: function renderLink(linkId, link) {
-      var deleteLink = this.props.deleteLink;
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        'link',
-        _react2.default.createElement(
-          'button',
-          {
-            onClick: function onClick() {
-              deleteLink(linkId);
-            },
-            style: deleteItemButtonStyle
-          },
-          'delete link'
-        )
-      );
-    }
-  }, {
-    key: 'renderInsControls',
-    value: function renderInsControls(nodeId, node) {
-      var _props2 = this.props,
-          createInputPin = _props2.createInputPin,
-          deleteInputPin = _props2.deleteInputPin,
-          view = _props2.view;
-
-
-      var ins = node.ins || [];
-      var lastInputPosition = ins.length - 1;
-      var lastInputIsConnected = false;
-
-      Object.keys(view.link).forEach(function (linkId) {
-        var link = view.link[linkId];
-
-        if (link.to && link.to[0] === nodeId && link.to[1] === lastInputPosition) {
-          lastInputIsConnected = true;
-        }
-      });
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        'ins',
-        _react2.default.createElement(
-          'button',
-          {
-            disabled: ins.length === 0 || lastInputIsConnected,
-            onClick: function onClick() {
-              deleteInputPin(nodeId);
-            },
-            style: pinButtonStyle
-          },
-          '-'
-        ),
-        _react2.default.createElement(
-          'button',
-          {
-            onClick: function onClick() {
-              createInputPin(nodeId);
-            },
-            style: pinButtonStyle
-          },
-          '+'
-        )
-      );
-    }
-  }, {
-    key: 'renderOutsControls',
-    value: function renderOutsControls(nodeId, node) {
-      var _props3 = this.props,
-          createOutputPin = _props3.createOutputPin,
-          deleteOutputPin = _props3.deleteOutputPin,
-          view = _props3.view;
-
-
-      var outs = node.outs || [];
-      var lastOutputPosition = outs.length - 1;
-      var lastOutputIsConnected = false;
-
-      Object.keys(view.link).forEach(function (linkId) {
-        var link = view.link[linkId];
-
-        if (link.from[0] === nodeId && link.from[1] === lastOutputPosition) {
-          lastOutputIsConnected = true;
-        }
-      });
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        'outs',
-        _react2.default.createElement(
-          'button',
-          {
-            disabled: outs.length === 0 || lastOutputIsConnected,
-            onClick: function onClick() {
-              deleteOutputPin(nodeId);
-            },
-            style: pinButtonStyle
-          },
-          '-'
-        ),
-        _react2.default.createElement(
-          'button',
-          {
-            onClick: function onClick() {
-              createOutputPin(nodeId);
-            },
-            style: pinButtonStyle
-          },
-          '+'
-        )
-      );
-    }
-  }, {
-    key: 'renderNode',
-    value: function renderNode(nodeId, node) {
-      var _props4 = this.props,
-          deleteNode = _props4.deleteNode,
-          renameNode = _props4.renameNode;
-
-
-      var setState = this.setState.bind(this);
-
-      var newNodeText = this.state.newNodeText;
-
-      var nodeText = newNodeText || node.text;
-
-      var onChange = function onChange(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var text = e.target.value;
-
-        setState({ newNodeText: text });
-      };
-
-      var onKeyPress = function onKeyPress(e) {
-        var text = nodeText.trim();
-
-        var pressedEnter = e.key === 'Enter';
-        var textIsNotBlank = text.length > 0;
-
-        if (pressedEnter && textIsNotBlank) {
-          setState({ newNodeText: null });
-
-          renameNode(nodeId, text);
-        }
-      };
-
-      var getFocus = function getFocus(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        e.target.focus();
-      };
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'label',
-          {
-            htmlFor: 'name'
-          },
-          'node'
-        ),
-        _react2.default.createElement('input', {
-          type: 'text',
-          onBlur: function onBlur() {
-            var text = nodeText.trim();
-
-            var textIsNotBlank = text.length > 0;
-
-            if (textIsNotBlank) {
-              renameNode(nodeId, text);
-            }
-
-            setState({ newNodeText: text });
-          },
-          onChange: onChange,
-          onClick: getFocus,
-          onKeyPress: onKeyPress,
-          value: nodeText,
-          style: { outline: 'none' }
-        }),
-        this.renderInsControls(nodeId, node),
-        this.renderOutsControls(nodeId, node),
-        _react2.default.createElement(
-          'button',
-          {
-            onClick: function onClick() {
-              deleteNode(nodeId);
-            },
-            style: deleteItemButtonStyle
-          },
-          'delete node'
-        )
-      );
-    }
-  }]);
-
-  return Inspector;
-}(_react.Component);
-
-Inspector.propTypes = {
-  createInputPin: _react.PropTypes.func.isRequired,
-  createOutputPin: _react.PropTypes.func.isRequired,
-  deleteLink: _react.PropTypes.func.isRequired,
-  deleteNode: _react.PropTypes.func.isRequired,
-  deleteInputPin: _react.PropTypes.func.isRequired,
-  deleteOutputPin: _react.PropTypes.func.isRequired,
-  items: _react.PropTypes.array.isRequired,
-  renameNode: _react.PropTypes.func.isRequired,
-  view: _react.PropTypes.shape({
-    link: _react.PropTypes.object.isRequired,
-    node: _react.PropTypes.object.isRequired
-  }).isRequired,
-  width: _react.PropTypes.number.isRequired,
-  x: _react.PropTypes.number.isRequired,
-  y: _react.PropTypes.number.isRequired
-};
-
-Inspector.defaultProps = {
-  createInputPin: Function.prototype,
-  createOutputPin: Function.prototype,
-  deleteLink: Function.prototype,
-  deleteNode: Function.prototype,
-  items: [],
-  deleteInputPin: Function.prototype,
-  deleteOutputPin: Function.prototype,
-  renameNode: Function.prototype,
-  width: 200,
-  x: 0,
-  y: 0
-};
-
-exports.default = Inspector;
-
-},{"../utils/ignoreEvent":282,"react":257}],276:[function(require,module,exports){
+},{"../utils/computeNodeWidth":280,"../utils/ignoreEvent":281,"../utils/xOfPin":283,"./Link":275,"./Node":276,"./Selector":277,"./theme":279,"react":257,"react-dom":102}],275:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51324,7 +50940,7 @@ Link.defaultProps = {
 
 exports.default = Link;
 
-},{"../utils/ignoreEvent":282,"./theme":280,"react":257}],277:[function(require,module,exports){
+},{"../utils/ignoreEvent":281,"./theme":279,"react":257}],276:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51382,40 +50998,6 @@ var Node = function (_Component) {
 
       var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
 
-      // TODO place an id in the div wrapping the body and try to
-      // resolve bodyHeight from its content.
-
-      /*
-       TODO The following code works and it is ok for custom nodes.
-       BUT it os not ok for server side rendering cause foreignobject
-          is not supported in image context.
-       return (
-        <foreignObject
-          height={bodyHeight}
-          onClick={ignoreEvent}
-          onDoubleClick={ignoreEvent}
-          onMouseDown={willDragNode}
-          onMouseUp={selectNode}
-          transform={`translate(0,${pinSize})`}
-          width={computedWidth}
-        >
-          <div
-            style={{backgroundColor: color.body}}
-          >
-            <p
-              style={{
-                marginLeft: pinSize,
-                marginRight: pinSize,
-                pointerEvents: 'none'
-              }}
-            >
-              {text}
-            </p>
-          </div>
-        </foreignObject>
-      )
-      */
-
       // Heuristic value, based on Courier font.
       var margin = fontSize * 0.2;
 
@@ -51436,6 +51018,11 @@ var Node = function (_Component) {
     key: 'render',
     value: function render() {
       var _props2 = this.props,
+          createInputPin = _props2.createInputPin,
+          createOutputPin = _props2.createOutputPin,
+          deleteInputPin = _props2.deleteInputPin,
+          deleteNode = _props2.deleteNode,
+          deleteOutputPin = _props2.deleteOutputPin,
           dragged = _props2.dragged,
           draggedLinkId = _props2.draggedLinkId,
           fontSize = _props2.fontSize,
@@ -51472,7 +51059,6 @@ var Node = function (_Component) {
       return _react2.default.createElement(
         'g',
         {
-          onClick: _ignoreEvent2.default,
           onDoubleClick: _ignoreEvent2.default,
           onMouseDown: willDragNode,
           onMouseUp: selectNode,
@@ -51481,6 +51067,46 @@ var Node = function (_Component) {
           },
           transform: 'translate(' + x + ',' + y + ')'
         },
+        selected ? _react2.default.createElement('path', {
+          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+          fill: highlightColor,
+          transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
+          onMouseDown: function onMouseDown() {
+            return deleteNode(id);
+          }
+        }) : null,
+        selected ? _react2.default.createElement('path', {
+          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+          transform: 'translate(' + (computedWidth + 2) + ',0)',
+          onMouseDown: function onMouseDown() {
+            return deleteInputPin(id);
+          },
+          fill: highlightColor
+        }) : null,
+        selected ? _react2.default.createElement('path', {
+          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+          transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)',
+          onMouseDown: function onMouseDown() {
+            return createInputPin(id);
+          },
+          fill: highlightColor
+        }) : null,
+        selected ? _react2.default.createElement('path', {
+          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+          transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')',
+          onMouseDown: function onMouseDown() {
+            return deleteOutputPin(id);
+          },
+          fill: highlightColor
+        }) : null,
+        selected ? _react2.default.createElement('path', {
+          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+          transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')',
+          onMouseDown: function onMouseDown() {
+            return createOutputPin(id);
+          },
+          fill: highlightColor
+        }) : null,
         _react2.default.createElement('rect', {
           fillOpacity: 0,
           height: bodyHeight + 2 * pinSize,
@@ -51494,15 +51120,7 @@ var Node = function (_Component) {
           width: computedWidth
         }),
         ins.map(function (pin, i, array) {
-          // TODO const name = (typeof pin === 'string' ? { name: pin } : pin)
           var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
-
-          // TODO
-          // const onMouseDown = (e) => {
-          //   e.preventDefault()
-          //   e.stopPropagation()
-          //   onCreateLink({ from: null, to: [ id, i ] })
-          // }
 
           var onMouseUp = function onMouseUp(e) {
             e.preventDefault();
@@ -51560,6 +51178,11 @@ var Node = function (_Component) {
 
 Node.propTypes = {
   bodyHeight: _react.PropTypes.number,
+  createInputPin: _react.PropTypes.func.isRequired,
+  createOutputPin: _react.PropTypes.func.isRequired,
+  deleteInputPin: _react.PropTypes.func.isRequired,
+  deleteNode: _react.PropTypes.func.isRequired,
+  deleteOutputPin: _react.PropTypes.func.isRequired,
   dragged: _react.PropTypes.bool.isRequired,
   draggedLinkId: _react.PropTypes.string,
   fontSize: _react.PropTypes.number.isRequired,
@@ -51579,6 +51202,11 @@ Node.propTypes = {
 };
 
 Node.defaultProps = {
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
+  deleteInputPin: Function.prototype,
+  deleteNode: Function.prototype,
+  deleteOutputPin: Function.prototype,
   dragged: false, // TODO looks more like a state
   draggedLinkId: null,
   ins: [],
@@ -51594,7 +51222,7 @@ Node.defaultProps = {
 
 exports.default = Node;
 
-},{"../utils/computeNodeWidth":281,"../utils/ignoreEvent":282,"../utils/xOfPin":284,"./theme":280,"react":257}],278:[function(require,module,exports){
+},{"../utils/computeNodeWidth":280,"../utils/ignoreEvent":281,"../utils/xOfPin":283,"./theme":279,"react":257}],277:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51712,13 +51340,13 @@ Selector.defaultProps = {
 
 exports.default = Selector;
 
-},{"react":257}],279:[function(require,module,exports){
+},{"react":257}],278:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Selector = exports.Node = exports.Link = exports.Inspector = exports.Frame = undefined;
+exports.Selector = exports.Node = exports.Link = exports.Frame = undefined;
 
 var _Frame = require('./Frame');
 
@@ -51732,10 +51360,6 @@ var _Node = require('./Node');
 
 var _Node2 = _interopRequireDefault(_Node);
 
-var _Inspector = require('./Inspector');
-
-var _Inspector2 = _interopRequireDefault(_Inspector);
-
 var _Selector = require('./Selector');
 
 var _Selector2 = _interopRequireDefault(_Selector);
@@ -51743,12 +51367,11 @@ var _Selector2 = _interopRequireDefault(_Selector);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Frame = _Frame2.default;
-exports.Inspector = _Inspector2.default;
 exports.Link = _Link2.default;
 exports.Node = _Node2.default;
 exports.Selector = _Selector2.default;
 
-},{"./Frame":274,"./Inspector":275,"./Link":276,"./Node":277,"./Selector":278}],280:[function(require,module,exports){
+},{"./Frame":274,"./Link":275,"./Node":276,"./Selector":277}],279:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51787,7 +51410,7 @@ exports.default = {
   propTypes: propTypes
 };
 
-},{"react":257}],281:[function(require,module,exports){
+},{"react":257}],280:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51828,7 +51451,7 @@ var computeNodeWidth = function computeNodeWidth(_ref) {
 
 exports.default = computeNodeWidth;
 
-},{}],282:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51841,7 +51464,7 @@ var ignoreEvent = function ignoreEvent(e) {
 
 exports.default = ignoreEvent;
 
-},{}],283:[function(require,module,exports){
+},{}],282:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51866,7 +51489,7 @@ function randomString(length) {
 
 exports.default = randomString;
 
-},{}],284:[function(require,module,exports){
+},{}],283:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51901,4 +51524,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.Canvas = _Canvas2.default;
 exports.components = _components2.default;
 
-},{"./Canvas":273,"./components":279}]},{},[]);
+},{"./Canvas":273,"./components":278}]},{},[]);

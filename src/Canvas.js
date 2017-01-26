@@ -53,13 +53,11 @@ class Canvas extends EventEmitter {
 
     const defaultItem = Frame.defaultProps.item
 
-    const DefaultInspector = defaultItem.inspector.DefaultInspector
     const DefaultLink = defaultItem.link.DefaultLink
     const DefaultNode = defaultItem.node.DefaultNode
     const typeOfNode = defaultItem.util.typeOfNode
 
     const item = Object.assign({},
-      { inspector: { DefaultInspector } },
       { link: { DefaultLink } },
       { node: { DefaultNode } },
       { util: { typeOfNode } },

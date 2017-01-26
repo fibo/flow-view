@@ -36,7 +36,7 @@ The following features are implemented:
 
 * Create nodes and links using a visual interface.
 * SVG server side rendering.
-* Custom items: nodes, links, inspector can be customized using React.
+* Custom items: nodes links can be customized using React.
 * Events are emitted to achieve integration with other packages.
 
 > Let's give Node.js a common visual interface. Use *flow-view*!
@@ -74,8 +74,6 @@ npm install flow-view
 
 * **@param** `{String}` containerId
 * **@param** `{Object}` [item] collection to be customized
-* **@param** `{Object}` [item.inspector]
-* **@param** `{Object}` [item.inspector.DefaultInspector]
 * **@param** `{Object}` [item.link]
 * **@param** `{Object}` [item.link.DefaultLink]
 * **@param** `{Object}` [item.node]
@@ -116,8 +114,8 @@ On server side it generates an SVG output like the one you see on top of this RE
 see [render/serverside.js example][example_render_serverside].
 
 * **@param** `{Object}` *[view]* can be empty
-* **@param** `{Number}` *view.height* defaults to container height
-* **@param** `{Number}` *view.width* defaults to container width
+* **@param** `{Number}` *[view.height]* defaults to container height
+* **@param** `{Number}` *[view.width]* defaults to container width
 * **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
 * **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
 * **@param** `{Object}` *[model]*, can be used for custom items

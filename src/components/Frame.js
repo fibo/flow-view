@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
 import computeNodeWidth from '../utils/computeNodeWidth'
-import DefaultInspector from './Inspector'
 import DefaultLink from './Link'
 import DefaultNode from './Node'
 import theme from './theme'
@@ -67,18 +66,17 @@ class Frame extends Component {
   render () {
     const {
       createInputPin,
-      createOutputPin,
       createLink,
       createNode,
-      deleteLink,
+      createOutputPin,
       deleteInputPin,
+      deleteLink,
       deleteNode,
       deleteOutputPin,
       dragItems,
       fontSize,
       item,
       model,
-      renameNode,
       theme,
       updateLink,
       view
@@ -90,7 +88,6 @@ class Frame extends Component {
       pointer,
       dynamicView,
       selectedItems,
-      selectionBoundingBox,
       showSelector
     } = this.state
 
@@ -107,7 +104,6 @@ class Frame extends Component {
 
     const typeOfNode = item.util.typeOfNode
 
-    const Inspector = item.inspector.DefaultInspector
     const Link = item.link.DefaultLink
 
     const setState = this.setState.bind(this)
@@ -436,10 +432,14 @@ class Frame extends Component {
           const Node = item.node[nodeType]
 
           return (
-            <Node
-              key={i}
+            <Node key={i}
+              createInputPin={createInputPin}
+              createOutputPin={createOutputPin}
               dragged={(draggedItems.indexOf(id) > -1)}
               draggedLinkId={draggedLinkId}
+              deleteInputPin={deleteInputPin}
+              deleteNode={deleteNode}
+              deleteOutputPin={deleteOutputPin}
               fontSize={fontSize}
               height={height}
               id={id}
@@ -486,23 +486,6 @@ class Frame extends Component {
             />
           )
         })}
-        <Inspector
-          createInputPin={createInputPin}
-          createOutputPin={createOutputPin}
-          deleteLink={deleteLink}
-          deleteNode={deleteNode}
-          deleteInputPin={deleteInputPin}
-          deleteOutputPin={deleteOutputPin}
-          items={(Object.assign([], selectedItems))}
-          renameNode={(nodeId, text) => {
-            renameNode(nodeId, text)
-
-            setState({ whenUpdated: getTime() })
-          }}
-          view={view}
-          x={selectionBoundingBox ? selectionBoundingBox.x2 : 0}
-          y={selectionBoundingBox ? selectionBoundingBox.y1 : 0}
-        />
         <Selector
           createNode={(node) => {
             const id = createNode(node)
@@ -533,14 +516,12 @@ Frame.propTypes = {
   dragItems: PropTypes.func.isRequired,
   fontSize: PropTypes.number.isRequired,
   item: PropTypes.shape({
-    inspector: PropTypes.object.isRequired,
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired,
     util: PropTypes.shape({
       typeOfNode: PropTypes.func.isRequired
     })
   }).isRequired,
-  renameNode: PropTypes.func.isRequired,
   theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
@@ -552,18 +533,17 @@ Frame.propTypes = {
 }
 
 Frame.defaultProps = {
-  createInputPin: Function.prototype,
-  createOutputPin: Function.prototype,
   createLink: Function.prototype,
   createNode: Function.prototype,
-  deleteLink: Function.prototype,
+  createInputPin: Function.prototype,
+  createOutputPin: Function.prototype,
   deleteInputPin: Function.prototype,
+  deleteLink: Function.prototype,
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
-    inspector: { DefaultInspector },
     link: { DefaultLink },
     node: { DefaultNode },
     util: {
@@ -572,7 +552,6 @@ Frame.defaultProps = {
       }
     }
   },
-  renameNode: Function.prototype,
   theme: theme.defaultProps,
   updateLink: Function.prototype,
   view: {

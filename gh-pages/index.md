@@ -151,19 +151,17 @@ canvas.render({
 
 ### Theme
 
-Theme is a prop which defaults to
+Theme is a prop object with the following attributes
 
-```javascript
-  fontFamily: 'Courier',
-  frameBorder: '1px solid black',
-  highlightColor: 'lightsteelblue',
-  lineWidth: 3,
-  linkColor: 'gray',
-  nodeBarColor: 'lightgray',
-  nodeBodyHeight: 20,
-  pinColor: 'darkgray',
-  pinSize: 10
-```
+* fontFamily
+* frameBorder
+* highlightColor
+* lineWidth
+* linkColor
+* nodeBarColor
+* nodeBodyHeight
+* pinColor
+* pinSize
 
 ### Events
 

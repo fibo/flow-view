@@ -1,16 +1,32 @@
 import { PropTypes } from 'react'
 
+/*
+
+Palette from https://www.materialpalette.com/lime/grey
+
+Thanks to Tania and Lucilla.
+
+dark primary color #AFB42B
+primary color #CDDC39
+light primary color #F0F4C3
+
+accent color #9E9E9E
+primary text #212121
+secondary text #757575
+
+text / icons #212121
+divider color #BDBDBD
+*/
+
 const defaultProps = {
   fontFamily: 'Courier',
-  frameBorder: '1px solid black',
-  highlightColor: 'lightsteelblue',
+  frameBorder: '1px solid #F0F4C3',
+  highlightColor: '#CDDC39',
   lineWidth: 3,
-  linkColor: 'gray',
-  nodeBarColor: 'lightgray',
+  linkColor: '#757575',
+  nodeBarColor: '#BDBDBD',
   nodeBodyHeight: 20,
-  pinColor: 'darkgray', // Ahahah darkgray is not darker than gray!
-                        // Actually we have
-                        // lightgray < darkgray < gray
+  pinColor: '#9E9E9E',
   pinSize: 10
 }
 

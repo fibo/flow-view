@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', '../utils/computeNodeWidth', './Inspector', './Link', './Node', './theme', '../utils/ignoreEvent', '../utils/xOfPin', './Selector'], factory);
+    define(['module', 'exports', 'react', 'react-dom', '../utils/computeNodeWidth', './Link', './Node', './theme', '../utils/ignoreEvent', '../utils/xOfPin', './Selector'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('../utils/computeNodeWidth'), require('./Inspector'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('./Selector'));
+    factory(module, exports, require('react'), require('react-dom'), require('../utils/computeNodeWidth'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('./Selector'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Inspector, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
+    factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
     global.Frame = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Inspector, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
+})(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -20,8 +20,6 @@
   var _react2 = _interopRequireDefault(_react);
 
   var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
-
-  var _Inspector2 = _interopRequireDefault(_Inspector);
 
   var _Link2 = _interopRequireDefault(_Link);
 
@@ -158,18 +156,17 @@
 
         var _props = this.props,
             createInputPin = _props.createInputPin,
-            createOutputPin = _props.createOutputPin,
             createLink = _props.createLink,
             _createNode = _props.createNode,
-            deleteLink = _props.deleteLink,
+            createOutputPin = _props.createOutputPin,
             deleteInputPin = _props.deleteInputPin,
+            deleteLink = _props.deleteLink,
             deleteNode = _props.deleteNode,
             deleteOutputPin = _props.deleteOutputPin,
             dragItems = _props.dragItems,
             fontSize = _props.fontSize,
             item = _props.item,
             model = _props.model,
-            _renameNode = _props.renameNode,
             theme = _props.theme,
             updateLink = _props.updateLink,
             view = _props.view;
@@ -179,7 +176,6 @@
             pointer = _state.pointer,
             dynamicView = _state.dynamicView,
             selectedItems = _state.selectedItems,
-            selectionBoundingBox = _state.selectionBoundingBox,
             showSelector = _state.showSelector;
         var frameBorder = theme.frameBorder,
             fontFamily = theme.fontFamily,
@@ -193,7 +189,6 @@
 
         var typeOfNode = item.util.typeOfNode;
 
-        var Inspector = item.inspector.DefaultInspector;
         var Link = item.link.DefaultLink;
 
         var setState = this.setState.bind(this);
@@ -532,10 +527,14 @@
             var nodeType = typeOfNode(node);
             var Node = item.node[nodeType];
 
-            return _react2.default.createElement(Node, {
-              key: i,
+            return _react2.default.createElement(Node, { key: i,
+              createInputPin: createInputPin,
+              createOutputPin: createOutputPin,
               dragged: draggedItems.indexOf(id) > -1,
               draggedLinkId: draggedLinkId,
+              deleteInputPin: deleteInputPin,
+              deleteNode: deleteNode,
+              deleteOutputPin: deleteOutputPin,
               fontSize: fontSize,
               height: height,
               id: id,
@@ -579,23 +578,6 @@
               y2: coord.y2
             });
           }),
-          _react2.default.createElement(Inspector, {
-            createInputPin: createInputPin,
-            createOutputPin: createOutputPin,
-            deleteLink: deleteLink,
-            deleteNode: deleteNode,
-            deleteInputPin: deleteInputPin,
-            deleteOutputPin: deleteOutputPin,
-            items: Object.assign([], selectedItems),
-            renameNode: function renameNode(nodeId, text) {
-              _renameNode(nodeId, text);
-
-              setState({ whenUpdated: getTime() });
-            },
-            view: view,
-            x: selectionBoundingBox ? selectionBoundingBox.x2 : 0,
-            y: selectionBoundingBox ? selectionBoundingBox.y1 : 0
-          }),
           _react2.default.createElement(_Selector2.default, {
             createNode: function createNode(node) {
               var id = _createNode(node);
@@ -628,14 +610,12 @@
     dragItems: _react.PropTypes.func.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     item: _react.PropTypes.shape({
-      inspector: _react.PropTypes.object.isRequired,
       link: _react.PropTypes.object.isRequired,
       node: _react.PropTypes.object.isRequired,
       util: _react.PropTypes.shape({
         typeOfNode: _react.PropTypes.func.isRequired
       })
     }).isRequired,
-    renameNode: _react.PropTypes.func.isRequired,
     theme: _theme2.default.propTypes,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
@@ -647,18 +627,17 @@
   };
 
   Frame.defaultProps = {
-    createInputPin: Function.prototype,
-    createOutputPin: Function.prototype,
     createLink: Function.prototype,
     createNode: Function.prototype,
-    deleteLink: Function.prototype,
+    createInputPin: Function.prototype,
+    createOutputPin: Function.prototype,
     deleteInputPin: Function.prototype,
+    deleteLink: Function.prototype,
     deleteNode: Function.prototype,
     deleteOutputPin: Function.prototype,
     dragItems: Function.prototype,
     fontSize: 17, // FIXME fontSize seems to be ignored
     item: {
-      inspector: { DefaultInspector: _Inspector2.default },
       link: { DefaultLink: _Link2.default },
       node: { DefaultNode: _Node2.default },
       util: {
@@ -667,7 +646,6 @@
         }
       }
     },
-    renameNode: Function.prototype,
     theme: _theme2.default.defaultProps,
     updateLink: Function.prototype,
     view: {

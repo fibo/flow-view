@@ -27,9 +27,13 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.11.0] - 2017-01-26
+
 ### Changed
 
 - Inspector removed, interface looks better now.
+- New color palette, interface looks worse now ;)
+- Update deps.
 
 ## [v2.10.1] - 2017-01-14
 

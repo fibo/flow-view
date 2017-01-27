@@ -16,7 +16,7 @@ class Node extends Component {
       pinSize
     } = theme
 
-    const bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight
+    const bodyHeight = this.getBodyHeight()
 
     // Heuristic value, based on Courier font.
     const margin = fontSize * 0.2
@@ -31,26 +31,177 @@ class Node extends Component {
     )
   }
 
-  render () {
+  getBodyHeight () {
+    const {
+      bodyHeight,
+      theme
+    } = this.props
+
+    return bodyHeight || theme.nodeBodyHeight
+  }
+
+  getComputedWidth () {
+    const {
+      fontSize,
+      ins,
+      outs,
+      text,
+      theme,
+      width
+    } = this.props
+
+    const { pinSize } = theme
+
+    const bodyHeight = this.getBodyHeight()
+
+    const computedWidth = computeNodeWidth({
+      bodyHeight,
+      pinSize,
+      fontSize,
+      node: { ins, outs, text, width }
+    })
+
+    return computedWidth
+  }
+
+  getDeleteButton () {
+    const {
+      deleteNode,
+      id,
+      theme
+    } = this.props
+
+    const {
+      highlightColor,
+      pinSize
+    } = theme
+
+    return (
+      <path
+        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+        fill={highlightColor}
+        transform={`translate(${pinSize / 2},${pinSize / 2}) rotate(45) translate(${-3 * pinSize / 2},${pinSize / 2})`}
+        onMouseDown={() => deleteNode(id)}
+      />
+    )
+  }
+
+  getInputMinus () {
+    const {
+      deleteInputPin,
+      id,
+      ins,
+      theme
+    } = this.props
+
+    const {
+      highlightColor,
+      pinSize
+    } = theme
+
+    if (ins.length === 0) return null
+
+    const computedWidth = this.getComputedWidth()
+
+    return (
+      <path
+        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+        transform={`translate(${computedWidth + 2},0)`}
+        onMouseDown={() => deleteInputPin(id)}
+        fill={highlightColor}
+      />
+    )
+  }
+
+  getInputPlus () {
     const {
       createInputPin,
-      createOutputPin,
-      deleteInputPin,
-      deleteNode,
+      id,
+      theme
+    } = this.props
+
+    const {
+      highlightColor,
+      pinSize
+    } = theme
+
+    const computedWidth = this.getComputedWidth()
+
+    return (
+      <path
+        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+        transform={`translate(${computedWidth + 4 + pinSize},0)`}
+        onMouseDown={() => createInputPin(id)}
+        fill={highlightColor}
+      />
+    )
+  }
+
+  getOutputMinus () {
+    const {
       deleteOutputPin,
+      id,
+      outs,
+      theme
+    } = this.props
+
+    if (outs.length === 0) return null
+
+    const {
+      highlightColor,
+      pinSize
+    } = theme
+
+    const bodyHeight = this.getBodyHeight()
+    const computedWidth = this.getComputedWidth()
+
+    return (
+      <path
+        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+        transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
+        onMouseDown={() => deleteOutputPin(id)}
+        fill={highlightColor}
+      />
+    )
+  }
+
+  getOutputPlus () {
+    const {
+      createOutputPin,
+      id,
+      theme
+    } = this.props
+
+    const {
+      highlightColor,
+      pinSize
+    } = theme
+
+    const bodyHeight = this.getBodyHeight()
+    const computedWidth = this.getComputedWidth()
+
+    return (
+      <path
+        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
+        transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
+        onMouseDown={() => createOutputPin(id)}
+        fill={highlightColor}
+      />
+    )
+  }
+
+  render () {
+    const {
       dragged,
       draggedLinkId,
-      fontSize,
       id,
       ins,
       onCreateLink,
       outs,
       selected,
       selectNode,
-      text,
       theme,
       updateLink,
-      width,
       willDragNode,
       x,
       y
@@ -63,16 +214,9 @@ class Node extends Component {
       pinSize
     } = theme
 
-    const bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight
-
     const bodyContent = this.getBody()
-
-    const computedWidth = computeNodeWidth({
-      bodyHeight,
-      pinSize,
-      fontSize,
-      node: { ins, outs, text, width }
-    })
+    const bodyHeight = this.getBodyHeight()
+    const computedWidth = this.getComputedWidth()
 
     return (
       <g
@@ -84,46 +228,11 @@ class Node extends Component {
         }}
         transform={`translate(${x},${y})`}
       >
-        {selected ? (
-          <path
-            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-            fill={highlightColor}
-            transform={`translate(${pinSize / 2},${pinSize / 2}) rotate(45) translate(${-3 * pinSize / 2},${pinSize / 2})`}
-            onMouseDown={() => deleteNode(id)}
-          />
-        ) : null}
-        {selected ? (
-          <path
-            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
-            transform={`translate(${computedWidth + 2},0)`}
-            onMouseDown={() => deleteInputPin(id)}
-            fill={highlightColor}
-          />
-        ) : null}
-        {selected ? (
-          <path
-            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-            transform={`translate(${computedWidth + 4 + pinSize},0)`}
-            onMouseDown={() => createInputPin(id)}
-            fill={highlightColor}
-          />
-        ) : null}
-        {selected ? (
-          <path
-            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
-            transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
-            onMouseDown={() => deleteOutputPin(id)}
-            fill={highlightColor}
-          />
-        ) : null}
-        {selected ? (
-          <path
-            d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-            transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
-            onMouseDown={() => createOutputPin(id)}
-            fill={highlightColor}
-          />
-        ) : null}
+        {selected ? this.getDeleteButton() : null}
+        {selected ? this.getInputMinus() : null}
+        {selected ? this.getInputPlus() : null}
+        {selected ? this.getOutputMinus() : null}
+        {selected ? this.getOutputPlus() : null}
         <rect
           fillOpacity={0}
           height={bodyHeight + 2 * pinSize}

@@ -51022,7 +51022,7 @@ var Node = function (_Component) {
       var pinSize = theme.pinSize;
 
 
-      var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
+      var bodyHeight = this.getBodyHeight();
 
       // Heuristic value, based on Courier font.
       var margin = fontSize * 0.2;
@@ -51041,39 +51041,29 @@ var Node = function (_Component) {
       );
     }
   }, {
-    key: 'render',
-    value: function render() {
+    key: 'getBodyHeight',
+    value: function getBodyHeight() {
       var _props2 = this.props,
-          createInputPin = _props2.createInputPin,
-          createOutputPin = _props2.createOutputPin,
-          deleteInputPin = _props2.deleteInputPin,
-          deleteNode = _props2.deleteNode,
-          deleteOutputPin = _props2.deleteOutputPin,
-          dragged = _props2.dragged,
-          draggedLinkId = _props2.draggedLinkId,
-          fontSize = _props2.fontSize,
-          id = _props2.id,
-          ins = _props2.ins,
-          onCreateLink = _props2.onCreateLink,
-          outs = _props2.outs,
-          selected = _props2.selected,
-          selectNode = _props2.selectNode,
-          text = _props2.text,
-          theme = _props2.theme,
-          updateLink = _props2.updateLink,
-          width = _props2.width,
-          willDragNode = _props2.willDragNode,
-          x = _props2.x,
-          y = _props2.y;
-      var highlightColor = theme.highlightColor,
-          nodeBarColor = theme.nodeBarColor,
-          pinColor = theme.pinColor,
-          pinSize = theme.pinSize;
+          bodyHeight = _props2.bodyHeight,
+          theme = _props2.theme;
 
 
-      var bodyHeight = this.props.bodyHeight || theme.nodeBodyHeight;
+      return bodyHeight || theme.nodeBodyHeight;
+    }
+  }, {
+    key: 'getComputedWidth',
+    value: function getComputedWidth() {
+      var _props3 = this.props,
+          fontSize = _props3.fontSize,
+          ins = _props3.ins,
+          outs = _props3.outs,
+          text = _props3.text,
+          theme = _props3.theme,
+          width = _props3.width;
+      var pinSize = theme.pinSize;
 
-      var bodyContent = this.getBody();
+
+      var bodyHeight = this.getBodyHeight();
 
       var computedWidth = (0, _computeNodeWidth2.default)({
         bodyHeight: bodyHeight,
@@ -51081,6 +51071,153 @@ var Node = function (_Component) {
         fontSize: fontSize,
         node: { ins: ins, outs: outs, text: text, width: width }
       });
+
+      return computedWidth;
+    }
+  }, {
+    key: 'getDeleteButton',
+    value: function getDeleteButton() {
+      var _props4 = this.props,
+          deleteNode = _props4.deleteNode,
+          id = _props4.id,
+          theme = _props4.theme;
+      var highlightColor = theme.highlightColor,
+          pinSize = theme.pinSize;
+
+
+      return _react2.default.createElement('path', {
+        d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+        fill: highlightColor,
+        transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
+        onMouseDown: function onMouseDown() {
+          return deleteNode(id);
+        }
+      });
+    }
+  }, {
+    key: 'getInputMinus',
+    value: function getInputMinus() {
+      var _props5 = this.props,
+          deleteInputPin = _props5.deleteInputPin,
+          id = _props5.id,
+          ins = _props5.ins,
+          theme = _props5.theme;
+      var highlightColor = theme.highlightColor,
+          pinSize = theme.pinSize;
+
+
+      if (ins.length === 0) return null;
+
+      var computedWidth = this.getComputedWidth();
+
+      return _react2.default.createElement('path', {
+        d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+        transform: 'translate(' + (computedWidth + 2) + ',0)',
+        onMouseDown: function onMouseDown() {
+          return deleteInputPin(id);
+        },
+        fill: highlightColor
+      });
+    }
+  }, {
+    key: 'getInputPlus',
+    value: function getInputPlus() {
+      var _props6 = this.props,
+          createInputPin = _props6.createInputPin,
+          id = _props6.id,
+          theme = _props6.theme;
+      var highlightColor = theme.highlightColor,
+          pinSize = theme.pinSize;
+
+
+      var computedWidth = this.getComputedWidth();
+
+      return _react2.default.createElement('path', {
+        d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+        transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)',
+        onMouseDown: function onMouseDown() {
+          return createInputPin(id);
+        },
+        fill: highlightColor
+      });
+    }
+  }, {
+    key: 'getOutputMinus',
+    value: function getOutputMinus() {
+      var _props7 = this.props,
+          deleteOutputPin = _props7.deleteOutputPin,
+          id = _props7.id,
+          outs = _props7.outs,
+          theme = _props7.theme;
+
+
+      if (outs.length === 0) return null;
+
+      var highlightColor = theme.highlightColor,
+          pinSize = theme.pinSize;
+
+
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
+
+      return _react2.default.createElement('path', {
+        d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
+        transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')',
+        onMouseDown: function onMouseDown() {
+          return deleteOutputPin(id);
+        },
+        fill: highlightColor
+      });
+    }
+  }, {
+    key: 'getOutputPlus',
+    value: function getOutputPlus() {
+      var _props8 = this.props,
+          createOutputPin = _props8.createOutputPin,
+          id = _props8.id,
+          theme = _props8.theme;
+      var highlightColor = theme.highlightColor,
+          pinSize = theme.pinSize;
+
+
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
+
+      return _react2.default.createElement('path', {
+        d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
+        transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')',
+        onMouseDown: function onMouseDown() {
+          return createOutputPin(id);
+        },
+        fill: highlightColor
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props9 = this.props,
+          dragged = _props9.dragged,
+          draggedLinkId = _props9.draggedLinkId,
+          id = _props9.id,
+          ins = _props9.ins,
+          onCreateLink = _props9.onCreateLink,
+          outs = _props9.outs,
+          selected = _props9.selected,
+          selectNode = _props9.selectNode,
+          theme = _props9.theme,
+          updateLink = _props9.updateLink,
+          willDragNode = _props9.willDragNode,
+          x = _props9.x,
+          y = _props9.y;
+      var highlightColor = theme.highlightColor,
+          nodeBarColor = theme.nodeBarColor,
+          pinColor = theme.pinColor,
+          pinSize = theme.pinSize;
+
+
+      var bodyContent = this.getBody();
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
 
       return _react2.default.createElement(
         'g',
@@ -51093,46 +51230,11 @@ var Node = function (_Component) {
           },
           transform: 'translate(' + x + ',' + y + ')'
         },
-        selected ? _react2.default.createElement('path', {
-          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
-          fill: highlightColor,
-          transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
-          onMouseDown: function onMouseDown() {
-            return deleteNode(id);
-          }
-        }) : null,
-        selected ? _react2.default.createElement('path', {
-          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
-          transform: 'translate(' + (computedWidth + 2) + ',0)',
-          onMouseDown: function onMouseDown() {
-            return deleteInputPin(id);
-          },
-          fill: highlightColor
-        }) : null,
-        selected ? _react2.default.createElement('path', {
-          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
-          transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)',
-          onMouseDown: function onMouseDown() {
-            return createInputPin(id);
-          },
-          fill: highlightColor
-        }) : null,
-        selected ? _react2.default.createElement('path', {
-          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z',
-          transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')',
-          onMouseDown: function onMouseDown() {
-            return deleteOutputPin(id);
-          },
-          fill: highlightColor
-        }) : null,
-        selected ? _react2.default.createElement('path', {
-          d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
-          transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')',
-          onMouseDown: function onMouseDown() {
-            return createOutputPin(id);
-          },
-          fill: highlightColor
-        }) : null,
+        selected ? this.getDeleteButton() : null,
+        selected ? this.getInputMinus() : null,
+        selected ? this.getInputPlus() : null,
+        selected ? this.getOutputMinus() : null,
+        selected ? this.getOutputPlus() : null,
         _react2.default.createElement('rect', {
           fillOpacity: 0,
           height: bodyHeight + 2 * pinSize,

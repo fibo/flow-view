@@ -27,6 +27,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Added
+
+- Separated pin controls into methods.
+
 ## [v2.11.0] - 2017-01-26
 
 ### Changed

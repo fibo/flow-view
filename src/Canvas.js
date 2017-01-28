@@ -65,8 +65,8 @@ class Canvas extends EventEmitter {
       this.item
     )
 
-    let height = view.height
-    let width = view.width
+    let height
+    let width
 
     // Get height and width from container, if any.
     if (container) {

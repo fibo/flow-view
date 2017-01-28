@@ -143,10 +143,10 @@
         var DefaultNode = defaultItem.node.DefaultNode;
         var typeOfNode = defaultItem.util.typeOfNode;
 
-        var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { util: { typeOfNode: typeOfNode } }, this.item);
+        var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { nodeList: [] }, { util: { typeOfNode: typeOfNode } }, this.item);
 
-        var height = view.height;
-        var width = view.width;
+        var height = void 0;
+        var width = void 0;
 
         // Get height and width from container, if any.
         if (container) {
@@ -313,6 +313,7 @@
           dragItems: dragItems,
           item: item,
           model: model,
+          nodeList: item.nodeList,
           renameNode: renameNode,
           updateLink: updateLink,
           view: view

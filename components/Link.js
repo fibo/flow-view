@@ -91,18 +91,22 @@
       value: function render() {
         var _props = this.props,
             id = _props.id,
+            deleteLink = _props.deleteLink,
             from = _props.from,
             onCreateLink = _props.onCreateLink,
             startDraggingLinkTarget = _props.startDraggingLinkTarget,
             selected = _props.selected,
             selectLink = _props.selectLink,
+            sourceSelected = _props.sourceSelected,
+            targetSelected = _props.targetSelected,
             theme = _props.theme,
             to = _props.to,
             x1 = _props.x1,
             y1 = _props.y1,
             x2 = _props.x2,
             y2 = _props.y2;
-        var highlightColor = theme.highlightColor,
+        var darkPrimaryColor = theme.darkPrimaryColor,
+            primaryColor = theme.primaryColor,
             linkColor = theme.linkColor,
             lineWidth = theme.lineWidth,
             pinSize = theme.pinSize;
@@ -143,12 +147,15 @@
           _react2.default.createElement('path', {
             d: 'M ' + startX + ' ' + startY + ' C ' + controlPointX1 + ' ' + controlPointY1 + ', ' + controlPointX2 + ' ' + controlPointY2 + ' ,' + endX + ' ' + endY,
             fill: 'transparent',
-            onMouseUp: selectLink,
-            stroke: selected ? highlightColor : linkColor,
+            onMouseDown: function onMouseDown() {
+              if (selected) deleteLink(id);
+            },
+            onMouseUp: selectLink(id),
+            stroke: selected ? primaryColor : linkColor,
             strokeWidth: lineWidth
           }),
           _react2.default.createElement('rect', {
-            fill: linkColor,
+            fill: selected || sourceSelected ? darkPrimaryColor : linkColor,
             height: pinSize,
             onMouseDown: onSourceMouseDown,
             width: pinSize,
@@ -156,7 +163,7 @@
             y: y1
           }),
           to ? _react2.default.createElement('rect', {
-            fill: linkColor,
+            fill: selected || targetSelected ? darkPrimaryColor : linkColor,
             height: pinSize,
             onMouseDown: onTargetMouseDown,
             width: pinSize,
@@ -171,6 +178,7 @@
   }(_react.Component);
 
   Link.propTypes = {
+    deleteLink: _react.PropTypes.func.isRequired,
     id: _react.PropTypes.string,
     from: _react.PropTypes.array,
     onCreateLink: _react.PropTypes.func.isRequired,
@@ -178,6 +186,8 @@
     pinSize: _react.PropTypes.number.isRequired,
     selected: _react.PropTypes.bool.isRequired,
     selectLink: _react.PropTypes.func.isRequired,
+    sourceSelected: _react.PropTypes.bool.isRequired,
+    targetSelected: _react.PropTypes.bool.isRequired,
     theme: _theme2.default.propTypes,
     to: _react.PropTypes.array,
     x1: _react.PropTypes.number.isRequired,
@@ -187,10 +197,13 @@
   };
 
   Link.defaultProps = {
+    deleteLink: Function.prototype,
     onCreateLink: Function.prototype,
     startDraggingLinkTarget: Function.prototype,
     selected: false,
     selectLink: Function.prototype,
+    sourceSelected: false,
+    targetSelected: false,
     theme: _theme2.default.defaultProps
   };
 

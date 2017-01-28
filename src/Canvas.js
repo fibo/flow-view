@@ -205,6 +205,7 @@ class Canvas extends EventEmitter {
       view.node[nodeId].outs.splice(position, 1)
     }
 
+    // TODO this is not used buy now.
     const renameNode = (nodeId, text) => {
       view.node[nodeId].text = text
     }

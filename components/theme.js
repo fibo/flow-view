@@ -39,18 +39,19 @@
   var defaultProps = {
     fontFamily: 'Courier',
     frameBorder: '1px solid #F0F4C3',
-    highlightColor: '#CDDC39',
+    darkPrimaryColor: '#AFB42B',
+    primaryColor: '#CDDC39',
     lineWidth: 3,
-    linkColor: '#757575',
     nodeBarColor: '#BDBDBD',
     nodeBodyHeight: 20,
-    pinColor: '#9E9E9E',
+    pinColor: '#757575',
+    linkColor: '#9E9E9E',
     pinSize: 10
   };
 
   var propTypes = _react.PropTypes.shape({
     fontFamily: _react.PropTypes.string.isRequired,
-    highlightColor: _react.PropTypes.string.isRequired,
+    primaryColor: _react.PropTypes.string.isRequired,
     lineWidth: _react.PropTypes.number.isRequired,
     linkColor: _react.PropTypes.string.isRequired,
     nodeBarColor: _react.PropTypes.string.isRequired,

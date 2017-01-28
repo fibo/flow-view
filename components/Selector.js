@@ -96,6 +96,7 @@
         var _props = this.props,
             createNode = _props.createNode,
             height = _props.height,
+            nodeList = _props.nodeList,
             pointer = _props.pointer,
             show = _props.show,
             width = _props.width;
@@ -138,6 +139,7 @@
             y: pointer ? pointer.y : 0
           },
           _react2.default.createElement('input', {
+            list: 'nodes',
             type: 'text',
             ref: function ref(input) {
               if (input !== null) input.focus();
@@ -146,7 +148,14 @@
             onChange: onChange,
             onKeyPress: onKeyPress,
             value: text
-          })
+          }),
+          nodeList ? _react2.default.createElement(
+            'datalist',
+            { id: 'nodes' },
+            nodeList.map(function (item, i) {
+              return _react2.default.createElement('option', { key: i, value: item });
+            })
+          ) : null
         );
       }
     }]);
@@ -156,6 +165,7 @@
 
   Selector.propTypes = {
     createNode: _react.PropTypes.func.isRequired,
+    nodelist: _react.PropTypes.array,
     pointer: _react.PropTypes.shape({
       x: _react.PropTypes.number.isRequired,
       y: _react.PropTypes.number.isRequired

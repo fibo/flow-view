@@ -167,6 +167,7 @@
             fontSize = _props.fontSize,
             item = _props.item,
             model = _props.model,
+            nodeList = _props.nodeList,
             theme = _props.theme,
             updateLink = _props.updateLink,
             view = _props.view;
@@ -560,9 +561,11 @@
 
 
             var coord = coordinatesOfLink(view.link[id]);
+            var sourceSelected = from ? draggedItems.indexOf(from[0]) > -1 || selectedItems.indexOf(from[0]) > -1 : false;
+            var targetSelected = to ? draggedItems.indexOf(to[0]) > -1 || selectedItems.indexOf(to[0]) > -1 : false;
 
-            return _react2.default.createElement(Link, {
-              key: i,
+            return _react2.default.createElement(Link, { key: i,
+              deleteLink: deleteLink,
               from: from,
               lineWidth: lineWidth,
               id: id,
@@ -570,7 +573,9 @@
               startDraggingLinkTarget: startDraggingLinkTarget,
               pinSize: pinSize,
               selected: selectedItems.indexOf(id) > -1,
-              selectLink: selectItem(id),
+              selectLink: selectItem,
+              sourceSelected: sourceSelected,
+              targetSelected: targetSelected,
               to: to,
               x1: coord.x1,
               y1: coord.y1,
@@ -588,6 +593,7 @@
                 whenUpdated: getTime()
               });
             },
+            nodeList: nodeList,
             pointer: pointer,
             show: showSelector
           })

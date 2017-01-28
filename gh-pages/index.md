@@ -74,10 +74,11 @@ npm install flow-view
 
 * **@param** `{String}` containerId
 * **@param** `{Object}` [item] collection to be customized
-* **@param** `{Object}` [item.link]
+* **@param** `{Object}` [item.link] collection of custom links
 * **@param** `{Object}` [item.link.DefaultLink]
-* **@param** `{Object}` [item.node]
+* **@param** `{Object}` [item.node] collection of custom nodes
 * **@param** `{Object}` [item.node.DefaultNode]
+* **@param** `{Object}` [item.nodeList] used for nodes autocompletion
 * **@param** `{Object}` [item.util]
 * **@param** `{Function}` [item.util.typeOfNode]
 * **@returns** `{Object}` canvas
@@ -155,7 +156,8 @@ Theme is a prop object with the following attributes
 
 * fontFamily
 * frameBorder
-* highlightColor
+* darkPrimaryColor
+* primaryColor
 * lineWidth
 * linkColor
 * nodeBarColor
@@ -178,7 +180,7 @@ The following events are emitted by [canvas](#canvas):
 | `deleteNode`      | nodeId                |
 | `deleteInputPin`  | nodeId, position      |
 | `deleteOutputPin` | nodeId, position      |
-| `renameNode`      | nodeId, text          |
+| `draggedNode`     | nodeId, x, y          |
 
 ### Node spec
 
@@ -230,6 +232,7 @@ Available examples are:
 * [custom/item.js][example_custom_item] `npm run example_custom_item`
 * [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
+* [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
 * [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
 
 Note that examples are intended to be used for development, hence there
@@ -247,6 +250,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
+[example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg

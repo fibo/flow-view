@@ -6,16 +6,20 @@ flow: /empty.json
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
-The image below is an SVG generated server side by [flow-view Canvas](#canvas): click it to
-see [online example][online_example].
-
-[![sample view][sample_view_svg]][online_example]
-
 [Description](#description) |
 [Installation](#installation) |
 [API](#api) |
 [Examples](#examples) |
 [License](#license)
+
+The image below is an SVG generated server side by [flow-view Canvas](#canvas): click it to
+see [online example][online_example].
+
+[![sample view][sample_view_svg]][online_example]
+
+The following animated gif represents a family free.
+
+![The Simpsons][simpsons_gif]
 
 [![Whatchers](http://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](http://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](http://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
 
@@ -254,3 +258,4 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg
+[simpsons_gif]: https://g14n.info/flow-view/media/TheSimspons.gif

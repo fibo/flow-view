@@ -25,14 +25,49 @@ class Frame extends Component {
       showSelector: false,
       selectedItems: [],
       selectionBoundingBox: null,
+      shiftPressed: false,
       whenUpdated: getTime() // this attribute is used to force React render.
     }
   }
 
   componentDidMount () {
+    const {
+      createInputPin,
+      deleteInputPin,
+      view
+    } = this.props
+
+    const {
+      selectedItems,
+      shiftPressed
+    } = this.state
+
     const setState = this.setState.bind(this)
 
     const container = findDOMNode(this).parentNode
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Shift') setState({ shiftPressed: true })
+
+      // TODO it prints [], FIXME selectedItems
+      console.log(selectedItems)
+      console.log(e.code, view.node)
+      if (e.code === 'KeyI') {
+        selectedItems.forEach((id) => {
+          if (view.node[id].ins && Object.keys(view.node).indexOf(id) > -1) {
+            if (shiftPressed) {
+              deleteInputPin(id)
+            } else {
+              createInputPin(id)
+            }
+          }
+        })
+      }
+    })
+
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'Shift') setState({ shiftPressed: false })
+    })
 
     window.addEventListener('scroll', () => {
       setState({ scroll: {
@@ -213,6 +248,7 @@ class Frame extends Component {
       e.stopPropagation()
 
       // TODO Shift key for multiple selection.
+      // use state shiftPressed
 
       setState({
         selectedItems: []

@@ -17,10 +17,6 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link to Changelog page
 
-### Fixed
-
-- renameNode event, now is fired.
-
 ### Added
 
 - selectNode, selectLink events.

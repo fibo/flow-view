@@ -60,6 +60,7 @@ class Canvas extends EventEmitter {
     const item = Object.assign({},
       { link: { DefaultLink } },
       { node: { DefaultNode } },
+      { nodeList: [] },
       { util: { typeOfNode } },
       this.item
     )
@@ -233,6 +234,7 @@ class Canvas extends EventEmitter {
         dragItems={dragItems}
         item={item}
         model={model}
+        nodeList={item.nodeList}
         renameNode={renameNode}
         updateLink={updateLink}
         view={view}

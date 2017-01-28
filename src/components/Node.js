@@ -4,6 +4,14 @@ import xOfPin from '../utils/xOfPin'
 import computeNodeWidth from '../utils/computeNodeWidth'
 import theme from './theme'
 
+const minus = (pinSize) => (
+  `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
+)
+
+const plus = (pinSize) => (
+  `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`
+)
+
 class Node extends Component {
   getBody () {
     const {
@@ -72,14 +80,14 @@ class Node extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      primaryColor,
       pinSize
     } = theme
 
     return (
       <path
         d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-        fill={highlightColor}
+        fill={primaryColor}
         transform={`translate(${pinSize / 2},${pinSize / 2}) rotate(45) translate(${-3 * pinSize / 2},${pinSize / 2})`}
         onMouseDown={() => deleteNode(id)}
       />
@@ -95,20 +103,23 @@ class Node extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      primaryColor,
       pinSize
     } = theme
 
-    if (ins.length === 0) return null
-
     const computedWidth = this.getComputedWidth()
+    const disabled = ins.length === 0
 
     return (
       <path
-        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+        d={minus(pinSize)}
+        fill={disabled ? 'transparent' : primaryColor}
+        onMouseDown={() => {
+          if (disabled) return
+          else deleteInputPin(id)
+        }}
+        stroke={primaryColor}
         transform={`translate(${computedWidth + 2},0)`}
-        onMouseDown={() => deleteInputPin(id)}
-        fill={highlightColor}
       />
     )
   }
@@ -121,7 +132,7 @@ class Node extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      primaryColor,
       pinSize
     } = theme
 
@@ -129,10 +140,11 @@ class Node extends Component {
 
     return (
       <path
-        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-        transform={`translate(${computedWidth + 4 + pinSize},0)`}
+        d={plus(pinSize)}
+        fill={primaryColor}
         onMouseDown={() => createInputPin(id)}
-        fill={highlightColor}
+        stroke={primaryColor}
+        transform={`translate(${computedWidth + 4 + pinSize},0)`}
       />
     )
   }
@@ -145,22 +157,25 @@ class Node extends Component {
       theme
     } = this.props
 
-    if (outs.length === 0) return null
-
     const {
-      highlightColor,
+      primaryColor,
       pinSize
     } = theme
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
+    const disabled = outs.length === 0
 
     return (
       <path
-        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`}
+        d={minus(pinSize)}
+        fill={disabled ? 'transparent' : primaryColor}
+        onMouseDown={() => {
+          if (disabled) return
+          else deleteOutputPin(id)
+        }}
+        stroke={primaryColor}
         transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
-        onMouseDown={() => deleteOutputPin(id)}
-        fill={highlightColor}
       />
     )
   }
@@ -173,7 +188,7 @@ class Node extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      primaryColor,
       pinSize
     } = theme
 
@@ -182,10 +197,11 @@ class Node extends Component {
 
     return (
       <path
-        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-        transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
+        d={plus(pinSize)}
+        fill={primaryColor}
         onMouseDown={() => createOutputPin(id)}
-        fill={highlightColor}
+        stroke={primaryColor}
+        transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
       />
     )
   }
@@ -208,10 +224,11 @@ class Node extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      darkPrimaryColor,
       nodeBarColor,
       pinColor,
-      pinSize
+      pinSize,
+      primaryColor
     } = theme
 
     const bodyContent = this.getBody()
@@ -236,12 +253,12 @@ class Node extends Component {
         <rect
           fillOpacity={0}
           height={bodyHeight + 2 * pinSize}
-          stroke={(selected || dragged) ? highlightColor : nodeBarColor}
+          stroke={(selected || dragged) ? primaryColor : nodeBarColor}
           strokeWidth={1}
           width={computedWidth}
         />
         <rect
-          fill={(selected || dragged) ? highlightColor : nodeBarColor}
+          fill={(selected || dragged) ? primaryColor : nodeBarColor}
           height={pinSize}
           width={computedWidth}
         />
@@ -260,7 +277,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={pinColor}
+              fill={(selected || dragged) ? darkPrimaryColor : pinColor}
               height={pinSize}
               onMouseDown={ignoreEvent}
               onMouseUp={onMouseUp}
@@ -271,7 +288,7 @@ class Node extends Component {
         })}
         {bodyContent}
         <rect
-          fill={(selected || dragged) ? highlightColor : nodeBarColor}
+          fill={(selected || dragged) ? primaryColor : nodeBarColor}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}
@@ -289,7 +306,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={pinColor}
+              fill={(selected || dragged) ? darkPrimaryColor : pinColor}
               height={pinSize}
               onClick={ignoreEvent}
               onMouseLeave={ignoreEvent}

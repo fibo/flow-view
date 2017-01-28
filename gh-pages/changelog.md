@@ -30,6 +30,8 @@ New g14n.info layouts, with link to Changelog page
 ### Added
 
 - Separated pin controls into methods.
+- Double click in link to delete it.
+- Selector datalist populated by *nodeList* parameter.
 
 ## [v2.11.0] - 2017-01-26
 

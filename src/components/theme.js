@@ -21,18 +21,19 @@ divider color #BDBDBD
 const defaultProps = {
   fontFamily: 'Courier',
   frameBorder: '1px solid #F0F4C3',
-  highlightColor: '#CDDC39',
+  darkPrimaryColor: '#AFB42B',
+  primaryColor: '#CDDC39',
   lineWidth: 3,
-  linkColor: '#757575',
   nodeBarColor: '#BDBDBD',
   nodeBodyHeight: 20,
-  pinColor: '#9E9E9E',
+  pinColor: '#757575',
+  linkColor: '#9E9E9E',
   pinSize: 10
 }
 
 const propTypes = PropTypes.shape({
   fontFamily: PropTypes.string.isRequired,
-  highlightColor: PropTypes.string.isRequired,
+  primaryColor: PropTypes.string.isRequired,
   lineWidth: PropTypes.number.isRequired,
   linkColor: PropTypes.string.isRequired,
   nodeBarColor: PropTypes.string.isRequired,

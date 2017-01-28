@@ -14,6 +14,7 @@ class Selector extends Component {
     const {
       createNode,
       height,
+      nodeList,
       pointer,
       show,
       width
@@ -55,6 +56,7 @@ class Selector extends Component {
         y={pointer ? pointer.y : 0}
       >
         <input
+          list='nodes'
           type='text'
           ref={(input) => {
             if (input !== null) input.focus()
@@ -64,6 +66,11 @@ class Selector extends Component {
           onKeyPress={onKeyPress}
           value={text}
         />
+        {nodeList ? (
+          <datalist id='nodes'>
+            {nodeList.map((item, i) => (<option key={i} value={item} />))}
+          </datalist>
+        ) : null}
       </foreignObject>
     )
   }
@@ -71,6 +78,7 @@ class Selector extends Component {
 
 Selector.propTypes = {
   createNode: PropTypes.func.isRequired,
+  nodelist: PropTypes.array,
   pointer: PropTypes.shape({
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired

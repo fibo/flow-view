@@ -77,6 +77,7 @@ class Frame extends Component {
       fontSize,
       item,
       model,
+      nodeList,
       theme,
       updateLink,
       view
@@ -465,11 +466,17 @@ class Frame extends Component {
             to
           } = view.link[id]
 
-          var coord = coordinatesOfLink(view.link[id])
+          const coord = coordinatesOfLink(view.link[id])
+          const sourceSelected = from ? (
+            (draggedItems.indexOf(from[0]) > -1) || (selectedItems.indexOf(from[0]) > -1)
+          ) : false
+          const targetSelected = to ? (
+            (draggedItems.indexOf(to[0]) > -1) || (selectedItems.indexOf(to[0]) > -1)
+          ) : false
 
           return (
-            <Link
-              key={i}
+            <Link key={i}
+              deleteLink={deleteLink}
               from={from}
               lineWidth={lineWidth}
               id={id}
@@ -477,7 +484,9 @@ class Frame extends Component {
               startDraggingLinkTarget={startDraggingLinkTarget}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
-              selectLink={selectItem(id)}
+              selectLink={selectItem}
+              sourceSelected={sourceSelected}
+              targetSelected={targetSelected}
               to={to}
               x1={coord.x1}
               y1={coord.y1}
@@ -496,6 +505,7 @@ class Frame extends Component {
               whenUpdated: getTime()
             })
           }}
+          nodeList={nodeList}
           pointer={pointer}
           show={showSelector}
         />

@@ -51433,6 +51433,7 @@ var Selector = function (_Component) {
 
       var onChange = function onChange(e) {
         var text = e.target.value;
+
         _this2.setState({ text: text });
       };
 
@@ -51478,7 +51479,10 @@ var Selector = function (_Component) {
         }),
         nodeList ? _react2.default.createElement(
           'datalist',
-          { id: 'nodes' },
+          {
+            id: 'nodes',
+            onChange: onChange
+          },
           nodeList.map(function (item, i) {
             return _react2.default.createElement('option', { key: i, value: item });
           })

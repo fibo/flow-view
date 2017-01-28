@@ -18,20 +18,37 @@ canvas.render({
       outs: [ 'is father of' ]
     },
     mom: {
-      x: 100, y: 20,
+      x: 120, y: 20,
       text: 'Marge',
       outs: [ 'is mother of' ]
     },
     son: {
-      x: 20, y: 50,
+      x: 20, y: 190,
       text: 'Bart',
-      ins: [ 'father', 'mother' ]
+      ins: ['father', 'mother']
     },
     daughter: {
-      x: 120, y: 40,
+      x: 180, y: 170,
       text: 'Lisa',
-      ins: [ 'father', 'mother' ]
+      ins: ['father', 'mother']
     }
   },
-  link: {}
+  link: {
+    a: {
+      from: ['dad', 0],
+      to: ['son', 0]
+    },
+    b: {
+      from: ['mom', 0],
+      to: ['son', 1]
+    },
+    c: {
+      from: ['dad', 0],
+      to: ['daughter', 0]
+    },
+    d: {
+      from: ['mom', 0],
+      to: ['daughter', 1]
+    }
+  }
 })

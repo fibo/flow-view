@@ -24,6 +24,7 @@ class Selector extends Component {
 
     const onChange = (e) => {
       const text = e.target.value
+
       this.setState({ text })
     }
 
@@ -67,7 +68,10 @@ class Selector extends Component {
           value={text}
         />
         {nodeList ? (
-          <datalist id='nodes'>
+          <datalist
+            id='nodes'
+            onChange={onChange}
+          >
             {nodeList.map((item, i) => (<option key={i} value={item} />))}
           </datalist>
         ) : null}

@@ -6,11 +6,14 @@ class Link extends Component {
   render () {
     const {
       id,
+      deleteLink,
       from,
       onCreateLink,
       startDraggingLinkTarget,
       selected,
       selectLink,
+      sourceSelected,
+      targetSelected,
       theme,
       to,
       x1,
@@ -20,7 +23,8 @@ class Link extends Component {
     } = this.props
 
     const {
-      highlightColor,
+      darkPrimaryColor,
+      primaryColor,
       linkColor,
       lineWidth,
       pinSize
@@ -60,12 +64,15 @@ class Link extends Component {
         <path
           d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
           fill='transparent'
-          onMouseUp={selectLink}
-          stroke={selected ? highlightColor : linkColor}
+          onMouseDown={() => {
+            if (selected) deleteLink(id)
+          }}
+          onMouseUp={selectLink(id)}
+          stroke={selected ? primaryColor : linkColor}
           strokeWidth={lineWidth}
         />
         <rect
-          fill={linkColor}
+          fill={(selected || sourceSelected) ? darkPrimaryColor : linkColor}
           height={pinSize}
           onMouseDown={onSourceMouseDown}
           width={pinSize}
@@ -74,7 +81,7 @@ class Link extends Component {
         />
         {to ? (
           <rect
-            fill={linkColor}
+            fill={(selected || targetSelected) ? darkPrimaryColor : linkColor}
             height={pinSize}
             onMouseDown={onTargetMouseDown}
             width={pinSize}
@@ -88,6 +95,7 @@ class Link extends Component {
 }
 
 Link.propTypes = {
+  deleteLink: PropTypes.func.isRequired,
   id: PropTypes.string,
   from: PropTypes.array,
   onCreateLink: PropTypes.func.isRequired,
@@ -95,6 +103,8 @@ Link.propTypes = {
   pinSize: PropTypes.number.isRequired,
   selected: PropTypes.bool.isRequired,
   selectLink: PropTypes.func.isRequired,
+  sourceSelected: PropTypes.bool.isRequired,
+  targetSelected: PropTypes.bool.isRequired,
   theme: theme.propTypes,
   to: PropTypes.array,
   x1: PropTypes.number.isRequired,
@@ -104,10 +114,13 @@ Link.propTypes = {
 }
 
 Link.defaultProps = {
+  deleteLink: Function.prototype,
   onCreateLink: Function.prototype,
   startDraggingLinkTarget: Function.prototype,
   selected: false,
   selectLink: Function.prototype,
+  sourceSelected: false,
+  targetSelected: false,
   theme: theme.defaultProps
 }
 

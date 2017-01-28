@@ -20,6 +20,7 @@
     "example_custom_item": "BABEL_ENV=development NODE_PATH=. budo --open examples/custom/item.js -- -t babelify -p livereactload",
     "example_empty_canvas": "BABEL_ENV=development NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify -p livereactload",
     "example_event_emitter": "BABEL_ENV=development NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify -p livereactload",
+    "example_genealogic_tree": "BABEL_ENV=development NODE_PATH=src budo --open examples/genealogic/tree.js -- -t babelify -p livereactload",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > gh-pages/svg/sample-view.svg",
     "gh-pages:_data": "for x in package.json tags.json; do npm run gh-pages:_data:$x; done",
     "gh-pages:_data:package.json": "cp package.json gh-pages/_data/",
@@ -74,7 +75,7 @@
     "not-defined": "^1.1.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "svgx": "^0.6.2"
+    "svgx": "^0.6.3"
   },
   "devDependencies": {
     "babel-plugin-add-module-exports": "^0.2.1",

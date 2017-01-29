@@ -186,6 +186,14 @@ The following events are emitted by [canvas](#canvas):
 | `deleteOutputPin` | nodeId, position      |
 | `draggedNode`     | nodeId, x, y          |
 
+### Hotkeys
+
+Few hotkyes are defined.
+
+Arrows <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> <kbd>←</kbd> translate currently selected nodes, if also <kdb>SHIFT</kdb> is pressed translation is performed pixel by pixel.
+<kdb>ESC</kbd> cancel current selection.
+Keys <kdb>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kdb>SHIFT</kbd> is pressed, pins are deleted.
+
 ### Node spec
 
 A node describes an element and has the following attributes:

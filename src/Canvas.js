@@ -182,11 +182,24 @@ class Canvas extends EventEmitter {
     }
 
     const deleteInputPin = (nodeId, position) => {
-      var ins = view.node[nodeId].ins
+      const ins = view.node[nodeId].ins
 
-      if (no(ins)) view.node[nodeId].ins = ins = []
+      if (no(ins)) return
+      if (ins.length === 0) return
 
       if (no(position)) position = ins.length - 1
+
+      // Look for connected links and delete them.
+
+      Object.keys(view.link).forEach((id) => {
+        const to = view.link[id].to
+
+        if (no(to)) return
+
+        if ((to[0] === nodeId) && (to[1] === position)) {
+          deleteLink(id)
+        }
+      })
 
       this.emit('deleteInputPin', nodeId, position)
 
@@ -194,11 +207,24 @@ class Canvas extends EventEmitter {
     }
 
     const deleteOutputPin = (nodeId, position) => {
-      var outs = view.node[nodeId].outs
+      const outs = view.node[nodeId].outs
 
-      if (no(outs)) view.node[nodeId].outs = outs = []
+      if (no(outs)) return
+      if (outs.length === 0) return
 
       if (no(position)) position = outs.length - 1
+
+      // Look for connected links and delete them.
+
+      Object.keys(view.link).forEach((id) => {
+        const from = view.link[id].from
+
+        if (no(from)) return
+
+        if ((from[0] === nodeId) && (from[1] === position)) {
+          deleteLink(id)
+        }
+      })
 
       this.emit('deleteOutputPin', nodeId, position)
 

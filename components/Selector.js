@@ -120,6 +120,8 @@
           if (pressedEnter) {
             if (textIsNotBlank) {
               createNode({
+                ins: [],
+                outs: [],
                 text: text,
                 x: pointer.x,
                 y: pointer.y

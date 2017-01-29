@@ -30,6 +30,10 @@ New g14n.info layouts, with link to Changelog page
 - Selector datalist populated by *nodeList* parameter.
 - Genealogic tree example.
 
+### Fixed
+
+- Missing bottom and right border.
+
 ## [v2.11.0] - 2017-01-26
 
 ### Changed

@@ -264,9 +264,22 @@
         var deleteInputPin = function deleteInputPin(nodeId, position) {
           var ins = view.node[nodeId].ins;
 
-          if ((0, _notDefined2.default)(ins)) view.node[nodeId].ins = ins = [];
+          if ((0, _notDefined2.default)(ins)) return;
+          if (ins.length === 0) return;
 
           if ((0, _notDefined2.default)(position)) position = ins.length - 1;
+
+          // Look for connected links and delete them.
+
+          Object.keys(view.link).forEach(function (id) {
+            var to = view.link[id].to;
+
+            if ((0, _notDefined2.default)(to)) return;
+
+            if (to[0] === nodeId && to[1] === position) {
+              deleteLink(id);
+            }
+          });
 
           _this2.emit('deleteInputPin', nodeId, position);
 
@@ -276,9 +289,22 @@
         var deleteOutputPin = function deleteOutputPin(nodeId, position) {
           var outs = view.node[nodeId].outs;
 
-          if ((0, _notDefined2.default)(outs)) view.node[nodeId].outs = outs = [];
+          if ((0, _notDefined2.default)(outs)) return;
+          if (outs.length === 0) return;
 
           if ((0, _notDefined2.default)(position)) position = outs.length - 1;
+
+          // Look for connected links and delete them.
+
+          Object.keys(view.link).forEach(function (id) {
+            var from = view.link[id].from;
+
+            if ((0, _notDefined2.default)(from)) return;
+
+            if (from[0] === nodeId && from[1] === position) {
+              deleteLink(id);
+            }
+          });
 
           _this2.emit('deleteOutputPin', nodeId, position);
 

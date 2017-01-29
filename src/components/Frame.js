@@ -24,6 +24,7 @@ class Frame extends Component {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
       draggedItems: [],
+      dragging: false,
       offset: { x: 0, y: 0 },
       pointer: null,
       scroll: { x: 0, y: 0 },
@@ -311,7 +312,7 @@ class Frame extends Component {
       if (draggedLinkId) delete view.link[draggedLinkId]
 
       setState({
-        draggedItems: [],
+        dragging: false,
         draggedLinkId: null,
         pointer: null,
         showSelector: false
@@ -322,21 +323,24 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
+      const {
+        dragging,
+        selectedItems
+      } = this.state
+
       const nextPointer = getCoordinates(e)
 
       setState({
         pointer: nextPointer
       })
 
-      const draggedItems = this.state.draggedItems
-
-      if (draggedItems.length > 0) {
+      if (dragging && (selectedItems.length > 0)) {
         const draggingDelta = {
           x: (pointer ? nextPointer.x - pointer.x : 0),
           y: (pointer ? nextPointer.y - pointer.y : 0)
         }
 
-        dragItems(draggingDelta, draggedItems)
+        dragItems(draggingDelta, selectedItems)
       }
     }
 
@@ -355,6 +359,7 @@ class Frame extends Component {
         })
       } else {
         setState({
+          dragging: false,
           pointer: null
         })
       }
@@ -390,9 +395,7 @@ class Frame extends Component {
       if (draggedLinkId) {
         delete view.link[draggedLinkId]
 
-        setState({
-          draggedLinkId: null
-        })
+        setState({ draggedLinkId: null })
 
         return
       }
@@ -412,14 +415,13 @@ class Frame extends Component {
           selectedItems.push(id)
         }
       } else {
-        if (itemAlreadySelected) {
-          return
-        } else {
+        if (!itemAlreadySelected) {
           selectedItems = [id]
         }
       }
 
       setState({
+        dragging: true,
         selectedItems
       })
     }
@@ -522,7 +524,7 @@ class Frame extends Component {
               startDraggingLinkTarget={startDraggingLinkTarget}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
-              selectLink={selectItem}
+              selectLink={selectItem(id)}
               sourceSelected={sourceSelected}
               targetSelected={targetSelected}
               to={to}

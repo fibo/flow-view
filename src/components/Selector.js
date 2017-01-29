@@ -38,6 +38,8 @@ class Selector extends Component {
       if (pressedEnter) {
         if (textIsNotBlank) {
           createNode({
+            ins: [],
+            outs: [],
             text,
             x: pointer.x,
             y: pointer.y

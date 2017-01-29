@@ -29,7 +29,8 @@ New g14n.info layouts, with link to Changelog page
 - Double click in link to delete it.
 - Selector datalist populated by *nodeList* parameter.
 - Genealogic tree example.
-- Hotkeys
+- Hotkeys.
+- Dragging multiple nodes.
 
 ### Fixed
 

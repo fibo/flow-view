@@ -105,6 +105,7 @@
         dynamicView: { height: null, width: null },
         draggedLinkId: null,
         draggedItems: [],
+        dragging: false,
         offset: { x: 0, y: 0 },
         pointer: null,
         scroll: { x: 0, y: 0 },
@@ -125,6 +126,7 @@
             createOutputPin = _props.createOutputPin,
             deleteInputPin = _props.deleteInputPin,
             deleteOutputPin = _props.deleteOutputPin,
+            dragItems = _props.dragItems,
             view = _props.view;
 
 
@@ -132,21 +134,38 @@
 
         var container = (0, _reactDom.findDOMNode)(this).parentNode;
 
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown', function (_ref) {
+          var code = _ref.code;
           var _state = _this2.state,
               selectedItems = _state.selectedItems,
               shiftPressed = _state.shiftPressed;
 
 
-          if (isShift(e.code)) {
+          if (isShift(code)) {
             setState({ shiftPressed: true });
           }
 
-          if (e.code === 'Escape') {
+          if (code === 'Escape') {
             setState({ selectedItems: [] });
           }
 
-          if (e.code === 'KeyI') {
+          var selectedNodes = Object.keys(view.node).filter(function (id) {
+            return selectedItems.indexOf(id) > -1;
+          });
+
+          if (selectedNodes.length > 0) {
+            var draggingDelta = { x: 0, y: 0 };
+            var unit = shiftPressed ? 1 : 10;
+
+            if (code === 'ArrowLeft') draggingDelta.x = -unit;
+            if (code === 'ArrowRight') draggingDelta.x = unit;
+            if (code === 'ArrowUp') draggingDelta.y = -unit;
+            if (code === 'ArrowDown') draggingDelta.y = unit;
+
+            dragItems(draggingDelta, selectedNodes);
+          }
+
+          if (code === 'KeyI') {
             selectedItems.forEach(function (id) {
               if (view.node[id] && view.node[id].ins) {
                 if (shiftPressed) {
@@ -154,14 +173,11 @@
                 } else {
                   createInputPin(id);
                 }
-
-                // Since state or props are not modified it is necessary to force update.
-                _this2.forceUpdate();
               }
             });
           }
 
-          if (e.code === 'KeyO') {
+          if (code === 'KeyO') {
             selectedItems.forEach(function (id) {
               if (view.node[id] && view.node[id].outs) {
                 if (shiftPressed) {
@@ -169,16 +185,18 @@
                 } else {
                   createOutputPin(id);
                 }
-
-                // Since state or props are not modified it is necessary to force update.
-                _this2.forceUpdate();
               }
             });
           }
+
+          // Since state or props are not modified it is necessary to force update.
+          _this2.forceUpdate();
         });
 
-        document.addEventListener('keyup', function (e) {
-          if (isShift(e.code)) {
+        document.addEventListener('keyup', function (_ref2) {
+          var code = _ref2.code;
+
+          if (isShift(code)) {
             setState({ shiftPressed: false });
           }
         });
@@ -262,9 +280,9 @@
 
         var setState = this.setState.bind(this);
 
-        var coordinatesOfLink = function coordinatesOfLink(_ref) {
-          var from = _ref.from,
-              to = _ref.to;
+        var coordinatesOfLink = function coordinatesOfLink(_ref3) {
+          var from = _ref3.from,
+              to = _ref3.to;
 
           var x1 = null;
           var y1 = null;
@@ -390,7 +408,7 @@
           if (draggedLinkId) delete view.link[draggedLinkId];
 
           setState({
-            draggedItems: [],
+            dragging: false,
             draggedLinkId: null,
             pointer: null,
             showSelector: false
@@ -401,21 +419,24 @@
           e.preventDefault();
           e.stopPropagation();
 
+          var _state4 = _this3.state,
+              dragging = _state4.dragging,
+              selectedItems = _state4.selectedItems;
+
+
           var nextPointer = getCoordinates(e);
 
           setState({
             pointer: nextPointer
           });
 
-          var draggedItems = _this3.state.draggedItems;
-
-          if (draggedItems.length > 0) {
+          if (dragging && selectedItems.length > 0) {
             var draggingDelta = {
               x: pointer ? nextPointer.x - pointer.x : 0,
               y: pointer ? nextPointer.y - pointer.y : 0
             };
 
-            dragItems(draggingDelta, draggedItems);
+            dragItems(draggingDelta, selectedItems);
           }
         };
 
@@ -434,6 +455,7 @@
             });
           } else {
             setState({
+              dragging: false,
               pointer: null
             });
           }
@@ -460,9 +482,9 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var _state4 = _this3.state,
-                draggedLinkId = _state4.draggedLinkId,
-                shiftPressed = _state4.shiftPressed;
+            var _state5 = _this3.state,
+                draggedLinkId = _state5.draggedLinkId,
+                shiftPressed = _state5.shiftPressed;
 
 
             // Do not select items when releasing a dragging link.
@@ -470,9 +492,7 @@
             if (draggedLinkId) {
               delete view.link[draggedLinkId];
 
-              setState({
-                draggedLinkId: null
-              });
+              setState({ draggedLinkId: null });
 
               return;
             }
@@ -492,14 +512,13 @@
                 selectedItems.push(id);
               }
             } else {
-              if (itemAlreadySelected) {
-                return;
-              } else {
+              if (!itemAlreadySelected) {
                 selectedItems = [id];
               }
             }
 
             setState({
+              dragging: true,
               selectedItems: selectedItems
             });
           };
@@ -596,7 +615,7 @@
               startDraggingLinkTarget: startDraggingLinkTarget,
               pinSize: pinSize,
               selected: selectedItems.indexOf(id) > -1,
-              selectLink: selectItem,
+              selectLink: selectItem(id),
               sourceSelected: sourceSelected,
               targetSelected: targetSelected,
               to: to,

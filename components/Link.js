@@ -150,7 +150,7 @@
             onMouseDown: function onMouseDown() {
               if (selected) deleteLink(id);
             },
-            onMouseUp: selectLink(id),
+            onMouseUp: selectLink,
             stroke: selected ? primaryColor : linkColor,
             strokeWidth: lineWidth
           }),

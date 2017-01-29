@@ -285,6 +285,7 @@
           view.node[nodeId].outs.splice(position, 1);
         };
 
+        // TODO this is not used buy now.
         var renameNode = function renameNode(nodeId, text) {
           view.node[nodeId].text = text;
         };

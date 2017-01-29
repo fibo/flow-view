@@ -87,10 +87,6 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  var getTime = function getTime() {
-    return new Date() / 1;
-  };
-
   var Frame = function (_Component) {
     _inherits(Frame, _Component);
 
@@ -109,7 +105,7 @@
         showSelector: false,
         selectedItems: [],
         selectionBoundingBox: null,
-        whenUpdated: getTime() // this attribute is used to force React render.
+        shiftPressed: false
       };
       return _this;
     }
@@ -117,9 +113,41 @@
     _createClass(Frame, [{
       key: 'componentDidMount',
       value: function componentDidMount() {
+        var _props = this.props,
+            createInputPin = _props.createInputPin,
+            deleteInputPin = _props.deleteInputPin,
+            view = _props.view;
+        var _state = this.state,
+            selectedItems = _state.selectedItems,
+            shiftPressed = _state.shiftPressed;
+
+
         var setState = this.setState.bind(this);
 
         var container = (0, _reactDom.findDOMNode)(this).parentNode;
+
+        document.addEventListener('keydown', function (e) {
+          if (e.code === 'Shift') setState({ shiftPressed: true });
+
+          // TODO it prints [], FIXME selectedItems
+          console.log(selectedItems);
+          console.log(e.code, view.node);
+          if (e.code === 'KeyI') {
+            selectedItems.forEach(function (id) {
+              if (view.node[id].ins && Object.keys(view.node).indexOf(id) > -1) {
+                if (shiftPressed) {
+                  deleteInputPin(id);
+                } else {
+                  createInputPin(id);
+                }
+              }
+            });
+          }
+        });
+
+        document.addEventListener('keyup', function (e) {
+          if (e.code === 'Shift') setState({ shiftPressed: false });
+        });
 
         window.addEventListener('scroll', function () {
           setState({ scroll: {
@@ -154,30 +182,30 @@
       value: function render() {
         var _this2 = this;
 
-        var _props = this.props,
-            createInputPin = _props.createInputPin,
-            createLink = _props.createLink,
-            _createNode = _props.createNode,
-            createOutputPin = _props.createOutputPin,
-            deleteInputPin = _props.deleteInputPin,
-            deleteLink = _props.deleteLink,
-            deleteNode = _props.deleteNode,
-            deleteOutputPin = _props.deleteOutputPin,
-            dragItems = _props.dragItems,
-            fontSize = _props.fontSize,
-            item = _props.item,
-            model = _props.model,
-            nodeList = _props.nodeList,
-            theme = _props.theme,
-            updateLink = _props.updateLink,
-            view = _props.view;
-        var _state = this.state,
-            draggedItems = _state.draggedItems,
-            draggedLinkId = _state.draggedLinkId,
-            pointer = _state.pointer,
-            dynamicView = _state.dynamicView,
-            selectedItems = _state.selectedItems,
-            showSelector = _state.showSelector;
+        var _props2 = this.props,
+            createInputPin = _props2.createInputPin,
+            createLink = _props2.createLink,
+            _createNode = _props2.createNode,
+            createOutputPin = _props2.createOutputPin,
+            deleteInputPin = _props2.deleteInputPin,
+            deleteLink = _props2.deleteLink,
+            deleteNode = _props2.deleteNode,
+            deleteOutputPin = _props2.deleteOutputPin,
+            dragItems = _props2.dragItems,
+            fontSize = _props2.fontSize,
+            item = _props2.item,
+            model = _props2.model,
+            nodeList = _props2.nodeList,
+            theme = _props2.theme,
+            updateLink = _props2.updateLink,
+            view = _props2.view;
+        var _state2 = this.state,
+            draggedItems = _state2.draggedItems,
+            draggedLinkId = _state2.draggedLinkId,
+            pointer = _state2.pointer,
+            dynamicView = _state2.dynamicView,
+            selectedItems = _state2.selectedItems,
+            showSelector = _state2.showSelector;
         var frameBorder = theme.frameBorder,
             fontFamily = theme.fontFamily,
             lineWidth = theme.lineWidth,
@@ -187,6 +215,12 @@
 
         var height = dynamicView.height || view.height;
         var width = dynamicView.width || view.width;
+
+        // Remove border, otherwise also server side SVGx renders
+        // miss the bottom and right border.
+        var border = 1; // TODO frameBorder is 1px, make it dynamic
+        height = height - 2 * border;
+        width = width - 2 * border;
 
         var typeOfNode = item.util.typeOfNode;
 
@@ -252,9 +286,9 @@
         };
 
         var getCoordinates = function getCoordinates(e) {
-          var _state2 = _this2.state,
-              offset = _state2.offset,
-              scroll = _state2.scroll;
+          var _state3 = _this2.state,
+              offset = _state3.offset,
+              scroll = _state3.scroll;
 
 
           return {
@@ -305,6 +339,7 @@
           e.stopPropagation();
 
           // TODO Shift key for multiple selection.
+          // use state shiftPressed
 
           setState({
             selectedItems: []
@@ -589,8 +624,7 @@
 
               setState({
                 selectedItems: [id],
-                showSelector: false,
-                whenUpdated: getTime()
+                showSelector: false
               });
             },
             nodeList: nodeList,

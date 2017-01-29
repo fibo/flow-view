@@ -9,8 +9,6 @@ import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
-const getTime = () => (new Date() / 1)
-
 class Frame extends Component {
   constructor (props) {
     super(props)
@@ -25,8 +23,7 @@ class Frame extends Component {
       showSelector: false,
       selectedItems: [],
       selectionBoundingBox: null,
-      shiftPressed: false,
-      whenUpdated: getTime() // this attribute is used to force React render.
+      shiftPressed: false
     }
   }
 
@@ -135,8 +132,14 @@ class Frame extends Component {
       pinSize
     } = theme
 
-    const height = dynamicView.height || view.height
-    const width = dynamicView.width || view.width
+    let height = dynamicView.height || view.height
+    let width = dynamicView.width || view.width
+
+    // Remove border, otherwise also server side SVGx renders
+    // miss the bottom and right border.
+    const border = 1 // TODO frameBorder is 1px, make it dynamic
+    height = height - 2 * border
+    width = width - 2 * border
 
     const typeOfNode = item.util.typeOfNode
 
@@ -537,8 +540,7 @@ class Frame extends Component {
 
             setState({
               selectedItems: [id],
-              showSelector: false,
-              whenUpdated: getTime()
+              showSelector: false
             })
           }}
           nodeList={nodeList}

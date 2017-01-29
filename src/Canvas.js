@@ -112,6 +112,14 @@ class Canvas extends EventEmitter {
       view.node[nodeId].outs.push(pin)
     }
 
+    const selectLink = (id) => {
+      this.emit('selectLink', id)
+    }
+
+    const selectNode = (id) => {
+      this.emit('selectNode', id)
+    }
+
     function generateId () {
       const id = randomString(idLength)
 
@@ -206,6 +214,18 @@ class Canvas extends EventEmitter {
       view.node[nodeId].ins.splice(position, 1)
     }
 
+    const endDragging = (selectNodes) => {
+      let nodesCoordinates = {}
+
+      selectNodes.forEach((id) => {
+        nodesCoordinates.id = {}
+        nodesCoordinates.id.x = view.node[id].x
+        nodesCoordinates.id.y = view.node[id].y
+      })
+
+      this.emit('endDragging', nodesCoordinates)
+    }
+
     const deleteOutputPin = (nodeId, position) => {
       const outs = view.node[nodeId].outs
 
@@ -259,10 +279,13 @@ class Canvas extends EventEmitter {
         deleteNode={deleteNode}
         deleteOutputPin={deleteOutputPin}
         dragItems={dragItems}
+        endDragging={endDragging}
         item={item}
         model={model}
         nodeList={item.nodeList}
         renameNode={renameNode}
+        selectLink={selectLink}
+        selectNode={selectNode}
         updateLink={updateLink}
         view={view}
       />

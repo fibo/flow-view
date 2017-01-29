@@ -192,6 +192,14 @@
           view.node[nodeId].outs.push(pin);
         };
 
+        var selectLink = function selectLink(id) {
+          _this2.emit('selectLink', id);
+        };
+
+        var selectNode = function selectNode(id) {
+          _this2.emit('selectNode', id);
+        };
+
         function generateId() {
           var id = (0, _randomString2.default)(idLength);
 
@@ -286,6 +294,18 @@
           view.node[nodeId].ins.splice(position, 1);
         };
 
+        var endDragging = function endDragging(selectNodes) {
+          var nodesCoordinates = {};
+
+          selectNodes.forEach(function (id) {
+            nodesCoordinates.id = {};
+            nodesCoordinates.id.x = view.node[id].x;
+            nodesCoordinates.id.y = view.node[id].y;
+          });
+
+          _this2.emit('endDragging', nodesCoordinates);
+        };
+
         var deleteOutputPin = function deleteOutputPin(nodeId, position) {
           var outs = view.node[nodeId].outs;
 
@@ -338,10 +358,13 @@
           deleteNode: deleteNode,
           deleteOutputPin: deleteOutputPin,
           dragItems: dragItems,
+          endDragging: endDragging,
           item: item,
           model: model,
           nodeList: item.nodeList,
           renameNode: renameNode,
+          selectLink: selectLink,
+          selectNode: selectNode,
           updateLink: updateLink,
           view: view
         });

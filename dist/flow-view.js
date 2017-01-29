@@ -50046,6 +50046,14 @@ var Canvas = function (_EventEmitter) {
         view.node[nodeId].outs.push(pin);
       };
 
+      var selectLink = function selectLink(id) {
+        _this2.emit('selectLink', id);
+      };
+
+      var selectNode = function selectNode(id) {
+        _this2.emit('selectNode', id);
+      };
+
       function generateId() {
         var id = (0, _randomString2.default)(idLength);
 
@@ -50140,6 +50148,18 @@ var Canvas = function (_EventEmitter) {
         view.node[nodeId].ins.splice(position, 1);
       };
 
+      var endDragging = function endDragging(selectNodes) {
+        var nodesCoordinates = {};
+
+        selectNodes.forEach(function (id) {
+          nodesCoordinates.id = {};
+          nodesCoordinates.id.x = view.node[id].x;
+          nodesCoordinates.id.y = view.node[id].y;
+        });
+
+        _this2.emit('endDragging', nodesCoordinates);
+      };
+
       var deleteOutputPin = function deleteOutputPin(nodeId, position) {
         var outs = view.node[nodeId].outs;
 
@@ -50192,10 +50212,13 @@ var Canvas = function (_EventEmitter) {
         deleteNode: deleteNode,
         deleteOutputPin: deleteOutputPin,
         dragItems: dragItems,
+        endDragging: endDragging,
         item: item,
         model: model,
         nodeList: item.nodeList,
         renameNode: renameNode,
+        selectLink: selectLink,
+        selectNode: selectNode,
         updateLink: updateLink,
         view: view
       });
@@ -50296,8 +50319,8 @@ var Frame = function (_Component) {
     _this.state = {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
-      draggedItems: [],
       dragging: false,
+      dragMoved: false,
       offset: { x: 0, y: 0 },
       pointer: null,
       scroll: { x: 0, y: 0 },
@@ -50328,7 +50351,9 @@ var Frame = function (_Component) {
 
       document.addEventListener('keydown', function (_ref) {
         var code = _ref.code;
+        var endDragging = _this2.props.endDragging;
         var _state = _this2.state,
+            dragMoved = _state.dragMoved,
             selectedItems = _state.selectedItems,
             shiftPressed = _state.shiftPressed;
 
@@ -50345,7 +50370,7 @@ var Frame = function (_Component) {
           return selectedItems.indexOf(id) > -1;
         });
 
-        if (selectedNodes.length > 0) {
+        if (selectedNodes.length > 0 && code.substring(0, 5) === 'Arrow') {
           var draggingDelta = { x: 0, y: 0 };
           var unit = shiftPressed ? 1 : 10;
 
@@ -50355,6 +50380,19 @@ var Frame = function (_Component) {
           if (code === 'ArrowDown') draggingDelta.y = unit;
 
           dragItems(draggingDelta, selectedNodes);
+
+          if (!dragMoved) {
+            setState({ dragMoved: true });
+          }
+
+          if (!shiftPressed) {
+            endDragging(selectedNodes);
+
+            setState({
+              dragMoved: false,
+              dragging: false
+            });
+          }
         }
 
         if (code === 'KeyI') {
@@ -50387,9 +50425,27 @@ var Frame = function (_Component) {
 
       document.addEventListener('keyup', function (_ref2) {
         var code = _ref2.code;
+        var endDragging = _this2.props.endDragging;
+        var _state2 = _this2.state,
+            dragMoved = _state2.dragMoved,
+            selectedItems = _state2.selectedItems;
+
+
+        var selectedNodes = Object.keys(view.node).filter(function (id) {
+          return selectedItems.indexOf(id) > -1;
+        });
 
         if (isShift(code)) {
           setState({ shiftPressed: false });
+
+          if (dragMoved && selectedNodes) {
+            endDragging(selectedNodes);
+
+            setState({
+              dragging: false,
+              dragMoved: false
+            });
+          }
         }
       });
 
@@ -50436,20 +50492,22 @@ var Frame = function (_Component) {
           deleteNode = _props2.deleteNode,
           deleteOutputPin = _props2.deleteOutputPin,
           dragItems = _props2.dragItems,
+          endDragging = _props2.endDragging,
           fontSize = _props2.fontSize,
           item = _props2.item,
           model = _props2.model,
           nodeList = _props2.nodeList,
+          selectLink = _props2.selectLink,
+          selectNode = _props2.selectNode,
           theme = _props2.theme,
           updateLink = _props2.updateLink,
           view = _props2.view;
-      var _state2 = this.state,
-          draggedItems = _state2.draggedItems,
-          draggedLinkId = _state2.draggedLinkId,
-          pointer = _state2.pointer,
-          dynamicView = _state2.dynamicView,
-          selectedItems = _state2.selectedItems,
-          showSelector = _state2.showSelector;
+      var _state3 = this.state,
+          draggedLinkId = _state3.draggedLinkId,
+          pointer = _state3.pointer,
+          dynamicView = _state3.dynamicView,
+          selectedItems = _state3.selectedItems,
+          showSelector = _state3.showSelector;
       var frameBorder = theme.frameBorder,
           fontFamily = theme.fontFamily,
           lineWidth = theme.lineWidth,
@@ -50534,9 +50592,9 @@ var Frame = function (_Component) {
       };
 
       var getCoordinates = function getCoordinates(e) {
-        var _state3 = _this3.state,
-            offset = _state3.offset,
-            scroll = _state3.scroll;
+        var _state4 = _this3.state,
+            offset = _state4.offset,
+            scroll = _state4.scroll;
 
 
         return {
@@ -50611,9 +50669,10 @@ var Frame = function (_Component) {
         e.preventDefault();
         e.stopPropagation();
 
-        var _state4 = _this3.state,
-            dragging = _state4.dragging,
-            selectedItems = _state4.selectedItems;
+        var _state5 = _this3.state,
+            dragging = _state5.dragging,
+            dragMoved = _state5.dragMoved,
+            selectedItems = _state5.selectedItems;
 
 
         var nextPointer = getCoordinates(e);
@@ -50629,6 +50688,10 @@ var Frame = function (_Component) {
           };
 
           dragItems(draggingDelta, selectedItems);
+
+          if (!dragMoved) {
+            setState({ dragMoved: true });
+          }
         }
       };
 
@@ -50636,7 +50699,11 @@ var Frame = function (_Component) {
         e.preventDefault();
         e.stopPropagation();
 
-        var draggedLinkId = _this3.state.draggedLinkId;
+        var _state6 = _this3.state,
+            draggedLinkId = _state6.draggedLinkId,
+            dragMoved = _state6.dragMoved,
+            selectedItems = _state6.selectedItems;
+
 
         if (draggedLinkId) {
           delete view.link[draggedLinkId];
@@ -50646,10 +50713,23 @@ var Frame = function (_Component) {
             pointer: null
           });
         } else {
-          setState({
-            dragging: false,
-            pointer: null
+          var selectedNodes = Object.keys(view.node).filter(function (id) {
+            return selectedItems.indexOf(id) > -1;
           });
+
+          if (dragMoved) {
+            endDragging(selectedNodes);
+
+            setState({
+              dragging: false,
+              dragMoved: false,
+              pointer: null
+            });
+          } else {
+            setState({
+              pointer: null
+            });
+          }
         }
       };
 
@@ -50674,9 +50754,9 @@ var Frame = function (_Component) {
           e.preventDefault();
           e.stopPropagation();
 
-          var _state5 = _this3.state,
-              draggedLinkId = _state5.draggedLinkId,
-              shiftPressed = _state5.shiftPressed;
+          var _state7 = _this3.state,
+              draggedLinkId = _state7.draggedLinkId,
+              shiftPressed = _state7.shiftPressed;
 
           // Do not select items when releasing a dragging link.
 
@@ -50705,6 +50785,16 @@ var Frame = function (_Component) {
           } else {
             if (!itemAlreadySelected) {
               selectedItems = [id];
+            }
+          }
+
+          if (!itemAlreadySelected) {
+            if (Object.keys(view.node).indexOf(id) > -1) {
+              selectNode(id);
+            }
+
+            if (Object.keys(view.link).indexOf(id) > -1) {
+              selectLink(id);
             }
           }
 
@@ -50764,7 +50854,6 @@ var Frame = function (_Component) {
           return _react2.default.createElement(Node, { key: i,
             createInputPin: createInputPin,
             createOutputPin: createOutputPin,
-            dragged: draggedItems.indexOf(id) > -1,
             draggedLinkId: draggedLinkId,
             deleteInputPin: deleteInputPin,
             deleteNode: deleteNode,
@@ -50794,8 +50883,8 @@ var Frame = function (_Component) {
 
 
           var coord = coordinatesOfLink(view.link[id]);
-          var sourceSelected = from ? draggedItems.indexOf(from[0]) > -1 || selectedItems.indexOf(from[0]) > -1 : false;
-          var targetSelected = to ? draggedItems.indexOf(to[0]) > -1 || selectedItems.indexOf(to[0]) > -1 : false;
+          var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
+          var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
 
           return _react2.default.createElement(Link, { key: i,
             deleteLink: deleteLink,
@@ -50846,6 +50935,7 @@ Frame.propTypes = {
   deleteNode: _react.PropTypes.func.isRequired,
   deleteOutputPin: _react.PropTypes.func.isRequired,
   dragItems: _react.PropTypes.func.isRequired,
+  endDragging: _react.PropTypes.func.isRequired,
   fontSize: _react.PropTypes.number.isRequired,
   item: _react.PropTypes.shape({
     link: _react.PropTypes.object.isRequired,
@@ -50854,6 +50944,8 @@ Frame.propTypes = {
       typeOfNode: _react.PropTypes.func.isRequired
     })
   }).isRequired,
+  selectLink: _react.PropTypes.func.isRequired,
+  selectNode: _react.PropTypes.func.isRequired,
   theme: _theme2.default.propTypes,
   updateLink: _react.PropTypes.func.isRequired,
   view: _react.PropTypes.shape({
@@ -50874,6 +50966,7 @@ Frame.defaultProps = {
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
+  endDragging: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     link: { DefaultLink: _Link2.default },
@@ -50885,6 +50978,8 @@ Frame.defaultProps = {
     }
   },
   theme: _theme2.default.defaultProps,
+  selectLink: Function.prototype,
+  selectNode: Function.prototype,
   updateLink: Function.prototype,
   view: {
     link: {},
@@ -51319,7 +51414,7 @@ var Node = function (_Component) {
     key: 'render',
     value: function render() {
       var _props9 = this.props,
-          dragged = _props9.dragged,
+          dragging = _props9.dragging,
           draggedLinkId = _props9.draggedLinkId,
           id = _props9.id,
           ins = _props9.ins,
@@ -51348,7 +51443,7 @@ var Node = function (_Component) {
           onDoubleClick: _ignoreEvent2.default,
           onMouseDown: selectNode,
           style: {
-            cursor: dragged ? 'pointer' : 'default'
+            cursor: dragging ? 'pointer' : 'default'
           },
           transform: 'translate(' + x + ',' + y + ')'
         },
@@ -51360,12 +51455,12 @@ var Node = function (_Component) {
         _react2.default.createElement('rect', {
           fillOpacity: 0,
           height: bodyHeight + 2 * pinSize,
-          stroke: selected || dragged ? primaryColor : nodeBarColor,
+          stroke: selected ? primaryColor : nodeBarColor,
           strokeWidth: 1,
           width: computedWidth
         }),
         _react2.default.createElement('rect', {
-          fill: selected || dragged ? primaryColor : nodeBarColor,
+          fill: selected ? primaryColor : nodeBarColor,
           height: pinSize,
           width: computedWidth
         }),
@@ -51383,7 +51478,7 @@ var Node = function (_Component) {
 
           return _react2.default.createElement('rect', {
             key: i,
-            fill: selected || dragged ? darkPrimaryColor : pinColor,
+            fill: selected ? darkPrimaryColor : pinColor,
             height: pinSize,
             onMouseDown: _ignoreEvent2.default,
             onMouseUp: onMouseUp,
@@ -51393,7 +51488,7 @@ var Node = function (_Component) {
         }),
         bodyContent,
         _react2.default.createElement('rect', {
-          fill: selected || dragged ? primaryColor : nodeBarColor,
+          fill: selected ? primaryColor : nodeBarColor,
           height: pinSize,
           transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
           width: computedWidth
@@ -51410,7 +51505,7 @@ var Node = function (_Component) {
 
           return _react2.default.createElement('rect', {
             key: i,
-            fill: selected || dragged ? darkPrimaryColor : pinColor,
+            fill: selected ? darkPrimaryColor : pinColor,
             height: pinSize,
             onClick: _ignoreEvent2.default,
             onMouseLeave: _ignoreEvent2.default,
@@ -51433,7 +51528,7 @@ Node.propTypes = {
   deleteInputPin: _react.PropTypes.func.isRequired,
   deleteNode: _react.PropTypes.func.isRequired,
   deleteOutputPin: _react.PropTypes.func.isRequired,
-  dragged: _react.PropTypes.bool.isRequired,
+  dragging: _react.PropTypes.bool.isRequired,
   draggedLinkId: _react.PropTypes.string,
   fontSize: _react.PropTypes.number.isRequired,
   id: _react.PropTypes.string,
@@ -51457,7 +51552,7 @@ Node.defaultProps = {
   deleteInputPin: Function.prototype,
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
-  dragged: false, // TODO looks more like a state
+  dragging: false,
   draggedLinkId: null,
   multiSelection: false,
   onCreateLink: Function.prototype,

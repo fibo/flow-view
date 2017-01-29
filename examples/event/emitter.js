@@ -34,8 +34,20 @@ canvas.on('deleteOutputPin', (nodeId, position) => {
   console.log('deleteOutputPin', nodeId, position)
 })
 
+canvas.on('endDragging', (selectNodes) => {
+  console.log('endDragging', selectNodes)
+})
+
 canvas.on('renameNode', (nodeId, text) => {
   console.log('renameNode', nodeId, text)
+})
+
+canvas.on('selectLink', (id) => {
+  console.log('selectLink', id)
+})
+
+canvas.on('selectNode', (id) => {
+  console.log('selectNode', id)
 })
 
 canvas.render({

@@ -1,5 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { findDOMNode } from 'react-dom'
+
+import no from 'not-defined'
+
 import computeNodeWidth from '../utils/computeNodeWidth'
 import DefaultLink from './Link'
 import DefaultNode from './Node'
@@ -8,6 +11,10 @@ import ignoreEvent from '../utils/ignoreEvent'
 
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
+
+const isShift = (code) => (
+  (code === 'ShiftLeft') || (code === 'ShiftRight')
+)
 
 class Frame extends Component {
   constructor (props) {
@@ -22,7 +29,6 @@ class Frame extends Component {
       scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
-      selectionBoundingBox: null,
       shiftPressed: false
     }
   }
@@ -30,28 +36,48 @@ class Frame extends Component {
   componentDidMount () {
     const {
       createInputPin,
+      createOutputPin,
       deleteInputPin,
+      deleteOutputPin,
+      dragItems,
       view
     } = this.props
-
-    const {
-      selectedItems,
-      shiftPressed
-    } = this.state
 
     const setState = this.setState.bind(this)
 
     const container = findDOMNode(this).parentNode
 
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Shift') setState({ shiftPressed: true })
+    document.addEventListener('keydown', ({ code }) => {
+      const {
+        selectedItems,
+        shiftPressed
+      } = this.state
 
-      // TODO it prints [], FIXME selectedItems
-      console.log(selectedItems)
-      console.log(e.code, view.node)
-      if (e.code === 'KeyI') {
+      if (isShift(code)) {
+        setState({ shiftPressed: true })
+      }
+
+      if (code === 'Escape') {
+        setState({ selectedItems: [] })
+      }
+
+      const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+
+      if (selectedNodes.length > 0) {
+        const draggingDelta = { x: 0, y: 0 }
+        const unit = shiftPressed ? 1 : 10
+
+        if (code === 'ArrowLeft') draggingDelta.x = -unit
+        if (code === 'ArrowRight') draggingDelta.x = unit
+        if (code === 'ArrowUp') draggingDelta.y = -unit
+        if (code === 'ArrowDown') draggingDelta.y = unit
+
+        dragItems(draggingDelta, selectedNodes)
+      }
+
+      if (code === 'KeyI') {
         selectedItems.forEach((id) => {
-          if (view.node[id].ins && Object.keys(view.node).indexOf(id) > -1) {
+          if (view.node[id] && view.node[id].ins) {
             if (shiftPressed) {
               deleteInputPin(id)
             } else {
@@ -60,10 +86,27 @@ class Frame extends Component {
           }
         })
       }
+
+      if (code === 'KeyO') {
+        selectedItems.forEach((id) => {
+          if (view.node[id] && view.node[id].outs) {
+            if (shiftPressed) {
+              deleteOutputPin(id)
+            } else {
+              createOutputPin(id)
+            }
+          }
+        })
+      }
+
+      // Since state or props are not modified it is necessary to force update.
+      this.forceUpdate()
     })
 
-    document.addEventListener('keyup', (e) => {
-      if (e.code === 'Shift') setState({ shiftPressed: false })
+    document.addEventListener('keyup', ({ code }) => {
+      if (isShift(code)) {
+        setState({ shiftPressed: false })
+      }
     })
 
     window.addEventListener('scroll', () => {
@@ -163,6 +206,8 @@ class Frame extends Component {
       if (sourceId) {
         const source = view.node[sourceId]
 
+        if (no(source.outs)) source.outs = {}
+
         computedWidth = computeNodeWidth({
           bodyHeight: nodeBodyHeight,
           pinSize,
@@ -176,6 +221,8 @@ class Frame extends Component {
 
       if (targetId) {
         const target = view.node[targetId]
+
+        if (no(target.ins)) target.ins = {}
 
         computedWidth = computeNodeWidth({
           bodyHeight: nodeBodyHeight,
@@ -250,9 +297,7 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      // TODO Shift key for multiple selection.
-      // use state shiftPressed
-
+      // TODO code here to start selectedArea dragging
       setState({
         selectedItems: []
       })
@@ -310,8 +355,6 @@ class Frame extends Component {
         })
       } else {
         setState({
-          draggedItems: [],
-          selectedItems: [],
           pointer: null
         })
       }
@@ -337,11 +380,12 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      let boundingBox = null
+      const {
+        draggedLinkId,
+        shiftPressed
+      } = this.state
 
       // Do not select items when releasing a dragging link.
-
-      const draggedLinkId = this.state.draggedLinkId
 
       if (draggedLinkId) {
         delete view.link[draggedLinkId]
@@ -353,51 +397,30 @@ class Frame extends Component {
         return
       }
 
-      var selectedItems = Object.assign([], this.state.selectedItems)
+      let selectedItems = Object.assign([], this.state.selectedItems)
 
       const index = selectedItems.indexOf(id)
 
-      if (index === -1) {
-        // Shift key allows multiple selection.
-        if (e.shiftKey) {
-          // TODO it does not work.
+      const itemAlreadySelected = index > -1
+
+      // Shift key allows multiple selection.
+
+      if (shiftPressed) {
+        if (itemAlreadySelected) {
+          selectedItems.splice(index, 1)
+        } else {
           selectedItems.push(id)
+        }
+      } else {
+        if (itemAlreadySelected) {
+          return
         } else {
           selectedItems = [id]
         }
-      } else {
-        selectedItems.splice(index, 1)
       }
 
-      selectedItems.forEach((id) => {
-        var link = view.link[id]
-        var node = view.node[id]
-
-        if (node) {
-          const computedWidth = computeNodeWidth({
-            bodyHeight: nodeBodyHeight,
-            pinSize,
-            fontSize,
-            node
-          })
-
-          boundingBox = {
-            x1: node.x,
-            y1: node.y,
-            x2: computedWidth + node.x,
-            y2: nodeBodyHeight + node.y
-          }
-        }
-
-        if (link) {
-          boundingBox = coordinatesOfLink(link)
-        }
-      })
-
       setState({
-        draggedItems: [],
-        selectedItems,
-        selectionBoundingBox: boundingBox
+        selectedItems
       })
     }
 
@@ -413,30 +436,6 @@ class Frame extends Component {
       // target and then drop it again in the same target.
       const draggedLinkId = createLink({ from })
       setState({ draggedLinkId })
-    }
-
-    const willDragItem = (id) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      var draggedItems = Object.assign([], this.state.draggedItems)
-
-      const index = draggedItems.indexOf(id)
-
-      if (index === -1) {
-        // Shift key allows multiple selection.
-        if (e.shiftKey) {
-          // TODO it does not work.
-          draggedItems.push(id)
-        } else {
-          draggedItems = [id]
-        }
-      }
-
-      setState({
-        draggedItems,
-        selectedItems: []
-      })
     }
 
     return (
@@ -485,6 +484,7 @@ class Frame extends Component {
               id={id}
               ins={ins}
               model={model}
+              multiSelection={(selectedItems.length > 1)}
               onCreateLink={onCreateLink}
               outs={outs}
               pinSize={pinSize}
@@ -493,7 +493,6 @@ class Frame extends Component {
               text={text}
               updateLink={onUpdateLink}
               width={width}
-              willDragNode={willDragItem(id)}
               x={x}
               y={y}
             />

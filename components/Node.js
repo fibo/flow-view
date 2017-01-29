@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', '../utils/ignoreEvent', '../utils/xOfPin', '../utils/computeNodeWidth', './theme'], factory);
+    define(['module', 'exports', 'react', 'not-defined', '../utils/computeNodeWidth', '../utils/ignoreEvent', './theme', '../utils/xOfPin'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('../utils/computeNodeWidth'), require('./theme'));
+    factory(module, exports, require('react'), require('not-defined'), require('../utils/computeNodeWidth'), require('../utils/ignoreEvent'), require('./theme'), require('../utils/xOfPin'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.ignoreEvent, global.xOfPin, global.computeNodeWidth, global.theme);
+    factory(mod, mod.exports, global.react, global.notDefined, global.computeNodeWidth, global.ignoreEvent, global.theme, global.xOfPin);
     global.Node = mod.exports;
   }
-})(this, function (module, exports, _react, _ignoreEvent, _xOfPin, _computeNodeWidth, _theme) {
+})(this, function (module, exports, _react, _notDefined, _computeNodeWidth, _ignoreEvent, _theme, _xOfPin) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -19,13 +19,15 @@
 
   var _react2 = _interopRequireDefault(_react);
 
-  var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
-  var _xOfPin2 = _interopRequireDefault(_xOfPin);
+  var _notDefined2 = _interopRequireDefault(_notDefined);
 
   var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
+  var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
+
   var _theme2 = _interopRequireDefault(_theme);
+
+  var _xOfPin2 = _interopRequireDefault(_xOfPin);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -166,10 +168,14 @@
         var _props4 = this.props,
             deleteNode = _props4.deleteNode,
             id = _props4.id,
+            multiSelection = _props4.multiSelection,
+            selected = _props4.selected,
             theme = _props4.theme;
         var primaryColor = theme.primaryColor,
             pinSize = theme.pinSize;
 
+
+        if (selected === false || multiSelection) return null;
 
         return _react2.default.createElement('path', {
           d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
@@ -187,10 +193,14 @@
             deleteInputPin = _props5.deleteInputPin,
             id = _props5.id,
             ins = _props5.ins,
+            multiSelection = _props5.multiSelection,
+            selected = _props5.selected,
             theme = _props5.theme;
         var primaryColor = theme.primaryColor,
             pinSize = theme.pinSize;
 
+
+        if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
 
         var computedWidth = this.getComputedWidth();
         var disabled = ins.length === 0;
@@ -211,10 +221,15 @@
         var _props6 = this.props,
             createInputPin = _props6.createInputPin,
             id = _props6.id,
+            ins = _props6.ins,
+            multiSelection = _props6.multiSelection,
+            selected = _props6.selected,
             theme = _props6.theme;
         var primaryColor = theme.primaryColor,
             pinSize = theme.pinSize;
 
+
+        if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
 
         var computedWidth = this.getComputedWidth();
 
@@ -234,11 +249,15 @@
         var _props7 = this.props,
             deleteOutputPin = _props7.deleteOutputPin,
             id = _props7.id,
+            multiSelection = _props7.multiSelection,
             outs = _props7.outs,
+            selected = _props7.selected,
             theme = _props7.theme;
         var primaryColor = theme.primaryColor,
             pinSize = theme.pinSize;
 
+
+        if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
 
         var bodyHeight = this.getBodyHeight();
         var computedWidth = this.getComputedWidth();
@@ -260,10 +279,15 @@
         var _props8 = this.props,
             createOutputPin = _props8.createOutputPin,
             id = _props8.id,
+            multiSelection = _props8.multiSelection,
+            outs = _props8.outs,
+            selected = _props8.selected,
             theme = _props8.theme;
         var primaryColor = theme.primaryColor,
             pinSize = theme.pinSize;
 
+
+        if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
 
         var bodyHeight = this.getBodyHeight();
         var computedWidth = this.getComputedWidth();
@@ -292,7 +316,6 @@
             selectNode = _props9.selectNode,
             theme = _props9.theme,
             updateLink = _props9.updateLink,
-            willDragNode = _props9.willDragNode,
             x = _props9.x,
             y = _props9.y;
         var darkPrimaryColor = theme.darkPrimaryColor,
@@ -310,18 +333,17 @@
           'g',
           {
             onDoubleClick: _ignoreEvent2.default,
-            onMouseDown: willDragNode,
-            onMouseUp: selectNode,
+            onMouseDown: selectNode,
             style: {
               cursor: dragged ? 'pointer' : 'default'
             },
             transform: 'translate(' + x + ',' + y + ')'
           },
-          selected ? this.getDeleteButton() : null,
-          selected ? this.getInputMinus() : null,
-          selected ? this.getInputPlus() : null,
-          selected ? this.getOutputMinus() : null,
-          selected ? this.getOutputPlus() : null,
+          this.getDeleteButton(),
+          this.getInputMinus(),
+          this.getInputPlus(),
+          this.getOutputMinus(),
+          this.getOutputPlus(),
           _react2.default.createElement('rect', {
             fillOpacity: 0,
             height: bodyHeight + 2 * pinSize,
@@ -334,7 +356,7 @@
             height: pinSize,
             width: computedWidth
           }),
-          ins.map(function (pin, i, array) {
+          ins && ins.map(function (pin, i, array) {
             var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
             var onMouseUp = function onMouseUp(e) {
@@ -363,7 +385,7 @@
             transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
             width: computedWidth
           }),
-          outs.map(function (pin, i, array) {
+          outs && outs.map(function (pin, i, array) {
             var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
             var onMouseDown = function onMouseDown(e) {
@@ -402,8 +424,9 @@
     draggedLinkId: _react.PropTypes.string,
     fontSize: _react.PropTypes.number.isRequired,
     id: _react.PropTypes.string,
-    ins: _react.PropTypes.array.isRequired,
-    outs: _react.PropTypes.array.isRequired,
+    ins: _react.PropTypes.array,
+    multiSelection: _react.PropTypes.bool.isRequired,
+    outs: _react.PropTypes.array,
     onCreateLink: _react.PropTypes.func.isRequired,
     selected: _react.PropTypes.bool.isRequired,
     selectNode: _react.PropTypes.func.isRequired,
@@ -411,7 +434,6 @@
     theme: _theme2.default.propTypes,
     updateLink: _react.PropTypes.func.isRequired,
     width: _react.PropTypes.number,
-    willDragNode: _react.PropTypes.func.isRequired,
     x: _react.PropTypes.number.isRequired,
     y: _react.PropTypes.number.isRequired
   };
@@ -424,15 +446,13 @@
     deleteOutputPin: Function.prototype,
     dragged: false, // TODO looks more like a state
     draggedLinkId: null,
-    ins: [],
+    multiSelection: false,
     onCreateLink: Function.prototype,
-    outs: [],
     selected: false,
     selectNode: Function.prototype,
     text: 'Node',
     theme: _theme2.default.defaultProps,
-    updateLink: Function.prototype,
-    willDragNode: Function.prototype
+    updateLink: Function.prototype
   };
 
   exports.default = Node;

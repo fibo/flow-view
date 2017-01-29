@@ -1,8 +1,11 @@
 import React, { PropTypes, Component } from 'react'
-import ignoreEvent from '../utils/ignoreEvent'
-import xOfPin from '../utils/xOfPin'
+
+import no from 'not-defined'
+
 import computeNodeWidth from '../utils/computeNodeWidth'
+import ignoreEvent from '../utils/ignoreEvent'
 import theme from './theme'
+import xOfPin from '../utils/xOfPin'
 
 const minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
@@ -76,6 +79,8 @@ class Node extends Component {
     const {
       deleteNode,
       id,
+      multiSelection,
+      selected,
       theme
     } = this.props
 
@@ -83,6 +88,8 @@ class Node extends Component {
       primaryColor,
       pinSize
     } = theme
+
+    if ((selected === false) || multiSelection) return null
 
     return (
       <path
@@ -99,6 +106,8 @@ class Node extends Component {
       deleteInputPin,
       id,
       ins,
+      multiSelection,
+      selected,
       theme
     } = this.props
 
@@ -106,6 +115,8 @@ class Node extends Component {
       primaryColor,
       pinSize
     } = theme
+
+    if (no(ins) || (selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
     const disabled = ins.length === 0
@@ -128,6 +139,9 @@ class Node extends Component {
     const {
       createInputPin,
       id,
+      ins,
+      multiSelection,
+      selected,
       theme
     } = this.props
 
@@ -135,6 +149,8 @@ class Node extends Component {
       primaryColor,
       pinSize
     } = theme
+
+    if (no(ins) || (selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
 
@@ -153,7 +169,9 @@ class Node extends Component {
     const {
       deleteOutputPin,
       id,
+      multiSelection,
       outs,
+      selected,
       theme
     } = this.props
 
@@ -161,6 +179,8 @@ class Node extends Component {
       primaryColor,
       pinSize
     } = theme
+
+    if (no(outs) || (selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
@@ -184,6 +204,9 @@ class Node extends Component {
     const {
       createOutputPin,
       id,
+      multiSelection,
+      outs,
+      selected,
       theme
     } = this.props
 
@@ -191,6 +214,8 @@ class Node extends Component {
       primaryColor,
       pinSize
     } = theme
+
+    if (no(outs) || (selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
@@ -218,7 +243,6 @@ class Node extends Component {
       selectNode,
       theme,
       updateLink,
-      willDragNode,
       x,
       y
     } = this.props
@@ -238,18 +262,17 @@ class Node extends Component {
     return (
       <g
         onDoubleClick={ignoreEvent}
-        onMouseDown={willDragNode}
-        onMouseUp={selectNode}
+        onMouseDown={selectNode}
         style={{
           cursor: (dragged ? 'pointer' : 'default')
         }}
         transform={`translate(${x},${y})`}
       >
-        {selected ? this.getDeleteButton() : null}
-        {selected ? this.getInputMinus() : null}
-        {selected ? this.getInputPlus() : null}
-        {selected ? this.getOutputMinus() : null}
-        {selected ? this.getOutputPlus() : null}
+        {this.getDeleteButton()}
+        {this.getInputMinus()}
+        {this.getInputPlus()}
+        {this.getOutputMinus()}
+        {this.getOutputPlus()}
         <rect
           fillOpacity={0}
           height={bodyHeight + 2 * pinSize}
@@ -262,7 +285,7 @@ class Node extends Component {
           height={pinSize}
           width={computedWidth}
         />
-        {ins.map((pin, i, array) => {
+        {ins && ins.map((pin, i, array) => {
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
           const onMouseUp = (e) => {
@@ -293,7 +316,7 @@ class Node extends Component {
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}
         />
-        {outs.map((pin, i, array) => {
+        {outs && outs.map((pin, i, array) => {
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
           const onMouseDown = (e) => {
@@ -332,8 +355,9 @@ Node.propTypes = {
   draggedLinkId: PropTypes.string,
   fontSize: PropTypes.number.isRequired,
   id: PropTypes.string,
-  ins: PropTypes.array.isRequired,
-  outs: PropTypes.array.isRequired,
+  ins: PropTypes.array,
+  multiSelection: PropTypes.bool.isRequired,
+  outs: PropTypes.array,
   onCreateLink: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
   selectNode: PropTypes.func.isRequired,
@@ -341,7 +365,6 @@ Node.propTypes = {
   theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   width: PropTypes.number,
-  willDragNode: PropTypes.func.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired
 }
@@ -354,15 +377,13 @@ Node.defaultProps = {
   deleteOutputPin: Function.prototype,
   dragged: false, // TODO looks more like a state
   draggedLinkId: null,
-  ins: [],
+  multiSelection: false,
   onCreateLink: Function.prototype,
-  outs: [],
   selected: false,
   selectNode: Function.prototype,
   text: 'Node',
   theme: theme.defaultProps,
-  updateLink: Function.prototype,
-  willDragNode: Function.prototype
+  updateLink: Function.prototype
 }
 
 export default Node

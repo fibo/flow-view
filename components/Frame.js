@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', '../utils/computeNodeWidth', './Link', './Node', './theme', '../utils/ignoreEvent', '../utils/xOfPin', './Selector'], factory);
+    define(['module', 'exports', 'react', 'react-dom', 'not-defined', '../utils/computeNodeWidth', './Link', './Node', './theme', '../utils/ignoreEvent', '../utils/xOfPin', './Selector'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('../utils/computeNodeWidth'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('./Selector'));
+    factory(module, exports, require('react'), require('react-dom'), require('not-defined'), require('../utils/computeNodeWidth'), require('./Link'), require('./Node'), require('./theme'), require('../utils/ignoreEvent'), require('../utils/xOfPin'), require('./Selector'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.computeNodeWidth, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
+    factory(mod, mod.exports, global.react, global.reactDom, global.notDefined, global.computeNodeWidth, global.Link, global.Node, global.theme, global.ignoreEvent, global.xOfPin, global.Selector);
     global.Frame = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _computeNodeWidth, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
+})(this, function (module, exports, _react, _reactDom, _notDefined, _computeNodeWidth, _Link, _Node, _theme, _ignoreEvent, _xOfPin, _Selector) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -18,6 +18,8 @@
   });
 
   var _react2 = _interopRequireDefault(_react);
+
+  var _notDefined2 = _interopRequireDefault(_notDefined);
 
   var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
@@ -87,6 +89,10 @@
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
+  var isShift = function isShift(code) {
+    return code === 'ShiftLeft' || code === 'ShiftRight';
+  };
+
   var Frame = function (_Component) {
     _inherits(Frame, _Component);
 
@@ -104,7 +110,6 @@
         scroll: { x: 0, y: 0 },
         showSelector: false,
         selectedItems: [],
-        selectionBoundingBox: null,
         shiftPressed: false
       };
       return _this;
@@ -113,13 +118,14 @@
     _createClass(Frame, [{
       key: 'componentDidMount',
       value: function componentDidMount() {
+        var _this2 = this;
+
         var _props = this.props,
             createInputPin = _props.createInputPin,
+            createOutputPin = _props.createOutputPin,
             deleteInputPin = _props.deleteInputPin,
+            deleteOutputPin = _props.deleteOutputPin,
             view = _props.view;
-        var _state = this.state,
-            selectedItems = _state.selectedItems,
-            shiftPressed = _state.shiftPressed;
 
 
         var setState = this.setState.bind(this);
@@ -127,26 +133,54 @@
         var container = (0, _reactDom.findDOMNode)(this).parentNode;
 
         document.addEventListener('keydown', function (e) {
-          if (e.code === 'Shift') setState({ shiftPressed: true });
+          var _state = _this2.state,
+              selectedItems = _state.selectedItems,
+              shiftPressed = _state.shiftPressed;
 
-          // TODO it prints [], FIXME selectedItems
-          console.log(selectedItems);
-          console.log(e.code, view.node);
+
+          if (isShift(e.code)) {
+            setState({ shiftPressed: true });
+          }
+
+          if (e.code === 'Escape') {
+            setState({ selectedItems: [] });
+          }
+
           if (e.code === 'KeyI') {
             selectedItems.forEach(function (id) {
-              if (view.node[id].ins && Object.keys(view.node).indexOf(id) > -1) {
+              if (view.node[id] && view.node[id].ins) {
                 if (shiftPressed) {
                   deleteInputPin(id);
                 } else {
                   createInputPin(id);
                 }
+
+                // Since state or props are not modified it is necessary to force update.
+                _this2.forceUpdate();
+              }
+            });
+          }
+
+          if (e.code === 'KeyO') {
+            selectedItems.forEach(function (id) {
+              if (view.node[id] && view.node[id].outs) {
+                if (shiftPressed) {
+                  deleteOutputPin(id);
+                } else {
+                  createOutputPin(id);
+                }
+
+                // Since state or props are not modified it is necessary to force update.
+                _this2.forceUpdate();
               }
             });
           }
         });
 
         document.addEventListener('keyup', function (e) {
-          if (e.code === 'Shift') setState({ shiftPressed: false });
+          if (isShift(e.code)) {
+            setState({ shiftPressed: false });
+          }
         });
 
         window.addEventListener('scroll', function () {
@@ -180,7 +214,7 @@
     }, {
       key: 'render',
       value: function render() {
-        var _this2 = this;
+        var _this3 = this;
 
         var _props2 = this.props,
             createInputPin = _props2.createInputPin,
@@ -251,6 +285,8 @@
           if (sourceId) {
             var source = view.node[sourceId];
 
+            if ((0, _notDefined2.default)(source.outs)) source.outs = {};
+
             computedWidth = (0, _computeNodeWidth2.default)({
               bodyHeight: nodeBodyHeight,
               pinSize: pinSize,
@@ -264,6 +300,8 @@
 
           if (targetId) {
             var target = view.node[targetId];
+
+            if ((0, _notDefined2.default)(target.ins)) target.ins = {};
 
             computedWidth = (0, _computeNodeWidth2.default)({
               bodyHeight: nodeBodyHeight,
@@ -286,7 +324,7 @@
         };
 
         var getCoordinates = function getCoordinates(e) {
-          var _state3 = _this2.state,
+          var _state3 = _this3.state,
               offset = _state3.offset,
               scroll = _state3.scroll;
 
@@ -338,9 +376,7 @@
           e.preventDefault();
           e.stopPropagation();
 
-          // TODO Shift key for multiple selection.
-          // use state shiftPressed
-
+          // TODO code here to start selectedArea dragging
           setState({
             selectedItems: []
           });
@@ -350,7 +386,7 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var draggedLinkId = _this2.state.draggedLinkId;
+          var draggedLinkId = _this3.state.draggedLinkId;
           if (draggedLinkId) delete view.link[draggedLinkId];
 
           setState({
@@ -371,7 +407,7 @@
             pointer: nextPointer
           });
 
-          var draggedItems = _this2.state.draggedItems;
+          var draggedItems = _this3.state.draggedItems;
 
           if (draggedItems.length > 0) {
             var draggingDelta = {
@@ -387,7 +423,7 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var draggedLinkId = _this2.state.draggedLinkId;
+          var draggedLinkId = _this3.state.draggedLinkId;
 
           if (draggedLinkId) {
             delete view.link[draggedLinkId];
@@ -398,8 +434,6 @@
             });
           } else {
             setState({
-              draggedItems: [],
-              selectedItems: [],
               pointer: null
             });
           }
@@ -426,11 +460,12 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var boundingBox = null;
+            var _state4 = _this3.state,
+                draggedLinkId = _state4.draggedLinkId,
+                shiftPressed = _state4.shiftPressed;
+
 
             // Do not select items when releasing a dragging link.
-
-            var draggedLinkId = _this2.state.draggedLinkId;
 
             if (draggedLinkId) {
               delete view.link[draggedLinkId];
@@ -442,51 +477,30 @@
               return;
             }
 
-            var selectedItems = Object.assign([], _this2.state.selectedItems);
+            var selectedItems = Object.assign([], _this3.state.selectedItems);
 
             var index = selectedItems.indexOf(id);
 
-            if (index === -1) {
-              // Shift key allows multiple selection.
-              if (e.shiftKey) {
-                // TODO it does not work.
+            var itemAlreadySelected = index > -1;
+
+            // Shift key allows multiple selection.
+
+            if (shiftPressed) {
+              if (itemAlreadySelected) {
+                selectedItems.splice(index, 1);
+              } else {
                 selectedItems.push(id);
+              }
+            } else {
+              if (itemAlreadySelected) {
+                return;
               } else {
                 selectedItems = [id];
               }
-            } else {
-              selectedItems.splice(index, 1);
             }
 
-            selectedItems.forEach(function (id) {
-              var link = view.link[id];
-              var node = view.node[id];
-
-              if (node) {
-                var computedWidth = (0, _computeNodeWidth2.default)({
-                  bodyHeight: nodeBodyHeight,
-                  pinSize: pinSize,
-                  fontSize: fontSize,
-                  node: node
-                });
-
-                boundingBox = {
-                  x1: node.x,
-                  y1: node.y,
-                  x2: computedWidth + node.x,
-                  y2: nodeBodyHeight + node.y
-                };
-              }
-
-              if (link) {
-                boundingBox = coordinatesOfLink(link);
-              }
-            });
-
             setState({
-              draggedItems: [],
-              selectedItems: selectedItems,
-              selectionBoundingBox: boundingBox
+              selectedItems: selectedItems
             });
           };
         };
@@ -503,32 +517,6 @@
           // target and then drop it again in the same target.
           var draggedLinkId = createLink({ from: from });
           setState({ draggedLinkId: draggedLinkId });
-        };
-
-        var willDragItem = function willDragItem(id) {
-          return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var draggedItems = Object.assign([], _this2.state.draggedItems);
-
-            var index = draggedItems.indexOf(id);
-
-            if (index === -1) {
-              // Shift key allows multiple selection.
-              if (e.shiftKey) {
-                // TODO it does not work.
-                draggedItems.push(id);
-              } else {
-                draggedItems = [id];
-              }
-            }
-
-            setState({
-              draggedItems: draggedItems,
-              selectedItems: []
-            });
-          };
         };
 
         return _react2.default.createElement(
@@ -576,6 +564,7 @@
               id: id,
               ins: ins,
               model: model,
+              multiSelection: selectedItems.length > 1,
               onCreateLink: onCreateLink,
               outs: outs,
               pinSize: pinSize,
@@ -584,7 +573,6 @@
               text: text,
               updateLink: onUpdateLink,
               width: width,
-              willDragNode: willDragItem(id),
               x: x,
               y: y
             });

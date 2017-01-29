@@ -17,7 +17,8 @@ see [online example][online_example].
 
 [![sample view][sample_view_svg]][online_example]
 
-The following animated gif represents a family free.
+The following animated gif represents a family tree. You can use autocompletion
+thanks to `nodeList` option parameter.
 
 ![The Simpsons][simpsons_gif]
 
@@ -134,7 +135,6 @@ canvas.render({
   node: {
     a: {
       x: 80, y: 100,
-      width: 100,
       text: 'Drag me',
       outs: ['out1', 'out2', 'out3']
     },
@@ -193,13 +193,15 @@ A node describes an element and has the following attributes:
 * **@param** `Number` *x* coordinate of top left vertex
 * **@param** `Number` *y* coordinate of top left vertex
 * **@param** `String` *text*
-* **@param** `Array` *ins* list of input pins
-* **@param** `Array` *outs* list of output pins
+* **@param** `Array | undefined` *ins* list of input pins
+* **@param** `Array | undefined` *outs* list of output pins
 * **@param** `Number` *[width]*, defaults to a value depending on text lenght and number of pins.
 
 An pin can be either a string or an object with the `name` attribute which must be a string.
 Input pins default to string `in${position}`.
 Output pins default to string `out${position}`.
+If *ins* is undefined, the node is a root.
+If *outs* is undefined, the node is a leaf.
 
 ### Link spec
 

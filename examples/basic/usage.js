@@ -4,7 +4,6 @@ const view = {
   node: {
     a: {
       x: 80, y: 100,
-      width: 100,
       text: 'Drag me',
       outs: ['out1', 'out2', 'out3']
     },

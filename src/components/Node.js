@@ -233,7 +233,7 @@ class Node extends Component {
 
   render () {
     const {
-      dragged,
+      dragging,
       draggedLinkId,
       id,
       ins,
@@ -264,7 +264,7 @@ class Node extends Component {
         onDoubleClick={ignoreEvent}
         onMouseDown={selectNode}
         style={{
-          cursor: (dragged ? 'pointer' : 'default')
+          cursor: (dragging ? 'pointer' : 'default')
         }}
         transform={`translate(${x},${y})`}
       >
@@ -276,12 +276,12 @@ class Node extends Component {
         <rect
           fillOpacity={0}
           height={bodyHeight + 2 * pinSize}
-          stroke={(selected || dragged) ? primaryColor : nodeBarColor}
+          stroke={selected ? primaryColor : nodeBarColor}
           strokeWidth={1}
           width={computedWidth}
         />
         <rect
-          fill={(selected || dragged) ? primaryColor : nodeBarColor}
+          fill={selected ? primaryColor : nodeBarColor}
           height={pinSize}
           width={computedWidth}
         />
@@ -300,7 +300,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={(selected || dragged) ? darkPrimaryColor : pinColor}
+              fill={selected ? darkPrimaryColor : pinColor}
               height={pinSize}
               onMouseDown={ignoreEvent}
               onMouseUp={onMouseUp}
@@ -311,7 +311,7 @@ class Node extends Component {
         })}
         {bodyContent}
         <rect
-          fill={(selected || dragged) ? primaryColor : nodeBarColor}
+          fill={selected ? primaryColor : nodeBarColor}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}
@@ -329,7 +329,7 @@ class Node extends Component {
           return (
             <rect
               key={i}
-              fill={(selected || dragged) ? darkPrimaryColor : pinColor}
+              fill={selected ? darkPrimaryColor : pinColor}
               height={pinSize}
               onClick={ignoreEvent}
               onMouseLeave={ignoreEvent}
@@ -351,7 +351,7 @@ Node.propTypes = {
   deleteInputPin: PropTypes.func.isRequired,
   deleteNode: PropTypes.func.isRequired,
   deleteOutputPin: PropTypes.func.isRequired,
-  dragged: PropTypes.bool.isRequired,
+  dragging: PropTypes.bool.isRequired,
   draggedLinkId: PropTypes.string,
   fontSize: PropTypes.number.isRequired,
   id: PropTypes.string,
@@ -375,7 +375,7 @@ Node.defaultProps = {
   deleteInputPin: Function.prototype,
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
-  dragged: false, // TODO looks more like a state
+  dragging: false,
   draggedLinkId: null,
   multiSelection: false,
   onCreateLink: Function.prototype,

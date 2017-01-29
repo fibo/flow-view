@@ -185,6 +185,9 @@ The following events are emitted by [canvas](#canvas):
 | `deleteInputPin`  | nodeId, position      |
 | `deleteOutputPin` | nodeId, position      |
 | `draggedNode`     | nodeId, x, y          |
+| `endDragging`     | { nodeId: { x, y } }  |
+| `selectLink`      | linkId                |
+| `selectNode`      | nodeId                |
 
 ### Hotkeys
 

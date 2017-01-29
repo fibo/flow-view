@@ -23,8 +23,8 @@ class Frame extends Component {
     this.state = {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
-      draggedItems: [],
       dragging: false,
+      dragMoved: false,
       offset: { x: 0, y: 0 },
       pointer: null,
       scroll: { x: 0, y: 0 },
@@ -49,7 +49,10 @@ class Frame extends Component {
     const container = findDOMNode(this).parentNode
 
     document.addEventListener('keydown', ({ code }) => {
+      const { endDragging } = this.props
+
       const {
+        dragMoved,
         selectedItems,
         shiftPressed
       } = this.state
@@ -64,7 +67,7 @@ class Frame extends Component {
 
       const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
 
-      if (selectedNodes.length > 0) {
+      if ((selectedNodes.length > 0) && (code.substring(0, 5) === 'Arrow')) {
         const draggingDelta = { x: 0, y: 0 }
         const unit = shiftPressed ? 1 : 10
 
@@ -74,6 +77,17 @@ class Frame extends Component {
         if (code === 'ArrowDown') draggingDelta.y = unit
 
         dragItems(draggingDelta, selectedNodes)
+
+        if (!dragMoved) { setState({ dragMoved: true }) }
+
+        if (!shiftPressed) {
+          endDragging(selectedNodes)
+
+          setState({
+            dragMoved: false,
+            dragging: false
+          })
+        }
       }
 
       if (code === 'KeyI') {
@@ -105,8 +119,26 @@ class Frame extends Component {
     })
 
     document.addEventListener('keyup', ({ code }) => {
+      const { endDragging } = this.props
+
+      const {
+        dragMoved,
+        selectedItems
+      } = this.state
+
+      const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+
       if (isShift(code)) {
         setState({ shiftPressed: false })
+
+        if (dragMoved && selectedNodes) {
+          endDragging(selectedNodes)
+
+          setState({
+            dragging: false,
+            dragMoved: false
+          })
+        }
       }
     })
 
@@ -150,17 +182,19 @@ class Frame extends Component {
       deleteNode,
       deleteOutputPin,
       dragItems,
+      endDragging,
       fontSize,
       item,
       model,
       nodeList,
+      selectLink,
+      selectNode,
       theme,
       updateLink,
       view
     } = this.props
 
     const {
-      draggedItems,
       draggedLinkId,
       pointer,
       dynamicView,
@@ -192,17 +226,17 @@ class Frame extends Component {
     const setState = this.setState.bind(this)
 
     const coordinatesOfLink = ({ from, to }) => {
-      var x1 = null
-      var y1 = null
-      var x2 = null
-      var y2 = null
+      let x1 = null
+      let y1 = null
+      let x2 = null
+      let y2 = null
 
       const nodeIds = Object.keys(view.node)
       const idEquals = (x) => (id) => (id === x[0])
       const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
       const targetId = (to ? nodeIds.find(idEquals(to)) : null)
 
-      var computedWidth = null
+      let computedWidth = null
 
       if (sourceId) {
         const source = view.node[sourceId]
@@ -325,6 +359,7 @@ class Frame extends Component {
 
       const {
         dragging,
+        dragMoved,
         selectedItems
       } = this.state
 
@@ -341,6 +376,8 @@ class Frame extends Component {
         }
 
         dragItems(draggingDelta, selectedItems)
+
+        if (!dragMoved) { setState({ dragMoved: true }) }
       }
     }
 
@@ -348,7 +385,11 @@ class Frame extends Component {
       e.preventDefault()
       e.stopPropagation()
 
-      const draggedLinkId = this.state.draggedLinkId
+      const {
+        draggedLinkId,
+        dragMoved,
+        selectedItems
+      } = this.state
 
       if (draggedLinkId) {
         delete view.link[draggedLinkId]
@@ -358,10 +399,21 @@ class Frame extends Component {
           pointer: null
         })
       } else {
-        setState({
-          dragging: false,
-          pointer: null
-        })
+        const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+
+        if (dragMoved) {
+          endDragging(selectedNodes)
+
+          setState({
+            dragging: false,
+            dragMoved: false,
+            pointer: null
+          })
+        } else {
+          setState({
+            pointer: null
+          })
+        }
       }
     }
 
@@ -417,6 +469,16 @@ class Frame extends Component {
       } else {
         if (!itemAlreadySelected) {
           selectedItems = [id]
+        }
+      }
+
+      if (!itemAlreadySelected) {
+        if (Object.keys(view.node).indexOf(id) > -1) {
+          selectNode(id)
+        }
+
+        if (Object.keys(view.link).indexOf(id) > -1) {
+          selectLink(id)
         }
       }
 
@@ -476,7 +538,6 @@ class Frame extends Component {
             <Node key={i}
               createInputPin={createInputPin}
               createOutputPin={createOutputPin}
-              dragged={(draggedItems.indexOf(id) > -1)}
               draggedLinkId={draggedLinkId}
               deleteInputPin={deleteInputPin}
               deleteNode={deleteNode}
@@ -507,12 +568,8 @@ class Frame extends Component {
           } = view.link[id]
 
           const coord = coordinatesOfLink(view.link[id])
-          const sourceSelected = from ? (
-            (draggedItems.indexOf(from[0]) > -1) || (selectedItems.indexOf(from[0]) > -1)
-          ) : false
-          const targetSelected = to ? (
-            (draggedItems.indexOf(to[0]) > -1) || (selectedItems.indexOf(to[0]) > -1)
-          ) : false
+          const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
+          const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
 
           return (
             <Link key={i}
@@ -563,6 +620,7 @@ Frame.propTypes = {
   deleteNode: PropTypes.func.isRequired,
   deleteOutputPin: PropTypes.func.isRequired,
   dragItems: PropTypes.func.isRequired,
+  endDragging: PropTypes.func.isRequired,
   fontSize: PropTypes.number.isRequired,
   item: PropTypes.shape({
     link: PropTypes.object.isRequired,
@@ -571,6 +629,8 @@ Frame.propTypes = {
       typeOfNode: PropTypes.func.isRequired
     })
   }).isRequired,
+  selectLink: PropTypes.func.isRequired,
+  selectNode: PropTypes.func.isRequired,
   theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
@@ -591,6 +651,7 @@ Frame.defaultProps = {
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
+  endDragging: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     link: { DefaultLink },
@@ -602,6 +663,8 @@ Frame.defaultProps = {
     }
   },
   theme: theme.defaultProps,
+  selectLink: Function.prototype,
+  selectNode: Function.prototype,
   updateLink: Function.prototype,
   view: {
     link: {},

@@ -306,7 +306,7 @@
       key: 'render',
       value: function render() {
         var _props9 = this.props,
-            dragged = _props9.dragged,
+            dragging = _props9.dragging,
             draggedLinkId = _props9.draggedLinkId,
             id = _props9.id,
             ins = _props9.ins,
@@ -335,7 +335,7 @@
             onDoubleClick: _ignoreEvent2.default,
             onMouseDown: selectNode,
             style: {
-              cursor: dragged ? 'pointer' : 'default'
+              cursor: dragging ? 'pointer' : 'default'
             },
             transform: 'translate(' + x + ',' + y + ')'
           },
@@ -347,12 +347,12 @@
           _react2.default.createElement('rect', {
             fillOpacity: 0,
             height: bodyHeight + 2 * pinSize,
-            stroke: selected || dragged ? primaryColor : nodeBarColor,
+            stroke: selected ? primaryColor : nodeBarColor,
             strokeWidth: 1,
             width: computedWidth
           }),
           _react2.default.createElement('rect', {
-            fill: selected || dragged ? primaryColor : nodeBarColor,
+            fill: selected ? primaryColor : nodeBarColor,
             height: pinSize,
             width: computedWidth
           }),
@@ -370,7 +370,7 @@
 
             return _react2.default.createElement('rect', {
               key: i,
-              fill: selected || dragged ? darkPrimaryColor : pinColor,
+              fill: selected ? darkPrimaryColor : pinColor,
               height: pinSize,
               onMouseDown: _ignoreEvent2.default,
               onMouseUp: onMouseUp,
@@ -380,7 +380,7 @@
           }),
           bodyContent,
           _react2.default.createElement('rect', {
-            fill: selected || dragged ? primaryColor : nodeBarColor,
+            fill: selected ? primaryColor : nodeBarColor,
             height: pinSize,
             transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
             width: computedWidth
@@ -397,7 +397,7 @@
 
             return _react2.default.createElement('rect', {
               key: i,
-              fill: selected || dragged ? darkPrimaryColor : pinColor,
+              fill: selected ? darkPrimaryColor : pinColor,
               height: pinSize,
               onClick: _ignoreEvent2.default,
               onMouseLeave: _ignoreEvent2.default,
@@ -420,7 +420,7 @@
     deleteInputPin: _react.PropTypes.func.isRequired,
     deleteNode: _react.PropTypes.func.isRequired,
     deleteOutputPin: _react.PropTypes.func.isRequired,
-    dragged: _react.PropTypes.bool.isRequired,
+    dragging: _react.PropTypes.bool.isRequired,
     draggedLinkId: _react.PropTypes.string,
     fontSize: _react.PropTypes.number.isRequired,
     id: _react.PropTypes.string,
@@ -444,7 +444,7 @@
     deleteInputPin: Function.prototype,
     deleteNode: Function.prototype,
     deleteOutputPin: Function.prototype,
-    dragged: false, // TODO looks more like a state
+    dragging: false,
     draggedLinkId: null,
     multiSelection: false,
     onCreateLink: Function.prototype,

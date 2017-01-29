@@ -17,11 +17,9 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link to Changelog page
 
-### Added
-
-- selectNode, selectLink events.
-
 ## [Unreleased]
+
+## [v2.12.0] - 2017-01-29
 
 ### Added
 
@@ -31,6 +29,7 @@ New g14n.info layouts, with link to Changelog page
 - Genealogic tree example.
 - Hotkeys.
 - Dragging multiple nodes.
+- Events endDragging, selectNode, selectLink.
 
 ### Fixed
 

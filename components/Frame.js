@@ -104,8 +104,8 @@
       _this.state = {
         dynamicView: { height: null, width: null },
         draggedLinkId: null,
-        draggedItems: [],
         dragging: false,
+        dragMoved: false,
         offset: { x: 0, y: 0 },
         pointer: null,
         scroll: { x: 0, y: 0 },
@@ -136,7 +136,9 @@
 
         document.addEventListener('keydown', function (_ref) {
           var code = _ref.code;
+          var endDragging = _this2.props.endDragging;
           var _state = _this2.state,
+              dragMoved = _state.dragMoved,
               selectedItems = _state.selectedItems,
               shiftPressed = _state.shiftPressed;
 
@@ -153,7 +155,7 @@
             return selectedItems.indexOf(id) > -1;
           });
 
-          if (selectedNodes.length > 0) {
+          if (selectedNodes.length > 0 && code.substring(0, 5) === 'Arrow') {
             var draggingDelta = { x: 0, y: 0 };
             var unit = shiftPressed ? 1 : 10;
 
@@ -163,6 +165,19 @@
             if (code === 'ArrowDown') draggingDelta.y = unit;
 
             dragItems(draggingDelta, selectedNodes);
+
+            if (!dragMoved) {
+              setState({ dragMoved: true });
+            }
+
+            if (!shiftPressed) {
+              endDragging(selectedNodes);
+
+              setState({
+                dragMoved: false,
+                dragging: false
+              });
+            }
           }
 
           if (code === 'KeyI') {
@@ -195,9 +210,27 @@
 
         document.addEventListener('keyup', function (_ref2) {
           var code = _ref2.code;
+          var endDragging = _this2.props.endDragging;
+          var _state2 = _this2.state,
+              dragMoved = _state2.dragMoved,
+              selectedItems = _state2.selectedItems;
+
+
+          var selectedNodes = Object.keys(view.node).filter(function (id) {
+            return selectedItems.indexOf(id) > -1;
+          });
 
           if (isShift(code)) {
             setState({ shiftPressed: false });
+
+            if (dragMoved && selectedNodes) {
+              endDragging(selectedNodes);
+
+              setState({
+                dragging: false,
+                dragMoved: false
+              });
+            }
           }
         });
 
@@ -244,20 +277,22 @@
             deleteNode = _props2.deleteNode,
             deleteOutputPin = _props2.deleteOutputPin,
             dragItems = _props2.dragItems,
+            endDragging = _props2.endDragging,
             fontSize = _props2.fontSize,
             item = _props2.item,
             model = _props2.model,
             nodeList = _props2.nodeList,
+            selectLink = _props2.selectLink,
+            selectNode = _props2.selectNode,
             theme = _props2.theme,
             updateLink = _props2.updateLink,
             view = _props2.view;
-        var _state2 = this.state,
-            draggedItems = _state2.draggedItems,
-            draggedLinkId = _state2.draggedLinkId,
-            pointer = _state2.pointer,
-            dynamicView = _state2.dynamicView,
-            selectedItems = _state2.selectedItems,
-            showSelector = _state2.showSelector;
+        var _state3 = this.state,
+            draggedLinkId = _state3.draggedLinkId,
+            pointer = _state3.pointer,
+            dynamicView = _state3.dynamicView,
+            selectedItems = _state3.selectedItems,
+            showSelector = _state3.showSelector;
         var frameBorder = theme.frameBorder,
             fontFamily = theme.fontFamily,
             lineWidth = theme.lineWidth,
@@ -342,9 +377,9 @@
         };
 
         var getCoordinates = function getCoordinates(e) {
-          var _state3 = _this3.state,
-              offset = _state3.offset,
-              scroll = _state3.scroll;
+          var _state4 = _this3.state,
+              offset = _state4.offset,
+              scroll = _state4.scroll;
 
 
           return {
@@ -419,9 +454,10 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var _state4 = _this3.state,
-              dragging = _state4.dragging,
-              selectedItems = _state4.selectedItems;
+          var _state5 = _this3.state,
+              dragging = _state5.dragging,
+              dragMoved = _state5.dragMoved,
+              selectedItems = _state5.selectedItems;
 
 
           var nextPointer = getCoordinates(e);
@@ -437,6 +473,10 @@
             };
 
             dragItems(draggingDelta, selectedItems);
+
+            if (!dragMoved) {
+              setState({ dragMoved: true });
+            }
           }
         };
 
@@ -444,7 +484,11 @@
           e.preventDefault();
           e.stopPropagation();
 
-          var draggedLinkId = _this3.state.draggedLinkId;
+          var _state6 = _this3.state,
+              draggedLinkId = _state6.draggedLinkId,
+              dragMoved = _state6.dragMoved,
+              selectedItems = _state6.selectedItems;
+
 
           if (draggedLinkId) {
             delete view.link[draggedLinkId];
@@ -454,10 +498,23 @@
               pointer: null
             });
           } else {
-            setState({
-              dragging: false,
-              pointer: null
+            var selectedNodes = Object.keys(view.node).filter(function (id) {
+              return selectedItems.indexOf(id) > -1;
             });
+
+            if (dragMoved) {
+              endDragging(selectedNodes);
+
+              setState({
+                dragging: false,
+                dragMoved: false,
+                pointer: null
+              });
+            } else {
+              setState({
+                pointer: null
+              });
+            }
           }
         };
 
@@ -482,9 +539,9 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var _state5 = _this3.state,
-                draggedLinkId = _state5.draggedLinkId,
-                shiftPressed = _state5.shiftPressed;
+            var _state7 = _this3.state,
+                draggedLinkId = _state7.draggedLinkId,
+                shiftPressed = _state7.shiftPressed;
 
 
             // Do not select items when releasing a dragging link.
@@ -514,6 +571,16 @@
             } else {
               if (!itemAlreadySelected) {
                 selectedItems = [id];
+              }
+            }
+
+            if (!itemAlreadySelected) {
+              if (Object.keys(view.node).indexOf(id) > -1) {
+                selectNode(id);
+              }
+
+              if (Object.keys(view.link).indexOf(id) > -1) {
+                selectLink(id);
               }
             }
 
@@ -573,7 +640,6 @@
             return _react2.default.createElement(Node, { key: i,
               createInputPin: createInputPin,
               createOutputPin: createOutputPin,
-              dragged: draggedItems.indexOf(id) > -1,
               draggedLinkId: draggedLinkId,
               deleteInputPin: deleteInputPin,
               deleteNode: deleteNode,
@@ -603,8 +669,8 @@
 
 
             var coord = coordinatesOfLink(view.link[id]);
-            var sourceSelected = from ? draggedItems.indexOf(from[0]) > -1 || selectedItems.indexOf(from[0]) > -1 : false;
-            var targetSelected = to ? draggedItems.indexOf(to[0]) > -1 || selectedItems.indexOf(to[0]) > -1 : false;
+            var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
+            var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
 
             return _react2.default.createElement(Link, { key: i,
               deleteLink: deleteLink,
@@ -655,6 +721,7 @@
     deleteNode: _react.PropTypes.func.isRequired,
     deleteOutputPin: _react.PropTypes.func.isRequired,
     dragItems: _react.PropTypes.func.isRequired,
+    endDragging: _react.PropTypes.func.isRequired,
     fontSize: _react.PropTypes.number.isRequired,
     item: _react.PropTypes.shape({
       link: _react.PropTypes.object.isRequired,
@@ -663,6 +730,8 @@
         typeOfNode: _react.PropTypes.func.isRequired
       })
     }).isRequired,
+    selectLink: _react.PropTypes.func.isRequired,
+    selectNode: _react.PropTypes.func.isRequired,
     theme: _theme2.default.propTypes,
     updateLink: _react.PropTypes.func.isRequired,
     view: _react.PropTypes.shape({
@@ -683,6 +752,7 @@
     deleteNode: Function.prototype,
     deleteOutputPin: Function.prototype,
     dragItems: Function.prototype,
+    endDragging: Function.prototype,
     fontSize: 17, // FIXME fontSize seems to be ignored
     item: {
       link: { DefaultLink: _Link2.default },
@@ -694,6 +764,8 @@
       }
     },
     theme: _theme2.default.defaultProps,
+    selectLink: Function.prototype,
+    selectNode: Function.prototype,
     updateLink: Function.prototype,
     view: {
       link: {},

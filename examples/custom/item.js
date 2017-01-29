@@ -35,8 +35,8 @@ const view = {
     a: {
       x: 80, y: 10,
       width: 100,
-      text: 'Drag me',
-      outs: ['out1', 'out2', 'out3']
+      text: 'Root',
+      outs: ['out']
     },
     b: {
       x: 180, y: 100,
@@ -44,10 +44,15 @@ const view = {
       text: 'Big Node',
       ins: [ 'in0' ],
       outs: ['return']
+    },
+    c: {
+      text: 'Leaf',
+      x: 10, y: 200,
+      ins: ['in1', 'in2', 'in3']
     }
   },
   link: {
-    c: {
+    e: {
       from: ['a', 0],
       to: ['b', 0]
     }

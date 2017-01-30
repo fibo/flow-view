@@ -128,7 +128,7 @@ see [render/serverside.js example][example_render_serverside].
 * **@param** `{Object}` *[callback]* called on serverside context
 * **@returns** `{void}`
 
-Follow a basic example.
+Follows a basic example.
 
 ```javascript
 canvas.render({
@@ -184,7 +184,6 @@ The following events are emitted by [canvas](#canvas):
 | `deleteNode`      | nodeId                |
 | `deleteInputPin`  | nodeId, position      |
 | `deleteOutputPin` | nodeId, position      |
-| `draggedNode`     | nodeId, x, y          |
 | `endDragging`     | { nodeId: { x, y } }  |
 | `selectLink`      | linkId                |
 | `selectNode`      | nodeId                |
@@ -195,7 +194,7 @@ Few hotkyes are defined.
 
 Arrows <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> <kbd>←</kbd> translate currently selected nodes, if also <kdb>SHIFT</kdb> is pressed translation is performed pixel by pixel.
 <kdb>ESC</kbd> cancel current selection.
-Keys <kdb>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kdb>SHIFT</kbd> is pressed, pins are deleted.
+Keys <kdb>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kbd>SHIFT</kbd> is pressed, pins are deleted.
 
 ### Node spec
 

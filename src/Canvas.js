@@ -4,7 +4,8 @@ import Frame from './components/Frame'
 import EventEmitter from 'events'
 import no from 'not-defined'
 import randomString from './utils/randomString'
-import renderSVGx from 'svgx'
+import reactDom from 'react-dom/server'
+import svgx from 'svgx'
 
 // TODO find a better way to generate ids.
 const idLength = 3
@@ -305,7 +306,7 @@ class Canvas extends EventEmitter {
         />
       )
 
-      const outputSVG = renderSVGx(jsx, opts)
+      const outputSVG = svgx(reactDom.renderToStaticMarkup)(jsx, opts)
 
       if (typeof callback === 'function') {
         callback(null, outputSVG)

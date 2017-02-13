@@ -77,16 +77,16 @@ npm install flow-view
 
 > flow-view Canvas constructor
 
-* **@param** `{String}` containerId
-* **@param** `{Object}` [item] collection to be customized
-* **@param** `{Object}` [item.link] collection of custom links
-* **@param** `{Object}` [item.link.DefaultLink]
-* **@param** `{Object}` [item.node] collection of custom nodes
-* **@param** `{Object}` [item.node.DefaultNode]
-* **@param** `{Object}` [item.nodeList] used for nodes autocompletion
-* **@param** `{Object}` [item.util]
-* **@param** `{Function}` [item.util.typeOfNode]
-* **@returns** `{Object}` canvas
+* **@param** `{String}` *containerId*
+* **@param** `{Object}` *[item]* collection to be customized
+* **@param** `{Object}` *[item.link]* collection of custom links
+* **@param** `{Object}` *[item.link.DefaultLink]*
+* **@param** `{Object}` *[item.node]* collection of custom nodes
+* **@param** `{Object}` *[item.node.DefaultNode]*
+* **@param** `{Object}` *[item.nodeList]* used for nodes autocompletion
+* **@param** `{Object}` *[item.util]*
+* **@param** `{Function}` *[item.util.typeOfNode]*
+* **@returns** `{Object}` *canvas*
 
 Suppose your *containerId* is `drawing`.
 In your HTML, **optionally** place a div where you want to mount the canvas.

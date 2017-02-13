@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'react', 'react-dom', './components/Frame', 'events', 'not-defined', './utils/randomString', 'svgx'], factory);
+    define(['module', 'exports', 'react', 'react-dom', './components/Frame', 'events', 'not-defined', './utils/randomString', 'react-dom/server', 'svgx'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('react-dom'), require('./components/Frame'), require('events'), require('not-defined'), require('./utils/randomString'), require('svgx'));
+    factory(module, exports, require('react'), require('react-dom'), require('./components/Frame'), require('events'), require('not-defined'), require('./utils/randomString'), require('react-dom/server'), require('svgx'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.react, global.reactDom, global.Frame, global.events, global.notDefined, global.randomString, global.svgx);
+    factory(mod, mod.exports, global.react, global.reactDom, global.Frame, global.events, global.notDefined, global.randomString, global.server, global.svgx);
     global.Canvas = mod.exports;
   }
-})(this, function (module, exports, _react, _reactDom, _Frame, _events, _notDefined, _randomString, _svgx) {
+})(this, function (module, exports, _react, _reactDom, _Frame, _events, _notDefined, _randomString, _server, _svgx) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26,6 +26,8 @@
   var _notDefined2 = _interopRequireDefault(_notDefined);
 
   var _randomString2 = _interopRequireDefault(_randomString);
+
+  var _server2 = _interopRequireDefault(_server);
 
   var _svgx2 = _interopRequireDefault(_svgx);
 
@@ -381,7 +383,7 @@
             view: view
           });
 
-          var outputSVG = (0, _svgx2.default)(jsx, opts);
+          var outputSVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, opts);
 
           if (typeof callback === 'function') {
             callback(null, outputSVG);

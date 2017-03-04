@@ -10,13 +10,13 @@ var computeNodeWidth = ({
   var width = node.width
 
   // Node shape defaults to a square.
-  var defaultWidth = width || bodyHeight + pinSize * 2
+  var defaultWidth = width || bodyHeight + (pinSize * 2)
 
   // Heuristic value, based on Courier font.
   var fontAspectRatio = 0.64
 
   // The with required to fit the node text.
-  var textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
+  var textWidth = (pinSize * 2) + (text.length * fontSize * fontAspectRatio)
 
   // The greatest number of pins, by type (ins or outs).
   var numPins = Math.max(ins.length, outs.length)

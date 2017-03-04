@@ -11,8 +11,8 @@ test('Frame component', (t) => {
   var width = 100
 
   var border = 1
-  var expectedHeight = height - 2 * border
-  var expectedWidth = width - 2 * border
+  var expectedHeight = height - (2 * border)
+  var expectedWidth = width - (2 * border)
 
   var view = {
     height,

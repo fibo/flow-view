@@ -216,8 +216,8 @@ class Frame extends Component {
     // Remove border, otherwise also server side SVGx renders
     // miss the bottom and right border.
     var border = 1 // TODO frameBorder is 1px, make it dynamic
-    height = height - 2 * border
-    width = width - 2 * border
+    height = height - (2 * border)
+    width = width - (2 * border)
 
     var typeOfNode = item.util.typeOfNode
 
@@ -272,7 +272,7 @@ class Frame extends Component {
         // FIXME at first, pointer is null. This trick works, but,
         // it should be reviosioned when implementing creating links
         // in the opposite direction.
-        x2 = pointer ? (pointer.x - pinSize / 2) : x1
+        x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
         y2 = pointer ? (pointer.y - pinSize) : y1
       }
 

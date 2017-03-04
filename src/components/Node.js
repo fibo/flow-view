@@ -126,8 +126,7 @@ class Node extends Component {
         d={minus(pinSize)}
         fill={disabled ? 'transparent' : primaryColor}
         onMouseDown={() => {
-          if (disabled) return
-          else deleteInputPin(id)
+          if (!disabled) deleteInputPin(id)
         }}
         stroke={primaryColor}
         transform={`translate(${computedWidth + 2},0)`}
@@ -191,8 +190,7 @@ class Node extends Component {
         d={minus(pinSize)}
         fill={disabled ? 'transparent' : primaryColor}
         onMouseDown={() => {
-          if (disabled) return
-          else deleteOutputPin(id)
+          if (!disabled) deleteOutputPin(id)
         }}
         stroke={primaryColor}
         transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
@@ -275,7 +273,7 @@ class Node extends Component {
         {this.getOutputPlus()}
         <rect
           fillOpacity={0}
-          height={bodyHeight + 2 * pinSize}
+          height={bodyHeight + (2 * pinSize)}
           stroke={selected ? primaryColor : nodeBarColor}
           strokeWidth={1}
           width={computedWidth}

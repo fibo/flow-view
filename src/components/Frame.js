@@ -673,4 +673,4 @@ Frame.defaultProps = {
   }
 }
 
-export default Frame
+module.exports = exports.default = Frame

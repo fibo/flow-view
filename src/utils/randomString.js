@@ -15,4 +15,4 @@ var randomString = (length) => {
   return result
 }
 
-export default randomString
+module.exports = exports.default = randomString

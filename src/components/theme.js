@@ -42,7 +42,7 @@ var propTypes = PropTypes.shape({
   pinSize: PropTypes.number.isRequired
 }).isRequired
 
-export default {
+module.exports = exports.default = {
   defaultProps,
   propTypes
 }

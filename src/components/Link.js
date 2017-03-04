@@ -124,4 +124,4 @@ Link.defaultProps = {
   theme: theme.defaultProps
 }
 
-export default Link
+module.exports = exports.default = Link

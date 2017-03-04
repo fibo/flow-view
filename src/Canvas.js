@@ -310,4 +310,4 @@ class Canvas extends EventEmitter {
   }
 }
 
-export default Canvas
+module.exports = exports.default = Canvas

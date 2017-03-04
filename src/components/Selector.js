@@ -97,4 +97,4 @@ Selector.defaultProps = {
   width: 200
 }
 
-export default Selector
+module.exports = exports.default = Selector

@@ -1,4 +1,4 @@
-const ignoreEvent = (e) => {
+var ignoreEvent = (e) => {
   e.preventDefault()
   e.stopPropagation()
 }

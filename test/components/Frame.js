@@ -4,30 +4,30 @@ import reactDom from 'react-dom/server'
 import Frame from 'components/Frame'
 import test from 'tape'
 
-const render = reactDom.renderToStaticMarkup
+var render = reactDom.renderToStaticMarkup
 
 test('Frame component', (t) => {
-  const height = 100
-  const width = 100
+  var height = 100
+  var width = 100
 
-  const border = 1
-  const expectedHeight = height - 2 * border
-  const expectedWidth = width - 2 * border
+  var border = 1
+  var expectedHeight = height - 2 * border
+  var expectedWidth = width - 2 * border
 
-  const view = {
+  var view = {
     height,
     link: {},
     node: {},
     width
   }
 
-  const el = (
+  var el = (
     <Frame
       view={view}
     />
   )
 
-  const $ = dom.load(render(el), { xmlMode: true })
+  var $ = dom.load(render(el), { xmlMode: true })
 
   t.equal($('svg').attr('width'), expectedWidth.toString(), 'width prop')
   t.equal($('svg').attr('height'), expectedHeight.toString(), 'height prop')

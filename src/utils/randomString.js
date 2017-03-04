@@ -5,7 +5,7 @@
  * @returns {String} result
  */
 
-function randomString (length) {
+var randomString = (length) => {
   var result = ''
 
   while (result.length < length) {

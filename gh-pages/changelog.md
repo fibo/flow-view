@@ -19,6 +19,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Changed
+
+- Using only var, no const or let: the goal is to minimize transpiling.
+
 ## [v2.12.0] - 2017-01-29
 
 ### Added

@@ -7,30 +7,30 @@ import ignoreEvent from '../utils/ignoreEvent'
 import theme from './theme'
 import xOfPin from '../utils/xOfPin'
 
-const minus = (pinSize) => (
+var minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
 )
 
-const plus = (pinSize) => (
+var plus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`
 )
 
 class Node extends Component {
   getBody () {
-    const {
+    var {
       fontSize,
       theme,
       text
     } = this.props
 
-    const {
+    var {
       pinSize
     } = theme
 
-    const bodyHeight = this.getBodyHeight()
+    var bodyHeight = this.getBodyHeight()
 
     // Heuristic value, based on Courier font.
-    const margin = fontSize * 0.2
+    var margin = fontSize * 0.2
 
     return (
       <text
@@ -43,7 +43,7 @@ class Node extends Component {
   }
 
   getBodyHeight () {
-    const {
+    var {
       bodyHeight,
       theme
     } = this.props
@@ -52,7 +52,7 @@ class Node extends Component {
   }
 
   getComputedWidth () {
-    const {
+    var {
       fontSize,
       ins,
       outs,
@@ -61,11 +61,11 @@ class Node extends Component {
       width
     } = this.props
 
-    const { pinSize } = theme
+    var { pinSize } = theme
 
-    const bodyHeight = this.getBodyHeight()
+    var bodyHeight = this.getBodyHeight()
 
-    const computedWidth = computeNodeWidth({
+    var computedWidth = computeNodeWidth({
       bodyHeight,
       pinSize,
       fontSize,
@@ -76,7 +76,7 @@ class Node extends Component {
   }
 
   getDeleteButton () {
-    const {
+    var {
       deleteNode,
       id,
       multiSelection,
@@ -84,7 +84,7 @@ class Node extends Component {
       theme
     } = this.props
 
-    const {
+    var {
       primaryColor,
       pinSize
     } = theme
@@ -102,7 +102,7 @@ class Node extends Component {
   }
 
   getInputMinus () {
-    const {
+    var {
       deleteInputPin,
       id,
       ins,
@@ -111,15 +111,15 @@ class Node extends Component {
       theme
     } = this.props
 
-    const {
+    var {
       primaryColor,
       pinSize
     } = theme
 
     if (no(ins) || (selected === false) || multiSelection) return null
 
-    const computedWidth = this.getComputedWidth()
-    const disabled = ins.length === 0
+    var computedWidth = this.getComputedWidth()
+    var disabled = ins.length === 0
 
     return (
       <path
@@ -136,7 +136,7 @@ class Node extends Component {
   }
 
   getInputPlus () {
-    const {
+    var {
       createInputPin,
       id,
       ins,
@@ -145,14 +145,14 @@ class Node extends Component {
       theme
     } = this.props
 
-    const {
+    var {
       primaryColor,
       pinSize
     } = theme
 
     if (no(ins) || (selected === false) || multiSelection) return null
 
-    const computedWidth = this.getComputedWidth()
+    var computedWidth = this.getComputedWidth()
 
     return (
       <path
@@ -166,7 +166,7 @@ class Node extends Component {
   }
 
   getOutputMinus () {
-    const {
+    var {
       deleteOutputPin,
       id,
       multiSelection,
@@ -175,16 +175,16 @@ class Node extends Component {
       theme
     } = this.props
 
-    const {
+    var {
       primaryColor,
       pinSize
     } = theme
 
     if (no(outs) || (selected === false) || multiSelection) return null
 
-    const bodyHeight = this.getBodyHeight()
-    const computedWidth = this.getComputedWidth()
-    const disabled = outs.length === 0
+    var bodyHeight = this.getBodyHeight()
+    var computedWidth = this.getComputedWidth()
+    var disabled = outs.length === 0
 
     return (
       <path
@@ -201,7 +201,7 @@ class Node extends Component {
   }
 
   getOutputPlus () {
-    const {
+    var {
       createOutputPin,
       id,
       multiSelection,
@@ -210,15 +210,15 @@ class Node extends Component {
       theme
     } = this.props
 
-    const {
+    var {
       primaryColor,
       pinSize
     } = theme
 
     if (no(outs) || (selected === false) || multiSelection) return null
 
-    const bodyHeight = this.getBodyHeight()
-    const computedWidth = this.getComputedWidth()
+    var bodyHeight = this.getBodyHeight()
+    var computedWidth = this.getComputedWidth()
 
     return (
       <path
@@ -232,7 +232,7 @@ class Node extends Component {
   }
 
   render () {
-    const {
+    var {
       dragging,
       draggedLinkId,
       id,
@@ -247,7 +247,7 @@ class Node extends Component {
       y
     } = this.props
 
-    const {
+    var {
       darkPrimaryColor,
       nodeBarColor,
       pinColor,
@@ -255,9 +255,9 @@ class Node extends Component {
       primaryColor
     } = theme
 
-    const bodyContent = this.getBody()
-    const bodyHeight = this.getBodyHeight()
-    const computedWidth = this.getComputedWidth()
+    var bodyContent = this.getBody()
+    var bodyHeight = this.getBodyHeight()
+    var computedWidth = this.getComputedWidth()
 
     return (
       <g
@@ -286,9 +286,9 @@ class Node extends Component {
           width={computedWidth}
         />
         {ins && ins.map((pin, i, array) => {
-          const x = xOfPin(pinSize, computedWidth, array.length, i)
+          var x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          const onMouseUp = (e) => {
+          var onMouseUp = (e) => {
             e.preventDefault()
             e.stopPropagation()
 
@@ -317,9 +317,9 @@ class Node extends Component {
           width={computedWidth}
         />
         {outs && outs.map((pin, i, array) => {
-          const x = xOfPin(pinSize, computedWidth, array.length, i)
+          var x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          const onMouseDown = (e) => {
+          var onMouseDown = (e) => {
             e.preventDefault()
             e.stopPropagation()
 

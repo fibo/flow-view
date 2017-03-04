@@ -18,7 +18,7 @@ text / icons #212121
 divider color #BDBDBD
 */
 
-const defaultProps = {
+var defaultProps = {
   fontFamily: 'Courier',
   frameBorder: '1px solid #F0F4C3',
   darkPrimaryColor: '#AFB42B',
@@ -31,7 +31,7 @@ const defaultProps = {
   pinSize: 10
 }
 
-const propTypes = PropTypes.shape({
+var propTypes = PropTypes.shape({
   fontFamily: PropTypes.string.isRequired,
   primaryColor: PropTypes.string.isRequired,
   lineWidth: PropTypes.number.isRequired,

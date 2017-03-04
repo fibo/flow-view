@@ -8,7 +8,7 @@ import reactDom from 'react-dom/server'
 import svgx from 'svgx'
 
 // TODO find a better way to generate ids.
-const idLength = 3
+var idLength = 3
 
 class Canvas extends EventEmitter {
   constructor (containerId, item) {
@@ -24,7 +24,7 @@ class Canvas extends EventEmitter {
     // If we are in browser context, get the document element containing
     // the canvas or create it.
     if (typeof document !== 'undefined') {
-      let container = document.getElementById(containerId)
+      var container = document.getElementById(containerId)
 
       if (container === null) {
         container = document.createElement('div')
@@ -50,15 +50,15 @@ class Canvas extends EventEmitter {
    */
 
   render (view, model, callback) {
-    const container = this.container
+    var container = this.container
 
-    const defaultItem = Frame.defaultProps.item
+    var defaultItem = Frame.defaultProps.item
 
-    const DefaultLink = defaultItem.link.DefaultLink
-    const DefaultNode = defaultItem.node.DefaultNode
-    const typeOfNode = defaultItem.util.typeOfNode
+    var DefaultLink = defaultItem.link.DefaultLink
+    var DefaultNode = defaultItem.node.DefaultNode
+    var typeOfNode = defaultItem.util.typeOfNode
 
-    const item = Object.assign({},
+    var item = Object.assign({},
       { link: { DefaultLink } },
       { node: { DefaultNode } },
       { nodeList: [] },
@@ -66,13 +66,13 @@ class Canvas extends EventEmitter {
       this.item
     )
 
-    let height
-    let width
+    var height
+    var width
 
     // Get height and width from container, if any.
     if (container) {
-      const border = 1 // TODO could be configurable in style prop
-      const rect = container.getBoundingClientRect()
+      var border = 1 // TODO could be configurable in style prop
+      var rect = container.getBoundingClientRect()
 
       height = rect.height - 2 * border
       width = rect.width - 2 * border
@@ -85,12 +85,12 @@ class Canvas extends EventEmitter {
       width
     }, view)
 
-    const createInputPin = (nodeId, pin) => {
+    var createInputPin = (nodeId, pin) => {
       var ins = view.node[nodeId].ins
 
       if (no(ins)) view.node[nodeId].ins = ins = []
 
-      const position = ins.length
+      var position = ins.length
 
       if (no(pin)) pin = `in${position}`
 
@@ -99,12 +99,12 @@ class Canvas extends EventEmitter {
       view.node[nodeId].ins.push(pin)
     }
 
-    const createOutputPin = (nodeId, pin) => {
+    var createOutputPin = (nodeId, pin) => {
       var outs = view.node[nodeId].outs
 
       if (no(outs)) view.node[nodeId].outs = outs = []
 
-      const position = outs.length
+      var position = outs.length
 
       if (no(pin)) pin = `out${position}`
 
@@ -113,25 +113,25 @@ class Canvas extends EventEmitter {
       view.node[nodeId].outs.push(pin)
     }
 
-    const selectLink = (id) => {
+    var selectLink = (id) => {
       this.emit('selectLink', id)
     }
 
-    const selectNode = (id) => {
+    var selectNode = (id) => {
       this.emit('selectNode', id)
     }
 
     function generateId () {
-      const id = randomString(idLength)
+      var id = randomString(idLength)
 
       return (view.link[id] || view.node[id]) ? generateId() : id
     }
 
-    const createLink = (link) => {
-      const from = link.from
-      const to = link.to
+    var createLink = (link) => {
+      var from = link.from
+      var to = link.to
 
-      const id = generateId()
+      var id = generateId()
 
       // Do not fire createLink event if it is a dragging link.
       if (no(to)) {
@@ -145,8 +145,8 @@ class Canvas extends EventEmitter {
       return id
     }
 
-    const createNode = (node) => {
-      const id = generateId()
+    var createNode = (node) => {
+      var id = generateId()
 
       view.node[id] = node
 
@@ -155,17 +155,17 @@ class Canvas extends EventEmitter {
       return id
     }
 
-    const deleteLink = (id) => {
+    var deleteLink = (id) => {
       this.emit('deleteLink', id)
 
       delete view.link[id]
     }
 
-    const deleteNode = (id) => {
+    var deleteNode = (id) => {
       // delete links connected to given node.
       Object.keys(view.link).forEach((linkId) => {
-        const from = view.link[linkId].from
-        const to = view.link[linkId].to
+        var from = view.link[linkId].from
+        var to = view.link[linkId].to
 
         if (from && from[0] === id) {
           deleteLink(linkId)
@@ -181,7 +181,7 @@ class Canvas extends EventEmitter {
       this.emit('deleteNode', id)
     }
 
-    const dragItems = (dragginDelta, draggedItems) => {
+    var dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
       .filter((id) => (draggedItems.indexOf(id) > -1))
       .forEach((id) => {
@@ -190,8 +190,8 @@ class Canvas extends EventEmitter {
       })
     }
 
-    const deleteInputPin = (nodeId, position) => {
-      const ins = view.node[nodeId].ins
+    var deleteInputPin = (nodeId, position) => {
+      var ins = view.node[nodeId].ins
 
       if (no(ins)) return
       if (ins.length === 0) return
@@ -201,7 +201,7 @@ class Canvas extends EventEmitter {
       // Look for connected links and delete them.
 
       Object.keys(view.link).forEach((id) => {
-        const to = view.link[id].to
+        var to = view.link[id].to
 
         if (no(to)) return
 
@@ -215,8 +215,8 @@ class Canvas extends EventEmitter {
       view.node[nodeId].ins.splice(position, 1)
     }
 
-    const endDragging = (selectNodes) => {
-      let nodesCoordinates = {}
+    var endDragging = (selectNodes) => {
+      var nodesCoordinates = {}
 
       selectNodes.forEach((id) => {
         nodesCoordinates.id = {}
@@ -227,8 +227,8 @@ class Canvas extends EventEmitter {
       this.emit('endDragging', nodesCoordinates)
     }
 
-    const deleteOutputPin = (nodeId, position) => {
-      const outs = view.node[nodeId].outs
+    var deleteOutputPin = (nodeId, position) => {
+      var outs = view.node[nodeId].outs
 
       if (no(outs)) return
       if (outs.length === 0) return
@@ -238,7 +238,7 @@ class Canvas extends EventEmitter {
       // Look for connected links and delete them.
 
       Object.keys(view.link).forEach((id) => {
-        const from = view.link[id].from
+        var from = view.link[id].from
 
         if (no(from)) return
 
@@ -253,13 +253,13 @@ class Canvas extends EventEmitter {
     }
 
     // TODO this is not used buy now.
-    const renameNode = (nodeId, text) => {
+    var renameNode = (nodeId, text) => {
       view.node[nodeId].text = text
     }
 
-    const updateLink = (id, link) => {
-      const to = link.to
-      const from = link.from
+    var updateLink = (id, link) => {
+      var to = link.to
+      var from = link.from
 
       // Trigger a createLink event if it is a connected link.
       if (no(from)) {
@@ -269,7 +269,7 @@ class Canvas extends EventEmitter {
       }
     }
 
-    const component = (
+    st component = (
       <Frame
         createInputPin={createInputPin}
         createOutputPin={createOutputPin}
@@ -298,15 +298,16 @@ class Canvas extends EventEmitter {
     } else {
       // Server side rendering.
 
-      const opts = { doctype: true, xmlns: true }
-      const jsx = (
+      var opts = { doctype: true, xmlns: true }
+
+      var jsx = (
         <Frame
           item={item}
           view={view}
         />
       )
 
-      const outputSVG = svgx(reactDom.renderToStaticMarkup)(jsx, opts)
+      var outputSVG = svgx(reactDom.renderToStaticMarkup)(jsx, opts)
 
       if (typeof callback === 'function') {
         callback(null, outputSVG)

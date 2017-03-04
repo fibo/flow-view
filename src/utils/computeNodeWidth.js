@@ -1,32 +1,32 @@
-const computeNodeWidth = ({
+var computeNodeWidth = ({
   bodyHeight, // It is used only to make shapes default to square.
   pinSize,
   fontSize,
   node
 }) => {
-  const ins = node.ins || []
-  const outs = node.outs || []
-  const text = node.text
-  const width = node.width
+  var ins = node.ins || []
+  var outs = node.outs || []
+  var text = node.text
+  var width = node.width
 
   // Node shape defaults to a square.
-  const defaultWidth = width || bodyHeight + pinSize * 2
+  var defaultWidth = width || bodyHeight + pinSize * 2
 
   // Heuristic value, based on Courier font.
-  const fontAspectRatio = 0.64
+  var fontAspectRatio = 0.64
 
   // The with required to fit the node text.
-  const textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
+  var textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
 
   // The greatest number of pins, by type (ins or outs).
-  const numPins = Math.max(ins.length, outs.length)
+  var numPins = Math.max(ins.length, outs.length)
 
   // The width required to fit the most numerous pins.
-  const pinsWidth = numPins * pinSize * 2
+  var pinsWidth = numPins * pinSize * 2
 
-  const dynamicWidth = Math.max(textWidth, pinsWidth)
+  var dynamicWidth = Math.max(textWidth, pinsWidth)
 
-  const computedWidth = Math.max(defaultWidth, dynamicWidth)
+  var computedWidth = Math.max(defaultWidth, dynamicWidth)
 
   return computedWidth
 }

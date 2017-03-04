@@ -12,7 +12,7 @@ import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 import Selector from './Selector'
 
-const isShift = (code) => (
+var isShift = (code) => (
   (code === 'ShiftLeft') || (code === 'ShiftRight')
 )
 
@@ -35,7 +35,7 @@ class Frame extends Component {
   }
 
   componentDidMount () {
-    const {
+    var {
       createInputPin,
       createOutputPin,
       deleteInputPin,
@@ -44,14 +44,14 @@ class Frame extends Component {
       view
     } = this.props
 
-    const setState = this.setState.bind(this)
+    var setState = this.setState.bind(this)
 
-    const container = findDOMNode(this).parentNode
+    var container = findDOMNode(this).parentNode
 
     document.addEventListener('keydown', ({ code }) => {
-      const { endDragging } = this.props
+      var { endDragging } = this.props
 
-      const {
+      var {
         dragMoved,
         selectedItems,
         shiftPressed
@@ -65,11 +65,11 @@ class Frame extends Component {
         setState({ selectedItems: [] })
       }
 
-      const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+      var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
 
       if ((selectedNodes.length > 0) && (code.substring(0, 5) === 'Arrow')) {
-        const draggingDelta = { x: 0, y: 0 }
-        const unit = shiftPressed ? 1 : 10
+        var draggingDelta = { x: 0, y: 0 }
+        var unit = shiftPressed ? 1 : 10
 
         if (code === 'ArrowLeft') draggingDelta.x = -unit
         if (code === 'ArrowRight') draggingDelta.x = unit
@@ -119,14 +119,14 @@ class Frame extends Component {
     })
 
     document.addEventListener('keyup', ({ code }) => {
-      const { endDragging } = this.props
+      var { endDragging } = this.props
 
-      const {
+      var {
         dragMoved,
         selectedItems
       } = this.state
 
-      const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+      var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
 
       if (isShift(code)) {
         setState({ shiftPressed: false })
@@ -150,7 +150,7 @@ class Frame extends Component {
     })
 
     window.addEventListener('resize', () => {
-      const rect = container.getBoundingClientRect()
+      var rect = container.getBoundingClientRect()
 
       setState({ dynamicView: {
         height: rect.height,
@@ -158,12 +158,12 @@ class Frame extends Component {
       }})
     })
 
-    const offset = {
+    var offset = {
       x: container.offsetLeft,
       y: container.offsetTop
     }
 
-    const scroll = {
+    var scroll = {
       x: window.scrollX,
       y: window.scrollY
     }
@@ -172,7 +172,7 @@ class Frame extends Component {
   }
 
   render () {
-    const {
+    var {
       createInputPin,
       createLink,
       createNode,
@@ -194,7 +194,7 @@ class Frame extends Component {
       view
     } = this.props
 
-    const {
+    var {
       draggedLinkId,
       pointer,
       dynamicView,
@@ -202,7 +202,7 @@ class Frame extends Component {
       showSelector
     } = this.state
 
-    const {
+    var {
       frameBorder,
       fontFamily,
       lineWidth,
@@ -210,36 +210,36 @@ class Frame extends Component {
       pinSize
     } = theme
 
-    let height = dynamicView.height || view.height
-    let width = dynamicView.width || view.width
+    var height = dynamicView.height || view.height
+    var width = dynamicView.width || view.width
 
     // Remove border, otherwise also server side SVGx renders
     // miss the bottom and right border.
-    const border = 1 // TODO frameBorder is 1px, make it dynamic
+    var border = 1 // TODO frameBorder is 1px, make it dynamic
     height = height - 2 * border
     width = width - 2 * border
 
-    const typeOfNode = item.util.typeOfNode
+    var typeOfNode = item.util.typeOfNode
 
-    const Link = item.link.DefaultLink
+    var Link = item.link.DefaultLink
 
-    const setState = this.setState.bind(this)
+    var setState = this.setState.bind(this)
 
-    const coordinatesOfLink = ({ from, to }) => {
-      let x1 = null
-      let y1 = null
-      let x2 = null
-      let y2 = null
+    var coordinatesOfLink = ({ from, to }) => {
+      var x1 = null
+      var y1 = null
+      var x2 = null
+      var y2 = null
 
-      const nodeIds = Object.keys(view.node)
-      const idEquals = (x) => (id) => (id === x[0])
-      const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
-      const targetId = (to ? nodeIds.find(idEquals(to)) : null)
+      var nodeIds = Object.keys(view.node)
+      var idEquals = (x) => (id) => (id === x[0])
+      var sourceId = (from ? nodeIds.find(idEquals(from)) : null)
+      var targetId = (to ? nodeIds.find(idEquals(to)) : null)
 
-      let computedWidth = null
+      var computedWidth = null
 
       if (sourceId) {
-        const source = view.node[sourceId]
+        var source = view.node[sourceId]
 
         if (no(source.outs)) source.outs = {}
 
@@ -255,7 +255,7 @@ class Frame extends Component {
       }
 
       if (targetId) {
-        const target = view.node[targetId]
+        var target = view.node[targetId]
 
         if (no(target.ins)) target.ins = {}
 
@@ -279,8 +279,8 @@ class Frame extends Component {
       return { x1, y1, x2, y2 }
     }
 
-    const getCoordinates = (e) => {
-      const {
+    var getCoordinates = (e) => {
+      var {
         offset,
         scroll
       } = this.state
@@ -291,23 +291,23 @@ class Frame extends Component {
       }
     }
 
-    const onClick = (e) => {
+    var onClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       setState({ showSelector: false })
     }
 
-    const onCreateLink = (link) => {
-      const draggedLinkId = createLink(link)
+    var onCreateLink = (link) => {
+      var draggedLinkId = createLink(link)
 
       setState({ draggedLinkId })
     }
 
-    const onUpdateLink = (id, link) => {
+    var onUpdateLink = (id, link) => {
       updateLink(id, link)
 
-      const disconnectingLink = (link.to === null)
+      var disconnectingLink = (link.to === null)
 
       if (disconnectingLink) {
         link.id = id
@@ -318,7 +318,7 @@ class Frame extends Component {
       }
     }
 
-    const onDoubleClick = (e) => {
+    var onDoubleClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -328,7 +328,7 @@ class Frame extends Component {
       })
     }
 
-    const onMouseDown = (e) => {
+    var onMouseDown = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -338,11 +338,11 @@ class Frame extends Component {
       })
     }
 
-    const onMouseLeave = (e) => {
+    var onMouseLeave = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      const draggedLinkId = this.state.draggedLinkId
+      var draggedLinkId = this.state.draggedLinkId
       if (draggedLinkId) delete view.link[draggedLinkId]
 
       setState({
@@ -353,24 +353,24 @@ class Frame extends Component {
       })
     }
 
-    const onMouseMove = (e) => {
+    var onMouseMove = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      const {
+      var {
         dragging,
         dragMoved,
         selectedItems
       } = this.state
 
-      const nextPointer = getCoordinates(e)
+      var nextPointer = getCoordinates(e)
 
       setState({
         pointer: nextPointer
       })
 
       if (dragging && (selectedItems.length > 0)) {
-        const draggingDelta = {
+        var draggingDelta = {
           x: (pointer ? nextPointer.x - pointer.x : 0),
           y: (pointer ? nextPointer.y - pointer.y : 0)
         }
@@ -381,11 +381,11 @@ class Frame extends Component {
       }
     }
 
-    const onMouseUp = (e) => {
+    var onMouseUp = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      const {
+      var {
         draggedLinkId,
         dragMoved,
         selectedItems
@@ -399,7 +399,7 @@ class Frame extends Component {
           pointer: null
         })
       } else {
-        const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+        var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
 
         if (dragMoved) {
           endDragging(selectedNodes)
@@ -421,11 +421,11 @@ class Frame extends Component {
      * Bring up selected nodes.
      */
 
-    const selectedFirst = (a, b) => {
+    var selectedFirst = (a, b) => {
       // FIXME it works, but it would be nice if the selected
       // items keep being up after deselection.
-      const aIsSelected = (selectedItems.indexOf(a) > -1)
-      const bIsSelected = (selectedItems.indexOf(b) > -1)
+      var aIsSelected = (selectedItems.indexOf(a) > -1)
+      var bIsSelected = (selectedItems.indexOf(b) > -1)
 
       if (aIsSelected && bIsSelected) return 0
 
@@ -433,11 +433,11 @@ class Frame extends Component {
       if (bIsSelected) return -1
     }
 
-    const selectItem = (id) => (e) => {
+    var selectItem = (id) => (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      const {
+      var {
         draggedLinkId,
         shiftPressed
       } = this.state
@@ -452,11 +452,11 @@ class Frame extends Component {
         return
       }
 
-      let selectedItems = Object.assign([], this.state.selectedItems)
+      var selectedItems = Object.assign([], this.state.selectedItems)
 
-      const index = selectedItems.indexOf(id)
+      var index = selectedItems.indexOf(id)
 
-      const itemAlreadySelected = index > -1
+      var itemAlreadySelected = index > -1
 
       // Shift key allows multiple selection.
 
@@ -488,9 +488,9 @@ class Frame extends Component {
       })
     }
 
-    const startDraggingLinkTarget = (id) => {
+    var startDraggingLinkTarget = (id) => {
       // Remember link source.
-      const from = view.link[id].from
+      var from = view.link[id].from
 
       // Delete dragged link so the 'deleteLink' event is triggered.
       deleteLink(id)
@@ -498,7 +498,7 @@ class Frame extends Component {
       // Create a brand new link, this is the right choice to avoid
       // conflicts, for example the user could start dragging the link
       // target and then drop it again in the same target.
-      const draggedLinkId = createLink({ from })
+      var draggedLinkId = createLink({ from })
       setState({ draggedLinkId })
     }
 
@@ -519,9 +519,9 @@ class Frame extends Component {
         width={width}
       >
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
-          const node = view.node[id]
+          var node = view.node[id]
 
-          const {
+          var {
             height,
             ins,
             outs,
@@ -531,8 +531,8 @@ class Frame extends Component {
             y
           } = node
 
-          const nodeType = typeOfNode(node)
-          const Node = item.node[nodeType]
+          var nodeType = typeOfNode(node)
+          var Node = item.node[nodeType]
 
           return (
             <Node key={i}
@@ -562,14 +562,14 @@ class Frame extends Component {
           )
         })}
         {Object.keys(view.link).map((id, i) => {
-          const {
+          var {
             from,
             to
           } = view.link[id]
 
-          const coord = coordinatesOfLink(view.link[id])
-          const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
-          const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
+          var coord = coordinatesOfLink(view.link[id])
+          var sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
+          var targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
 
           return (
             <Link key={i}
@@ -594,7 +594,7 @@ class Frame extends Component {
         })}
         <Selector
           createNode={(node) => {
-            const id = createNode(node)
+            var id = createNode(node)
 
             setState({
               selectedItems: [id],

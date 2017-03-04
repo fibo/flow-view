@@ -19,9 +19,15 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Removed
+
+- bower support
+
 ### Changed
 
 - Using only var, no const or let: the goal is to minimize transpiling.
+- CDN instructions with unpkg.com, dist folder on npm now.
+- React as peer deps.
 
 ## [v2.12.0] - 2017-01-29
 

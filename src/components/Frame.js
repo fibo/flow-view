@@ -1,21 +1,19 @@
 var React = require('react')
+var inherits = require('inherits')
+var ReactDOM = require('react-dom')
+var no = require('not-defined')
+
 var Component = React.Component
 var PropTypes = React.PropTypes
 
-var inherits = require('inherits')
+var computeNodeWidth = require('../utils/computeNodeWidth')
+var ignoreEvent = require('../utils/ignoreEvent')
+var xOfPin = require('../utils/xOfPin')
 
-import { findDOMNode } from 'react-dom'
-
-import no from 'not-defined'
-
-import computeNodeWidth from '../utils/computeNodeWidth'
-import DefaultLink from './Link'
-import DefaultNode from './Node'
-import theme from './theme'
-import ignoreEvent from '../utils/ignoreEvent'
-
-import xOfPin from '../utils/xOfPin'
-import Selector from './Selector'
+var DefaultLink = require('./Link')
+var DefaultNode = require('./Node')
+var Selector = require('./Selector')
+var theme = require('./theme')
 
 var isShift = (code) => (
   (code === 'ShiftLeft') || (code === 'ShiftRight')
@@ -52,7 +50,7 @@ function componentDidMount () {
 
   var setState = this.setState.bind(this)
 
-  var container = findDOMNode(this).parentNode
+  var container = ReactDOM.findDOMNode(this).parentNode
 
   document.addEventListener('keydown', ({ code }) => {
     var { endDragging } = this.props

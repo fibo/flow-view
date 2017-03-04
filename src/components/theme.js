@@ -1,7 +1,8 @@
-import { PropTypes } from 'react'
+var React = require('react')
+
+var PropTypes = React.PropTypes
 
 /*
-
 Palette from https://www.materialpalette.com/lime/grey
 
 Thanks to Tania and Lucilla.

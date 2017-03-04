@@ -1,22 +1,22 @@
 {
   "presets": [
-    "es2015",
     "react"
   ],
   "env": {
-    "umd": {
-      "plugins": [
-        "transform-es2015-modules-umd"
+    "test": {
+      "presets": [
+        "es2015"
       ]
     },
-    "development": {
+    "umd": {
       "plugins": [
-        ["react-transform", {
-          "transforms": [{
-            "transform": "livereactload/babel-transform",
-            "imports": ["react"]
-          }]
-        }]
+        "transform-es2015-modules-umd",
+        "transform-es2015-arrow-functions",
+        "transform-es2015-block-scoped-functions",
+        "transform-es2015-destructuring",
+        "transform-es2015-parameters",
+        "transform-es2015-shorthand-properties",
+        "transform-es2015-template-literals"
       ]
     }
   }

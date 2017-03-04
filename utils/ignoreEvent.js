@@ -13,14 +13,10 @@
 })(this, function (module, exports) {
   "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var ignoreEvent = function ignoreEvent(e) {
+  var ignoreEvent = function (e) {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  exports.default = ignoreEvent;
-  module.exports = exports["default"];
+  module.exports = exports.default = ignoreEvent;
 });

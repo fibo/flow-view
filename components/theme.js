@@ -10,16 +10,12 @@
     factory(mod, mod.exports, global.react);
     global.theme = mod.exports;
   }
-})(this, function (module, exports, _react) {
+})(this, function (module, exports, React) {
   'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
+  var PropTypes = React.PropTypes;
 
   /*
-  
   Palette from https://www.materialpalette.com/lime/grey
   
   Thanks to Tania and Lucilla.
@@ -49,20 +45,19 @@
     pinSize: 10
   };
 
-  var propTypes = _react.PropTypes.shape({
-    fontFamily: _react.PropTypes.string.isRequired,
-    primaryColor: _react.PropTypes.string.isRequired,
-    lineWidth: _react.PropTypes.number.isRequired,
-    linkColor: _react.PropTypes.string.isRequired,
-    nodeBarColor: _react.PropTypes.string.isRequired,
-    nodeBodyHeight: _react.PropTypes.number.isRequired,
-    pinColor: _react.PropTypes.string.isRequired,
-    pinSize: _react.PropTypes.number.isRequired
+  var propTypes = PropTypes.shape({
+    fontFamily: PropTypes.string.isRequired,
+    primaryColor: PropTypes.string.isRequired,
+    lineWidth: PropTypes.number.isRequired,
+    linkColor: PropTypes.string.isRequired,
+    nodeBarColor: PropTypes.string.isRequired,
+    nodeBodyHeight: PropTypes.number.isRequired,
+    pinColor: PropTypes.string.isRequired,
+    pinSize: PropTypes.number.isRequired
   }).isRequired;
 
-  exports.default = {
+  module.exports = exports.default = {
     defaultProps: defaultProps,
     propTypes: propTypes
   };
-  module.exports = exports['default'];
 });

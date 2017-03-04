@@ -1,6 +1,6 @@
-import Frame from './Frame'
-import Link from './Link'
-import Node from './Node'
-import Selector from './Selector'
+var Frame = require('./Frame')
+var Link = require('./Link')
+var Node = require('./Node')
+var Selector = require('./Selector')
 
 module.exports = exports.default = { Frame, Link, Node, Selector }

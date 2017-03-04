@@ -13,9 +13,6 @@
 })(this, function (module, exports) {
   'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
   /**
    * Generate random string [a-z].
    *
@@ -23,7 +20,7 @@
    * @returns {String} result
    */
 
-  var randomString = function randomString(length) {
+  var randomString = function (length) {
     var result = '';
 
     while (result.length < length) {
@@ -33,6 +30,5 @@
     return result;
   };
 
-  exports.default = randomString;
-  module.exports = exports['default'];
+  module.exports = exports.default = randomString;
 });

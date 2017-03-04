@@ -1,6 +1,6 @@
-import { Canvas } from 'flow-view'
+var Canvas = require('flow-view')
 
-const canvas = new Canvas('drawing', {
+var canvas = new Canvas('drawing', {
   nodeList: [
     'Homer',
     'Marge',

@@ -1,6 +1,6 @@
-import { Canvas } from 'flow-view'
+var Canvas = require('flow-view')
 
-const canvas = new Canvas('drawing', {})
+var canvas = new Canvas('drawing', {})
 
 canvas.on('createLink', (link, id) => {
   console.log('createLink', link, id)
@@ -60,6 +60,6 @@ canvas.render({
   }
 })
 
-const consoleLogDiv = document.createElement('script')
+var consoleLogDiv = document.createElement('script')
 consoleLogDiv.src = 'https://rawgit.com/bahmutov/console-log-div/master/console-log-div.js'
 document.body.appendChild(consoleLogDiv)

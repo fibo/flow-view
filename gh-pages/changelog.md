@@ -23,13 +23,13 @@ New g14n.info layouts, with link to Changelog page
 
 - bower support
 
-### Changed
-
 The goal is to minimize transpiling:
 - Using only `var`, no `const` or `let`.
-- Removed `Object.assign`.
-- Removed `class`.
-- Removed add-module-exports babel plugin.
+-  `Object.assign`, `import`, `class`.
+- ES2015 babel preset and add-module-exports babel plugin.
+
+
+### Changed
 
 - CDN instructions with unpkg.com, dist folder on npm now.
 - React as peer deps.

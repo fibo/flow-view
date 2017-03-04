@@ -1,15 +1,15 @@
+var inherits = require('inherits')
 var React = require('react')
+
 var Component = React.Component
 var PropTypes = React.PropTypes
 
-var inherits = require('inherits')
+var no = require('not-defined')
 
-import no from 'not-defined'
-
-import computeNodeWidth from '../utils/computeNodeWidth'
-import ignoreEvent from '../utils/ignoreEvent'
-import theme from './theme'
-import xOfPin from '../utils/xOfPin'
+var computeNodeWidth = require('../utils/computeNodeWidth')
+var ignoreEvent = require('../utils/ignoreEvent')
+var xOfPin = require('../utils/xOfPin')
+var theme = require('./theme')
 
 var minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`

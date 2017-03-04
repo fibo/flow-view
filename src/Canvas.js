@@ -1,12 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Frame from './components/Frame'
-import EventEmitter from 'events'
-import no from 'not-defined'
-import randomString from './utils/randomString'
-import reactDom from 'react-dom/server'
-import svgx from 'svgx'
+var EventEmitter = require('events')
 var inherits = require('inherits')
+var no = require('not-defined')
+var React = require('react')
+var ReactDOM = require('react-dom')
+var svgx = require('svgx')
+
+var Frame = require('./components/Frame')
+var randomString = require('./utils/randomString')
+
+// It is not a bad idea to include react-dom/server in the bundle.
+// It is only 620 bytes, see https://gist.github.com/irae/2026a9655ca5ee8cd9e821c63435de1e
+var reactDOMServer = require('react-dom/server')
 
 // TODO find a better way to generate ids.
 var idLength = 3
@@ -32,9 +36,7 @@ function Canvas (containerId, item) {
 
   // If we are in browser context, get the document element containing
   // the canvas or create it.
-  if (no(document)) {
-    this.container = null
-  } else {
+  if (document) {
     var container = document.getElementById(containerId)
 
     if (container === null) {
@@ -47,6 +49,8 @@ function Canvas (containerId, item) {
     }
 
     this.container = container
+  } else {
+    this.container = null
   }
 }
 
@@ -303,7 +307,7 @@ function render (view, model, callback) {
       />
     )
 
-    var outputSVG = svgx(reactDom.renderToStaticMarkup)(jsx, opts)
+    var outputSVG = svgx(reactDOMServer.renderToStaticMarkup)(jsx, opts)
 
     if (typeof callback === 'function') {
       callback(null, outputSVG)

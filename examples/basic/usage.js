@@ -1,6 +1,6 @@
-import { Canvas } from 'flow-view'
+var Canvas = require('flow-view').Canvas
 
-const view = {
+var view = {
   node: {
     a: {
       x: 80, y: 100,
@@ -22,6 +22,6 @@ const view = {
   }
 }
 
-const canvas = new Canvas('drawing')
+var canvas = new Canvas('drawing')
 
 canvas.render(view)

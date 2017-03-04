@@ -1,5 +1,5 @@
-import { Canvas } from 'flow-view'
+var Canvas = require('flow-view').Canvas
 
-const canvas = new Canvas('drawing')
+var canvas = new Canvas('drawing')
 
 canvas.render()

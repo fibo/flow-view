@@ -1,4 +1,4 @@
-import Canvas from './Canvas'
-import components from './components'
+var Canvas = require('./Canvas')
+var components = require('./components')
 
 module.exports = exports.default = { Canvas, components }

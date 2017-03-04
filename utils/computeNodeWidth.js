@@ -13,11 +13,8 @@
 })(this, function (module, exports) {
   "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var computeNodeWidth = function computeNodeWidth(_ref) {
-    var bodyHeight = _ref.bodyHeight,
+  var computeNodeWidth = function (_ref) {
+    let bodyHeight = _ref.bodyHeight,
         pinSize = _ref.pinSize,
         fontSize = _ref.fontSize,
         node = _ref.node;
@@ -49,6 +46,5 @@
     return computedWidth;
   };
 
-  exports.default = computeNodeWidth;
-  module.exports = exports["default"];
+  module.exports = exports.default = computeNodeWidth;
 });

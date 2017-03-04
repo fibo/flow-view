@@ -16,11 +16,11 @@
     "browserify_dist": "NODE_ENV=production browserify -r ./src/${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "build": "npm run example_render_serverside; npm run browserify && npm run minify; npm run jekyll; git status",
     "check-deps": "npm outdated",
-    "example_basic_usage": "BABEL_ENV=development NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify -p livereactload",
-    "example_custom_item": "BABEL_ENV=development NODE_PATH=. budo --open examples/custom/item.js -- -t babelify -p livereactload",
-    "example_empty_canvas": "BABEL_ENV=development NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify -p livereactload",
-    "example_event_emitter": "BABEL_ENV=development NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify -p livereactload",
-    "example_genealogic_tree": "BABEL_ENV=development NODE_PATH=src budo --open examples/genealogic/tree.js -- -t babelify -p livereactload",
+    "example_basic_usage": "NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify ",
+    "example_custom_item": "NODE_PATH=. budo --open examples/custom/item.js -- -t babelify ",
+    "example_empty_canvas": "NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify ",
+    "example_event_emitter": "NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify ",
+    "example_genealogic_tree": "NODE_PATH=src budo --open examples/genealogic/tree.js -- -t babelify ",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > gh-pages/svg/sample-view.svg",
     "gh-pages:_data": "for x in package.json tags.json; do npm run gh-pages:_data:$x; done",
     "gh-pages:_data:package.json": "cp package.json gh-pages/_data/",
@@ -45,7 +45,7 @@
     "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
     "test": "for x in serverside components; do npm run test_$x; done",
     "test_serverside": "NODE_PATH=. tape test/serverside/*.js",
-    "test_components": "NODE_PATH=src tape -r babel-register test/components/*.js",
+    "test_components": "BABEL_ENV=test NODE_PATH=src tape -r babel-register test/components/*.js",
     "update-deps": "npm update --save --dev"
   },
   "pre-commit": [
@@ -78,8 +78,6 @@
     "events": "^1.1.1",
     "inherits": "^2.0.3",
     "not-defined": "^1.1.0",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
     "svgx": "^0.7.2"
   },
   "devDependencies": {
@@ -91,7 +89,6 @@
     "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
     "dot-editorconfig": "^0.4.0",
-    "livereactload": "^3.2.0",
     "pre-commit": "^1.2.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",

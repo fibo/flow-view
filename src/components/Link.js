@@ -1,11 +1,11 @@
 var React = require('react')
+var inherits = require('inherits')
+
 var Component = React.Component
 var PropTypes = React.PropTypes
 
-var inherits = require('inherits')
-
-import ignoreEvent from '../utils/ignoreEvent'
-import theme from './theme'
+var ignoreEvent = require('../utils/ignoreEvent')
+var theme = require('./theme')
 
 function Link () {
   Component.apply(this, arguments)

@@ -4,7 +4,7 @@ import theme from './theme'
 
 class Link extends Component {
   render () {
-    const {
+    var {
       id,
       deleteLink,
       from,
@@ -22,7 +22,7 @@ class Link extends Component {
       y2
     } = this.props
 
-    const {
+    var {
       darkPrimaryColor,
       primaryColor,
       linkColor,
@@ -30,31 +30,31 @@ class Link extends Component {
       pinSize
     } = theme
 
-    const onSourceMouseDown = (e) => {
+    var onSourceMouseDown = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       onCreateLink({ from, to: null })
     }
 
-    const onTargetMouseDown = (e) => {
+    var onTargetMouseDown = (e) => {
       e.preventDefault()
       e.stopPropagation()
 
       startDraggingLinkTarget(id)
     }
 
-    const startX = x1 + pinSize / 2
-    const startY = y1 + pinSize / 2
-    const endX = x2 + pinSize / 2
-    const endY = y2 + pinSize / 2
+    var startX = x1 + pinSize / 2
+    var startY = y1 + pinSize / 2
+    var endX = x2 + pinSize / 2
+    var endY = y2 + pinSize / 2
 
-    const midPointY = (startY + endY) / 2
+    var midPointY = (startY + endY) / 2
 
-    const controlPointX1 = startX
-    const controlPointY1 = to ? midPointY : startY
-    const controlPointX2 = endX
-    const controlPointY2 = to ? midPointY : endY
+    var controlPointX1 = startX
+    var controlPointY1 = to ? midPointY : startY
+    var controlPointX2 = endX
+    var controlPointY2 = to ? midPointY : endY
 
     return (
       <g

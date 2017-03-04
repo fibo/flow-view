@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 
-const hidden = { display: 'none', overflow: 'hidden' }
-const visible = { display: 'inline', overflow: 'visible' }
+var hidden = { display: 'none', overflow: 'hidden' }
+var visible = { display: 'inline', overflow: 'visible' }
 
 class Selector extends Component {
   constructor (props) {
@@ -11,7 +11,7 @@ class Selector extends Component {
   }
 
   render () {
-    const {
+    var {
       createNode,
       height,
       nodeList,
@@ -20,20 +20,20 @@ class Selector extends Component {
       width
     } = this.props
 
-    const text = this.state.text
+    var text = this.state.text
 
-    const onChange = (e) => {
-      const text = e.target.value
+    var onChange = (e) => {
+      var text = e.target.value
 
       this.setState({ text })
     }
 
-    const onKeyPress = (e) => {
-      const text = e.target.value.trim()
-      const pointer = this.props.pointer
+    var onKeyPress = (e) => {
+      var text = e.target.value.trim()
+      var pointer = this.props.pointer
 
-      const pressedEnter = (e.key === 'Enter')
-      const textIsNotBlank = text.length > 0
+      var pressedEnter = (e.key === 'Enter')
+      var textIsNotBlank = text.length > 0
 
       if (pressedEnter) {
         if (textIsNotBlank) {

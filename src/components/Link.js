@@ -44,10 +44,10 @@ class Link extends Component {
       startDraggingLinkTarget(id)
     }
 
-    var startX = x1 + pinSize / 2
-    var startY = y1 + pinSize / 2
-    var endX = x2 + pinSize / 2
-    var endY = y2 + pinSize / 2
+    var startX = x1 + (pinSize / 2)
+    var startY = y1 + (pinSize / 2)
+    var endX = x2 + (pinSize / 2)
+    var endY = y2 + (pinSize / 2)
 
     var midPointY = (startY + endY) / 2
 

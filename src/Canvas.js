@@ -74,8 +74,8 @@ class Canvas extends EventEmitter {
       var border = 1 // TODO could be configurable in style prop
       var rect = container.getBoundingClientRect()
 
-      height = rect.height - 2 * border
-      width = rect.width - 2 * border
+      height = rect.height - (2 * border)
+      width = rect.width - (2 * border)
     }
 
     view = Object.assign({}, {
@@ -269,7 +269,7 @@ class Canvas extends EventEmitter {
       }
     }
 
-    st component = (
+    var component = (
       <Frame
         createInputPin={createInputPin}
         createOutputPin={createOutputPin}

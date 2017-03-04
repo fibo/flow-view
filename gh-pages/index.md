@@ -50,23 +50,30 @@ Any feedback is welcome!
 
 ## Installation
 
-With [bower](http://bower.io/) do
+### Using npm
+
+Note that *flow-view* requires [React] as a peer dependency. If they are
+not already installed, with [npm](https://npmjs.org/) do
 
 ```bash
-bower install flow-view
+npm install react react-dom --save-dev
 ```
 
-or use a CDN adding this to your HTML page
+I guess you need it as a development dependency to build your project, so
+probably you need to launch
+
+```bash
+npm install flow-view --save-dev
+```
+
+### Using a CDN
+
+Adding this to your HTML page
 
 ```html
-<script src="https://cdn.rawgit.com/fibo/flow-view/master/dist/flow-view.min.js"></script>
-```
-
-Note that *flow-view* is supposed to be imported in your project build,
-so it is recommended you install it with [npm](https://npmjs.org/)
-
-```bash
-npm install flow-view
+<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+<script src="https://unpkg.com/flow-view@2/dist/flow-view.min.js"></script>
 ```
 
 ## API

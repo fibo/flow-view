@@ -186,7 +186,6 @@ class Frame extends Component {
       fontSize,
       item,
       model,
-      nodeList,
       selectLink,
       selectNode,
       theme,
@@ -452,7 +451,7 @@ class Frame extends Component {
         return
       }
 
-      var selectedItems = Object.assign([], this.state.selectedItems)
+      var selectedItems = this.state.selectedItems.slice(0)
 
       var index = selectedItems.indexOf(id)
 
@@ -601,7 +600,7 @@ class Frame extends Component {
               showSelector: false
             })
           }}
-          nodeList={nodeList}
+          nodeList={item.nodeList}
           pointer={pointer}
           show={showSelector}
         />
@@ -637,6 +636,7 @@ Frame.propTypes = {
     height: PropTypes.number.isRequired,
     link: PropTypes.object.isRequired,
     node: PropTypes.object.isRequired,
+    nodeList: PropTypes.array.isRequired,
     width: PropTypes.number.isRequired
   }).isRequired
 }
@@ -656,6 +656,7 @@ Frame.defaultProps = {
   item: {
     link: { DefaultLink },
     node: { DefaultNode },
+    nodeList: [],
     util: {
       typeOfNode: function (node) {
         return 'DefaultNode'

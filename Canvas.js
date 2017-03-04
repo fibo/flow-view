@@ -147,8 +147,8 @@
 
         var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { nodeList: [] }, { util: { typeOfNode: typeOfNode } }, this.item);
 
-        var height = void 0;
-        var width = void 0;
+        var height;
+        var width;
 
         // Get height and width from container, if any.
         if (container) {
@@ -378,6 +378,7 @@
           // Server side rendering.
 
           var opts = { doctype: true, xmlns: true };
+
           var jsx = _react2.default.createElement(_Frame2.default, {
             item: item,
             view: view

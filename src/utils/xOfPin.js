@@ -4,4 +4,4 @@ var xOfPin = (pinSize, width, numPins, position) => {
   if (numPins > 1) return position * (width - pinSize) / (numPins - 1)
 }
 
-export default xOfPin
+module.exports = exports.default = xOfPin

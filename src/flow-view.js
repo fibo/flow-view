@@ -1,4 +1,4 @@
 import Canvas from './Canvas'
 import components from './components'
 
-export { Canvas, components }
+module.exports = exports.default = { Canvas, components }

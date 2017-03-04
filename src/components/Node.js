@@ -384,4 +384,4 @@ Node.defaultProps = {
   updateLink: Function.prototype
 }
 
-export default Node
+module.exports = exports.default = Node

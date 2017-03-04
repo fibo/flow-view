@@ -3,4 +3,4 @@ var ignoreEvent = (e) => {
   e.stopPropagation()
 }
 
-export default ignoreEvent
+module.exports = exports.default = ignoreEvent

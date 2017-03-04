@@ -82,7 +82,6 @@
     "svgx": "^0.7.2"
   },
   "devDependencies": {
-    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.23.0",
     "babelify": "^7.3.0",

@@ -31,4 +31,4 @@ var computeNodeWidth = ({
   return computedWidth
 }
 
-export default computeNodeWidth
+module.exports = exports.default = computeNodeWidth

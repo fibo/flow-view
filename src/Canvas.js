@@ -9,12 +9,21 @@ import svgx from 'svgx'
 
 // TODO find a better way to generate ids.
 var idLength = 3
+var defaultItem = Frame.defaultProps.item
 
 class Canvas extends EventEmitter {
   constructor (containerId, item) {
     super()
 
-    this.container = null
+    if (no(item)) item = defaultItem
+    if (no(item.link)) item.link = defaultItem.link
+    if (no(item.link.DefaultLink)) item.link = defaultItem.link.DefaultLink
+    if (no(item.node)) item.node = defaultItem.node
+    if (no(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode
+    if (no(item.nodeList)) item.nodeList = defaultItem.nodeList
+    if (no(item.util)) item.util = defaultItem.util.typeOfNode
+
+    this.item = item
 
     // Check that containerId is a string.
     if (typeof containerId !== 'string') {
@@ -23,7 +32,9 @@ class Canvas extends EventEmitter {
 
     // If we are in browser context, get the document element containing
     // the canvas or create it.
-    if (typeof document !== 'undefined') {
+    if (no(document)) {
+      this.container = null
+    } else {
       var container = document.getElementById(containerId)
 
       if (container === null) {
@@ -36,8 +47,6 @@ class Canvas extends EventEmitter {
       }
 
       this.container = container
-
-      this.item = item
     }
   }
 
@@ -51,20 +60,7 @@ class Canvas extends EventEmitter {
 
   render (view, model, callback) {
     var container = this.container
-
-    var defaultItem = Frame.defaultProps.item
-
-    var DefaultLink = defaultItem.link.DefaultLink
-    var DefaultNode = defaultItem.node.DefaultNode
-    var typeOfNode = defaultItem.util.typeOfNode
-
-    var item = Object.assign({},
-      { link: { DefaultLink } },
-      { node: { DefaultNode } },
-      { nodeList: [] },
-      { util: { typeOfNode } },
-      this.item
-    )
+    var item = this.item
 
     var height
     var width
@@ -78,12 +74,10 @@ class Canvas extends EventEmitter {
       width = rect.width - (2 * border)
     }
 
-    view = Object.assign({}, {
-      height,
-      link: {},
-      node: {},
-      width
-    }, view)
+    if (no(view.height)) view.height = height
+    if (no(view.link)) view.link = {}
+    if (no(view.node)) view.node = {}
+    if (no(view.width)) view.width = width
 
     var createInputPin = (nodeId, pin) => {
       var ins = view.node[nodeId].ins

@@ -23,7 +23,7 @@
    * @returns {String} result
    */
 
-  function randomString(length) {
+  var randomString = function randomString(length) {
     var result = '';
 
     while (result.length < length) {
@@ -31,7 +31,7 @@
     }
 
     return result;
-  }
+  };
 
   exports.default = randomString;
   module.exports = exports['default'];

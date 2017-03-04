@@ -209,7 +209,7 @@
           d: minus(pinSize),
           fill: disabled ? 'transparent' : primaryColor,
           onMouseDown: function onMouseDown() {
-            if (disabled) return;else deleteInputPin(id);
+            if (!disabled) deleteInputPin(id);
           },
           stroke: primaryColor,
           transform: 'translate(' + (computedWidth + 2) + ',0)'
@@ -267,7 +267,7 @@
           d: minus(pinSize),
           fill: disabled ? 'transparent' : primaryColor,
           onMouseDown: function onMouseDown() {
-            if (disabled) return;else deleteOutputPin(id);
+            if (!disabled) deleteOutputPin(id);
           },
           stroke: primaryColor,
           transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')'

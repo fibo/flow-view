@@ -49774,63 +49774,37 @@ function base64DetectIncompleteChar(buffer) {
 }
 
 },{"buffer":5}],271:[function(require,module,exports){
-(function (global, factory) {
-  if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'cheerio', 'react-dom/server'], factory);
-  } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('cheerio'), require('react-dom/server'));
-  } else {
-    var mod = {
-      exports: {}
-    };
-    factory(mod, mod.exports, global.cheerio, global.server);
-    global.svgx = mod.exports;
-  }
-})(this, function (module, exports, _cheerio, _server) {
-  'use strict';
+var dom = require('cheerio')
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
+var doctype = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
 
-  var _cheerio2 = _interopRequireDefault(_cheerio);
+function svgx (render) {
+  return function (jsx, opts) {
+    if (!opts) opts = {}
 
-  var _server2 = _interopRequireDefault(_server);
+    var svg = render(jsx)
 
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
-  }
+    var $ = dom.load(svg, { xmlMode: true })
 
-  var doctype = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
-  var render = function render(jsx) {
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var svgx = _server2.default.renderToStaticMarkup(jsx);
-
-    var $ = _cheerio2.default.load(svgx, { xmlMode: true });
-
-    var $svg = $('svg');
+    var $svg = $('svg')
 
     // Currently, React strips off namespace attributes.
     if (opts.xmlns) {
-      $svg.attr('xmlns', 'http://www.w3.org/2000/svg');
-      $svg.attr('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+      $svg.attr('xmlns', 'http://www.w3.org/2000/svg')
+      $svg.attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
     }
 
-    var result = $.html();
+    var result = $.html()
 
-    if (opts.doctype) result = doctype + result;
+    if (opts.doctype) result = doctype + result
 
-    return result;
-  };
+    return result
+  }
+}
 
-  exports.default = render;
-  module.exports = exports['default'];
-});
+module.exports = exports.default = svgx
 
-},{"cheerio":6,"react-dom/server":232}],272:[function(require,module,exports){
+},{"cheerio":6}],272:[function(require,module,exports){
 (function (global){
 
 /**
@@ -49932,6 +49906,10 @@ var _randomString = require('./utils/randomString');
 
 var _randomString2 = _interopRequireDefault(_randomString);
 
+var _server = require('react-dom/server');
+
+var _server2 = _interopRequireDefault(_server);
+
 var _svgx = require('svgx');
 
 var _svgx2 = _interopRequireDefault(_svgx);
@@ -50006,8 +49984,8 @@ var Canvas = function (_EventEmitter) {
 
       var item = Object.assign({}, { link: { DefaultLink: DefaultLink } }, { node: { DefaultNode: DefaultNode } }, { nodeList: [] }, { util: { typeOfNode: typeOfNode } }, this.item);
 
-      var height = void 0;
-      var width = void 0;
+      var height;
+      var width;
 
       // Get height and width from container, if any.
       if (container) {
@@ -50237,12 +50215,13 @@ var Canvas = function (_EventEmitter) {
         // Server side rendering.
 
         var opts = { doctype: true, xmlns: true };
+
         var jsx = _react2.default.createElement(_Frame2.default, {
           item: item,
           view: view
         });
 
-        var outputSVG = (0, _svgx2.default)(jsx, opts);
+        var outputSVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, opts);
 
         if (typeof callback === 'function') {
           callback(null, outputSVG);
@@ -50256,7 +50235,7 @@ var Canvas = function (_EventEmitter) {
 
 exports.default = Canvas;
 
-},{"./components/Frame":274,"./utils/randomString":282,"events":47,"not-defined":95,"react":257,"react-dom":102,"svgx":271}],274:[function(require,module,exports){
+},{"./components/Frame":274,"./utils/randomString":282,"events":47,"not-defined":95,"react":257,"react-dom":102,"react-dom/server":232,"svgx":271}],274:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -51324,7 +51303,7 @@ var Node = function (_Component) {
         d: minus(pinSize),
         fill: disabled ? 'transparent' : primaryColor,
         onMouseDown: function onMouseDown() {
-          if (disabled) return;else deleteInputPin(id);
+          if (!disabled) deleteInputPin(id);
         },
         stroke: primaryColor,
         transform: 'translate(' + (computedWidth + 2) + ',0)'
@@ -51382,7 +51361,7 @@ var Node = function (_Component) {
         d: minus(pinSize),
         fill: disabled ? 'transparent' : primaryColor,
         onMouseDown: function onMouseDown() {
-          if (disabled) return;else deleteOutputPin(id);
+          if (!disabled) deleteOutputPin(id);
         },
         stroke: primaryColor,
         transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')'
@@ -51860,7 +51839,7 @@ Object.defineProperty(exports, "__esModule", {
  * @returns {String} result
  */
 
-function randomString(length) {
+var randomString = function randomString(length) {
   var result = '';
 
   while (result.length < length) {
@@ -51868,7 +51847,7 @@ function randomString(length) {
   }
 
   return result;
-}
+};
 
 exports.default = randomString;
 

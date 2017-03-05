@@ -52,7 +52,9 @@ function componentDidMount () {
 
   var container = ReactDOM.findDOMNode(this).parentNode
 
-  document.addEventListener('keydown', ({ code }) => {
+  document.addEventListener('keydown', (event) => {
+    var code = event.code
+
     var { endDragging } = this.props
 
     var {
@@ -122,7 +124,9 @@ function componentDidMount () {
     this.forceUpdate()
   })
 
-  document.addEventListener('keyup', ({ code }) => {
+  document.addEventListener('keyup', (event) => {
+    var code = event.code
+
     var { endDragging } = this.props
 
     var {
@@ -230,7 +234,10 @@ function render () {
 
   var setState = this.setState.bind(this)
 
-  var coordinatesOfLink = ({ from, to }) => {
+  var coordinatesOfLink = (link) => {
+    var from = link.from
+    var to = link.to
+
     var x1 = null
     var y1 = null
     var x2 = null

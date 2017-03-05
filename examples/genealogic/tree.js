@@ -1,4 +1,4 @@
-var Canvas = require('flow-view')
+var Canvas = require('flow-view').Canvas
 
 var canvas = new Canvas('drawing', {
   nodeList: [

@@ -19,6 +19,8 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.14.0] - 2017-03-05
+
 ### Removed
 
 - bower support
@@ -28,11 +30,11 @@ The goal is to minimize transpiling:
 -  `Object.assign`, `import`, `class`.
 - ES2015 babel preset and add-module-exports babel plugin.
 
-
 ### Changed
 
+- Babel transpiling from *.jsx to *js, revisited procedure.
 - CDN instructions with unpkg.com, dist folder on npm now.
-- React as peer deps.
+- React as peer deps, saved 800k in the build.
 
 ## [v2.12.0] - 2017-01-29
 

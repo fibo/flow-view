@@ -25,7 +25,7 @@ function Canvas (containerId, item) {
   if (no(item.node)) item.node = defaultItem.node
   if (no(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode
   if (no(item.nodeList)) item.nodeList = defaultItem.nodeList
-  if (no(item.util)) item.util = defaultItem.util.typeOfNode
+  if (no(item.util)) item.util = defaultItem.util
 
   this.item = item
 
@@ -36,7 +36,10 @@ function Canvas (containerId, item) {
 
   // If we are in browser context, get the document element containing
   // the canvas or create it.
-  if (document) {
+  //
+  // Cannot use if (document) or if(no(document)) otherwise
+  // test/serverside/works.js will fail.
+  if (typeof document !== 'undefined') {
     var container = document.getElementById(containerId)
 
     if (container === null) {

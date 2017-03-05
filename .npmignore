@@ -1,1 +1,2 @@
+# Do not ignore dist folder to support unpkg.com CDN.
 gh-pages

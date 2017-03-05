@@ -33,8 +33,8 @@ The goal is to minimize transpiling:
 ### Changed
 
 - Babel transpiling from *.jsx to *js, revisited procedure.
-- CDN instructions with unpkg.com, dist folder on npm now.
-- React as peer deps, saved 800k in the build.
+- CDN support for unpkg.com, dist folder on npm now.
+- React as peer deps.
 
 ## [v2.12.0] - 2017-01-29
 

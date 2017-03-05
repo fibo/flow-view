@@ -71,8 +71,6 @@ npm install flow-view --save-dev
 Adding this to your HTML page
 
 ```html
-<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
-<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
 <script src="https://unpkg.com/flow-view@2/dist/flow-view.min.js"></script>
 ```
 

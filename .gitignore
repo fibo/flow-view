@@ -6,4 +6,4 @@ Gemfile*
 gh-pages/_site
 dist/flow-view.js
 build/
-_site
+.DS_Store

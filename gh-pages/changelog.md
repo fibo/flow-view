@@ -8,7 +8,7 @@ permalink: /changelog
 
 # Change Log
 
-All notable changes to this project will be documented in this file.
+All notable changes to [flow-view project](http://g14n.info/flow-view) will be documented in [this file](https://github.com/fibo/flow-view/blob/master/gh-pages/changelog.md).
 
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
@@ -19,9 +19,13 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Added
+
+- Links in changelog.
+
 ### Fixed
 
-- Few improvements in README.md's markdown and .gitignore
+- Few improvements in .gitignore and README.md's markdown.
 
 ## [v2.14.0] - 2017-03-05
 

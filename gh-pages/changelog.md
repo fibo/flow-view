@@ -19,6 +19,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Fixed
+
+- Few improvements in README.md's markdown and .gitignore
+
 ## [v2.14.0] - 2017-03-05
 
 ### Removed

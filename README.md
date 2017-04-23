@@ -75,5 +75,5 @@ nav:
   Mandolino: //g14n.info
 ```
 
-[page_template]: http://g14n.info/templates/page/ "page template"
+[page_template]: http://g14n.info/templates/page "page template"
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

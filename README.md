@@ -51,15 +51,14 @@ git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
 
 ### page
 
-Use it for every [microsite] basic page. See [example page](http://g14n.info/templates/page/).
+Use it for every [microsite](#microsite) basic page. See [example page][page_template].
 
-Requires
+Requires the following.
 
-* Exists resource `//style.css`.
-* Optional `site.lang`, defaults to *en*.
 * Variable `page.title`, or `site.data.package.name`
 * List of `keywords` in `page` or `site.data.package`.
 * Variable `description` in `page` or `site.data.package`.
+* Optional variable `site.lang`, defaults to *en*.
 * A `nav` hash with menu items. If `page.nav` is not found, it will look for `site.nav`.
 
 Follows a sample YAML frontmatter
@@ -76,5 +75,5 @@ nav:
   Mandolino: //g14n.info
 ```
 
-[microsite](#microsite)
+[page_template]: http://g14n.info/templates/page/ "page template"
 [g14n.info-jekyll-includes]: https://github.com/fibo/g14n.info-jekyll-includes "g14n.info-jekyll-includes"

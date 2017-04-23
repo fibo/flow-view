@@ -13,10 +13,9 @@
 <body>
   {% include common/nav.html %}
 
-  <div class="container">
-    {{ content }}
-  </div>
+  <main>{{ content }}</main>
 
+  {% include common/footer.html %}
   {% include common/analytics.html %}
 </body>
 </html>

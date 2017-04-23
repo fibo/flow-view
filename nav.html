@@ -1,5 +1,5 @@
 
-{% assign nav = page.nav || site.nav  %}
+{% assign nav = page.nav | default: site.nav  %}
 
 <nav role="navigation">
   <ul>

@@ -4,12 +4,12 @@
 
 ## Setup
 
-Assuming that the content of the *gh-pages* branch is under the *gh-pages/* folder, do
+Assuming that the content of the *gh-pages* branch is under the *docs/* folder, do
 
 1. [Add remote](#add-remote)
 2. [Add subtree](#add-subtree)
 
-Then use the includes as usual, for example in *gh-pages/_layouts/page.html*
+Then use the includes as usual, for example in *docs/_layouts/page.html*
 
 ```
 {% include common/analytics.html %}
@@ -24,7 +24,7 @@ git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
 ### Add subtree
 
 ```bash
-git subtree add --prefix=gh-pages/_includes/common/ common_includes master
+git subtree add --prefix=docs/_includes/common/ common_includes master
 ```
 
 ## Update
@@ -34,7 +34,7 @@ If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 In a working tree with all modifications committed, launch
 
 ```
-git subtree --prefix=gh-pages/_includes/common/ pull common_includes master
+git subtree --prefix=docs/_includes/common/ pull common_includes master
 ```
 
 ## Content
@@ -49,15 +49,30 @@ Requires `page.title` and *_data/package.json* file with the following entries:
 * keywords
 * author.name
 
-### purecss.html
+### nav.html
 
-Includes a minified version of purecss from Yahoo CDN.
+Implments nav bar, requires `page.nav` or `site.nav` variable like
+
+```yaml
+nav:
+  Pizza: /pizza
+  Mafia: '#mafia'
+  Mandolino: //g14n.info
+```
+
+### style.html
+
+Adds common style sheet.
 
 ### github-corner.html
+
+**DEPRECATED**
 
 Comes from [GitHub corners](http://tholman.com/github-corners/).
 
 ### github-markdown-css.html
+
+**DEPRECATED**
 
 [github-markdown-css](https://github.com/sindresorhus/github-markdown-css) is
 

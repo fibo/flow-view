@@ -4,15 +4,10 @@
 
 {% assign package = site.data.package %}
 
-{% assign description = page.description %}
-{% unless description %}{% assign description = package.description %}{% endunless %}
-{% unless description %}{% assign description = site.description %}{% endunless %}
+{% assign description = page.description | default: package.description %}
+{% assign keywords = page.keywords | default: package.keywords %}
 
-{% assign keywords = page.keywords || package.keywords %}
-{% unless keywords %}{% assign keywords = package.keywords %}{% endunless %}
-{% unless keywords %}{% assign keywords = site.keywords %}{% endunless %}
-
-{% assign title = page.title %}
+{% assign title = page.title | default: package.name %}
 {% unless title %}{% assign title = package.name %}{% endunless %}
 
 <meta name="description" content="{{ description | strip_newlines }}">

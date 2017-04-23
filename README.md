@@ -41,6 +41,12 @@ git subtree --prefix=docs/_includes/common/ pull common_includes master
 
 ### analytics.html
 
+Contains Google Analytics tag.
+
+### footer.html
+
+**TODO** add common footer.
+
 ### meta.html
 
 Requires `page.title` and *_data/package.json* file with the following entries:

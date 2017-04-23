@@ -4,7 +4,21 @@
 <nav role="navigation">
   <ul>
   {% for item in nav %}
-    <li><a href="{{ item[1] }}">{{ item[0] }}</a></li>
+    <li><a href="{{ item[1] }}" onclick="toggleNav()">{{ item[0] }}</a></li>
   {% endfor %}
+    <li id="hamburgericon" onclick="toggleNav()">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </li>
   </ul>
+  <script>
+    function toggleNav () {
+      document.querySelector('nav[role=navigation] ul').classList.toggle('responsive')
+      document.getElementById('hamburgericon').classList.toggle('open')
+    }
+  </script>
 </nav>

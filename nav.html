@@ -1,7 +1,7 @@
 
 {% assign nav = page.nav | default: site.nav  %}
 
-<nav role="navigation">
+<nav>
   <ul>
   {% for item in nav %}
     <li><a href="{{ item[1] }}" onclick="toggleNav()">{{ item[0] }}</a></li>
@@ -17,7 +17,7 @@
   </ul>
   <script>
     function toggleNav () {
-      document.querySelector('nav[role=navigation] ul').classList.toggle('responsive')
+      document.querySelector('nav ul').classList.toggle('responsive')
       document.getElementById('hamburgericon').classList.toggle('open')
     }
   </script>

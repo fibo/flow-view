@@ -65,6 +65,10 @@ nav:
   Mafia: '#mafia'
   Mandolino: //g14n.info
 ```
+### js-bundle.html
+
+Includes `g14n.info/js/bundle.js` that implements common features across
+website, like nav toggle.
 
 ### style.html
 

@@ -1,8 +1,8 @@
 var inherits = require('inherits');
 var React = require('react');
+var PropTypes = require('prop-types');
 
 var Component = React.Component;
-var PropTypes = React.PropTypes;
 
 var no = require('not-defined');
 

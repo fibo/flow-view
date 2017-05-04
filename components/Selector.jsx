@@ -1,8 +1,8 @@
 var inherits = require('inherits')
+var PropTypes = require('prop-types')
 var React = require('react')
 
 var Component = React.Component
-var PropTypes = React.PropTypes
 
 var hidden = { display: 'none', overflow: 'hidden' }
 var visible = { display: 'inline', overflow: 'visible' }

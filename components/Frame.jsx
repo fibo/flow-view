@@ -1,10 +1,10 @@
-var React = require('react')
 var inherits = require('inherits')
-var ReactDOM = require('react-dom')
 var no = require('not-defined')
+var PropTypes = require('prop-types')
+var React = require('react')
+var ReactDOM = require('react-dom')
 
 var Component = React.Component
-var PropTypes = React.PropTypes
 
 var computeNodeWidth = require('../utils/computeNodeWidth')
 var ignoreEvent = require('../utils/ignoreEvent')

@@ -19,12 +19,14 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.14.1] - 2017-05-05
+
 ### Added
 
 - Links in changelog.
-- Improved browserify build, reference: https://facebook.github.io/react/docs/optimizing-performance.html#browserify
 - Deps update.
 - Using docs/ folder instead of gh-pages.
+- Using *prop-types*.
 
 ### Fixed
 

@@ -82,16 +82,16 @@ Adding this to your HTML page
 
 > flow-view Canvas constructor
 
-* **@param** `{String}` *containerId*
-* **@param** `{Object}` *[item]* collection to be customized
-* **@param** `{Object}` *[item.link]* collection of custom links
-* **@param** `{Object}` *[item.link.DefaultLink]*
-* **@param** `{Object}` *[item.node]* collection of custom nodes
-* **@param** `{Object}` *[item.node.DefaultNode]*
-* **@param** `{Object}` *[item.nodeList]* used for nodes autocompletion
-* **@param** `{Object}` *[item.util]*
-* **@param** `{Function}` *[item.util.typeOfNode]*
-* **@returns** `{Object}` *canvas*
+* **@param** `{String}` **containerId**
+* **@param** `{Object}` **[item]** collection to be customized
+* **@param** `{Object}` **[item.link]** collection of custom links
+* **@param** `{Object}` **[item.link.DefaultLink]**
+* **@param** `{Object}` **[item.node]** collection of custom nodes
+* **@param** `{Object}` **[item.node.DefaultNode]**
+* **@param** `{Object}` **[item.nodeList]** used for nodes autocompletion
+* **@param** `{Object}` **[item.util]**
+* **@param** `{Function}` **[item.util.typeOfNode]**
+* **@returns** `{Object}` **canvas**
 
 Suppose your *containerId* is `drawing`.
 In your HTML, **optionally** place a div where you want to mount the canvas.
@@ -124,13 +124,13 @@ Draws a view, that is a collection of nodes and links.
 On server side it generates an SVG output like the one you see on top of this README.md,
 see [render/serverside.js example][example_render_serverside].
 
-* **@param** `{Object}` *[view]* can be empty
-* **@param** `{Number}` *[view.height]* defaults to container height
-* **@param** `{Number}` *[view.width]* defaults to container width
-* **@param** `{Object}` *view.link*, see [link spec](#link-spec) below
-* **@param** `{Object}` *view.node*, see [node spec](#node-spec) below
-* **@param** `{Object}` *[model]*, can be used for custom items
-* **@param** `{Object}` *[callback]* called on serverside context
+* **@param** `{Object}` **[view]** can be empty
+* **@param** `{Number}` **[view.height]** defaults to container height
+* **@param** `{Number}` **[view.width]** defaults to container width
+* **@param** `{Object}` **view.link**, see [link spec](#link-spec) below
+* **@param** `{Object}` **view.node**, see [node spec](#node-spec) below
+* **@param** `{Object}` **[model]**, can be used for custom items
+* **@param** `{Object}` **[callback]** called on serverside context
 * **@returns** `{void}`
 
 Follows a basic example.
@@ -197,20 +197,20 @@ The following events are emitted by [canvas](#canvas):
 
 Few hotkyes are defined.
 
-Arrows <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> <kbd>←</kbd> translate currently selected nodes, if also <kdb>SHIFT</kdb> is pressed translation is performed pixel by pixel.
-<kdb>ESC</kbd> cancel current selection.
-Keys <kdb>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kbd>SHIFT</kbd> is pressed, pins are deleted.
+Arrows <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> <kbd>←</kbd> translate currently selected nodes, if also <kbd>SHIFT</kbd> is pressed translation is performed pixel by pixel.
+<kbd>ESC</kbd> cancel current selection.
+Keys <kbd>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kbd>SHIFT</kbd> is pressed, pins are deleted.
 
 ### Node spec
 
 A node describes an element and has the following attributes:
 
-* **@param** `Number` *x* coordinate of top left vertex
-* **@param** `Number` *y* coordinate of top left vertex
-* **@param** `String` *text*
-* **@param** `Array | undefined` *ins* list of input pins
-* **@param** `Array | undefined` *outs* list of output pins
-* **@param** `Number` *[width]*, defaults to a value depending on text lenght and number of pins.
+* **@param** `Number` **x** coordinate of top left vertex
+* **@param** `Number` **y** coordinate of top left vertex
+* **@param** `String` **text**
+* **@param** `Array | undefined` **ins** list of input pins
+* **@param** `Array | undefined` **outs** list of output pins
+* **@param** `Number` **[width]**, defaults to a value depending on text lenght and number of pins.
 
 An pin can be either a string or an object with the `name` attribute which must be a string.
 Input pins default to string `in${position}`.
@@ -222,12 +222,12 @@ If *outs* is undefined, the node is a leaf.
 
 A link describes a connection between elements and has the following attributes:
 
-* **@param** `Array` *from* has exactly two elements
-* **@param** `String` *from[0]* is the key of the source node
-* **@param** `Number` *from[1]* is the output pin position
-* **@param** `Array` *to* has exactly two elements
-* **@param** `String` *to[0]* is the key of the target node
-* **@param** `Number` *to[1]* is the input pin position
+* **@param** `Array` **from** has exactly two elements
+* **@param** `String` **from[0]** is the key of the source node
+* **@param** `Number` **from[1]** is the output pin position
+* **@param** `Array` **to** has exactly two elements
+* **@param** `String` **to[0]** is the key of the target node
+* **@param** `Number` **to[1]** is the input pin position
 
 ## Examples
 
@@ -249,8 +249,8 @@ npm run example_basic_usage
 
 Available examples are:
 
-* [basic/usage.js][example_basic_usage] `npm run example_basic_usage`
-* [custom/item.js][example_custom_item] `npm run example_custom_item`
+* [basic/usage.js][example_basic_usage]: `npm run example_basic_usage`
+* [custom/item.js][example_custom_item]: `npm run example_custom_item`
 * [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
@@ -266,7 +266,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-[React]: https://facebook.github.io/react/
+[React]: https://facebook.github.io/react/ "React"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
 [example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
@@ -274,5 +274,5 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
-[sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg
-[simpsons_gif]: https://g14n.info/flow-view/media/TheSimspons.gif
+[sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg "SVG Sample"
+[simpsons_gif]: https://g14n.info/flow-view/media/TheSimspons.gif "The Simpsons Family"

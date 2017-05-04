@@ -1,8 +1,8 @@
-var React = require('react');
 var inherits = require('inherits');
+var PropTypes = require('prop-types');
+var React = require('react');
 
 var Component = React.Component;
-var PropTypes = React.PropTypes;
 
 var ignoreEvent = require('../utils/ignoreEvent');
 var theme = require('./theme');

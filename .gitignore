@@ -3,7 +3,7 @@
 node_modules
 npm-debug.log
 Gemfile*
-gh-pages/_site
+docs/_site
 dist/flow-view.js
 build/
 .DS_Store

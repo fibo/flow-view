@@ -57,7 +57,8 @@ Requires `page.title` and *_data/package.json* file with the following entries:
 
 ### nav.html
 
-Implments nav bar, requires `page.nav` or `site.nav` variable like
+Implments nav bar: project `repository_url` and `url` are grabbed from [github-metadata].
+It looks into `page.nav` or `site.nav` variable, if any, for example
 
 ```yaml
 nav:
@@ -89,3 +90,4 @@ Comes from [GitHub corners](http://tholman.com/github-corners/).
 
 > The minimal amount of CSS to replicate the GitHub Markdown style
 
+[github-metadata]: https://github.com/jekyll/github-metadata "a.k.a. site.github"

@@ -3,9 +3,11 @@
 
 <nav>
   <ul>
+    <li><a href="{{ site.github.url }}" onclick="toggleNav()">{{ site.github.project_title }}</a></li>
   {% for item in nav %}
     <li><a href="{{ item[1] }}" onclick="toggleNav()">{{ item[0] }}</a></li>
   {% endfor %}
+    <li><a href="{{ site.github.repository_url }}" target="_blank">Code</a></li>
     <li id="hamburgericon" onclick="toggleNav()">
       <span></span>
       <span></span>

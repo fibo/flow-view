@@ -4,7 +4,7 @@
 
 ## Setup
 
-Assuming that the content of the *gh-pages* branch is under the *docs/* folder, do
+Assuming that you are using the *docs/* folder for GitHub Pages, do
 
 1. [Add remote](#add-remote)
 2. [Add subtree](#add-subtree)

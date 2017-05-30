@@ -10,7 +10,7 @@ By **microsite** I mean a subset of a website. For example `http://example.org/m
 
 First of all, make sure you have already imported [g14n.info-jekyll-includes].
 
-Assuming that the content of the *gh-pages* branch is under the *gh-pages/* folder, do
+Assuming that you are using the *docs/* folder for GitHub Pages, do
 
 1. [Add remote](#add-remote)
 2. [Add subtree](#add-subtree)
@@ -34,7 +34,7 @@ git remote add common_layouts git@github.com:fibo/g14n.info-jekyll-layouts.git
 ### Add subtree
 
 ```bash
-git subtree add --prefix=gh-pages/_layouts/common/ common_layouts master
+git subtree add --prefix=docs/_layouts/common/ common_layouts master
 ```
 
 ## Update
@@ -44,7 +44,7 @@ If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 In a working tree with all modifications committed, launch
 
 ```bash
-git subtree --prefix=gh-pages/_layouts/common/ pull common_layouts master
+git subtree --prefix=docs/_layouts/common/ pull common_layouts master
 ```
 
 ## Content

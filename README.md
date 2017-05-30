@@ -45,7 +45,7 @@ Contains Google Analytics tag.
 
 ### footer.html
 
-**TODO** add common footer.
+Copyright, license.
 
 ### meta.html
 
@@ -65,6 +65,7 @@ nav:
   Mafia: '#mafia'
   Mandolino: //g14n.info
 ```
+
 ### js-bundle.html
 
 Includes `g14n.info/js/bundle.js` that implements common features across

@@ -19,7 +19,7 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
-## [v2.14.2] - 2017-06-08
+## [v2.14.3] - 2017-06-08
 
 ### Added
 
@@ -28,6 +28,10 @@ New g14n.info layouts, with link to Changelog page
 ### Fixed
 
 - [Issue41](https://github.com/fibo/flow-view/issues/41): adding pins started dragging.
+
+### Removed
+
+- Check deps on commit. Probably cheerio will be replaced by jest, and uglifyjs v3 has breaking changes I need to evaluate now.
 
 ## [v2.14.1] - 2017-05-05
 

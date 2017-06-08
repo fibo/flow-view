@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming, powered by React",
-  "version": "2.14.1",
+  "version": "2.14.3",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -15,7 +15,6 @@
     "browserify_example": "NODE_ENV=production NODE_PATH=. browserify --no-bundle-external examples/render/clientside.js -o docs/example/bundle.js",
     "browserify_dist": "BABEL_ENV=umd NODE_ENV=production browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "build": "npm run example_render_serverside; npm run browserify && npm run minify; npm run jekyll; git status",
-    "check-deps": "npm outdated",
     "example_basic_usage": "NODE_PATH=. budo --open examples/basic/usage.js -- -t babelify ",
     "example_custom_item": "BABEL_ENV=dev NODE_PATH=. budo --open examples/custom/item.js -- -t babelify ",
     "example_empty_canvas": "BABEL_ENV=dev NODE_PATH=. budo --open examples/empty/canvas.js -- -t babelify ",
@@ -45,8 +44,7 @@
   },
   "pre-commit": [
     "lint",
-    "test",
-    "check-deps"
+    "test"
   ],
   "repository": {
     "type": "git",

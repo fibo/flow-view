@@ -19,6 +19,10 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+### Added
+
+- UglifyJS v3 update and source map with comment preample support.
+
 ## [v2.14.3] - 2017-06-08
 
 ### Added

@@ -30,7 +30,7 @@
     "lint": "for x in src test; do npm run lint_$x; done",
     "lint_src": "standard Canvas.jsx flow-view.js utils/*js components/*jsx components/theme.js components/index.js",
     "lint_test": "cd test; standard; cd ..",
-    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map ${npm_package_name}.map --output ${npm_package_name}.min.js --compress --mangle --preamble \"// Software: ${npm_package_name}\n// Homepage: ${npm_package_homepage}\n// License: ${npm_package_license}\"; cd -",
+    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
     "preexample_render_serverside": "npm run babel",
     "preversion": "npm run build; npm run babel",
     "postversion": "git push origin v${npm_package_version}; npm publish",
@@ -89,6 +89,6 @@
     "react-proxy": "^1.1.8",
     "standard": "^10.0.2",
     "tape": "^4.6.2",
-    "uglify-js": "^2.8.22"
+    "uglify-js": "^3.0.15"
   }
 }

@@ -84,7 +84,7 @@
     "budo": "^10.0.3",
     "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
-    "dot-editorconfig": "^0.4.0",
+    "dot-editorconfig": "^1.0.1",
     "pre-commit": "^1.2.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",

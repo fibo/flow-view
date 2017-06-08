@@ -19,6 +19,16 @@ New g14n.info layouts, with link to Changelog page
 
 ## [Unreleased]
 
+## [v2.14.2] - 2017-06-08
+
+### Added
+
+- File package-lock.json (npm v5).
+
+### Fixed
+
+- [Issue41](https://github.com/fibo/flow-view/issues/41): adding pins started dragging.
+
 ## [v2.14.1] - 2017-05-05
 
 ### Added

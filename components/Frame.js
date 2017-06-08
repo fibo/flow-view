@@ -411,6 +411,7 @@ function render() {
         });
       } else {
         setState({
+          dragging: false,
           pointer: null
         });
       }

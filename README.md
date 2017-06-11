@@ -80,8 +80,6 @@ Adding this to your HTML page
 
 * **@param** `{String}` **containerId**
 * **@param** `{Object}` **[item]** collection to be customized
-* **@param** `{Object}` **[item.link]** collection of custom links
-* **@param** `{Object}` **[item.link.DefaultLink]**
 * **@param** `{Object}` **[item.node]** collection of custom nodes
 * **@param** `{Object}` **[item.node.DefaultNode]**
 * **@param** `{Object}` **[item.nodeList]** used for nodes autocompletion

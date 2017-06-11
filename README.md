@@ -37,7 +37,7 @@ The following features are implemented:
 
 * Create nodes and links using a visual interface.
 * SVG server side rendering.
-* Custom items: nodes links can be customized using React.
+* Custom items: nodes can be customized using React.
 * Events are emitted to achieve integration with other packages.
 
 > Let's give Node.js a common visual interface. Use *flow-view*!

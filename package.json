@@ -27,20 +27,18 @@
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
     "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
     "jekyll:serve": "npm run browserify; npm run homepage; cd docs; jekyll serve; cd ..",
-    "lint": "for x in src test; do npm run lint_$x; done",
+    "lint": "for x in src examples; do npm run lint_$x; done",
     "lint_src": "standard Canvas.jsx flow-view.js utils/*js components/*jsx components/theme.js components/index.js",
-    "lint_test": "cd test; standard; cd ..",
+    "lint_examples": "cd examples; standard; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
     "preexample_render_serverside": "npm run babel",
     "preversion": "npm run build; npm run babel",
     "postversion": "git push origin v${npm_package_version}; npm publish",
     "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "postupdate-deps": "npm test && git commit -am 'updated deps' || git checkout -- package.json",
-    "test": "for x in serverside components; do npm run test_$x; done",
-    "test_serverside": "NODE_PATH=. tape test/serverside/*.js",
-    "test_components": "BABEL_ENV=dev NODE_PATH=. tape -r babel-register test/components/*.js",
-    "update-deps": "npm update --save --dev"
+    "test": "for x in serverside jest; do npm run test_$x; done",
+    "test_jest": "BABEL_ENV=umd NODE_PATH=. jest",
+    "test_serverside": "NODE_PATH=. tape test/serverside.js"
   },
   "pre-commit": [
     "lint",
@@ -75,20 +73,22 @@
     "svgx": "^0.7.3"
   },
   "devDependencies": {
+    "babel-jest": "^20.0.3",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babelify": "^7.3.0",
     "brfs": "^1.4.3",
     "budo": "^10.0.3",
-    "cheerio": "^0.22.0",
     "deep-freeze": "0.0.1",
     "dot-editorconfig": "^1.0.1",
+    "jest": "^20.0.4",
     "pre-commit": "^1.2.2",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-proxy": "^1.1.8",
+    "react-test-renderer": "^15.6.1",
     "standard": "^10.0.2",
     "tape": "^4.6.2",
-    "uglify-js": "^3.0.15"
+    "uglify-js": "^3.0.19"
   }
 }

@@ -22,6 +22,7 @@ New g14n.info layouts, with link to Changelog page
 ### Added
 
 - UglifyJS v3 update and source map with comment preample support.
+- Jest snapshot tests.
 
 ## [v2.14.3] - 2017-06-08
 

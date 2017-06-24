@@ -30,16 +30,19 @@ BigNode.defaultProps = Object.assign({},
 )
 
 const view = {
-  width: 400, height: 300,
+  width: 400,
+  height: 300,
   node: {
     a: {
-      x: 80, y: 10,
+      x: 80,
+      y: 10,
       width: 100,
       text: 'Root',
       outs: ['out']
     },
     b: {
-      x: 180, y: 100,
+      x: 180,
+      y: 100,
       item: 'BigNode',
       text: 'Big Node',
       ins: [ 'in0' ],
@@ -47,7 +50,8 @@ const view = {
     },
     c: {
       text: 'Leaf',
-      x: 10, y: 200,
+      x: 10,
+      y: 200,
       ins: ['in1', 'in2', 'in3']
     }
   },
@@ -64,4 +68,3 @@ const canvas = new Canvas('drawing', {
 })
 
 canvas.render(view)
-

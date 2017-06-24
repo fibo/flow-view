@@ -13,22 +13,26 @@ var canvas = new Canvas('drawing', {
 canvas.render({
   node: {
     dad: {
-      x: 10, y: 10,
+      x: 10,
+      y: 10,
       text: 'Homer',
       outs: [ 'is father of' ]
     },
     mom: {
-      x: 120, y: 20,
+      x: 120,
+      y: 20,
       text: 'Marge',
       outs: [ 'is mother of' ]
     },
     son: {
-      x: 20, y: 190,
+      x: 20,
+      y: 190,
       text: 'Bart',
       ins: ['father', 'mother']
     },
     daughter: {
-      x: 180, y: 170,
+      x: 180,
+      y: 170,
       text: 'Lisa',
       ins: ['father', 'mother']
     }

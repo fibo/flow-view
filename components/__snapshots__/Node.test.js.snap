@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<g
+  onDoubleClick={[Function]}
+  onMouseDown={[Function]}
+  style={
+    Object {
+      "cursor": "default",
+    }
+  }
+  transform="translate(0,0)"
+>
+  <rect
+    fillOpacity={0}
+    height={40}
+    stroke="#BDBDBD"
+    strokeWidth={1}
+    width={50.72}
+  />
+  <rect
+    fill="#BDBDBD"
+    height={10}
+    width={50.72}
+  />
+  <text
+    x={10}
+    y={27.6}
+  >
+    <tspan>
+      Node
+    </tspan>
+  </text>
+  <rect
+    fill="#BDBDBD"
+    height={10}
+    transform="translate(0,30)"
+    width={50.72}
+  />
+</g>
+`;

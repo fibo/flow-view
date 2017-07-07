@@ -67,6 +67,8 @@ nav:
   Mandolino: //g14n.info
 ```
 
+Home page is added by default, link to repo is added only if *_data/package.json* `private` attribute is not true.
+
 ### js-bundle.html
 
 Includes `g14n.info/js/bundle.js` that implements common features across
@@ -75,19 +77,5 @@ website, like nav toggle.
 ### style.html
 
 Adds common style sheet.
-
-### github-corner.html
-
-**DEPRECATED**
-
-Comes from [GitHub corners](http://tholman.com/github-corners/).
-
-### github-markdown-css.html
-
-**DEPRECATED**
-
-[github-markdown-css](https://github.com/sindresorhus/github-markdown-css) is
-
-> The minimal amount of CSS to replicate the GitHub Markdown style
 
 [github-metadata]: https://github.com/jekyll/github-metadata "a.k.a. site.github"

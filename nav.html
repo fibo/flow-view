@@ -7,7 +7,9 @@
   {% for item in nav %}
     <li><a href="{{ item[1] }}" onclick="toggleNav()">{{ item[0] }}</a></li>
   {% endfor %}
+  {% unless site.data.package.private %}
     <li><a href="{{ site.github.repository_url }}" target="_blank">Code</a></li>
+  {% endunless %}
     <li id="hamburgericon" onclick="toggleNav()">
       <span></span>
       <span></span>

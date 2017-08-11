@@ -21,6 +21,9 @@ New g14n.info layouts, with link to Changelog page
 
 ### Added
 
+- Added flow static type checker.
+- Big refactoring: back again to ES6 syntactic sugar.
+- Using [bindme](http://g14n.info/bindme) for better React performance.
 - UglifyJS v3 update and source map with comment preample support.
 - Jest snapshot tests.
 

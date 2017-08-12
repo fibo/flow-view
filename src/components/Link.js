@@ -8,14 +8,14 @@ import { defaultTheme, Theme } from './theme'
 
 export default class Link extends React.Component {
   props: {
-//    deleteLink: PropTypes.func.isRequired,
+    deleteLink: (string) => void,
     id: string,
     from: [string, number],
-//    onCreateLink: PropTypes.func.isRequired,
-//    startDraggingLinkTarget: PropTypes.func.isRequired,
+    onCreateLink: ({ from: [ string, number ], to: ?[ string, number ] }) => void,
+    startDraggingLinkTarget: (string) => void,
     pinSize: number,
     selected: boolean,
-//    selectLink: PropTypes.func.isRequired,
+    selectLink: (MouseEvent) => void,
     sourceSelected: boolean,
     targetSelected: boolean,
     theme: Theme,

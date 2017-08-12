@@ -1,18 +1,13 @@
-/**
- * Generate random string [a-z].
- *
- * @param {Number} length of desired result
- * @returns {String} result
- */
+'use strict';
 
-function randomString (length) {
-  var result = ''
+function randomString(length) {
+  var result = '';
 
   while (result.length < length) {
-    result += String.fromCharCode(97 + Math.floor(Math.random() * 26))
+    result += String.fromCharCode(97 + Math.floor(Math.random() * 26));
   }
 
-  return result
+  return result;
 }
 
-module.exports = exports.default = randomString
+module.exports = exports.default = randomString;

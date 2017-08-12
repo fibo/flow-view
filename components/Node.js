@@ -1,3 +1,5 @@
+'use strict';
+
 var inherits = require('inherits');
 var React = require('react');
 var PropTypes = require('prop-types');
@@ -11,9 +13,13 @@ var ignoreEvent = require('../utils/ignoreEvent');
 var xOfPin = require('../utils/xOfPin');
 var theme = require('./theme');
 
-var minus = pinSize => 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z';
+var minus = function minus(pinSize) {
+  return 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z';
+};
 
-var plus = pinSize => 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z';
+var plus = function plus(pinSize) {
+  return 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z';
+};
 
 function Node() {
   Component.apply(this, arguments);
@@ -102,7 +108,9 @@ function getDeleteButton() {
     d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
     fill: primaryColor,
     transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
-    onMouseDown: () => deleteNode(id)
+    onMouseDown: function onMouseDown() {
+      return deleteNode(id);
+    }
   });
 }
 
@@ -128,7 +136,7 @@ function getInputMinus() {
   return React.createElement('path', {
     d: minus(pinSize),
     fill: disabled ? 'transparent' : primaryColor,
-    onMouseDown: () => {
+    onMouseDown: function onMouseDown() {
       if (!disabled) deleteInputPin(id);
     },
     stroke: primaryColor,
@@ -157,7 +165,9 @@ function getInputPlus() {
   return React.createElement('path', {
     d: plus(pinSize),
     fill: primaryColor,
-    onMouseDown: () => createInputPin(id),
+    onMouseDown: function onMouseDown() {
+      return createInputPin(id);
+    },
     stroke: primaryColor,
     transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)'
   });
@@ -186,7 +196,7 @@ function getOutputMinus() {
   return React.createElement('path', {
     d: minus(pinSize),
     fill: disabled ? 'transparent' : primaryColor,
-    onMouseDown: () => {
+    onMouseDown: function onMouseDown() {
       if (!disabled) deleteOutputPin(id);
     },
     stroke: primaryColor,
@@ -216,7 +226,9 @@ function getOutputPlus() {
   return React.createElement('path', {
     d: plus(pinSize),
     fill: primaryColor,
-    onMouseDown: () => createOutputPin(id),
+    onMouseDown: function onMouseDown() {
+      return createOutputPin(id);
+    },
     stroke: primaryColor,
     transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')'
   });
@@ -276,10 +288,10 @@ function render() {
       height: pinSize,
       width: computedWidth
     }),
-    ins && ins.map((pin, i, array) => {
+    ins && ins.map(function (pin, i, array) {
       var x = xOfPin(pinSize, computedWidth, array.length, i);
 
-      var onMouseUp = e => {
+      var onMouseUp = function onMouseUp(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -305,10 +317,10 @@ function render() {
       transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
       width: computedWidth
     }),
-    outs && outs.map((pin, i, array) => {
+    outs && outs.map(function (pin, i, array) {
       var x = xOfPin(pinSize, computedWidth, array.length, i);
 
-      var onMouseDown = e => {
+      var onMouseDown = function onMouseDown(e) {
         e.preventDefault();
         e.stopPropagation();
 

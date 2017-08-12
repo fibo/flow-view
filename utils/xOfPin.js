@@ -1,7 +1,9 @@
-function xOfPin (pinSize, width, numPins, position) {
-  if (position === 0) return 0
+"use strict";
 
-  if (numPins > 1) return position * (width - pinSize) / (numPins - 1)
+function xOfPin(pinSize, width, numPins, position) {
+  if (position === 0) return 0;
+
+  if (numPins > 1) return position * (width - pinSize) / (numPins - 1);
 }
 
-module.exports = exports.default = xOfPin
+module.exports = exports.default = xOfPin;

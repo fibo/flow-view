@@ -1,6 +1,21 @@
-'use strict';
+var PropTypes = require('prop-types')
 
-var PropTypes = require('prop-types');
+/*
+Palette from https://www.materialpalette.com/lime/grey
+
+Thanks to Tania and Lucilla.
+
+dark primary color #AFB42B
+primary color #CDDC39
+light primary color #F0F4C3
+
+accent color #9E9E9E
+primary text #212121
+secondary text #757575
+
+text / icons #212121
+divider color #BDBDBD
+*/
 
 var defaultProps = {
   fontFamily: 'Courier',
@@ -13,7 +28,7 @@ var defaultProps = {
   pinColor: '#757575',
   linkColor: '#9E9E9E',
   pinSize: 10
-};
+}
 
 var propTypes = PropTypes.shape({
   fontFamily: PropTypes.string.isRequired,
@@ -24,9 +39,9 @@ var propTypes = PropTypes.shape({
   nodeBodyHeight: PropTypes.number.isRequired,
   pinColor: PropTypes.string.isRequired,
   pinSize: PropTypes.number.isRequired
-}).isRequired;
+}).isRequired
 
 module.exports = exports.default = {
-  defaultProps: defaultProps,
-  propTypes: propTypes
-};
+  defaultProps,
+  propTypes
+}

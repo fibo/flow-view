@@ -1,4 +1,6 @@
-var Canvas = require('./Canvas')
-var components = require('./components')
+'use strict';
 
-module.exports = exports.default = { Canvas, components }
+var Canvas = require('./Canvas');
+var components = require('./components');
+
+module.exports = exports.default = { Canvas: Canvas, components: components };

@@ -1,3 +1,5 @@
+'use strict';
+
 var EventEmitter = require('events');
 var inherits = require('inherits');
 var no = require('not-defined');
@@ -51,6 +53,8 @@ function Canvas(containerId, item) {
 inherits(Canvas, EventEmitter);
 
 function render(view, model, callback) {
+  var _this = this;
+
   var container = this.container;
   var item = this.item;
 
@@ -70,7 +74,7 @@ function render(view, model, callback) {
   if (no(view.node)) view.node = {};
   if (no(view.width)) view.width = width;
 
-  var createInputPin = (nodeId, pin) => {
+  var createInputPin = function createInputPin(nodeId, pin) {
     var ins = view.node[nodeId].ins;
 
     if (no(ins)) view.node[nodeId].ins = ins = [];
@@ -79,12 +83,12 @@ function render(view, model, callback) {
 
     if (no(pin)) pin = 'in' + position;
 
-    this.emit('createInputPin', nodeId, position, pin);
+    _this.emit('createInputPin', nodeId, position, pin);
 
     view.node[nodeId].ins.push(pin);
   };
 
-  var createOutputPin = (nodeId, pin) => {
+  var createOutputPin = function createOutputPin(nodeId, pin) {
     var outs = view.node[nodeId].outs;
 
     if (no(outs)) view.node[nodeId].outs = outs = [];
@@ -93,17 +97,17 @@ function render(view, model, callback) {
 
     if (no(pin)) pin = 'out' + position;
 
-    this.emit('createOutputPin', nodeId, position, pin);
+    _this.emit('createOutputPin', nodeId, position, pin);
 
     view.node[nodeId].outs.push(pin);
   };
 
-  var selectLink = id => {
-    this.emit('selectLink', id);
+  var selectLink = function selectLink(id) {
+    _this.emit('selectLink', id);
   };
 
-  var selectNode = id => {
-    this.emit('selectNode', id);
+  var selectNode = function selectNode(id) {
+    _this.emit('selectNode', id);
   };
 
   function generateId() {
@@ -112,7 +116,7 @@ function render(view, model, callback) {
     return view.link[id] || view.node[id] ? generateId() : id;
   }
 
-  var createLink = link => {
+  var createLink = function createLink(link) {
     var from = link.from;
     var to = link.to;
 
@@ -123,30 +127,30 @@ function render(view, model, callback) {
     } else {
       view.link[id] = { from: from, to: to };
 
-      this.emit('createLink', { from: from, to: to }, id);
+      _this.emit('createLink', { from: from, to: to }, id);
     }
 
     return id;
   };
 
-  var createNode = node => {
+  var createNode = function createNode(node) {
     var id = generateId();
 
     view.node[id] = node;
 
-    this.emit('createNode', node, id);
+    _this.emit('createNode', node, id);
 
     return id;
   };
 
-  var deleteLink = id => {
-    this.emit('deleteLink', id);
+  var deleteLink = function deleteLink(id) {
+    _this.emit('deleteLink', id);
 
     delete view.link[id];
   };
 
-  var deleteNode = id => {
-    Object.keys(view.link).forEach(linkId => {
+  var deleteNode = function deleteNode(id) {
+    Object.keys(view.link).forEach(function (linkId) {
       var from = view.link[linkId].from;
       var to = view.link[linkId].to;
 
@@ -161,17 +165,19 @@ function render(view, model, callback) {
 
     delete view.node[id];
 
-    this.emit('deleteNode', id);
+    _this.emit('deleteNode', id);
   };
 
-  var dragItems = (dragginDelta, draggedItems) => {
-    Object.keys(view.node).filter(id => draggedItems.indexOf(id) > -1).forEach(id => {
+  var dragItems = function dragItems(dragginDelta, draggedItems) {
+    Object.keys(view.node).filter(function (id) {
+      return draggedItems.indexOf(id) > -1;
+    }).forEach(function (id) {
       view.node[id].x += dragginDelta.x;
       view.node[id].y += dragginDelta.y;
     });
   };
 
-  var deleteInputPin = (nodeId, position) => {
+  var deleteInputPin = function deleteInputPin(nodeId, position) {
     var ins = view.node[nodeId].ins;
 
     if (no(ins)) return;
@@ -179,7 +185,7 @@ function render(view, model, callback) {
 
     if (no(position)) position = ins.length - 1;
 
-    Object.keys(view.link).forEach(id => {
+    Object.keys(view.link).forEach(function (id) {
       var to = view.link[id].to;
 
       if (no(to)) return;
@@ -189,24 +195,24 @@ function render(view, model, callback) {
       }
     });
 
-    this.emit('deleteInputPin', nodeId, position);
+    _this.emit('deleteInputPin', nodeId, position);
 
     view.node[nodeId].ins.splice(position, 1);
   };
 
-  var endDragging = selectNodes => {
+  var endDragging = function endDragging(selectNodes) {
     var nodesCoordinates = {};
 
-    selectNodes.forEach(id => {
+    selectNodes.forEach(function (id) {
       nodesCoordinates.id = {};
       nodesCoordinates.id.x = view.node[id].x;
       nodesCoordinates.id.y = view.node[id].y;
     });
 
-    this.emit('endDragging', nodesCoordinates);
+    _this.emit('endDragging', nodesCoordinates);
   };
 
-  var deleteOutputPin = (nodeId, position) => {
+  var deleteOutputPin = function deleteOutputPin(nodeId, position) {
     var outs = view.node[nodeId].outs;
 
     if (no(outs)) return;
@@ -214,7 +220,7 @@ function render(view, model, callback) {
 
     if (no(position)) position = outs.length - 1;
 
-    Object.keys(view.link).forEach(id => {
+    Object.keys(view.link).forEach(function (id) {
       var from = view.link[id].from;
 
       if (no(from)) return;
@@ -224,23 +230,23 @@ function render(view, model, callback) {
       }
     });
 
-    this.emit('deleteOutputPin', nodeId, position);
+    _this.emit('deleteOutputPin', nodeId, position);
 
     view.node[nodeId].outs.splice(position, 1);
   };
 
-  var renameNode = (nodeId, text) => {
+  var renameNode = function renameNode(nodeId, text) {
     view.node[nodeId].text = text;
   };
 
-  var updateLink = (id, link) => {
+  var updateLink = function updateLink(id, link) {
     var to = link.to;
     var from = link.from;
 
     if (no(from)) {
       view.link[id].to = to;
 
-      this.emit('createLink', view.link[id], id);
+      _this.emit('createLink', view.link[id], id);
     }
   };
 

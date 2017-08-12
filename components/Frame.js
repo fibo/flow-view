@@ -1,3 +1,5 @@
+'use strict';
+
 var inherits = require('inherits');
 var no = require('not-defined');
 var PropTypes = require('prop-types');
@@ -15,7 +17,9 @@ var DefaultNode = require('./Node');
 var Selector = require('./Selector');
 var theme = require('./theme');
 
-var isShift = code => code === 'ShiftLeft' || code === 'ShiftRight';
+var isShift = function isShift(code) {
+  return code === 'ShiftLeft' || code === 'ShiftRight';
+};
 
 function Frame() {
   Component.apply(this, arguments);
@@ -37,6 +41,8 @@ function Frame() {
 inherits(Frame, Component);
 
 function componentDidMount() {
+  var _this = this;
+
   var _props = this.props,
       createInputPin = _props.createInputPin,
       createOutputPin = _props.createOutputPin,
@@ -50,11 +56,11 @@ function componentDidMount() {
 
   var container = ReactDOM.findDOMNode(this).parentNode;
 
-  document.addEventListener('keydown', event => {
+  document.addEventListener('keydown', function (event) {
     var code = event.code;
 
-    var endDragging = this.props.endDragging;
-    var _state = this.state,
+    var endDragging = _this.props.endDragging;
+    var _state = _this.state,
         dragMoved = _state.dragMoved,
         selectedItems = _state.selectedItems,
         shiftPressed = _state.shiftPressed;
@@ -68,7 +74,9 @@ function componentDidMount() {
       setState({ selectedItems: [] });
     }
 
-    var selectedNodes = Object.keys(view.node).filter(id => selectedItems.indexOf(id) > -1);
+    var selectedNodes = Object.keys(view.node).filter(function (id) {
+      return selectedItems.indexOf(id) > -1;
+    });
 
     if (selectedNodes.length > 0 && code.substring(0, 5) === 'Arrow') {
       var draggingDelta = { x: 0, y: 0 };
@@ -96,7 +104,7 @@ function componentDidMount() {
     }
 
     if (code === 'KeyI') {
-      selectedItems.forEach(id => {
+      selectedItems.forEach(function (id) {
         if (view.node[id] && view.node[id].ins) {
           if (shiftPressed) {
             deleteInputPin(id);
@@ -108,7 +116,7 @@ function componentDidMount() {
     }
 
     if (code === 'KeyO') {
-      selectedItems.forEach(id => {
+      selectedItems.forEach(function (id) {
         if (view.node[id] && view.node[id].outs) {
           if (shiftPressed) {
             deleteOutputPin(id);
@@ -119,19 +127,21 @@ function componentDidMount() {
       });
     }
 
-    this.forceUpdate();
+    _this.forceUpdate();
   });
 
-  document.addEventListener('keyup', event => {
+  document.addEventListener('keyup', function (event) {
     var code = event.code;
 
-    var endDragging = this.props.endDragging;
-    var _state2 = this.state,
+    var endDragging = _this.props.endDragging;
+    var _state2 = _this.state,
         dragMoved = _state2.dragMoved,
         selectedItems = _state2.selectedItems;
 
 
-    var selectedNodes = Object.keys(view.node).filter(id => selectedItems.indexOf(id) > -1);
+    var selectedNodes = Object.keys(view.node).filter(function (id) {
+      return selectedItems.indexOf(id) > -1;
+    });
 
     if (isShift(code)) {
       setState({ shiftPressed: false });
@@ -147,14 +157,14 @@ function componentDidMount() {
     }
   });
 
-  window.addEventListener('scroll', () => {
+  window.addEventListener('scroll', function () {
     setState({ scroll: {
         x: window.scrollX,
         y: window.scrollY
       } });
   });
 
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', function () {
     var rect = container.getBoundingClientRect();
 
     setState({ dynamicView: {
@@ -179,10 +189,12 @@ function componentDidMount() {
 Frame.prototype.componentDidMount = componentDidMount;
 
 function render() {
+  var _this2 = this;
+
   var _props2 = this.props,
       createInputPin = _props2.createInputPin,
       createLink = _props2.createLink,
-      createNode = _props2.createNode,
+      _createNode = _props2.createNode,
       createOutputPin = _props2.createOutputPin,
       deleteInputPin = _props2.deleteInputPin,
       deleteLink = _props2.deleteLink,
@@ -224,7 +236,7 @@ function render() {
 
   var setState = this.setState.bind(this);
 
-  var coordinatesOfLink = link => {
+  var coordinatesOfLink = function coordinatesOfLink(link) {
     var from = link.from;
     var to = link.to;
 
@@ -234,7 +246,11 @@ function render() {
     var y2 = null;
 
     var nodeIds = Object.keys(view.node);
-    var idEquals = x => id => id === x[0];
+    var idEquals = function idEquals(x) {
+      return function (id) {
+        return id === x[0];
+      };
+    };
     var sourceId = from ? nodeIds.find(idEquals(from)) : null;
     var targetId = to ? nodeIds.find(idEquals(to)) : null;
 
@@ -278,8 +294,8 @@ function render() {
     return { x1: x1, y1: y1, x2: x2, y2: y2 };
   };
 
-  var getCoordinates = e => {
-    var _state4 = this.state,
+  var getCoordinates = function getCoordinates(e) {
+    var _state4 = _this2.state,
         offset = _state4.offset,
         scroll = _state4.scroll;
 
@@ -290,20 +306,20 @@ function render() {
     };
   };
 
-  var onClick = e => {
+  var onClick = function onClick(e) {
     e.preventDefault();
     e.stopPropagation();
 
     setState({ showSelector: false });
   };
 
-  var onCreateLink = link => {
+  var onCreateLink = function onCreateLink(link) {
     var draggedLinkId = createLink(link);
 
     setState({ draggedLinkId: draggedLinkId });
   };
 
-  var onUpdateLink = (id, link) => {
+  var onUpdateLink = function onUpdateLink(id, link) {
     updateLink(id, link);
 
     var disconnectingLink = link.to === null;
@@ -317,7 +333,7 @@ function render() {
     }
   };
 
-  var onDoubleClick = e => {
+  var onDoubleClick = function onDoubleClick(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -327,7 +343,7 @@ function render() {
     });
   };
 
-  var onMouseDown = e => {
+  var onMouseDown = function onMouseDown(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -336,11 +352,11 @@ function render() {
     });
   };
 
-  var onMouseLeave = e => {
+  var onMouseLeave = function onMouseLeave(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    var draggedLinkId = this.state.draggedLinkId;
+    var draggedLinkId = _this2.state.draggedLinkId;
     if (draggedLinkId) delete view.link[draggedLinkId];
 
     setState({
@@ -351,11 +367,11 @@ function render() {
     });
   };
 
-  var onMouseMove = e => {
+  var onMouseMove = function onMouseMove(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    var _state5 = this.state,
+    var _state5 = _this2.state,
         dragging = _state5.dragging,
         dragMoved = _state5.dragMoved,
         selectedItems = _state5.selectedItems;
@@ -381,11 +397,11 @@ function render() {
     }
   };
 
-  var onMouseUp = e => {
+  var onMouseUp = function onMouseUp(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    var _state6 = this.state,
+    var _state6 = _this2.state,
         draggedLinkId = _state6.draggedLinkId,
         dragMoved = _state6.dragMoved,
         selectedItems = _state6.selectedItems;
@@ -399,7 +415,9 @@ function render() {
         pointer: null
       });
     } else {
-      var selectedNodes = Object.keys(view.node).filter(id => selectedItems.indexOf(id) > -1);
+      var selectedNodes = Object.keys(view.node).filter(function (id) {
+        return selectedItems.indexOf(id) > -1;
+      });
 
       if (dragMoved) {
         endDragging(selectedNodes);
@@ -418,7 +436,7 @@ function render() {
     }
   };
 
-  var selectedFirst = (a, b) => {
+  var selectedFirst = function selectedFirst(a, b) {
     var aIsSelected = selectedItems.indexOf(a) > -1;
     var bIsSelected = selectedItems.indexOf(b) > -1;
 
@@ -428,58 +446,60 @@ function render() {
     if (bIsSelected) return -1;
   };
 
-  var selectItem = id => e => {
-    e.preventDefault();
-    e.stopPropagation();
+  var selectItem = function selectItem(id) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
 
-    var _state7 = this.state,
-        draggedLinkId = _state7.draggedLinkId,
-        shiftPressed = _state7.shiftPressed;
+      var _state7 = _this2.state,
+          draggedLinkId = _state7.draggedLinkId,
+          shiftPressed = _state7.shiftPressed;
 
 
-    if (draggedLinkId) {
-      delete view.link[draggedLinkId];
+      if (draggedLinkId) {
+        delete view.link[draggedLinkId];
 
-      setState({ draggedLinkId: null });
+        setState({ draggedLinkId: null });
 
-      return;
-    }
+        return;
+      }
 
-    var selectedItems = this.state.selectedItems.slice(0);
+      var selectedItems = _this2.state.selectedItems.slice(0);
 
-    var index = selectedItems.indexOf(id);
+      var index = selectedItems.indexOf(id);
 
-    var itemAlreadySelected = index > -1;
+      var itemAlreadySelected = index > -1;
 
-    if (shiftPressed) {
-      if (itemAlreadySelected) {
-        selectedItems.splice(index, 1);
+      if (shiftPressed) {
+        if (itemAlreadySelected) {
+          selectedItems.splice(index, 1);
+        } else {
+          selectedItems.push(id);
+        }
       } else {
-        selectedItems.push(id);
+        if (!itemAlreadySelected) {
+          selectedItems = [id];
+        }
       }
-    } else {
+
       if (!itemAlreadySelected) {
-        selectedItems = [id];
-      }
-    }
+        if (Object.keys(view.node).indexOf(id) > -1) {
+          selectNode(id);
+        }
 
-    if (!itemAlreadySelected) {
-      if (Object.keys(view.node).indexOf(id) > -1) {
-        selectNode(id);
+        if (Object.keys(view.link).indexOf(id) > -1) {
+          selectLink(id);
+        }
       }
 
-      if (Object.keys(view.link).indexOf(id) > -1) {
-        selectLink(id);
-      }
-    }
-
-    setState({
-      dragging: true,
-      selectedItems: selectedItems
-    });
+      setState({
+        dragging: true,
+        selectedItems: selectedItems
+      });
+    };
   };
 
-  var startDraggingLinkTarget = id => {
+  var startDraggingLinkTarget = function startDraggingLinkTarget(id) {
     var from = view.link[id].from;
 
     deleteLink(id);
@@ -505,7 +525,7 @@ function render() {
       style: { border: frameBorder },
       width: width
     },
-    Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+    Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
       var node = view.node[id];
 
       var height = node.height,
@@ -545,7 +565,7 @@ function render() {
         y: y
       });
     }),
-    Object.keys(view.link).map((id, i) => {
+    Object.keys(view.link).map(function (id, i) {
       var _view$link$id = view.link[id],
           from = _view$link$id.from,
           to = _view$link$id.to;
@@ -575,8 +595,8 @@ function render() {
       });
     }),
     React.createElement(Selector, {
-      createNode: node => {
-        var id = createNode(node);
+      createNode: function createNode(node) {
+        var id = _createNode(node);
 
         setState({
           selectedItems: [id],
@@ -641,7 +661,7 @@ Frame.defaultProps = {
     node: { DefaultNode: DefaultNode },
     nodeList: [],
     util: {
-      typeOfNode: function (node) {
+      typeOfNode: function typeOfNode(node) {
         return 'DefaultNode';
       }
     }

@@ -1,3 +1,5 @@
+'use strict';
+
 var inherits = require('inherits');
 var PropTypes = require('prop-types');
 var React = require('react');
@@ -16,6 +18,8 @@ function Selector() {
 inherits(Selector, Component);
 
 function render() {
+  var _this = this;
+
   var _props = this.props,
       createNode = _props.createNode,
       height = _props.height,
@@ -27,15 +31,15 @@ function render() {
 
   var text = this.state.text;
 
-  var onChange = e => {
+  var onChange = function onChange(e) {
     var text = e.target.value;
 
-    this.setState({ text: text });
+    _this.setState({ text: text });
   };
 
-  var onKeyPress = e => {
+  var onKeyPress = function onKeyPress(e) {
     var text = e.target.value.trim();
-    var pointer = this.props.pointer;
+    var pointer = _this.props.pointer;
 
     var pressedEnter = e.key === 'Enter';
     var textIsNotBlank = text.length > 0;
@@ -51,7 +55,7 @@ function render() {
         });
       }
 
-      this.setState({ text: '' });
+      _this.setState({ text: '' });
     }
   };
 
@@ -67,7 +71,7 @@ function render() {
     React.createElement('input', {
       list: 'nodes',
       type: 'text',
-      ref: input => {
+      ref: function ref(input) {
         if (input !== null) input.focus();
       },
       style: { outline: 'none' },
@@ -81,7 +85,9 @@ function render() {
         id: 'nodes',
         onChange: onChange
       },
-      nodeList.map((item, i) => React.createElement('option', { key: i, value: item }))
+      nodeList.map(function (item, i) {
+        return React.createElement('option', { key: i, value: item });
+      })
     ) : null
   );
 }

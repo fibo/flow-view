@@ -1,6 +1,8 @@
-function ignoreEvent (e) {
-  e.preventDefault()
-  e.stopPropagation()
+"use strict";
+
+function ignoreEvent(e) {
+  e.preventDefault();
+  e.stopPropagation();
 }
 
-module.exports = exports.default = ignoreEvent
+module.exports = exports.default = ignoreEvent;

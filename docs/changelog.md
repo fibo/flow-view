@@ -22,16 +22,18 @@ New g14n.info layouts, with link to Changelog page
 ### Added
 
 - Using React v16 :metal:.
-- Added flow static type checker.
-- Big refactoring: back again to ES6 syntactic sugar.
+- Dropped prop-types, using flow static type checker: minified build was 447kb.
+- Big refactoring:
+  - back again to ES6 syntactic sugar.
+  - using src folder
 - Using [bindme](http://g14n.info/bindme) for better React performance.
 - UglifyJS v3 update and source map with comment preample support.
 - Jest snapshot tests (few tests and boilerplate).
 - Multiple selection.
 
-### Removed
+### Fixed
 
-- Dropped prop-types, using flow instead.
+- Added docs/ folder to .npmignore
 
 ## [v2.14.3] - 2017-06-08
 

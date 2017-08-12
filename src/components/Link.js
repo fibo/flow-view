@@ -20,15 +20,18 @@ export class Link extends React.Component {
     event.preventDefault()
     event.stopPropagation()
 
-    this.props.onCreateLink({ from, to: null })
+    const {
+      from,
+      onCreateLink
+    } = this.props
+
+    onCreateLink({ from, to: null })
   }
 
   render () {
     var {
       id,
       deleteLink,
-      from,
-      onCreateLink,
       startDraggingLinkTarget,
       selected,
       selectLink,
@@ -106,7 +109,6 @@ export class Link extends React.Component {
     )
   }
 }
-
 
 Link.propTypes = {
   deleteLink: PropTypes.func.isRequired,

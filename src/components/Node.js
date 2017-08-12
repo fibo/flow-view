@@ -9,7 +9,7 @@ var no = require('not-defined')
 var computeNodeWidth = require('../utils/computeNodeWidth')
 var ignoreEvent = require('../utils/ignoreEvent')
 var xOfPin = require('../utils/xOfPin')
-var theme = require('./theme')
+import { defaultTheme, Theme } from './theme'
 
 var minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
@@ -386,7 +386,7 @@ Node.propTypes = {
   selected: PropTypes.bool.isRequired,
   selectNode: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
-  theme: theme.propTypes,
+//  theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   width: PropTypes.number,
   x: PropTypes.number.isRequired,
@@ -406,7 +406,7 @@ Node.defaultProps = {
   selected: false,
   selectNode: Function.prototype,
   text: 'Node',
-  theme: theme.defaultProps,
+  theme: defaultTheme,
   updateLink: Function.prototype
 }
 

@@ -119,7 +119,7 @@ export default class Link extends React.Component {
         onDoubleClick={ignoreEvent}
       >
         <path
-          d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
+          d={startY <= endY ? `M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}` : `M ${startX} ${startY} L ${endX} ${endY}`}
           fill='transparent'
           onMouseDown={this.onPathMouseDown}
           onMouseUp={selectLink}

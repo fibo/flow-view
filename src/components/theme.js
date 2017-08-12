@@ -17,6 +17,7 @@
 
 export const defaultTheme = {
   fontFamily: 'Courier',
+  fontSize: 17,
   frameBorder: '1px solid #F0F4C3',
   darkPrimaryColor: '#AFB42B',
   primaryColor: '#CDDC39',
@@ -30,6 +31,7 @@ export const defaultTheme = {
 
 export type Theme = {
   fontFamily: string,
+  fontSize: number,
   primaryColor: string,
   lineWidth: number,
   linkColor: string,

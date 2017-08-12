@@ -16,16 +16,16 @@ exports[`renders correctly 1`] = `
     height={40}
     stroke="#BDBDBD"
     strokeWidth={1}
-    width={50.72}
+    width={63.52}
   />
   <rect
     fill="#BDBDBD"
     height={10}
-    width={50.72}
+    width={63.52}
   />
   <text
     x={10}
-    y={27.6}
+    y={26.6}
   >
     <tspan>
       Node
@@ -35,7 +35,7 @@ exports[`renders correctly 1`] = `
     fill="#BDBDBD"
     height={10}
     transform="translate(0,30)"
-    width={50.72}
+    width={63.52}
   />
 </g>
 `;

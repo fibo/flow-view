@@ -5,14 +5,14 @@ import bindme from 'bindme'
 
 import ignoreEvent from '../utils/ignoreEvent'
 import { defaultTheme, Theme } from './theme'
-import { idAndPosition } from './types'
+import { IdAndPosition } from './types'
 
 export default class Link extends React.Component {
   props: {
     deleteLink: (string) => void,
     id: string,
-    from: idAndPosition,
-    onCreateLink: ({ from: idAndPosition, to: ?idAndPosition }) => void,
+    from: IdAndPosition,
+    onCreateLink: ({ from: IdAndPosition, to: ?IdAndPosition }) => void,
     startDraggingLinkTarget: (string) => void,
     pinSize: number,
     selected: boolean,
@@ -20,7 +20,7 @@ export default class Link extends React.Component {
     sourceSelected: boolean,
     targetSelected: boolean,
     theme: Theme,
-    to: idAndPosition,
+    to: IdAndPosition,
     x1: number,
     y1: number,
     x2: number,

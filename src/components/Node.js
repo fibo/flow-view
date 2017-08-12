@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 
 import no from 'not-defined'
@@ -8,7 +9,7 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-import { idAndPosition } from './types'
+import { IdAndPosition } from './types'
 
 const minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
@@ -22,24 +23,22 @@ export default class Node extends React.Component {
   props: {
     bodyHeight: number,
     createInputPin: (string) => void,
-    /*
-    createOutputPin: PropTypes.func.isRequired,
-    deleteInputPin: PropTypes.func.isRequired,
-    deleteNode: PropTypes.func.isRequired,
-    deleteOutputPin: PropTypes.func.isRequired,
-    dragging: PropTypes.bool.isRequired,
+    createOutputPin: (string) => void,
+    deleteInputPin: (string) => void,
+    deleteNode: (string) => void,
+    deleteOutputPin: (string) => void,
+    dragging: boolean,
     draggedLinkId: string,
     id: string,
-    ins: Array,
+    ins: Array<any>,
     multiSelection: boolean,
-    outs: Array,
-    onCreateLink: PropTypes.func.isRequired,
+    outs: Array<any>,
+    onCreateLink: ({ from: IdAndPosition, to: ?IdAndPosition }) => void,
     selected: boolean,
-    selectNode: PropTypes.func.isRequired,
-    */
+    selectNode: (MouseEvent) => void,
     text: string,
     theme: Theme,
-    updateLink: (string, { to: idAndPosition }) => void,
+    updateLink: (string, { to: IdAndPosition }) => void,
     width: number,
     x: number,
     y: number

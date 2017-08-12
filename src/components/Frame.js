@@ -46,8 +46,6 @@ export default class Frame extends React.Component {
   }
 
   componentDidMount () {
-    const { view } = this.state
-
     const container = ReactDOM.findDOMNode(this).parentNode
 
     document.addEventListener('keydown', this.onDocumentKeydown)
@@ -91,7 +89,14 @@ export default class Frame extends React.Component {
   onDocumentKeydown (event) {
     const { code } = event
 
-    const { endDragging } = this.props
+    const {
+      createInputPin,
+      createOutputPin,
+      deleteInputPin,
+      deleteOutputPin,
+      dragItems,
+      endDragging
+    } = this.props
 
     const {
       dragMoved,
@@ -127,7 +132,6 @@ export default class Frame extends React.Component {
         this.setState({ selectedItems: [] })
         break
 
-
       case 'KeyI':
         selectedItems.forEach((id) => {
           if (view.node[id] && view.node[id].ins) {
@@ -138,8 +142,7 @@ export default class Frame extends React.Component {
             }
           }
         })
-
-      break
+        break
 
       case 'KeyO':
         selectedItems.forEach((id) => {
@@ -151,12 +154,12 @@ export default class Frame extends React.Component {
             }
           }
         })
-
-      break
+        break
 
       case 'ShiftLeft':
       case 'ShiftRight':
         this.setState({ shiftPressed: true })
+
         break
 
       default:
@@ -182,7 +185,7 @@ export default class Frame extends React.Component {
   onDocumentKeyup (event) {
     const { code } = event
 
-    switch(code) {
+    switch (code) {
       case 'ShiftLeft':
       case 'ShiftRight':
         this.setState({ shiftPressed: false })
@@ -257,7 +260,6 @@ export default class Frame extends React.Component {
       x: (pointer ? nextPointer.x - pointer.x : 0),
       y: (pointer ? nextPointer.y - pointer.y : 0)
     }
-
 
     if (dragging && (selectedItems.length > 0)) {
       dragItems(draggingDelta, selectedItems)

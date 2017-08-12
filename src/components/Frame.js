@@ -1,428 +1,322 @@
-var inherits = require('inherits')
-var no = require('not-defined')
-var PropTypes = require('prop-types')
-var React = require('react')
-var ReactDOM = require('react-dom')
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-var Component = React.Component
+import bindme from 'bindme'
+import no from 'not-defined'
 
-var computeNodeWidth = require('../utils/computeNodeWidth')
-var ignoreEvent = require('../utils/ignoreEvent')
-var xOfPin = require('../utils/xOfPin')
+import DefaultLink from './Link'
+import DefaultNode from './Node'
+import Selector from './Selector'
 
-var DefaultLink = require('./Link')
-var DefaultNode = require('./Node')
-var Selector = require('./Selector')
-var theme = require('./theme')
+import computeNodeWidth from '../utils/computeNodeWidth'
+import ignoreEvent from '../utils/ignoreEvent'
+import xOfPin from '../utils/xOfPin'
 
-var isShift = (code) => (
-  (code === 'ShiftLeft') || (code === 'ShiftRight')
-)
+import { defaultTheme, Theme } from './theme'
 
-function Frame () {
-  Component.apply(this, arguments)
+export default class Frame extends React.Component {
+  constructor (props) {
+    bindme(super(props),
+      'onClick',
+      'onDocumentKeydown',
+      'onDocumentKeyup',
+      'onDoubleClick',
+      'onMouseDown',
+      'onMouseLeave',
+      'onMouseMove',
+      'onMouseUp',
+      'onWindowResize',
+      'onWindowScroll',
+      'selectorCreateNode'
+     )
 
-  this.state = {
-    dynamicView: { height: null, width: null },
-    draggedLinkId: null,
-    dragging: false,
-    dragMoved: false,
-    offset: { x: 0, y: 0 },
-    pointer: null,
-    scroll: { x: 0, y: 0 },
-    showSelector: false,
-    selectedItems: [],
-    shiftPressed: false
+    this.state = {
+      dynamicView: { height: null, width: null },
+      draggedLinkId: null,
+      dragging: false,
+      dragMoved: false,
+      offset: { x: 0, y: 0 },
+      pointer: null,
+      scroll: { x: 0, y: 0 },
+      showSelector: false,
+      selectedItems: [],
+      shiftPressed: false,
+      view: props.view
+    }
   }
-}
 
-inherits(Frame, Component)
+  componentDidMount () {
+    const {
+      createInputPin,
+      createOutputPin,
+      deleteInputPin,
+      deleteOutputPin,
+      dragItems,
+    } = this.props
 
-function componentDidMount () {
-  var {
-    createInputPin,
-    createOutputPin,
-    deleteInputPin,
-    deleteOutputPin,
-    dragItems,
-    view
-  } = this.props
+    const { view } = this.state
 
-  var setState = this.setState.bind(this)
+    const container = ReactDOM.findDOMNode(this).parentNode
 
-  var container = ReactDOM.findDOMNode(this).parentNode
+    document.addEventListener('keydown', this.onDocumentKeydown)
+    document.addEventListener('keyup', this.onDocumentKeyup)
 
-  document.addEventListener('keydown', (event) => {
-    var code = event.code
+    window.addEventListener('scroll', this.onWindowScroll)
+    window.addEventListener('resize', this.onWindowResize)
 
-    var { endDragging } = this.props
-
-    var {
-      dragMoved,
-      selectedItems,
-      shiftPressed
-    } = this.state
-
-    if (isShift(code)) {
-      setState({ shiftPressed: true })
+    const offset = {
+      x: container.offsetLeft,
+      y: container.offsetTop
     }
 
-    if (code === 'Escape') {
-      setState({ selectedItems: [] })
-    }
-
-    var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
-
-    if ((selectedNodes.length > 0) && (code.substring(0, 5) === 'Arrow')) {
-      var draggingDelta = { x: 0, y: 0 }
-      var unit = shiftPressed ? 1 : 10
-
-      if (code === 'ArrowLeft') draggingDelta.x = -unit
-      if (code === 'ArrowRight') draggingDelta.x = unit
-      if (code === 'ArrowUp') draggingDelta.y = -unit
-      if (code === 'ArrowDown') draggingDelta.y = unit
-
-      dragItems(draggingDelta, selectedNodes)
-
-      if (!dragMoved) { setState({ dragMoved: true }) }
-
-      if (!shiftPressed) {
-        endDragging(selectedNodes)
-
-        setState({
-          dragMoved: false,
-          dragging: false
-        })
-      }
-    }
-
-    if (code === 'KeyI') {
-      selectedItems.forEach((id) => {
-        if (view.node[id] && view.node[id].ins) {
-          if (shiftPressed) {
-            deleteInputPin(id)
-          } else {
-            createInputPin(id)
-          }
-        }
-      })
-    }
-
-    if (code === 'KeyO') {
-      selectedItems.forEach((id) => {
-        if (view.node[id] && view.node[id].outs) {
-          if (shiftPressed) {
-            deleteOutputPin(id)
-          } else {
-            createOutputPin(id)
-          }
-        }
-      })
-    }
-
-    // Since state or props are not modified it is necessary to force update.
-    this.forceUpdate()
-  })
-
-  document.addEventListener('keyup', (event) => {
-    var code = event.code
-
-    var { endDragging } = this.props
-
-    var {
-      dragMoved,
-      selectedItems
-    } = this.state
-
-    var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
-
-    if (isShift(code)) {
-      setState({ shiftPressed: false })
-
-      if (dragMoved && selectedNodes) {
-        endDragging(selectedNodes)
-
-        setState({
-          dragging: false,
-          dragMoved: false
-        })
-      }
-    }
-  })
-
-  window.addEventListener('scroll', () => {
-    setState({ scroll: {
+    const scroll = {
       x: window.scrollX,
       y: window.scrollY
-    }})
-  })
-
-  window.addEventListener('resize', () => {
-    var rect = container.getBoundingClientRect()
-
-    setState({ dynamicView: {
-      height: rect.height,
-      width: rect.width
-    }})
-  })
-
-  var offset = {
-    x: container.offsetLeft,
-    y: container.offsetTop
-  }
-
-  var scroll = {
-    x: window.scrollX,
-    y: window.scrollY
-  }
-
-  setState({ offset, scroll })
-}
-
-Frame.prototype.componentDidMount = componentDidMount
-
-function render () {
-  var {
-    createInputPin,
-    createLink,
-    createNode,
-    createOutputPin,
-    deleteInputPin,
-    deleteLink,
-    deleteNode,
-    deleteOutputPin,
-    dragItems,
-    endDragging,
-    fontSize,
-    item,
-    model,
-    selectLink,
-    selectNode,
-    theme,
-    updateLink,
-    view
-  } = this.props
-
-  var {
-    draggedLinkId,
-    pointer,
-    dynamicView,
-    selectedItems,
-    showSelector
-  } = this.state
-
-  var {
-    frameBorder,
-    fontFamily,
-    lineWidth,
-    nodeBodyHeight,
-    pinSize
-  } = theme
-
-  var height = dynamicView.height || view.height
-  var width = dynamicView.width || view.width
-
-  // Remove border, otherwise also server side SVGx renders
-  // miss the bottom and right border.
-  var border = 1 // TODO frameBorder is 1px, make it dynamic
-  height = height - (2 * border)
-  width = width - (2 * border)
-
-  var typeOfNode = item.util.typeOfNode
-
-  var Link = item.link.DefaultLink
-
-  var setState = this.setState.bind(this)
-
-  var coordinatesOfLink = (link) => {
-    var from = link.from
-    var to = link.to
-
-    var x1 = null
-    var y1 = null
-    var x2 = null
-    var y2 = null
-
-    var nodeIds = Object.keys(view.node)
-    var idEquals = (x) => (id) => (id === x[0])
-    var sourceId = (from ? nodeIds.find(idEquals(from)) : null)
-    var targetId = (to ? nodeIds.find(idEquals(to)) : null)
-
-    var computedWidth = null
-
-    if (sourceId) {
-      var source = view.node[sourceId]
-
-      if (no(source.outs)) source.outs = {}
-
-      computedWidth = computeNodeWidth({
-        bodyHeight: nodeBodyHeight,
-        pinSize,
-        fontSize,
-        node: source
-      })
-
-      x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
-      y1 = source.y + pinSize + nodeBodyHeight
     }
 
-    if (targetId) {
-      var target = view.node[targetId]
-
-      if (no(target.ins)) target.ins = {}
-
-      computedWidth = computeNodeWidth({
-        bodyHeight: nodeBodyHeight,
-        pinSize,
-        fontSize,
-        node: target
-      })
-
-      x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
-      y2 = target.y
-    } else {
-      // FIXME at first, pointer is null. This trick works, but,
-      // it should be reviosioned when implementing creating links
-      // in the opposite direction.
-      x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
-      y2 = pointer ? (pointer.y - pinSize) : y1
-    }
-
-    return { x1, y1, x2, y2 }
+    this.setState({ offset, scroll })
   }
 
-  var getCoordinates = (e) => {
-    var {
+  getCoordinates (event) {
+    const {
       offset,
       scroll
     } = this.state
 
     return {
-      x: e.clientX - offset.x + scroll.x,
-      y: e.clientY - offset.y + scroll.y
+      x: event.clientX - offset.x + scroll.x,
+      y: event.clientY - offset.y + scroll.y
     }
   }
 
-  var onClick = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onClick (event) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    setState({ showSelector: false })
+    this.setState({ showSelector: false })
   }
 
-  var onCreateLink = (link) => {
-    var draggedLinkId = createLink(link)
+  onDocumentKeydown (event) {
+    const { code } = event
 
-    setState({ draggedLinkId })
-  }
+    const { endDragging } = this.props
 
-  var onUpdateLink = (id, link) => {
-    updateLink(id, link)
+    const {
+      dragMoved,
+      selectedItems,
+      shiftPressed,
+      view
+    } = this.state
 
-    var disconnectingLink = (link.to === null)
+    const selectedNodes = this.selectedNodes()
+    const thereAreSelectedNodes = (selectedNodes.length > 0)
 
-    if (disconnectingLink) {
-      link.id = id
+    let draggingDelta = { x: 0, y: 0 }
+    const unit = shiftPressed ? 1 : 10
 
-      setState({ draggedLinkId: id })
-    } else {
-      setState({ draggedLinkId: null })
+    switch (code) {
+      case 'ArrowDown':
+        if (thereAreSelectedNodes) draggingDelta.y = unit
+        break
+
+      case 'ArrowLeft':
+        if (thereAreSelectedNodes) draggingDelta.x = -unit
+        break
+
+      case 'ArrowRight':
+        if (thereAreSelectedNodes) draggingDelta.x = unit
+        break
+
+      case 'ArrowUp':
+        if (thereAreSelectedNodes) draggingDelta.y = -unit
+        break
+
+      case 'Escape':
+        this.setState({ selectedItems: [] })
+        break
+
+
+      case 'KeyI':
+        selectedItems.forEach((id) => {
+          if (view.node[id] && view.node[id].ins) {
+            if (shiftPressed) {
+              deleteInputPin(id)
+            } else {
+              createInputPin(id)
+            }
+          }
+        })
+
+      break
+
+      case 'KeyO':
+        selectedItems.forEach((id) => {
+          if (view.node[id] && view.node[id].outs) {
+            if (shiftPressed) {
+              deleteOutputPin(id)
+            } else {
+              createOutputPin(id)
+            }
+          }
+        })
+
+      break
+
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.setState({ shiftPressed: true })
+        break
+
+      default:
+        break
+    }
+
+    if (thereAreSelectedNodes && (code.substring(0, 5) === 'Arrow')) {
+      dragItems(draggingDelta, selectedNodes)
+
+      if (!dragMoved) { this.setState({ dragMoved: true }) }
+
+      if (!shiftPressed) {
+        endDragging(selectedNodes)
+
+        this.setState({
+          dragMoved: false,
+          dragging: false
+        })
+      }
     }
   }
 
-  var onDoubleClick = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onDocumentKeyup (event) {
+    const { code } = event
 
-    setState({
-      pointer: getCoordinates(e),
+    switch(code) {
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.setState({ shiftPressed: false })
+        break
+
+      default:
+        break
+    }
+  }
+
+  onDoubleClick (event) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const pointer = this.getCoordinates(event)
+
+    this.setState({
+      pointer,
       showSelector: true
     })
   }
 
-  var onMouseDown = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onMouseDown (event) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    // TODO code here to start selectedArea dragging
-    setState({
+    this.setState({
       selectedItems: []
     })
   }
 
-  var onMouseLeave = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onMouseLeave (event) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    var draggedLinkId = this.state.draggedLinkId
-    if (draggedLinkId) delete view.link[draggedLinkId]
+    const {
+      draggedLinkId,
+      view
+    } = this.state
 
-    setState({
+    const link = Object.assign({}, view.link)
+
+    if (draggedLinkId) delete link[draggedLinkId]
+
+    this.setState({
       dragging: false,
       draggedLinkId: null,
       pointer: null,
-      showSelector: false
+      showSelector: false,
+      view: Object.assign({}, view, { link })
     })
   }
 
-  var onMouseMove = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onMouseMove (event) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    var {
+    const {
+      dragItems
+    } = this.props
+
+    const {
       dragging,
       dragMoved,
+      pointer,
       selectedItems
     } = this.state
 
-    var nextPointer = getCoordinates(e)
+    const nextPointer = this.getCoordinates(event)
 
-    setState({
-      pointer: nextPointer
-    })
+    const draggingDelta = {
+      x: (pointer ? nextPointer.x - pointer.x : 0),
+      y: (pointer ? nextPointer.y - pointer.y : 0)
+    }
+
 
     if (dragging && (selectedItems.length > 0)) {
-      var draggingDelta = {
-        x: (pointer ? nextPointer.x - pointer.x : 0),
-        y: (pointer ? nextPointer.y - pointer.y : 0)
-      }
-
       dragItems(draggingDelta, selectedItems)
+    }
 
-      if (!dragMoved) { setState({ dragMoved: true }) }
+    if (!dragMoved) {
+      this.setState({
+        dragMoved: true,
+        pointer: nextPointer
+      })
+    } else {
+      this.setState({ pointer: nextPointer })
     }
   }
 
-  var onMouseUp = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onMouseUp (event) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    var {
+    const {
+      endDragging
+    } = this.props
+
+    const {
       draggedLinkId,
       dragMoved,
-      selectedItems
+      view
     } = this.state
 
-    if (draggedLinkId) {
-      delete view.link[draggedLinkId]
+    const selectedNodes = this.selectedNodes()
+    const link = Object.assign({}, view.link)
 
-      setState({
+    if (draggedLinkId) {
+      delete link[draggedLinkId]
+
+      this.setState({
         draggedLinkId: null,
-        pointer: null
+        pointer: null,
+        view: Object.assign({}, view, { link })
       })
     } else {
-      var selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
-
       if (dragMoved) {
         endDragging(selectedNodes)
 
-        setState({
+        this.setState({
           dragging: false,
           dragMoved: false,
           pointer: null
         })
       } else {
-        setState({
+        this.setState({
           dragging: false,
           pointer: null
         })
@@ -430,200 +324,363 @@ function render () {
     }
   }
 
-  /**
-   * Bring up selected nodes.
-   */
+  onWindowResize () {
+    const rect = container.getBoundingClientRect()
 
-  var selectedFirst = (a, b) => {
-    // FIXME it works, but it would be nice if the selected
-    // items keep being up after deselection.
-    var aIsSelected = (selectedItems.indexOf(a) > -1)
-    var bIsSelected = (selectedItems.indexOf(b) > -1)
+    const dynamicView = {
+      height: rect.height,
+      width: rect.width
+    }
 
-    if (aIsSelected && bIsSelected) return 0
-
-    if (aIsSelected) return 1
-    if (bIsSelected) return -1
+    this.setState({ dynamicView })
   }
 
-  var selectItem = (id) => (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  onWindowScroll () {
+    const scroll = {
+      x: window.scrollX,
+      y: window.scrollY
+    }
 
-    var {
-      draggedLinkId,
-      shiftPressed
+    this.setState({ scroll })
+  }
+
+  selectedNodes () {
+    const {
+      view,
+      selectedItems
     } = this.state
 
-    // Do not select items when releasing a dragging link.
+    const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
 
-    if (draggedLinkId) {
-      delete view.link[draggedLinkId]
+    return selectedNodes
+  }
 
-      setState({ draggedLinkId: null })
+  selectorCreateNode (node) {
+    const {
+      createNode
+    } = this.props
 
-      return
-    }
+    const id = createNode(node)
 
-    var selectedItems = this.state.selectedItems.slice(0)
-
-    var index = selectedItems.indexOf(id)
-
-    var itemAlreadySelected = index > -1
-
-    // Shift key allows multiple selection.
-
-    if (shiftPressed) {
-      if (itemAlreadySelected) {
-        selectedItems.splice(index, 1)
-      } else {
-        selectedItems.push(id)
-      }
-    } else {
-      if (!itemAlreadySelected) {
-        selectedItems = [id]
-      }
-    }
-
-    if (!itemAlreadySelected) {
-      if (Object.keys(view.node).indexOf(id) > -1) {
-        selectNode(id)
-      }
-
-      if (Object.keys(view.link).indexOf(id) > -1) {
-        selectLink(id)
-      }
-    }
-
-    setState({
-      dragging: true,
-      selectedItems
+    this.setState({
+      selectedItems: [id],
+      showSelector: false
     })
   }
 
-  var startDraggingLinkTarget = (id) => {
-    // Remember link source.
-    var from = view.link[id].from
+  render () {
+    const {
+      createInputPin,
+      createLink,
+      createOutputPin,
+      deleteInputPin,
+      deleteLink,
+      deleteNode,
+      deleteOutputPin,
+      endDragging,
+      fontSize,
+      item,
+      model,
+      selectLink,
+      selectNode,
+      theme,
+      updateLink
+    } = this.props
 
-    // Delete dragged link so the 'deleteLink' event is triggered.
-    deleteLink(id)
+    const {
+      draggedLinkId,
+      pointer,
+      dynamicView,
+      selectedItems,
+      showSelector,
+      view
+    } = this.state
 
-    // Create a brand new link, this is the right choice to avoid
-    // conflicts, for example the user could start dragging the link
-    // target and then drop it again in the same target.
-    var draggedLinkId = createLink({ from })
-    setState({ draggedLinkId })
+    const {
+      frameBorder,
+      fontFamily,
+      lineWidth,
+      nodeBodyHeight,
+      pinSize
+    } = theme
+
+    let height = dynamicView.height || view.height
+    let width = dynamicView.width || view.width
+
+    // Remove border, otherwise also server side SVGx renders
+    // missing the bottom and right border.
+    var border = 1 // TODO frameBorder is 1px, make it dynamic
+    height = height - (2 * border)
+    width = width - (2 * border)
+
+    var Link = item.link.DefaultLink
+
+    var setState = this.setState.bind(this)
+
+    var coordinatesOfLink = (link) => {
+      var from = link.from
+      var to = link.to
+
+      var x1 = null
+      var y1 = null
+      var x2 = null
+      var y2 = null
+
+      var nodeIds = Object.keys(view.node)
+      var idEquals = (x) => (id) => (id === x[0])
+      var sourceId = (from ? nodeIds.find(idEquals(from)) : null)
+      var targetId = (to ? nodeIds.find(idEquals(to)) : null)
+
+      var computedWidth = null
+
+      if (sourceId) {
+        var source = view.node[sourceId]
+
+        if (no(source.outs)) source.outs = {}
+
+        computedWidth = computeNodeWidth({
+          bodyHeight: nodeBodyHeight,
+          pinSize,
+          fontSize,
+          node: source
+        })
+
+        x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
+        y1 = source.y + pinSize + nodeBodyHeight
+      }
+
+      if (targetId) {
+        var target = view.node[targetId]
+
+        if (no(target.ins)) target.ins = {}
+
+        computedWidth = computeNodeWidth({
+          bodyHeight: nodeBodyHeight,
+          pinSize,
+          fontSize,
+          node: target
+        })
+
+        x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
+        y2 = target.y
+      } else {
+        // FIXME at first, pointer is null. This trick works, but,
+        // it should be reviosioned when implementing creating links
+        // in the opposite direction.
+        x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
+        y2 = pointer ? (pointer.y - pinSize) : y1
+      }
+
+      return { x1, y1, x2, y2 }
+    }
+
+    var onCreateLink = (link) => {
+      var draggedLinkId = createLink(link)
+
+      setState({ draggedLinkId })
+    }
+
+    var onUpdateLink = (id, link) => {
+      updateLink(id, link)
+
+      var disconnectingLink = (link.to === null)
+
+      if (disconnectingLink) {
+        link.id = id
+
+        setState({ draggedLinkId: id })
+      } else {
+        setState({ draggedLinkId: null })
+      }
+    }
+
+    /**
+     * Bring up selected nodes.
+     */
+
+    var selectedFirst = (a, b) => {
+      // FIXME it works, but it would be nice if the selected
+      // items keep being up after deselection.
+      var aIsSelected = (selectedItems.indexOf(a) > -1)
+      var bIsSelected = (selectedItems.indexOf(b) > -1)
+
+      if (aIsSelected && bIsSelected) return 0
+
+      if (aIsSelected) return 1
+      if (bIsSelected) return -1
+    }
+
+    var selectItem = (id) => (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      var {
+        draggedLinkId,
+        shiftPressed
+      } = this.state
+
+      // Do not select items when releasing a dragging link.
+
+      if (draggedLinkId) {
+        delete view.link[draggedLinkId]
+
+        setState({ draggedLinkId: null })
+
+        return
+      }
+
+      var selectedItems = this.state.selectedItems.slice(0)
+
+      var index = selectedItems.indexOf(id)
+
+      var itemAlreadySelected = index > -1
+
+      // Shift key allows multiple selection.
+
+      if (shiftPressed) {
+        if (itemAlreadySelected) {
+          selectedItems.splice(index, 1)
+        } else {
+          selectedItems.push(id)
+        }
+      } else {
+        if (!itemAlreadySelected) {
+          selectedItems = [id]
+        }
+      }
+
+      if (!itemAlreadySelected) {
+        if (Object.keys(view.node).indexOf(id) > -1) {
+          selectNode(id)
+        }
+
+        if (Object.keys(view.link).indexOf(id) > -1) {
+          selectLink(id)
+        }
+      }
+
+      setState({
+        dragging: true,
+        selectedItems
+      })
+    }
+
+    var startDraggingLinkTarget = (id) => {
+      // Remember link source.
+      var from = view.link[id].from
+
+      // Delete dragged link so the 'deleteLink' event is triggered.
+      deleteLink(id)
+
+      // Create a brand new link, this is the right choice to avoid
+      // conflicts, for example the user could start dragging the link
+      // target and then drop it again in the same target.
+      var draggedLinkId = createLink({ from })
+      setState({ draggedLinkId })
+    }
+
+    return (
+      <svg
+        fontFamily={fontFamily}
+        fontSize={fontSize}
+        height={height}
+        onClick={this.onClick}
+        onDoubleClick={this.onDoubleClick}
+        onMouseDown={this.onMouseDown}
+        onMouseEnter={ignoreEvent}
+        onMouseLeave={this.onMouseLeave}
+        onMouseMove={this.onMouseMove}
+        onMouseUp={this.onMouseUp}
+        textAnchor='start'
+        style={{border: frameBorder}}
+        width={width}
+      >
+        {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
+          const node = view.node[id]
+
+          var {
+            height,
+            ins,
+            outs,
+            text,
+            width,
+            x,
+            y
+          } = node
+
+          const nodeType = item.util.typeOfNode(node)
+          const Node = item.node[nodeType]
+
+          return (
+            <Node key={i}
+              createInputPin={createInputPin}
+              createOutputPin={createOutputPin}
+              draggedLinkId={draggedLinkId}
+              deleteInputPin={deleteInputPin}
+              deleteNode={deleteNode}
+              deleteOutputPin={deleteOutputPin}
+              fontSize={fontSize}
+              height={height}
+              id={id}
+              ins={ins}
+              model={model}
+              multiSelection={(selectedItems.length > 1)}
+              onCreateLink={onCreateLink}
+              outs={outs}
+              pinSize={pinSize}
+              selected={(selectedItems.indexOf(id) > -1)}
+              selectNode={selectItem(id)}
+              text={text}
+              updateLink={onUpdateLink}
+              width={width}
+              x={x}
+              y={y}
+            />
+          )
+        })}
+        {Object.keys(view.link).map((id, i) => {
+          const {
+            from,
+            to
+          } = view.link[id]
+
+          const coord = coordinatesOfLink(view.link[id])
+          const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
+          const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
+
+          return (
+            <Link key={i}
+              deleteLink={deleteLink}
+              from={from}
+              lineWidth={lineWidth}
+              id={id}
+              onCreateLink={onCreateLink}
+              startDraggingLinkTarget={startDraggingLinkTarget}
+              pinSize={pinSize}
+              selected={(selectedItems.indexOf(id) > -1)}
+              selectLink={selectItem(id)}
+              sourceSelected={sourceSelected}
+              targetSelected={targetSelected}
+              to={to}
+              x1={coord.x1}
+              y1={coord.y1}
+              x2={coord.x2}
+              y2={coord.y2}
+            />
+          )
+        })}
+        <Selector
+          createNode={this.selectorCreateNode}
+          nodeList={item.nodeList}
+          pointer={pointer}
+          show={showSelector}
+        />
+      </svg>
+    )
   }
-
-  return (
-    <svg
-      fontFamily={fontFamily}
-      fontSize={fontSize}
-      height={height}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      onMouseDown={onMouseDown}
-      onMouseEnter={ignoreEvent}
-      onMouseLeave={onMouseLeave}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      textAnchor='start'
-      style={{border: frameBorder}}
-      width={width}
-    >
-      {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
-        var node = view.node[id]
-
-        var {
-          height,
-          ins,
-          outs,
-          text,
-          width,
-          x,
-          y
-        } = node
-
-        var nodeType = typeOfNode(node)
-        var Node = item.node[nodeType]
-
-        return (
-          <Node key={i}
-            createInputPin={createInputPin}
-            createOutputPin={createOutputPin}
-            draggedLinkId={draggedLinkId}
-            deleteInputPin={deleteInputPin}
-            deleteNode={deleteNode}
-            deleteOutputPin={deleteOutputPin}
-            fontSize={fontSize}
-            height={height}
-            id={id}
-            ins={ins}
-            model={model}
-            multiSelection={(selectedItems.length > 1)}
-            onCreateLink={onCreateLink}
-            outs={outs}
-            pinSize={pinSize}
-            selected={(selectedItems.indexOf(id) > -1)}
-            selectNode={selectItem(id)}
-            text={text}
-            updateLink={onUpdateLink}
-            width={width}
-            x={x}
-            y={y}
-          />
-        )
-      })}
-      {Object.keys(view.link).map((id, i) => {
-        var {
-          from,
-          to
-        } = view.link[id]
-
-        var coord = coordinatesOfLink(view.link[id])
-        var sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
-        var targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
-
-        return (
-          <Link key={i}
-            deleteLink={deleteLink}
-            from={from}
-            lineWidth={lineWidth}
-            id={id}
-            onCreateLink={onCreateLink}
-            startDraggingLinkTarget={startDraggingLinkTarget}
-            pinSize={pinSize}
-            selected={(selectedItems.indexOf(id) > -1)}
-            selectLink={selectItem(id)}
-            sourceSelected={sourceSelected}
-            targetSelected={targetSelected}
-            to={to}
-            x1={coord.x1}
-            y1={coord.y1}
-            x2={coord.x2}
-            y2={coord.y2}
-          />
-        )
-      })}
-      <Selector
-        createNode={(node) => {
-          var id = createNode(node)
-
-          setState({
-            selectedItems: [id],
-            showSelector: false
-          })
-        }}
-        nodeList={item.nodeList}
-        pointer={pointer}
-        show={showSelector}
-      />
-    </svg>
-  )
 }
 
-Frame.prototype.render = render
-
+/*
 Frame.propTypes = {
   createInputPin: PropTypes.func.isRequired,
   createOutputPin: PropTypes.func.isRequired,
@@ -646,7 +703,7 @@ Frame.propTypes = {
   }).isRequired,
   selectLink: PropTypes.func.isRequired,
   selectNode: PropTypes.func.isRequired,
-  theme: theme.propTypes,
+//  theme: theme.propTypes,
   updateLink: PropTypes.func.isRequired,
   view: PropTypes.shape({
     height: PropTypes.number.isRequired,
@@ -655,6 +712,7 @@ Frame.propTypes = {
     width: PropTypes.number.isRequired
   }).isRequired
 }
+*/
 
 Frame.defaultProps = {
   createLink: Function.prototype,
@@ -678,7 +736,7 @@ Frame.defaultProps = {
       }
     }
   },
-  theme: theme.defaultProps,
+  theme: defaultTheme,
   selectLink: Function.prototype,
   selectNode: Function.prototype,
   updateLink: Function.prototype,

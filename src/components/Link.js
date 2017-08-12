@@ -2,21 +2,60 @@
 import React from 'react'
 
 import bindme from 'bindme'
-var PropTypes = require('prop-types')
 
-var ignoreEvent = require('../utils/ignoreEvent')
-var theme = require('./theme')
+import ignoreEvent from '../utils/ignoreEvent'
+import { defaultTheme, Theme } from './theme'
 
-export class Link extends React.Component {
-  constructor (props) {
-    super(props)
+export default class Link extends React.Component {
+  props: {
+//    deleteLink: PropTypes.func.isRequired,
+    id: string,
+    from: [string, number],
+//    onCreateLink: PropTypes.func.isRequired,
+//    startDraggingLinkTarget: PropTypes.func.isRequired,
+    pinSize: number,
+    selected: boolean,
+//    selectLink: PropTypes.func.isRequired,
+    sourceSelected: boolean,
+    targetSelected: boolean,
+    theme: Theme,
+    to: [string, number],
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
+  }
 
-    bindme(this,
-      'onSourceMouseDown'
+  static defaultProps = {
+    deleteLink: Function.prototype,
+    onCreateLink: Function.prototype,
+    startDraggingLinkTarget: Function.prototype,
+    selected: false,
+    selectLink: Function.prototype,
+    sourceSelected: false,
+    targetSelected: false,
+    theme: defaultTheme
+  }
+
+  constructor () {
+    bindme(super(),
+      'onPathMouseDown',
+      'onSourceMouseDown',
+      'onTargetMouseDown'
     )
   }
 
-  onSourceMouseDown (event) {
+  onPathMouseDown (event: MouseEvent) {
+    const {
+      id,
+      deleteLink,
+      selected
+    } = this.props
+
+    if (selected) deleteLink(id)
+  }
+
+  onSourceMouseDown (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -28,11 +67,20 @@ export class Link extends React.Component {
     onCreateLink({ from, to: null })
   }
 
-  render () {
-    var {
+  onTargetMouseDown (event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const {
       id,
-      deleteLink,
-      startDraggingLinkTarget,
+      startDraggingLinkTarget
+    } = this.props
+
+    startDraggingLinkTarget(id)
+  }
+
+  render () {
+    const {
       selected,
       selectLink,
       sourceSelected,
@@ -45,7 +93,7 @@ export class Link extends React.Component {
       y2
     } = this.props
 
-    var {
+    const {
       darkPrimaryColor,
       primaryColor,
       linkColor,
@@ -53,24 +101,17 @@ export class Link extends React.Component {
       pinSize
     } = theme
 
-    var onTargetMouseDown = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
+    const startX = x1 + (pinSize / 2)
+    const startY = y1 + (pinSize / 2)
+    const endX = x2 + (pinSize / 2)
+    const endY = y2 + (pinSize / 2)
 
-      startDraggingLinkTarget(id)
-    }
+    const midPointY = (startY + endY) / 2
 
-    var startX = x1 + (pinSize / 2)
-    var startY = y1 + (pinSize / 2)
-    var endX = x2 + (pinSize / 2)
-    var endY = y2 + (pinSize / 2)
-
-    var midPointY = (startY + endY) / 2
-
-    var controlPointX1 = startX
-    var controlPointY1 = to ? midPointY : startY
-    var controlPointX2 = endX
-    var controlPointY2 = to ? midPointY : endY
+    const controlPointX1 = startX
+    const controlPointY1 = to ? midPointY : startY
+    const controlPointX2 = endX
+    const controlPointY2 = to ? midPointY : endY
 
     return (
       <g
@@ -80,9 +121,7 @@ export class Link extends React.Component {
         <path
           d={`M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}`}
           fill='transparent'
-          onMouseDown={() => {
-            if (selected) deleteLink(id)
-          }}
+          onMouseDown={this.onPathMouseDown}
           onMouseUp={selectLink}
           stroke={selected ? primaryColor : linkColor}
           strokeWidth={lineWidth}
@@ -99,7 +138,7 @@ export class Link extends React.Component {
           <rect
             fill={(selected || targetSelected) ? darkPrimaryColor : linkColor}
             height={pinSize}
-            onMouseDown={onTargetMouseDown}
+            onMouseDown={this.onTargetMouseDown}
             width={pinSize}
             x={x2}
             y={y2}
@@ -109,35 +148,3 @@ export class Link extends React.Component {
     )
   }
 }
-
-Link.propTypes = {
-  deleteLink: PropTypes.func.isRequired,
-  id: PropTypes.string,
-  from: PropTypes.array,
-  onCreateLink: PropTypes.func.isRequired,
-  startDraggingLinkTarget: PropTypes.func.isRequired,
-  pinSize: PropTypes.number.isRequired,
-  selected: PropTypes.bool.isRequired,
-  selectLink: PropTypes.func.isRequired,
-  sourceSelected: PropTypes.bool.isRequired,
-  targetSelected: PropTypes.bool.isRequired,
-  theme: theme.propTypes,
-  to: PropTypes.array,
-  x1: PropTypes.number.isRequired,
-  y1: PropTypes.number.isRequired,
-  x2: PropTypes.number.isRequired,
-  y2: PropTypes.number.isRequired
-}
-
-Link.defaultProps = {
-  deleteLink: Function.prototype,
-  onCreateLink: Function.prototype,
-  startDraggingLinkTarget: Function.prototype,
-  selected: false,
-  selectLink: Function.prototype,
-  sourceSelected: false,
-  targetSelected: false,
-  theme: theme.defaultProps
-}
-
-module.exports = exports.default = Link

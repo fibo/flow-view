@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% if site.lang %}
+  <html lang="{{ site.lang }}">
+{% else %}
+  <html lang="en">
+{% endif %}
+<head>
+  {% include common/meta.html %}
+  {% include common/favicon.html %}
+  {% include common/cookieconsent.html %}
+  {% include common/style.html %}
+</head>
+<body>
+  {% include common/nav.html %}
+
+  <main>{{ content }}</main>
+
+  {% include common/footer.html %}
+  {% include common/analytics.html %}
+  {% include common/js-bundle.html %}
+</body>
+</html>

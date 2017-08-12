@@ -1,17 +1,15 @@
+// @flow
 import React from 'react'
 
+import { Area, Node, Point } from './types'
+
 export default class Selector extends React.Component {
-/*
-Selector.propTypes = {
-  createNode: PropTypes.func.isRequired,
-  nodelist: PropTypes.array,
-  pointer: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
-  }),
-  show: PropTypes.bool.isRequired
-}
-*/
+  props: Area & {
+    createNode: (Node) => void,
+    nodelist: Array<string>,
+    pointer: Point,
+    show: boolean
+  }
 
   static defaultProps = {
     height: 20,

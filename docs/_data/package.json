@@ -28,7 +28,7 @@
     "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
     "jekyll:serve": "npm run browserify; npm run homepage; cd docs; jekyll serve; cd ..",
     "lint": "for x in src examples; do npm run lint_$x; done",
-    "lint_src": "standard Canvas.jsx flow-view.js utils/*js components/*jsx components/theme.js components/index.js",
+    "lint_src": "cd src; standard --global expect --global it; cd ..",
     "lint_examples": "cd examples; standard; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
     "preexample_render_serverside": "npm run babel",

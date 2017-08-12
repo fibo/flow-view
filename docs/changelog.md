@@ -30,6 +30,7 @@ New g14n.info layouts, with link to Changelog page
 - UglifyJS v3 update and source map with comment preample support.
 - Jest snapshot tests (few tests and boilerplate).
 - Multiple selection.
+- Updated website style.
 
 ### Fixed
 

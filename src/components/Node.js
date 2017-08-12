@@ -8,6 +8,8 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
+import { idAndPosition } from './types'
+
 const minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
 )
@@ -17,32 +19,31 @@ const plus = (pinSize) => (
 )
 
 export default class Node extends React.Component {
-/*
-Node.propTypes = {
-  bodyHeight: PropTypes.number,
-  createInputPin: PropTypes.func.isRequired,
-  createOutputPin: PropTypes.func.isRequired,
-  deleteInputPin: PropTypes.func.isRequired,
-  deleteNode: PropTypes.func.isRequired,
-  deleteOutputPin: PropTypes.func.isRequired,
-  dragging: PropTypes.bool.isRequired,
-  draggedLinkId: PropTypes.string,
-  fontSize: PropTypes.number.isRequired,
-  id: PropTypes.string,
-  ins: PropTypes.array,
-  multiSelection: PropTypes.bool.isRequired,
-  outs: PropTypes.array,
-  onCreateLink: PropTypes.func.isRequired,
-  selected: PropTypes.bool.isRequired,
-  selectNode: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired,
-//  theme: theme.propTypes,
-  updateLink: PropTypes.func.isRequired,
-  width: PropTypes.number,
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired
-}
-*/
+  props: {
+    bodyHeight: number,
+    createInputPin: (string) => void,
+    /*
+    createOutputPin: PropTypes.func.isRequired,
+    deleteInputPin: PropTypes.func.isRequired,
+    deleteNode: PropTypes.func.isRequired,
+    deleteOutputPin: PropTypes.func.isRequired,
+    dragging: PropTypes.bool.isRequired,
+    draggedLinkId: string,
+    id: string,
+    ins: Array,
+    multiSelection: boolean,
+    outs: Array,
+    onCreateLink: PropTypes.func.isRequired,
+    selected: boolean,
+    selectNode: PropTypes.func.isRequired,
+    */
+    text: string,
+    theme: Theme,
+    updateLink: (string, { to: idAndPosition }) => void,
+    width: number,
+    x: number,
+    y: number
+  }
 
   static defaultProps = {
     createInputPin: Function.prototype,
@@ -63,7 +64,6 @@ Node.propTypes = {
 
   getComputedWidth () {
     const {
-      fontSize,
       ins,
       outs,
       text,
@@ -71,7 +71,10 @@ Node.propTypes = {
       width
     } = this.props
 
-    var { pinSize } = theme
+    const {
+      fontSize,
+      pinSize
+    } = theme
 
     const bodyHeight = this.getBodyHeight()
 
@@ -148,11 +151,11 @@ Node.propTypes = {
           width={computedWidth}
         />
         {ins && ins.map((pin, i, array) => {
-          var x = xOfPin(pinSize, computedWidth, array.length, i)
+          const x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          var onMouseUp = (e) => {
-            e.preventDefault()
-            e.stopPropagation()
+          var onMouseUp = (event) => {
+            event.preventDefault()
+            event.stopPropagation()
 
             if (draggedLinkId) {
               updateLink(draggedLinkId, { to: [id, i] })
@@ -207,19 +210,19 @@ Node.propTypes = {
 
   renderBody () {
     const {
-      fontSize,
       theme,
       text
     } = this.props
 
     const {
+      fontSize,
       pinSize
     } = theme
 
     const bodyHeight = this.getBodyHeight()
 
     // Heuristic value, based on Courier font.
-    var margin = fontSize * 0.2
+    const margin = fontSize * 0.2
 
     return (
       <text
@@ -317,7 +320,7 @@ Node.propTypes = {
         stroke={primaryColor}
         transform={`translate(${computedWidth + 4 + pinSize},0)`}
       />
-     )
+    )
   }
 
   renderOutputMinus () {

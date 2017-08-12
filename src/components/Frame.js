@@ -54,7 +54,7 @@ export default class Frame extends React.Component {
     document.addEventListener('keyup', this.onDocumentKeyup)
 
     window.addEventListener('scroll', this.onWindowScroll)
-    window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('resize', this.onWindowResize(container))
 
     const offset = {
       x: container.offsetLeft,
@@ -316,15 +316,17 @@ export default class Frame extends React.Component {
     }
   }
 
-  onWindowResize () {
-    const rect = container.getBoundingClientRect()
+  onWindowResize (container) {
+    return () => {
+      const rect = container.getBoundingClientRect()
 
-    const dynamicView = {
-      height: rect.height,
-      width: rect.width
+      const dynamicView = {
+        height: rect.height,
+        width: rect.width
+      }
+
+      this.setState({ dynamicView })
     }
-
-    this.setState({ dynamicView })
   }
 
   onWindowScroll () {
@@ -369,7 +371,6 @@ export default class Frame extends React.Component {
       deleteLink,
       deleteNode,
       deleteOutputPin,
-      endDragging,
       fontSize,
       item,
       model,

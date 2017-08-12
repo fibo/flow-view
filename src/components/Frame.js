@@ -46,14 +46,6 @@ export default class Frame extends React.Component {
   }
 
   componentDidMount () {
-    const {
-      createInputPin,
-      createOutputPin,
-      deleteInputPin,
-      deleteOutputPin,
-      dragItems,
-    } = this.props
-
     const { view } = this.state
 
     const container = ReactDOM.findDOMNode(this).parentNode

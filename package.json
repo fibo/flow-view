@@ -38,7 +38,7 @@
     "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
     "test": "for x in serverside jest; do npm run test_$x; done",
-    "test_jest": "BABEL_ENV=umd NODE_PATH=src jest",
+    "test_jest": "NODE_PATH=src BABEL_ENV=umd NODE_PATH=src jest",
     "test_serverside": "NODE_PATH=. tape test/serverside.js"
   },
   "pre-commit": [

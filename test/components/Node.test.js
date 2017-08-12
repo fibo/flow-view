@@ -1,5 +1,5 @@
 import React from 'react'
-import Node from './Node'
+import Node from 'components/Node'
 import renderer from 'react-test-renderer'
 
 it('renders correctly', () => {

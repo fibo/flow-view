@@ -2,31 +2,80 @@
 
 > is a git subtree containing Jekyll includes used across my personal website
 
-The following g14n.info microsites are involved:
-
-* [algebra](http://g14n.info/algebra)
-* [dflow](http://g14n.info/dflow)
-* [flow-view](http://g14n.info/flow-view)
-
 ## Setup
 
-Assuming that the content of the *gh-pages* branch is under the *gh-pages/* folder,
+Assuming that you are using the *docs/* folder for GitHub Pages, do
 
-```
-git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
-git subtree add --prefix=gh-pages/_includes/common/ common_includes master
-```
+1. [Add remote](#add-remote)
+2. [Add subtree](#add-subtree)
 
-The use the includes as usual, for example in *gh-pages/_layouts/page.html*
+Then use the includes as usual, for example in *docs/_layouts/page.html*
 
 ```
 {% include common/analytics.html %}
 ```
 
+### Add remote
+
+```bash
+git remote add common_includes git@github.com:fibo/g14n.info-jekyll-includes.git
+```
+
+### Add subtree
+
+```bash
+git subtree add --prefix=docs/_includes/common/ common_includes master
+```
+
 ## Update
+
+If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 
 In a working tree with all modifications committed, launch
 
 ```
-git subtree --prefix=gh-pages/_includes/common/ pull common_includes master
+git subtree --prefix=docs/_includes/common/ pull common_includes master
 ```
+
+## Content
+
+### analytics.html
+
+Contains Google Analytics tag.
+
+### footer.html
+
+Copyright, license.
+
+### meta.html
+
+Requires `page.title` and *_data/package.json* file with the following entries:
+
+* description
+* keywords
+* author.name
+
+### nav.html
+
+Implments nav bar: project `repository_url` and `url` are grabbed from [github-metadata].
+It looks into `page.nav` or `site.nav` variable, if any, for example
+
+```yaml
+nav:
+  Pizza: /pizza
+  Mafia: '#mafia'
+  Mandolino: //g14n.info
+```
+
+Home page is added by default, link to repo is added only if *_data/package.json* `private` attribute is not true.
+
+### js-bundle.html
+
+Includes `g14n.info/js/bundle.js` that implements common features across
+website, like nav toggle.
+
+### style.html
+
+Adds common style sheet.
+
+[github-metadata]: https://github.com/jekyll/github-metadata "a.k.a. site.github"

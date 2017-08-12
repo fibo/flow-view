@@ -1,8 +1,4 @@
 
-domain: g14n.info
-
-permalink: ./:year/:month/:title/
-
 gems:
   - jekyll-sitemap
 
@@ -16,10 +12,7 @@ defaults:
       path: ""
       type: "pages"
     values:
-      layout: page
+      layout: common/page
 
-# Custom vars
-
-google-analytics:
-  id: UA-12635045-12
-
+nav:
+  Example: ../example

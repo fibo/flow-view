@@ -11,7 +11,7 @@ import no from 'not-defined'
 import svgx from 'svgx'
 
 import Frame from './components/Frame'
-import randomString from './utils/randomString'
+
 import {
   FlowView,
   Id,
@@ -21,9 +21,7 @@ import {
   SerializedNode
 } from './components/types'
 
-// TODO find a better way to generate ids.
-var idLength = 3
-var defaultItem = Frame.defaultProps.item
+const defaultItem = Frame.defaultProps.item
 
 class Canvas extends EventEmitter {
   constructor (containerId, item) {
@@ -33,6 +31,7 @@ class Canvas extends EventEmitter {
       'emitCreateNode',
       'emitCreateOutputPin',
       'emitDeleteInputPin',
+      'emitDeleteOutputPin',
       'emitDeleteLink',
       'emitDeleteNode',
       'emitDeleteOutputPin'
@@ -98,6 +97,10 @@ class Canvas extends EventEmitter {
     this.emit('deleteInputPin', nodeIdAndPosition)
   }
 
+  emitDeleteOutputPin (nodeIdAndPosition: NodeIdAndPosition) {
+    this.emit('deleteOutputPin', nodeIdAndPosition)
+  }
+
   emitDeleteLink (id: Id) {
     this.emit('deleteLink', id)
   }
@@ -112,24 +115,6 @@ class Canvas extends EventEmitter {
 
   getView () {
     return Object.assign({}, this.view)
-  }
-
-  setView ({node, link}): FlowView {
-    let view = this.getView()
-
-    if (link) {
-      Object.keys(link).forEack((id) => {
-        view.link[id] = link[id]
-      })
-    }
-
-    if (node) {
-      Object.keys(node).forEack((id) => {
-        view.node[id] = node[id]
-      })
-    }
-
-    this.view = Object.assign({}, view)
   }
 
   /**
@@ -175,80 +160,6 @@ class Canvas extends EventEmitter {
       view.node[nodeId].ins.push(pin)
     }
 
-    var createOutputPin = (nodeId, pin) => {
-      var outs = view.node[nodeId].outs
-
-      if (no(outs)) view.node[nodeId].outs = outs = []
-
-      var position = outs.length
-
-      if (no(pin)) pin = `out${position}`
-
-      this.emitCreateOutputPin([nodeId, position], pin)
-
-      view.node[nodeId].outs.push(pin)
-    }
-
-    function generateId () {
-      var id = randomString(idLength)
-
-      return (view.link[id] || view.node[id]) ? generateId() : id
-    }
-
-    var createLink = (link) => {
-      var from = link.from
-      var to = link.to
-
-      var id = generateId()
-
-       // Do not fire createLink event if it is a dragging link.
-      if (no(to)) {
-        view.link[id] = { from }
-      } else {
-        view.link[id] = { from, to }
-
-        this.emitCreateLink({ from, to }, id)
-      }
-
-      return id
-    }
-
-    var createNode = (node) => {
-      var id = generateId()
-
-      view.node[id] = node
-
-      this.emitCreateNode(node, id)
-
-      return id
-    }
-
-    var deleteLink = (id) => {
-      this.emitDeleteLink(id)
-
-      delete view.link[id]
-    }
-
-    var deleteNode = (id) => {
-       // delete links connected to given node.
-      Object.keys(view.link).forEach((linkId) => {
-        var from = view.link[linkId].from
-        var to = view.link[linkId].to
-
-        if (from && from[0] === id) {
-          deleteLink(linkId)
-        }
-
-        if (to && to[0] === id) {
-          deleteLink(linkId)
-        }
-      })
-
-      delete view.node[id]
-
-      this.emitDeleteNode(id)
-    }
-
     var dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
        .filter((id) => (draggedItems.indexOf(id) > -1))
@@ -256,31 +167,6 @@ class Canvas extends EventEmitter {
          view.node[id].x += dragginDelta.x
          view.node[id].y += dragginDelta.y
        })
-    }
-
-    var deleteInputPin = (nodeId, position) => {
-      var ins = view.node[nodeId].ins
-
-      if (no(ins)) return
-      if (ins.length === 0) return
-
-      if (no(position)) position = ins.length - 1
-
-       // Look for connected links and delete them.
-
-      Object.keys(view.link).forEach((id) => {
-        var to = view.link[id].to
-
-        if (no(to)) return
-
-        if ((to[0] === nodeId) && (to[1] === position)) {
-          deleteLink(id)
-        }
-      })
-
-      this.emitDeleteInputPin([nodeId, position])
-
-      view.node[nodeId].ins.splice(position, 1)
     }
 
     var endDragging = (selectNodes) => {
@@ -340,12 +226,6 @@ class Canvas extends EventEmitter {
     var component = (
       <Frame
         createInputPin={createInputPin}
-        createOutputPin={createOutputPin}
-        createLink={createLink}
-        createNode={createNode}
-        deleteLink={deleteLink}
-        deleteInputPin={deleteInputPin}
-        deleteNode={deleteNode}
         deleteOutputPin={deleteOutputPin}
         dragItems={dragItems}
         endDragging={endDragging}
@@ -354,6 +234,7 @@ class Canvas extends EventEmitter {
         emitCreateNode={this.emitCreateNode}
         emitCreateOutputPin={this.emitCreateOutputPin}
         emitDeleteInputPin={this.emitDeleteInputPin}
+        emitDeleteOutputPin={this.emitDeleteOutputPin}
         emitDeleteLink={this.emitDeleteLink}
         emitDeleteNode={this.emitDeleteNode}
         emitDeleteOutputPin={this.emitDeleteOutputPin}

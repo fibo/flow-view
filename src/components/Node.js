@@ -1,15 +1,26 @@
 // @flow
 import React from 'react'
 
+import bindme from 'bindme'
 import no from 'not-defined'
 
 import { defaultTheme, Theme } from './theme'
+
+import MinusButton from './MinusButton'
+import PlusButton from './PlusButton'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-import { NodeIdAndPosition } from './types'
+import {
+  CreatePin,
+  DeleteLink,
+  DeleteNode,
+  DeletePin,
+  Id,
+  NodeIdAndPosition
+} from './types'
 
 const minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
@@ -24,8 +35,12 @@ export default class Node extends React.Component {
     bodyHeight: number,
     createInputPin: (string) => void,
     createOutputPin: (string) => void,
-    deleteInputPin: (string) => void,
+    emitCreateOutputPin: CreatePin,
+    emitDeleteInputPin: DeletePin,
+    emitDeleteLink: DeleteLink,
+    emitCreateNode: DeleteNode,
     deleteNode: (string) => void,
+    deleteInputPin: (string) => void,
     deleteOutputPin: (string) => void,
     dragging: boolean,
     draggedLinkId: string,
@@ -33,7 +48,7 @@ export default class Node extends React.Component {
     ins: Array<any>,
     multiSelection: boolean,
     outs: Array<any>,
-    onCreateLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => void,
+    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
     selected: boolean,
     selectNode: (MouseEvent) => void,
     text: string,
@@ -46,19 +61,43 @@ export default class Node extends React.Component {
 
   static defaultProps = {
     createInputPin: Function.prototype,
+    createLink: Function.prototype,
     createOutputPin: Function.prototype,
-    deleteInputPin: Function.prototype,
     deleteNode: Function.prototype,
     deleteOutputPin: Function.prototype,
     dragging: false,
     draggedLinkId: null,
     multiSelection: false,
-    onCreateLink: Function.prototype,
     selected: false,
     selectNode: Function.prototype,
     text: 'Node',
     theme: defaultTheme,
     updateLink: Function.prototype
+  }
+
+  constructor () {
+    bindme(super(),
+      'createInputPin',
+      'createOutputPin',
+      'deleteInputPin',
+      'deleteOutputPin'
+    )
+  }
+
+  createInputPin () {
+    this.props.createInputPin(this.props.id)
+  }
+
+  createOutputPin () {
+    this.props.createOutputPin(this.props.id)
+  }
+
+  deleteInputPin () {
+    this.props.deleteInputPin(this.props.id)
+  }
+
+  deleteOutputPin () {
+    this.props.deleteOutputPin(this.props.id)
   }
 
   getComputedWidth () {
@@ -102,7 +141,7 @@ export default class Node extends React.Component {
       draggedLinkId,
       id,
       ins,
-      onCreateLink,
+      createLink,
       outs,
       selected,
       selectNode,
@@ -187,7 +226,7 @@ export default class Node extends React.Component {
             e.preventDefault()
             e.stopPropagation()
 
-            onCreateLink({ from: [ id, i ], to: null })
+            createLink({ from: [ id, i ], to: null })
           }
 
           return (
@@ -261,7 +300,6 @@ export default class Node extends React.Component {
 
   renderInputMinus () {
     const {
-      deleteInputPin,
       id,
       ins,
       multiSelection,
@@ -280,21 +318,19 @@ export default class Node extends React.Component {
     const disabled = ins.length === 0
 
     return (
-      <path
-        d={minus(pinSize)}
-        fill={disabled ? 'transparent' : primaryColor}
-        onMouseDown={() => {
-          if (!disabled) deleteInputPin(id)
-        }}
-        stroke={primaryColor}
-        transform={`translate(${computedWidth + 2},0)`}
+      <MinusButton
+        action={this.deleteInputPin}
+        color={primaryColor}
+        disabled={disabled}
+        size={pinSize}
+        x={computedWidth + 2}
+        y={0}
       />
     )
   }
 
   renderInputPlus () {
     const {
-      createInputPin,
       id,
       ins,
       multiSelection,
@@ -312,19 +348,19 @@ export default class Node extends React.Component {
     const computedWidth = this.getComputedWidth()
 
     return (
-      <path
-        d={plus(pinSize)}
-        fill={primaryColor}
-        onMouseDown={() => createInputPin(id)}
-        stroke={primaryColor}
-        transform={`translate(${computedWidth + 4 + pinSize},0)`}
+      <PlusButton
+        action={this.createInputPin}
+        color={primaryColor}
+        disabled={false}
+        size={pinSize}
+        x={computedWidth + 4 + pinSize}
+        y={0}
       />
     )
   }
 
   renderOutputMinus () {
     const {
-      deleteOutputPin,
       id,
       multiSelection,
       outs,
@@ -344,21 +380,19 @@ export default class Node extends React.Component {
     const disabled = outs.length === 0
 
     return (
-      <path
-        d={minus(pinSize)}
-        fill={disabled ? 'transparent' : primaryColor}
-        onMouseDown={() => {
-          if (!disabled) deleteOutputPin(id)
-        }}
-        stroke={primaryColor}
-        transform={`translate(${computedWidth + 2},${bodyHeight + pinSize})`}
+      <MinusButton
+        action={this.deleteOutputPin}
+        color={primaryColor}
+        disabled={disabled}
+        size={pinSize}
+        x={computedWidth + 2}
+        y={bodyHeight + pinSize}
       />
     )
   }
 
   renderOutputPlus () {
     const {
-      createOutputPin,
       id,
       multiSelection,
       outs,
@@ -377,12 +411,13 @@ export default class Node extends React.Component {
     const computedWidth = this.getComputedWidth()
 
     return (
-      <path
-        d={plus(pinSize)}
-        fill={primaryColor}
-        onMouseDown={() => createOutputPin(id)}
-        stroke={primaryColor}
-        transform={`translate(${computedWidth + 4 + pinSize},${bodyHeight + pinSize})`}
+      <PlusButton
+        action={this.createOutputPin}
+        color={primaryColor}
+        disabled={false}
+        size={pinSize}
+        x={computedWidth + 4 + pinSize}
+        y={bodyHeight + pinSize}
       />
     )
   }

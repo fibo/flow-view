@@ -13,8 +13,30 @@ import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
 import { defaultTheme, Theme } from './theme'
+import {
+  CreateLink,
+  CreateNode,
+  CreatePin,
+  DeleteLink,
+  DeleteNode,
+  DeletePin,
+  FlowView
+} from './types'
 
 export default class Frame extends React.Component {
+  props: {
+    emitCreateInputPin: CreatePin,
+    emitCreateLink: CreateLink,
+    emitCreateNode: CreateNode,
+    emitCreateOutputPin: CreatePin,
+    emitDeleteInputPin: DeletePin,
+    emitDeleteLink: DeleteLink,
+    emitCreateNode: DeleteNode,
+    emitDeleteOutputPin: DeletePin,
+    theme: Theme,
+    view: FlowView
+  }
+
   constructor (props) {
     bindme(super(props),
       'onClick',
@@ -67,7 +89,7 @@ export default class Frame extends React.Component {
     this.setState({ offset, scroll })
   }
 
-  getCoordinates (event) {
+  getCoordinates (event: MouseEvent) {
     const {
       offset,
       scroll
@@ -79,14 +101,14 @@ export default class Frame extends React.Component {
     }
   }
 
-  onClick (event) {
+  onClick (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
     this.setState({ showSelector: false })
   }
 
-  onDocumentKeydown (event) {
+  onDocumentKeydown (event: KeyboardEvent) {
     const { code } = event
 
     const {
@@ -182,7 +204,7 @@ export default class Frame extends React.Component {
     }
   }
 
-  onDocumentKeyup (event) {
+  onDocumentKeyup (event: KeyboardEvent) {
     const { code } = event
 
     switch (code) {
@@ -196,7 +218,7 @@ export default class Frame extends React.Component {
     }
   }
 
-  onDoubleClick (event) {
+  onDoubleClick (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -208,7 +230,7 @@ export default class Frame extends React.Component {
     })
   }
 
-  onMouseDown (event) {
+  onMouseDown (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -217,7 +239,7 @@ export default class Frame extends React.Component {
     })
   }
 
-  onMouseLeave (event) {
+  onMouseLeave (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -239,7 +261,7 @@ export default class Frame extends React.Component {
     })
   }
 
-  onMouseMove (event) {
+  onMouseMove (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -275,7 +297,7 @@ export default class Frame extends React.Component {
     }
   }
 
-  onMouseUp (event) {
+  onMouseUp (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -376,8 +398,6 @@ export default class Frame extends React.Component {
       fontSize,
       item,
       model,
-      selectLink,
-      selectNode,
       theme,
       updateLink
     } = this.props
@@ -541,16 +561,6 @@ export default class Frame extends React.Component {
       } else {
         if (!itemAlreadySelected) {
           selectedItems = [id]
-        }
-      }
-
-      if (!itemAlreadySelected) {
-        if (Object.keys(view.node).indexOf(id) > -1) {
-          selectNode(id)
-        }
-
-        if (Object.keys(view.link).indexOf(id) > -1) {
-          selectLink(id)
         }
       }
 
@@ -719,6 +729,14 @@ Frame.defaultProps = {
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragItems: Function.prototype,
+  emitCreateInputPin: Function.prototype,
+  emitCreateLink: Function.prototype,
+  emitCreateNode: Function.prototype,
+  emitCreateOutputPin: Function.prototype,
+  emitDeleteInputPin: Function.prototype,
+  emitDeleteLink: Function.prototype,
+  emitDeleteNode: Function.prototype,
+  emitDeleteOutputPin: Function.prototype,
   endDragging: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
@@ -732,8 +750,6 @@ Frame.defaultProps = {
     }
   },
   theme: defaultTheme,
-  selectLink: Function.prototype,
-  selectNode: Function.prototype,
   updateLink: Function.prototype,
   view: {
     link: {},

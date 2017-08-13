@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-var PropTypes = require('prop-types');
+var PropTypes = require('prop-types')
 
 var defaultProps = {
   fontFamily: 'Courier',
@@ -13,7 +13,7 @@ var defaultProps = {
   pinColor: '#757575',
   linkColor: '#9E9E9E',
   pinSize: 10
-};
+}
 
 var propTypes = PropTypes.shape({
   fontFamily: PropTypes.string.isRequired,
@@ -24,9 +24,9 @@ var propTypes = PropTypes.shape({
   nodeBodyHeight: PropTypes.number.isRequired,
   pinColor: PropTypes.string.isRequired,
   pinSize: PropTypes.number.isRequired
-}).isRequired;
+}).isRequired
 
 module.exports = exports.default = {
   defaultProps: defaultProps,
   propTypes: propTypes
-};
+}

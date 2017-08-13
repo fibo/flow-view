@@ -9,7 +9,7 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-import { IdAndPosition } from './types'
+import { NodeIdAndPosition } from './types'
 
 const minus = (pinSize) => (
   `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
@@ -33,12 +33,12 @@ export default class Node extends React.Component {
     ins: Array<any>,
     multiSelection: boolean,
     outs: Array<any>,
-    onCreateLink: ({ from: IdAndPosition, to: ?IdAndPosition }) => void,
+    onCreateLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => void,
     selected: boolean,
     selectNode: (MouseEvent) => void,
     text: string,
     theme: Theme,
-    updateLink: (string, { to: IdAndPosition }) => void,
+    updateLink: (string, { to: NodeIdAndPosition }) => void,
     width: number,
     x: number,
     y: number

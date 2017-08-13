@@ -1,48 +1,47 @@
-'use strict';
+'use strict'
 
-var inherits = require('inherits');
-var PropTypes = require('prop-types');
-var React = require('react');
+var inherits = require('inherits')
+var PropTypes = require('prop-types')
+var React = require('react')
 
-var Component = React.Component;
+var Component = React.Component
 
-var hidden = { display: 'none', overflow: 'hidden' };
-var visible = { display: 'inline', overflow: 'visible' };
+var hidden = { display: 'none', overflow: 'hidden' }
+var visible = { display: 'inline', overflow: 'visible' }
 
-function Selector() {
-  Component.apply(this, arguments);
+function Selector () {
+  Component.apply(this, arguments)
 
-  this.state = { text: '' };
+  this.state = { text: '' }
 }
 
-inherits(Selector, Component);
+inherits(Selector, Component)
 
-function render() {
-  var _this = this;
+function render () {
+  var _this = this
 
   var _props = this.props,
-      createNode = _props.createNode,
-      height = _props.height,
-      nodeList = _props.nodeList,
-      pointer = _props.pointer,
-      show = _props.show,
-      width = _props.width;
+    createNode = _props.createNode,
+    height = _props.height,
+    nodeList = _props.nodeList,
+    pointer = _props.pointer,
+    show = _props.show,
+    width = _props.width
 
+  var text = this.state.text
 
-  var text = this.state.text;
+  var onChange = function onChange (e) {
+    var text = e.target.value
 
-  var onChange = function onChange(e) {
-    var text = e.target.value;
+    _this.setState({ text: text })
+  }
 
-    _this.setState({ text: text });
-  };
+  var onKeyPress = function onKeyPress (e) {
+    var text = e.target.value.trim()
+    var pointer = _this.props.pointer
 
-  var onKeyPress = function onKeyPress(e) {
-    var text = e.target.value.trim();
-    var pointer = _this.props.pointer;
-
-    var pressedEnter = e.key === 'Enter';
-    var textIsNotBlank = text.length > 0;
+    var pressedEnter = e.key === 'Enter'
+    var textIsNotBlank = text.length > 0
 
     if (pressedEnter) {
       if (textIsNotBlank) {
@@ -52,12 +51,12 @@ function render() {
           text: text,
           x: pointer.x,
           y: pointer.y
-        });
+        })
       }
 
-      _this.setState({ text: '' });
+      _this.setState({ text: '' })
     }
-  };
+  }
 
   return React.createElement(
     'foreignObject',
@@ -71,8 +70,8 @@ function render() {
     React.createElement('input', {
       list: 'nodes',
       type: 'text',
-      ref: function ref(input) {
-        if (input !== null) input.focus();
+      ref: function ref (input) {
+        if (input !== null) input.focus()
       },
       style: { outline: 'none' },
       onChange: onChange,
@@ -86,13 +85,13 @@ function render() {
         onChange: onChange
       },
       nodeList.map(function (item, i) {
-        return React.createElement('option', { key: i, value: item });
+        return React.createElement('option', { key: i, value: item })
       })
     ) : null
-  );
+  )
 }
 
-Selector.prototype.render = render;
+Selector.prototype.render = render
 
 Selector.propTypes = {
   createNode: PropTypes.func.isRequired,
@@ -102,11 +101,11 @@ Selector.propTypes = {
     y: PropTypes.number.isRequired
   }),
   show: PropTypes.bool.isRequired
-};
+}
 
 Selector.defaultProps = {
   height: 20,
   width: 200
-};
+}
 
-module.exports = exports.default = Selector;
+module.exports = exports.default = Selector

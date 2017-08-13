@@ -1,11 +1,15 @@
 // @flow
 import React from 'react'
 
-import { Area, Node, Point } from './types'
+import {
+  Area,
+  Point,
+  SerializedNode
+} from './types'
 
 export default class Selector extends React.Component {
   props: Area & {
-    createNode: (Node) => void,
+    createNode: (SerializedNode) => void,
     nodelist: Array<string>,
     pointer: Point,
     show: boolean

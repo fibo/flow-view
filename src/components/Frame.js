@@ -9,6 +9,7 @@ import DefaultNode from './Node'
 import Selector from './Selector'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
+import randomString from '../utils/randomString'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
@@ -20,7 +21,10 @@ import {
   DeleteLink,
   DeleteNode,
   DeletePin,
-  FlowView
+  FlowView,
+  Id,
+  NodeIdAndPosition,
+  SerializedNode
 } from './types'
 
 export default class Frame extends React.Component {
@@ -39,6 +43,14 @@ export default class Frame extends React.Component {
 
   constructor (props) {
     bindme(super(props),
+      'createLink',
+      'createNode',
+      'createInputPin',
+      'createOutputPin',
+      'deleteInputPin',
+      'deleteOutputPin',
+      'deleteLink',
+      'deleteNode',
       'onClick',
       'onDocumentKeydown',
       'onDocumentKeyup',
@@ -89,6 +101,178 @@ export default class Frame extends React.Component {
     this.setState({ offset, scroll })
   }
 
+  createInputPin (nodeId: Id, pin: Pin) {
+    const view = Object.assign({}, this.state.view)
+
+    const ins = view.node[nodeId].ins || []
+
+    const position = view.node[nodeId].ins.length
+
+    if (no(pin)) pin = `in${position}`
+
+    ins.push(pin)
+
+    view.node[nodeId].ins = ins
+
+    this.setState({ view })
+
+    this.props.emitCreateInputPin([nodeId, position], pin)
+  }
+
+  createLink (link: { from: NodeIdAndPosition, to?: NodeIdAndPosition }) {
+    const view = Object.assign({}, this.state.view)
+
+    const id = this.generateId()
+
+    let newLink = {}
+    newLink[id] = link
+
+    view.link[id] = link
+
+    this.setState({ view })
+
+    // Fire createLink event only if it is not a dragging link.
+    if (link.to) {
+      this.props.emitCreateLink(link, id)
+    }
+
+    return id
+  }
+
+  createNode (node: SerializedNode) {
+    const view = Object.assign({}, this.state.view)
+
+    const id = this.generateId()
+
+    view.node[id] = node
+
+    this.setState({ view })
+
+    this.props.emitCreateNode(node, id)
+
+    return id
+  }
+
+  createOutputPin (nodeId: Id, pin: Pin) {
+    const view = Object.assign({}, this.state.view)
+
+    const outs = view.node[nodeId].outs || []
+
+    const position = view.node[nodeId].outs.length
+
+    if (no(pin)) pin = `out${position}`
+
+    outs.push(pin)
+
+    view.node[nodeId].outs = outs
+
+    this.setState({ view })
+
+    this.props.emitCreateOutputPin([nodeId, position], pin)
+  }
+
+  deleteInputPin (nodeId: Id, position?: number) {
+    const view = Object.assign({}, this.state.view)
+
+    const ins = view.node[nodeId].ins
+
+    if (no(ins)) return
+    if (ins.length === 0) return
+
+    if (no(position)) position = ins.length - 1
+
+     // Look for connected links and delete them.
+
+    Object.keys(view.link).forEach((id) => {
+      const to = view.link[id].to
+
+      if (no(to)) return
+
+      if ((to[0] === nodeId) && (to[1] === position)) {
+        this.deleteLink(id)
+      }
+    })
+
+    view.node[nodeId].ins.splice(position, 1)
+
+    this.setState({ view })
+
+    this.props.emitDeleteInputPin([nodeId, position])
+  }
+
+  deleteOutputPin (nodeId: Id, position?: number) {
+    const view = Object.assign({}, this.state.view)
+
+    const outs = view.node[nodeId].outs
+
+    if (no(outs)) return
+    if (outs.length === 0) return
+
+    if (no(position)) position = outs.length - 1
+
+     // Look for connected links and delete them.
+
+    Object.keys(view.link).forEach((id) => {
+      const from = view.link[id].from
+
+      if (no(from)) return
+
+      if ((from[0] === nodeId) && (from[1] === position)) {
+        this.deleteLink(id)
+      }
+    })
+
+    view.node[nodeId].outs.splice(position, 1)
+
+    this.setState({ view })
+
+    this.props.emitDeleteOutputPin([nodeId, position])
+  }
+
+  deleteLink (id: Id) {
+    const view = Object.assign({}, this.state.view)
+
+    delete view.link[id]
+
+    this.setState({ view })
+
+    this.props.emitDeleteLink(id)
+  }
+
+  deleteNode (id: Id) {
+    const view = Object.assign({}, this.state.view)
+
+    // Delete links connected to given node.
+    Object.keys(view.link).forEach((linkId) => {
+      const from = view.link[linkId].from
+      const to = view.link[linkId].to
+
+      if (from && from[0] === id) {
+        this.deleteLink(linkId)
+      }
+
+      if (to && to[0] === id) {
+        this.deleteLink(linkId)
+      }
+    })
+
+    delete view.node[id]
+
+    this.setState({ view })
+
+    this.props.emitDeleteNode(id)
+  }
+
+  generateId () {
+    const {
+      view
+    } = this.state
+
+    const id = randomString(3)
+
+    return (view.link[id] || view.node[id]) ? this.generateId() : id
+  }
+
   getCoordinates (event: MouseEvent) {
     const {
       offset,
@@ -112,9 +296,6 @@ export default class Frame extends React.Component {
     const { code } = event
 
     const {
-      createInputPin,
-      createOutputPin,
-      deleteInputPin,
       deleteOutputPin,
       dragItems,
       endDragging
@@ -158,9 +339,9 @@ export default class Frame extends React.Component {
         selectedItems.forEach((id) => {
           if (view.node[id] && view.node[id].ins) {
             if (shiftPressed) {
-              deleteInputPin(id)
+              this.deleteInputPin(id)
             } else {
-              createInputPin(id)
+              this.createInputPin(id)
             }
           }
         })
@@ -170,9 +351,9 @@ export default class Frame extends React.Component {
         selectedItems.forEach((id) => {
           if (view.node[id] && view.node[id].outs) {
             if (shiftPressed) {
-              deleteOutputPin(id)
+              this.deleteOutputPin(id)
             } else {
-              createOutputPin(id)
+              this.createOutputPin(id)
             }
           }
         })
@@ -374,11 +555,7 @@ export default class Frame extends React.Component {
   }
 
   selectorCreateNode (node) {
-    const {
-      createNode
-    } = this.props
-
-    const id = createNode(node)
+    const id = this.createNode(node)
 
     this.setState({
       selectedItems: [id],
@@ -388,13 +565,7 @@ export default class Frame extends React.Component {
 
   render () {
     const {
-      createInputPin,
       createLink,
-      createOutputPin,
-      deleteInputPin,
-      deleteLink,
-      deleteNode,
-      deleteOutputPin,
       fontSize,
       item,
       model,
@@ -618,19 +789,19 @@ export default class Frame extends React.Component {
 
           return (
             <Node key={i}
-              createInputPin={createInputPin}
-              createOutputPin={createOutputPin}
+              createInputPin={this.createInputPin}
+              createLink={this.createLink}
+              createOutputPin={this.createOutputPin}
               draggedLinkId={draggedLinkId}
-              deleteInputPin={deleteInputPin}
-              deleteNode={deleteNode}
-              deleteOutputPin={deleteOutputPin}
+              deleteInputPin={this.deleteInputPin}
+              deleteNode={this.deleteNode}
+              deleteOutputPin={this.deleteOutputPin}
               fontSize={fontSize}
               height={height}
               id={id}
               ins={ins}
               model={model}
               multiSelection={(selectedItems.length > 1)}
-              onCreateLink={onCreateLink}
               outs={outs}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
@@ -655,7 +826,7 @@ export default class Frame extends React.Component {
 
           return (
             <Link key={i}
-              deleteLink={deleteLink}
+              deleteLink={this.deleteLink}
               from={from}
               lineWidth={lineWidth}
               id={id}
@@ -685,50 +856,7 @@ export default class Frame extends React.Component {
   }
 }
 
-/*
-Frame.propTypes = {
-  createInputPin: PropTypes.func.isRequired,
-  createOutputPin: PropTypes.func.isRequired,
-  createLink: PropTypes.func.isRequired,
-  createNode: PropTypes.func.isRequired,
-  deleteLink: PropTypes.func.isRequired,
-  deleteInputPin: PropTypes.func.isRequired,
-  deleteNode: PropTypes.func.isRequired,
-  deleteOutputPin: PropTypes.func.isRequired,
-  dragItems: PropTypes.func.isRequired,
-  endDragging: PropTypes.func.isRequired,
-  fontSize: PropTypes.number.isRequired,
-  item: PropTypes.shape({
-    link: PropTypes.object.isRequired,
-    node: PropTypes.object.isRequired,
-    nodeList: PropTypes.array.isRequired,
-    util: PropTypes.shape({
-      typeOfNode: PropTypes.func.isRequired
-    })
-  }).isRequired,
-  selectLink: PropTypes.func.isRequired,
-  selectNode: PropTypes.func.isRequired,
-//  theme: theme.propTypes,
-  updateLink: PropTypes.func.isRequired,
-  view: PropTypes.shape({
-    height: PropTypes.number.isRequired,
-    link: PropTypes.object.isRequired,
-    node: PropTypes.object.isRequired,
-    width: PropTypes.number.isRequired
-  }).isRequired
-}
-*/
-
 Frame.defaultProps = {
-  createLink: Function.prototype,
-  createNode: Function.prototype,
-  createInputPin: Function.prototype,
-  createOutputPin: Function.prototype,
-  deleteInputPin: Function.prototype,
-  deleteLink: Function.prototype,
-  deleteNode: Function.prototype,
-  deleteOutputPin: Function.prototype,
-  dragItems: Function.prototype,
   emitCreateInputPin: Function.prototype,
   emitCreateLink: Function.prototype,
   emitCreateNode: Function.prototype,

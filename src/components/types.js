@@ -34,7 +34,10 @@ export type DeleteNode = (Id) => void
 
 // Secondly derived types
 
+export type LinkCollection = { [Id]: SerializedLink }
+export type NodeCollection = { [Id]: SerializedNode }
+
 export type FlowView = {
-  link: { [Id]: SerializedLink },
-  node: { [Id]: SerializedNode }
+  link: LinkCollection,
+  node: NodeCollection
 }

@@ -2,7 +2,20 @@ import React from 'react'
 
 import bindme from 'bindme'
 
+import { Point } from './types'
+
 export default class NodeButton extends React.Component {
+  props: Point & {
+    action: () => void,
+    color: string,
+    disabled: boolean,
+    size: number
+  }
+
+  static defaultProps = {
+    disabled: false
+  }
+
   constructor () {
     bindme(super(),
       'onMouseDown',
@@ -41,8 +54,6 @@ export default class NodeButton extends React.Component {
 
     const { focus } = this.state
 
-    const ray = size / 2
-
     return (
       <g
         onMouseDown={this.onMouseDown}
@@ -57,11 +68,11 @@ export default class NodeButton extends React.Component {
           transform={`translate(${x},${y})`}
         />
         <circle
-          cx={x + ray}
-          cy={y + ray}
+          cx={x + (size / 2)}
+          cy={y + (size / 2)}
           fill='transparent'
           stroke={(focus && !disabled) ? color : 'transparent'}
-          r={ray}
+          r={this.ray()}
         />
       </g>
     )

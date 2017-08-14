@@ -3,7 +3,7 @@ import NodeButton from './NodeButton'
 
 export default class CrossButton extends NodeButton {
   ray (): number {
-    return this.props.size * Math.sqrt(.47)
+    return this.props.size * Math.sqrt(0.47)
   }
 
   shape (size: number): string {

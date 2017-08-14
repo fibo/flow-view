@@ -1,6 +1,6 @@
-function ignoreEvent (e) {
-  e.preventDefault()
-  e.stopPropagation()
-}
+// @flow
 
-module.exports = exports.default = ignoreEvent
+export default function ignoreEvent (event: Event): void {
+  event.preventDefault()
+  event.stopPropagation()
+}

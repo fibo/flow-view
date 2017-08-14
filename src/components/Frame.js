@@ -24,6 +24,7 @@ import {
   FlowView,
   Id,
   NodeIdAndPosition,
+  Pin,
   SerializedNode
 } from './types'
 
@@ -61,7 +62,8 @@ export default class Frame extends React.Component {
       'onMouseUp',
       'onWindowResize',
       'onWindowScroll',
-      'selectorCreateNode'
+      'selectorCreateNode',
+      'startDraggingLinkTarget'
      )
 
     this.state = {
@@ -129,11 +131,12 @@ export default class Frame extends React.Component {
 
     view.link[id] = link
 
-    this.setState({ view })
-
     // Fire createLink event only if it is not a dragging link.
     if (link.to) {
+      this.setState({ view })
       this.props.emitCreateLink(link, id)
+    } else {
+      this.setState({ draggedLinkId: id })
     }
 
     return id
@@ -296,7 +299,6 @@ export default class Frame extends React.Component {
     const { code } = event
 
     const {
-      deleteOutputPin,
       dragItems,
       endDragging
     } = this.props
@@ -565,7 +567,6 @@ export default class Frame extends React.Component {
 
   render () {
     const {
-      createLink,
       fontSize,
       item,
       model,
@@ -660,12 +661,6 @@ export default class Frame extends React.Component {
       return { x1, y1, x2, y2 }
     }
 
-    var onCreateLink = (link) => {
-      var draggedLinkId = createLink(link)
-
-      setState({ draggedLinkId })
-    }
-
     var onUpdateLink = (id, link) => {
       updateLink(id, link)
 
@@ -739,20 +734,6 @@ export default class Frame extends React.Component {
         dragging: true,
         selectedItems
       })
-    }
-
-    var startDraggingLinkTarget = (id) => {
-      // Remember link source.
-      var from = view.link[id].from
-
-      // Delete dragged link so the 'deleteLink' event is triggered.
-      deleteLink(id)
-
-      // Create a brand new link, this is the right choice to avoid
-      // conflicts, for example the user could start dragging the link
-      // target and then drop it again in the same target.
-      var draggedLinkId = createLink({ from })
-      setState({ draggedLinkId })
     }
 
     return (
@@ -830,8 +811,8 @@ export default class Frame extends React.Component {
               from={from}
               lineWidth={lineWidth}
               id={id}
-              onCreateLink={onCreateLink}
-              startDraggingLinkTarget={startDraggingLinkTarget}
+              createLink={this.createLink}
+              startDraggingLinkTarget={this.startDraggingLinkTarget}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
               selectLink={selectItem(id)}
@@ -853,6 +834,20 @@ export default class Frame extends React.Component {
         />
       </svg>
     )
+  }
+
+  startDraggingLinkTarget (id) {
+    // Remember link source.
+    const { from } = this.state.view.link[id]
+
+    // Delete dragged link so the 'deleteLink' event is triggered.
+    this.deleteLink(id)
+
+    // Create a brand new link, this is the right choice to avoid
+    // conflicts, for example the user could start dragging the link
+    // target and then drop it again in the same target.
+    const draggedLinkId = this.createLink({ from })
+    this.setState({ draggedLinkId })
   }
 }
 
@@ -884,5 +879,3 @@ Frame.defaultProps = {
     node: {}
   }
 }
-
-module.exports = exports.default = Frame

@@ -23,7 +23,7 @@ import {
 
 const defaultItem = Frame.defaultProps.item
 
-class Canvas extends EventEmitter {
+export default class Canvas extends EventEmitter {
   constructor (containerId, item) {
     bindme(super(),
       'emitCreateInputPin',
@@ -97,10 +97,6 @@ class Canvas extends EventEmitter {
     this.emit('deleteInputPin', nodeIdAndPosition)
   }
 
-  emitDeleteOutputPin (nodeIdAndPosition: NodeIdAndPosition) {
-    this.emit('deleteOutputPin', nodeIdAndPosition)
-  }
-
   emitDeleteLink (id: Id) {
     this.emit('deleteLink', id)
   }
@@ -113,7 +109,7 @@ class Canvas extends EventEmitter {
     this.emit('deleteOutputPin', nodeIdAndPosition)
   }
 
-  getView () {
+  getView (): FlowView {
     return Object.assign({}, this.view)
   }
 
@@ -125,7 +121,7 @@ class Canvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
 
-  render (view, model, callback) {
+  render (view: FlowView, model, callback) {
     const container = this.container
     const item = this.item
 
@@ -145,20 +141,6 @@ class Canvas extends EventEmitter {
     if (no(view.link)) view.link = {}
     if (no(view.node)) view.node = {}
     if (no(view.width)) view.width = width
-
-    var createInputPin = (nodeId, pin) => {
-      var ins = view.node[nodeId].ins
-
-      if (no(ins)) view.node[nodeId].ins = ins = []
-
-      var position = ins.length
-
-      if (no(pin)) pin = `in${position}`
-
-      this.emitCreateInputPin([nodeId, position], pin)
-
-      view.node[nodeId].ins.push(pin)
-    }
 
     var dragItems = (dragginDelta, draggedItems) => {
       Object.keys(view.node)
@@ -181,31 +163,6 @@ class Canvas extends EventEmitter {
       this.emit('endDragging', nodesCoordinates)
     }
 
-    var deleteOutputPin = (nodeId, position) => {
-      var outs = view.node[nodeId].outs
-
-      if (no(outs)) return
-      if (outs.length === 0) return
-
-      if (no(position)) position = outs.length - 1
-
-       // Look for connected links and delete them.
-
-      Object.keys(view.link).forEach((id) => {
-        var from = view.link[id].from
-
-        if (no(from)) return
-
-        if ((from[0] === nodeId) && (from[1] === position)) {
-          deleteLink(id)
-        }
-      })
-
-      this.emitDeleteOutputPin([nodeId, position])
-
-      view.node[nodeId].outs.splice(position, 1)
-    }
-
      // TODO this is not used buy now.
     var renameNode = (nodeId, text) => {
       view.node[nodeId].text = text
@@ -225,8 +182,6 @@ class Canvas extends EventEmitter {
 
     var component = (
       <Frame
-        createInputPin={createInputPin}
-        deleteOutputPin={deleteOutputPin}
         dragItems={dragItems}
         endDragging={endDragging}
         emitCreateInputPin={this.emitCreateInputPin}
@@ -234,7 +189,6 @@ class Canvas extends EventEmitter {
         emitCreateNode={this.emitCreateNode}
         emitCreateOutputPin={this.emitCreateOutputPin}
         emitDeleteInputPin={this.emitDeleteInputPin}
-        emitDeleteOutputPin={this.emitDeleteOutputPin}
         emitDeleteLink={this.emitDeleteLink}
         emitDeleteNode={this.emitDeleteNode}
         emitDeleteOutputPin={this.emitDeleteOutputPin}
@@ -270,5 +224,3 @@ class Canvas extends EventEmitter {
     }
   }
 }
-
-module.exports = exports.default = Canvas

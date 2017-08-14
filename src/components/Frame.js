@@ -829,7 +829,7 @@ export default class Frame extends React.Component {
         <Selector
           createNode={this.selectorCreateNode}
           nodeList={item.nodeList}
-          pointer={pointer}
+          pointer={showSelector ? pointer : null}
           show={showSelector}
         />
       </svg>

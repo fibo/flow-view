@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<g
+  onClick={[Function]}
+  onDoubleClick={[Function]}
+>
+  <path
+    d="M 5 5 C 5 5, 15 15 ,15 15"
+    fill="transparent"
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    stroke="#9E9E9E"
+    strokeWidth={3}
+  />
+  <rect
+    fill="#9E9E9E"
+    height={10}
+    onMouseDown={[Function]}
+    width={10}
+    x={0}
+    y={0}
+  />
+</g>
+`;

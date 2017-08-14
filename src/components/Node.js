@@ -6,6 +6,7 @@ import no from 'not-defined'
 
 import { defaultTheme, Theme } from './theme'
 
+import CrossButton from './CrossButton'
 import MinusButton from './MinusButton'
 import PlusButton from './PlusButton'
 
@@ -80,6 +81,7 @@ export default class Node extends React.Component {
       'createInputPin',
       'createOutputPin',
       'deleteInputPin',
+      'deleteNode',
       'deleteOutputPin'
     )
   }
@@ -94,6 +96,10 @@ export default class Node extends React.Component {
 
   deleteInputPin () {
     this.props.deleteInputPin(this.props.id)
+  }
+
+  deleteNode () {
+    this.props.deleteNode(this.props.id)
   }
 
   deleteOutputPin () {
@@ -289,11 +295,12 @@ export default class Node extends React.Component {
     if ((selected === false) || multiSelection) return null
 
     return (
-      <path
-        d={`M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`}
-        fill={primaryColor}
-        transform={`translate(${pinSize / 2},${pinSize / 2}) rotate(45) translate(${-3 * pinSize / 2},${pinSize / 2})`}
-        onMouseDown={() => deleteNode(id)}
+      <CrossButton
+        action={this.deleteNode}
+        color={primaryColor}
+        size={pinSize}
+        x={-(1.5 * pinSize)}
+        y={0}
       />
     )
   }
@@ -351,7 +358,6 @@ export default class Node extends React.Component {
       <PlusButton
         action={this.createInputPin}
         color={primaryColor}
-        disabled={false}
         size={pinSize}
         x={computedWidth + 4 + pinSize}
         y={0}
@@ -414,7 +420,6 @@ export default class Node extends React.Component {
       <PlusButton
         action={this.createOutputPin}
         color={primaryColor}
-        disabled={false}
         size={pinSize}
         x={computedWidth + 4 + pinSize}
         y={bodyHeight + pinSize}

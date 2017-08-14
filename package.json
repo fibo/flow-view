@@ -50,6 +50,7 @@
     "globals": [
       "KeyboardEvent",
       "MouseEvent",
+      "Event",
       "it",
       "expect"
     ],

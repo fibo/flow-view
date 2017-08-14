@@ -23,14 +23,6 @@ import {
   NodeIdAndPosition
 } from './types'
 
-const minus = (pinSize) => (
-  `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} Z`
-)
-
-const plus = (pinSize) => (
-  `M 0 ${pinSize / 3} V ${2 * pinSize / 3} H ${pinSize / 3} V ${pinSize} H ${2 * pinSize / 3} V ${2 * pinSize / 3} H ${pinSize} V ${pinSize / 3} H ${2 * pinSize / 3} V ${0} H ${pinSize / 3} V ${pinSize / 3} Z`
-)
-
 export default class Node extends React.Component {
   props: {
     bodyHeight: number,
@@ -280,8 +272,6 @@ export default class Node extends React.Component {
 
   renderDeleteButton () {
     const {
-      deleteNode,
-      id,
       multiSelection,
       selected,
       theme
@@ -307,7 +297,6 @@ export default class Node extends React.Component {
 
   renderInputMinus () {
     const {
-      id,
       ins,
       multiSelection,
       selected,
@@ -338,7 +327,6 @@ export default class Node extends React.Component {
 
   renderInputPlus () {
     const {
-      id,
       ins,
       multiSelection,
       selected,
@@ -367,7 +355,6 @@ export default class Node extends React.Component {
 
   renderOutputMinus () {
     const {
-      id,
       multiSelection,
       outs,
       selected,
@@ -399,7 +386,6 @@ export default class Node extends React.Component {
 
   renderOutputPlus () {
     const {
-      id,
       multiSelection,
       outs,
       selected,

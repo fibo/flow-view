@@ -142,68 +142,23 @@ export default class Canvas extends EventEmitter {
     if (no(view.node)) view.node = {}
     if (no(view.width)) view.width = width
 
-    var dragItems = (dragginDelta, draggedItems) => {
-      Object.keys(view.node)
-       .filter((id) => (draggedItems.indexOf(id) > -1))
-       .forEach((id) => {
-         view.node[id].x += dragginDelta.x
-         view.node[id].y += dragginDelta.y
-       })
-    }
-
-    var endDragging = (selectNodes) => {
-      var nodesCoordinates = {}
-
-      selectNodes.forEach((id) => {
-        nodesCoordinates.id = {}
-        nodesCoordinates.id.x = view.node[id].x
-        nodesCoordinates.id.y = view.node[id].y
-      })
-
-      this.emit('endDragging', nodesCoordinates)
-    }
-
-     // TODO this is not used buy now.
-    var renameNode = (nodeId, text) => {
-      view.node[nodeId].text = text
-    }
-
-    var updateLink = (id, link) => {
-      var to = link.to
-      var from = link.from
-
-       // Trigger a createLink event if it is a connected link.
-      if (no(from)) {
-        view.link[id].to = to
-
-        this.emit('createLink', view.link[id], id)
-      }
-    }
-
-    var component = (
-      <Frame
-        dragItems={dragItems}
-        endDragging={endDragging}
-        emitCreateInputPin={this.emitCreateInputPin}
-        emitCreateLink={this.emitCreateLink}
-        emitCreateNode={this.emitCreateNode}
-        emitCreateOutputPin={this.emitCreateOutputPin}
-        emitDeleteInputPin={this.emitDeleteInputPin}
-        emitDeleteLink={this.emitDeleteLink}
-        emitDeleteNode={this.emitDeleteNode}
-        emitDeleteOutputPin={this.emitDeleteOutputPin}
-        item={item}
-        model={model}
-        nodeList={item.nodeList}
-        renameNode={renameNode}
-        updateLink={updateLink}
-        view={view}
-       />
-     )
-
     if (container) {
-       // Client side rendering.
-      ReactDOM.render(component, container)
+     // Client side rendering.
+      ReactDOM.render(
+        <Frame
+          emitCreateInputPin={this.emitCreateInputPin}
+          emitCreateLink={this.emitCreateLink}
+          emitCreateNode={this.emitCreateNode}
+          emitCreateOutputPin={this.emitCreateOutputPin}
+          emitDeleteInputPin={this.emitDeleteInputPin}
+          emitDeleteLink={this.emitDeleteLink}
+          emitDeleteNode={this.emitDeleteNode}
+          emitDeleteOutputPin={this.emitDeleteOutputPin}
+          item={item}
+          model={model}
+          nodeList={item.nodeList}
+          view={view}
+        />, container)
     } else {
        // Server side rendering.
 

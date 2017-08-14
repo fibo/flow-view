@@ -2,13 +2,17 @@
 
 export type Area = { height: number, width: number }
 
+export type Color = string
+
 export type Id = string
 
-export type Pin = mixed
+export type SerializedPin = string | { name: string }
 
 export type Point = { x: number, y: number }
 
 // Derived types.
+
+export type Rectangle = Area & Point
 
 export type NodeIdAndPosition = [Id, number]
 
@@ -18,12 +22,12 @@ export type SerializedLink = {
 }
 
 export type SerializedNode = Point & Area & {
-  ins?: Array<Pin>,
-  outs?: Array<Pin>,
+  ins: ?Array<SerializedPin>,
+  outs: ?Array<SerializedPin>,
   text: string
 }
 
-export type CreatePin = (NodeIdAndPosition, Pin) => void
+export type CreatePin = (NodeIdAndPosition, SerializedPin) => void
 export type DeletePin = (NodeIdAndPosition) => void
 
 export type CreateLink = (SerializedLink, Id) => void

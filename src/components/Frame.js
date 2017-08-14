@@ -6,6 +6,7 @@ import no from 'not-defined'
 
 import DefaultLink from './Link'
 import DefaultNode from './Node'
+import RectangularSelection from './RectangularSelection'
 import Selector from './Selector'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
@@ -24,8 +25,9 @@ import {
   FlowView,
   Id,
   NodeIdAndPosition,
-  Pin,
-  SerializedNode
+  Rectangle,
+  SerializedNode,
+  SerializedPin
 } from './types'
 
 export default class Frame extends React.Component {
@@ -38,12 +40,14 @@ export default class Frame extends React.Component {
     emitDeleteLink: DeleteLink,
     emitCreateNode: DeleteNode,
     emitDeleteOutputPin: DeletePin,
+    rectangularSelection: ?RectangularSelection,
     theme: Theme,
     view: FlowView
   }
 
   constructor (props) {
     bindme(super(props),
+      'connectLinkToTarget',
       'createLink',
       'createNode',
       'createInputPin',
@@ -69,10 +73,10 @@ export default class Frame extends React.Component {
     this.state = {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
-      dragging: false,
-      dragMoved: false,
+      isMouseDown: false,
       offset: { x: 0, y: 0 },
       pointer: null,
+      rectangularSelection: { x: 10, y: 10, width: 100, height: 100 }, // TODO null
       scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
@@ -103,7 +107,17 @@ export default class Frame extends React.Component {
     this.setState({ offset, scroll })
   }
 
-  createInputPin (nodeId: Id, pin: Pin) {
+  connectLinkToTarget (linkId: Id, target: NodeIdAndPosition) {
+    const view = Object.assign({}, this.state.view)
+
+
+    view.link[linkId].to = target
+
+    this.setState({ view })
+    this.props.emitCreateLink(view.link[linkId], linkId)
+  }
+
+  createInputPin (nodeId: Id, pin: SerializedPin) {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins || []
@@ -121,7 +135,7 @@ export default class Frame extends React.Component {
     this.props.emitCreateInputPin([nodeId, position], pin)
   }
 
-  createLink (link: { from: NodeIdAndPosition, to?: NodeIdAndPosition }) {
+  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }) {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -156,7 +170,7 @@ export default class Frame extends React.Component {
     return id
   }
 
-  createOutputPin (nodeId: Id, pin: Pin) {
+  createOutputPin (nodeId: Id, pin: SerializedPin) {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs || []
@@ -266,6 +280,39 @@ export default class Frame extends React.Component {
     this.props.emitDeleteNode(id)
   }
 
+  dragItems (dragginDelta, draggedItems: Array<Id>): void {
+    const view = Object.assign({}, this.state.view)
+
+    Object
+    .keys(view.node)
+    .filter((id) => (draggedItems.indexOf(id) > -1))
+    .forEach((id) => {
+       view.node[id].x += dragginDelta.x
+       view.node[id].y += dragginDelta.y
+    })
+
+    this.setState({ view })
+  }
+
+    /* TODO
+    endDragging (selectNodes) {
+      var nodesCoordinates = {}
+
+      selectNodes.forEach((id) => {
+        nodesCoordinates.id = {}
+        nodesCoordinates.id.x = view.node[id].x
+        nodesCoordinates.id.y = view.node[id].y
+      })
+
+      this.emit('endDragging', nodesCoordinates)
+    }
+
+     // TODO this is not used buy now.
+    var renameNode = (nodeId, text) => {
+      view.node[nodeId].text = text
+    }
+    */
+
   generateId () {
     const {
       view
@@ -299,12 +346,6 @@ export default class Frame extends React.Component {
     const { code } = event
 
     const {
-      dragItems,
-      endDragging
-    } = this.props
-
-    const {
-      dragMoved,
       selectedItems,
       shiftPressed,
       view
@@ -372,18 +413,7 @@ export default class Frame extends React.Component {
     }
 
     if (thereAreSelectedNodes && (code.substring(0, 5) === 'Arrow')) {
-      dragItems(draggingDelta, selectedNodes)
-
-      if (!dragMoved) { this.setState({ dragMoved: true }) }
-
-      if (!shiftPressed) {
-        endDragging(selectedNodes)
-
-        this.setState({
-          dragMoved: false,
-          dragging: false
-        })
-      }
+      this.dragItems(draggingDelta, selectedNodes)
     }
   }
 
@@ -418,6 +448,7 @@ export default class Frame extends React.Component {
     event.stopPropagation()
 
     this.setState({
+      isMouseDown: true,
       selectedItems: []
     })
   }
@@ -436,8 +467,8 @@ export default class Frame extends React.Component {
     if (draggedLinkId) delete link[draggedLinkId]
 
     this.setState({
-      dragging: false,
       draggedLinkId: null,
+      isMouseDown: false,
       pointer: null,
       showSelector: false,
       view: Object.assign({}, view, { link })
@@ -449,15 +480,12 @@ export default class Frame extends React.Component {
     event.stopPropagation()
 
     const {
-      dragItems
-    } = this.props
-
-    const {
-      dragging,
-      dragMoved,
+      isMouseDown,
       pointer,
       selectedItems
     } = this.state
+
+    if(!isMouseDown) return
 
     const nextPointer = this.getCoordinates(event)
 
@@ -466,18 +494,11 @@ export default class Frame extends React.Component {
       y: (pointer ? nextPointer.y - pointer.y : 0)
     }
 
-    if (dragging && (selectedItems.length > 0)) {
-      dragItems(draggingDelta, selectedItems)
+    if (selectedItems.length > 0) {
+      this.dragItems(draggingDelta, selectedItems)
     }
 
-    if (!dragMoved) {
-      this.setState({
-        dragMoved: true,
-        pointer: nextPointer
-      })
-    } else {
-      this.setState({ pointer: nextPointer })
-    }
+    this.setState({ pointer: nextPointer })
   }
 
   onMouseUp (event: MouseEvent) {
@@ -485,12 +506,7 @@ export default class Frame extends React.Component {
     event.stopPropagation()
 
     const {
-      endDragging
-    } = this.props
-
-    const {
       draggedLinkId,
-      dragMoved,
       view
     } = this.state
 
@@ -502,24 +518,15 @@ export default class Frame extends React.Component {
 
       this.setState({
         draggedLinkId: null,
+        isMouseDown: false,
         pointer: null,
         view: Object.assign({}, view, { link })
       })
     } else {
-      if (dragMoved) {
-        endDragging(selectedNodes)
-
-        this.setState({
-          dragging: false,
-          dragMoved: false,
-          pointer: null
-        })
-      } else {
-        this.setState({
-          dragging: false,
-          pointer: null
-        })
-      }
+      this.setState({
+        isMouseDown: false,
+        pointer: null
+      })
     }
   }
 
@@ -570,14 +577,14 @@ export default class Frame extends React.Component {
       fontSize,
       item,
       model,
-      theme,
-      updateLink
+      theme
     } = this.props
 
     const {
       draggedLinkId,
-      pointer,
       dynamicView,
+      pointer,
+      rectangularSelection,
       selectedItems,
       showSelector,
       view
@@ -588,7 +595,8 @@ export default class Frame extends React.Component {
       fontFamily,
       lineWidth,
       nodeBodyHeight,
-      pinSize
+      pinSize,
+      primaryColor
     } = theme
 
     let height = dynamicView.height || view.height
@@ -596,7 +604,7 @@ export default class Frame extends React.Component {
 
     // Remove border, otherwise also server side SVGx renders
     // missing the bottom and right border.
-    var border = 1 // TODO frameBorder is 1px, make it dynamic
+    const border = 1 // TODO frameBorder is 1px, make it dynamic
     height = height - (2 * border)
     width = width - (2 * border)
 
@@ -661,20 +669,6 @@ export default class Frame extends React.Component {
       return { x1, y1, x2, y2 }
     }
 
-    var onUpdateLink = (id, link) => {
-      updateLink(id, link)
-
-      var disconnectingLink = (link.to === null)
-
-      if (disconnectingLink) {
-        link.id = id
-
-        setState({ draggedLinkId: id })
-      } else {
-        setState({ draggedLinkId: null })
-      }
-    }
-
     /**
      * Bring up selected nodes.
      */
@@ -697,6 +691,7 @@ export default class Frame extends React.Component {
 
       var {
         draggedLinkId,
+        selectedItems,
         shiftPressed
       } = this.state
 
@@ -710,11 +705,9 @@ export default class Frame extends React.Component {
         return
       }
 
-      var selectedItems = this.state.selectedItems.slice(0)
+      const index = selectedItems.indexOf(id)
 
-      var index = selectedItems.indexOf(id)
-
-      var itemAlreadySelected = index > -1
+      const itemAlreadySelected = index > -1
 
       // Shift key allows multiple selection.
 
@@ -731,7 +724,7 @@ export default class Frame extends React.Component {
       }
 
       setState({
-        dragging: true,
+        isMouseDown: true,
         selectedItems
       })
     }
@@ -752,6 +745,12 @@ export default class Frame extends React.Component {
         style={{border: frameBorder}}
         width={width}
       >
+        {rectangularSelection ? (
+          <RectangularSelection
+            color={primaryColor}
+            {...rectangularSelection}
+          />
+        ) : null}
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
           const node = view.node[id]
 
@@ -770,6 +769,7 @@ export default class Frame extends React.Component {
 
           return (
             <Node key={i}
+              connectLinkToTarget={this.connectLinkToTarget}
               createInputPin={this.createInputPin}
               createLink={this.createLink}
               createOutputPin={this.createOutputPin}
@@ -788,7 +788,6 @@ export default class Frame extends React.Component {
               selected={(selectedItems.indexOf(id) > -1)}
               selectNode={selectItem(id)}
               text={text}
-              updateLink={onUpdateLink}
               width={width}
               x={x}
               y={y}
@@ -860,7 +859,6 @@ Frame.defaultProps = {
   emitDeleteLink: Function.prototype,
   emitDeleteNode: Function.prototype,
   emitDeleteOutputPin: Function.prototype,
-  endDragging: Function.prototype,
   fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     link: { DefaultLink },

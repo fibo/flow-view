@@ -46,13 +46,14 @@ export default class Node extends React.Component {
     selectNode: (MouseEvent) => void,
     text: string,
     theme: Theme,
-    updateLink: (string, { to: NodeIdAndPosition }) => void,
+    connectLinkToTarget: (Id, NodeIdAndPosition) => void,
     width: number,
     x: number,
     y: number
   }
 
   static defaultProps = {
+    connectLinkToTarget: Function.prototype,
     createInputPin: Function.prototype,
     createLink: Function.prototype,
     createOutputPin: Function.prototype,
@@ -64,8 +65,7 @@ export default class Node extends React.Component {
     selected: false,
     selectNode: Function.prototype,
     text: 'Node',
-    theme: defaultTheme,
-    updateLink: Function.prototype
+    theme: defaultTheme
   }
 
   constructor () {
@@ -139,12 +139,12 @@ export default class Node extends React.Component {
       draggedLinkId,
       id,
       ins,
+      connectLinkToTarget,
       createLink,
       outs,
       selected,
       selectNode,
       theme,
-      updateLink,
       x,
       y
     } = this.props
@@ -194,7 +194,7 @@ export default class Node extends React.Component {
             event.stopPropagation()
 
             if (draggedLinkId) {
-              updateLink(draggedLinkId, { to: [id, i] })
+              connectLinkToTarget(draggedLinkId, [id, i])
             }
           }
 

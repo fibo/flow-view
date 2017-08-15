@@ -125,8 +125,8 @@ export default class Canvas extends EventEmitter {
     const container = this.container
     const item = this.item
 
-    var height
-    var width
+    let height
+    let width
 
      // Get height and width from container, if any.
     if (container) {
@@ -137,6 +137,7 @@ export default class Canvas extends EventEmitter {
       width = rect.width - (2 * border)
     }
 
+    if (no(view)) view = {}
     if (no(view.height)) view.height = height
     if (no(view.link)) view.link = {}
     if (no(view.node)) view.node = {}

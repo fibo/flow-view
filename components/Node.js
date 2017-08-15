@@ -1,379 +1,392 @@
-'use strict'
+'use strict';
 
-var inherits = require('inherits')
-var React = require('react')
-var PropTypes = require('prop-types')
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var Component = React.Component
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var no = require('not-defined')
+var _react = require('react');
 
-var computeNodeWidth = require('../utils/computeNodeWidth')
-var ignoreEvent = require('../utils/ignoreEvent')
-var xOfPin = require('../utils/xOfPin')
-var theme = require('./theme')
+var _react2 = _interopRequireDefault(_react);
 
-var minus = function minus (pinSize) {
-  return 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' Z'
-}
+var _bindme = require('bindme');
 
-var plus = function plus (pinSize) {
-  return 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z'
-}
+var _bindme2 = _interopRequireDefault(_bindme);
 
-function Node () {
-  Component.apply(this, arguments)
-}
+var _notDefined = require('not-defined');
 
-inherits(Node, Component)
+var _notDefined2 = _interopRequireDefault(_notDefined);
 
-function getBody () {
-  var _props = this.props,
-    fontSize = _props.fontSize,
-    theme = _props.theme,
-    text = _props.text
-  var pinSize = theme.pinSize
+var _theme = require('./theme');
 
-  var bodyHeight = this.getBodyHeight()
+var _CrossButton = require('./CrossButton');
 
-  var margin = fontSize * 0.2
+var _CrossButton2 = _interopRequireDefault(_CrossButton);
 
-  return React.createElement(
-    'text',
-    {
-      x: pinSize,
-      y: bodyHeight + pinSize - margin
-    },
-    React.createElement(
-      'tspan',
-      null,
-      text
-    )
-  )
-}
+var _MinusButton = require('./MinusButton');
 
-Node.prototype.getBody = getBody
+var _MinusButton2 = _interopRequireDefault(_MinusButton);
 
-function getBodyHeight () {
-  var _props2 = this.props,
-    bodyHeight = _props2.bodyHeight,
-    theme = _props2.theme
+var _PlusButton = require('./PlusButton');
 
-  return bodyHeight || theme.nodeBodyHeight
-}
+var _PlusButton2 = _interopRequireDefault(_PlusButton);
 
-Node.prototype.getBodyHeight = getBodyHeight
+var _InputPin = require('./InputPin');
 
-function getComputedWidth () {
-  var _props3 = this.props,
-    fontSize = _props3.fontSize,
-    ins = _props3.ins,
-    outs = _props3.outs,
-    text = _props3.text,
-    theme = _props3.theme,
-    width = _props3.width
-  var pinSize = theme.pinSize
+var _InputPin2 = _interopRequireDefault(_InputPin);
 
-  var bodyHeight = this.getBodyHeight()
+var _OutputPin = require('./OutputPin');
 
-  var computedWidth = computeNodeWidth({
-    bodyHeight: bodyHeight,
-    pinSize: pinSize,
-    fontSize: fontSize,
-    node: { ins: ins, outs: outs, text: text, width: width }
-  })
+var _OutputPin2 = _interopRequireDefault(_OutputPin);
 
-  return computedWidth
-}
+var _types = require('./types');
 
-Node.prototype.getComputedWidth = getComputedWidth
+var _computeNodeWidth = require('../utils/computeNodeWidth');
 
-function getDeleteButton () {
-  var _props4 = this.props,
-    deleteNode = _props4.deleteNode,
-    id = _props4.id,
-    multiSelection = _props4.multiSelection,
-    selected = _props4.selected,
-    theme = _props4.theme
-  var primaryColor = theme.primaryColor,
-    pinSize = theme.pinSize
+var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
-  if (selected === false || multiSelection) return null
+var _ignoreEvent = require('../utils/ignoreEvent');
 
-  return React.createElement('path', {
-    d: 'M 0 ' + pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize / 3 + ' V ' + pinSize + ' H ' + 2 * pinSize / 3 + ' V ' + 2 * pinSize / 3 + ' H ' + pinSize + ' V ' + pinSize / 3 + ' H ' + 2 * pinSize / 3 + ' V ' + 0 + ' H ' + pinSize / 3 + ' V ' + pinSize / 3 + ' Z',
-    fill: primaryColor,
-    transform: 'translate(' + pinSize / 2 + ',' + pinSize / 2 + ') rotate(45) translate(' + -3 * pinSize / 2 + ',' + pinSize / 2 + ')',
-    onMouseDown: function onMouseDown () {
-      return deleteNode(id)
+var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
+
+var _xOfPin = require('../utils/xOfPin');
+
+var _xOfPin2 = _interopRequireDefault(_xOfPin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Node = function (_React$Component) {
+  _inherits(Node, _React$Component);
+
+  function Node() {
+    var _this;
+
+    _classCallCheck(this, Node);
+
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Node.__proto__ || Object.getPrototypeOf(Node)).call(this)), _this), 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteNode', 'deleteOutputPin');
+    return _this;
+  }
+
+  _createClass(Node, [{
+    key: 'createInputPin',
+    value: function createInputPin() {
+      this.props.createInputPin(this.props.id);
     }
-  })
-}
+  }, {
+    key: 'createOutputPin',
+    value: function createOutputPin() {
+      this.props.createOutputPin(this.props.id);
+    }
+  }, {
+    key: 'deleteInputPin',
+    value: function deleteInputPin() {
+      this.props.deleteInputPin(this.props.id);
+    }
+  }, {
+    key: 'deleteNode',
+    value: function deleteNode() {
+      this.props.deleteNode(this.props.id);
+    }
+  }, {
+    key: 'deleteOutputPin',
+    value: function deleteOutputPin() {
+      this.props.deleteOutputPin(this.props.id);
+    }
+  }, {
+    key: 'getComputedWidth',
+    value: function getComputedWidth() {
+      var _props = this.props,
+          ins = _props.ins,
+          outs = _props.outs,
+          text = _props.text,
+          theme = _props.theme,
+          width = _props.width;
+      var fontSize = theme.fontSize,
+          pinSize = theme.pinSize;
 
-Node.prototype.getDeleteButton = getDeleteButton
 
-function getInputMinus () {
-  var _props5 = this.props,
-    deleteInputPin = _props5.deleteInputPin,
-    id = _props5.id,
-    ins = _props5.ins,
-    multiSelection = _props5.multiSelection,
-    selected = _props5.selected,
-    theme = _props5.theme
-  var primaryColor = theme.primaryColor,
-    pinSize = theme.pinSize
+      var bodyHeight = this.getBodyHeight();
 
-  if (no(ins) || selected === false || multiSelection) return null
+      var computedWidth = (0, _computeNodeWidth2.default)({
+        bodyHeight: bodyHeight,
+        pinSize: pinSize,
+        fontSize: fontSize,
+        node: { ins: ins, outs: outs, text: text, width: width }
+      });
 
-  var computedWidth = this.getComputedWidth()
-  var disabled = ins.length === 0
+      return computedWidth;
+    }
+  }, {
+    key: 'getBodyHeight',
+    value: function getBodyHeight() {
+      var _props2 = this.props,
+          bodyHeight = _props2.bodyHeight,
+          theme = _props2.theme;
 
-  return React.createElement('path', {
-    d: minus(pinSize),
-    fill: disabled ? 'transparent' : primaryColor,
-    onMouseDown: function onMouseDown () {
-      if (!disabled) deleteInputPin(id)
-    },
-    stroke: primaryColor,
-    transform: 'translate(' + (computedWidth + 2) + ',0)'
-  })
-}
 
-Node.prototype.getInputMinus = getInputMinus
+      return bodyHeight || theme.nodeBodyHeight;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props3 = this.props,
+          dragging = _props3.dragging,
+          draggedLinkId = _props3.draggedLinkId,
+          id = _props3.id,
+          ins = _props3.ins,
+          connectLinkToTarget = _props3.connectLinkToTarget,
+          createLink = _props3.createLink,
+          outs = _props3.outs,
+          selected = _props3.selected,
+          selectNode = _props3.selectNode,
+          theme = _props3.theme,
+          x = _props3.x,
+          y = _props3.y;
+      var darkPrimaryColor = theme.darkPrimaryColor,
+          nodeBarColor = theme.nodeBarColor,
+          pinColor = theme.pinColor,
+          pinSize = theme.pinSize,
+          primaryColor = theme.primaryColor;
 
-function getInputPlus () {
-  var _props6 = this.props,
-    createInputPin = _props6.createInputPin,
-    id = _props6.id,
-    ins = _props6.ins,
-    multiSelection = _props6.multiSelection,
-    selected = _props6.selected,
-    theme = _props6.theme
-  var primaryColor = theme.primaryColor,
-    pinSize = theme.pinSize
 
-  if (no(ins) || selected === false || multiSelection) return null
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
 
-  var computedWidth = this.getComputedWidth()
+      return _react2.default.createElement(
+        'g',
+        {
+          onDoubleClick: _ignoreEvent2.default,
+          onMouseDown: selectNode,
+          style: {
+            cursor: dragging ? 'pointer' : 'default'
+          },
+          transform: 'translate(' + x + ',' + y + ')'
+        },
+        this.renderDeleteButton(),
+        this.renderInputMinus(),
+        this.renderInputPlus(),
+        this.renderOutputMinus(),
+        this.renderOutputPlus(),
+        _react2.default.createElement('rect', {
+          fillOpacity: 0,
+          height: bodyHeight + 2 * pinSize,
+          stroke: selected ? primaryColor : nodeBarColor,
+          strokeWidth: 1,
+          width: computedWidth
+        }),
+        _react2.default.createElement('rect', {
+          fill: selected ? primaryColor : nodeBarColor,
+          height: pinSize,
+          width: computedWidth
+        }),
+        ins && ins.map(function (pin, i, array) {
+          var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
-  return React.createElement('path', {
-    d: plus(pinSize),
-    fill: primaryColor,
-    onMouseDown: function onMouseDown () {
-      return createInputPin(id)
-    },
-    stroke: primaryColor,
-    transform: 'translate(' + (computedWidth + 4 + pinSize) + ',0)'
-  })
-}
+          return _react2.default.createElement(_InputPin2.default, { key: i,
+            color: selected ? darkPrimaryColor : pinColor,
+            nodeIdAndPosition: [id, i],
+            connectLinkToTarget: draggedLinkId ? connectLinkToTarget.bind(null, draggedLinkId) : null,
+            size: pinSize,
+            x: x,
+            y: 0
+          });
+        }),
+        this.renderBody(),
+        _react2.default.createElement('rect', {
+          fill: selected ? primaryColor : nodeBarColor,
+          height: pinSize,
+          transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
+          width: computedWidth
+        }),
+        outs && outs.map(function (pin, i, array) {
+          var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
-Node.prototype.getInputPlus = getInputPlus
+          return _react2.default.createElement(_OutputPin2.default, { key: i,
+            color: selected ? darkPrimaryColor : pinColor,
+            createLink: createLink,
+            nodeIdAndPosition: [id, i],
+            size: pinSize,
+            x: x,
+            y: pinSize + bodyHeight
+          });
+        })
+      );
+    }
+  }, {
+    key: 'renderBody',
+    value: function renderBody() {
+      var _props4 = this.props,
+          theme = _props4.theme,
+          text = _props4.text;
+      var fontSize = theme.fontSize,
+          pinSize = theme.pinSize;
 
-function getOutputMinus () {
-  var _props7 = this.props,
-    deleteOutputPin = _props7.deleteOutputPin,
-    id = _props7.id,
-    multiSelection = _props7.multiSelection,
-    outs = _props7.outs,
-    selected = _props7.selected,
-    theme = _props7.theme
-  var primaryColor = theme.primaryColor,
-    pinSize = theme.pinSize
 
-  if (no(outs) || selected === false || multiSelection) return null
+      var bodyHeight = this.getBodyHeight();
 
-  var bodyHeight = this.getBodyHeight()
-  var computedWidth = this.getComputedWidth()
-  var disabled = outs.length === 0
+      var margin = fontSize * 0.2;
 
-  return React.createElement('path', {
-    d: minus(pinSize),
-    fill: disabled ? 'transparent' : primaryColor,
-    onMouseDown: function onMouseDown () {
-      if (!disabled) deleteOutputPin(id)
-    },
-    stroke: primaryColor,
-    transform: 'translate(' + (computedWidth + 2) + ',' + (bodyHeight + pinSize) + ')'
-  })
-}
+      return _react2.default.createElement(
+        'text',
+        {
+          x: pinSize,
+          y: bodyHeight + pinSize - margin
+        },
+        _react2.default.createElement(
+          'tspan',
+          null,
+          text
+        )
+      );
+    }
+  }, {
+    key: 'renderDeleteButton',
+    value: function renderDeleteButton() {
+      var _props5 = this.props,
+          multiSelection = _props5.multiSelection,
+          selected = _props5.selected,
+          theme = _props5.theme;
+      var primaryColor = theme.primaryColor,
+          pinSize = theme.pinSize;
 
-Node.prototype.getOutputMinus = getOutputMinus
 
-function getOutputPlus () {
-  var _props8 = this.props,
-    createOutputPin = _props8.createOutputPin,
-    id = _props8.id,
-    multiSelection = _props8.multiSelection,
-    outs = _props8.outs,
-    selected = _props8.selected,
-    theme = _props8.theme
-  var primaryColor = theme.primaryColor,
-    pinSize = theme.pinSize
+      if (selected === false || multiSelection) return null;
 
-  if (no(outs) || selected === false || multiSelection) return null
+      return _react2.default.createElement(_CrossButton2.default, {
+        action: this.deleteNode,
+        color: primaryColor,
+        size: pinSize,
+        x: -(1.5 * pinSize),
+        y: 0
+      });
+    }
+  }, {
+    key: 'renderInputMinus',
+    value: function renderInputMinus() {
+      var _props6 = this.props,
+          ins = _props6.ins,
+          multiSelection = _props6.multiSelection,
+          selected = _props6.selected,
+          theme = _props6.theme;
+      var primaryColor = theme.primaryColor,
+          pinSize = theme.pinSize;
 
-  var bodyHeight = this.getBodyHeight()
-  var computedWidth = this.getComputedWidth()
 
-  return React.createElement('path', {
-    d: plus(pinSize),
-    fill: primaryColor,
-    onMouseDown: function onMouseDown () {
-      return createOutputPin(id)
-    },
-    stroke: primaryColor,
-    transform: 'translate(' + (computedWidth + 4 + pinSize) + ',' + (bodyHeight + pinSize) + ')'
-  })
-}
+      if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
 
-Node.prototype.getOutputPlus = getOutputPlus
+      var computedWidth = this.getComputedWidth();
+      var disabled = ins.length === 0;
 
-function render () {
-  var _props9 = this.props,
-    dragging = _props9.dragging,
-    draggedLinkId = _props9.draggedLinkId,
-    id = _props9.id,
-    ins = _props9.ins,
-    onCreateLink = _props9.onCreateLink,
-    outs = _props9.outs,
-    selected = _props9.selected,
-    selectNode = _props9.selectNode,
-    theme = _props9.theme,
-    updateLink = _props9.updateLink,
-    x = _props9.x,
-    y = _props9.y
-  var darkPrimaryColor = theme.darkPrimaryColor,
-    nodeBarColor = theme.nodeBarColor,
-    pinColor = theme.pinColor,
-    pinSize = theme.pinSize,
-    primaryColor = theme.primaryColor
+      return _react2.default.createElement(_MinusButton2.default, {
+        action: this.deleteInputPin,
+        color: primaryColor,
+        disabled: disabled,
+        size: pinSize,
+        x: computedWidth + 2,
+        y: 0
+      });
+    }
+  }, {
+    key: 'renderInputPlus',
+    value: function renderInputPlus() {
+      var _props7 = this.props,
+          ins = _props7.ins,
+          multiSelection = _props7.multiSelection,
+          selected = _props7.selected,
+          theme = _props7.theme;
+      var primaryColor = theme.primaryColor,
+          pinSize = theme.pinSize;
 
-  var bodyContent = this.getBody()
-  var bodyHeight = this.getBodyHeight()
-  var computedWidth = this.getComputedWidth()
 
-  return React.createElement(
-    'g',
-    {
-      onDoubleClick: ignoreEvent,
-      onMouseDown: selectNode,
-      style: {
-        cursor: dragging ? 'pointer' : 'default'
-      },
-      transform: 'translate(' + x + ',' + y + ')'
-    },
-    this.getDeleteButton(),
-    this.getInputMinus(),
-    this.getInputPlus(),
-    this.getOutputMinus(),
-    this.getOutputPlus(),
-    React.createElement('rect', {
-      fillOpacity: 0,
-      height: bodyHeight + 2 * pinSize,
-      stroke: selected ? primaryColor : nodeBarColor,
-      strokeWidth: 1,
-      width: computedWidth
-    }),
-    React.createElement('rect', {
-      fill: selected ? primaryColor : nodeBarColor,
-      height: pinSize,
-      width: computedWidth
-    }),
-    ins && ins.map(function (pin, i, array) {
-      var x = xOfPin(pinSize, computedWidth, array.length, i)
+      if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
 
-      var onMouseUp = function onMouseUp (e) {
-        e.preventDefault()
-        e.stopPropagation()
+      var computedWidth = this.getComputedWidth();
 
-        if (draggedLinkId) {
-          updateLink(draggedLinkId, { to: [id, i] })
-        }
-      }
+      return _react2.default.createElement(_PlusButton2.default, {
+        action: this.createInputPin,
+        color: primaryColor,
+        size: pinSize,
+        x: computedWidth + 4 + pinSize,
+        y: 0
+      });
+    }
+  }, {
+    key: 'renderOutputMinus',
+    value: function renderOutputMinus() {
+      var _props8 = this.props,
+          multiSelection = _props8.multiSelection,
+          outs = _props8.outs,
+          selected = _props8.selected,
+          theme = _props8.theme;
+      var primaryColor = theme.primaryColor,
+          pinSize = theme.pinSize;
 
-      return React.createElement('rect', {
-        key: i,
-        fill: selected ? darkPrimaryColor : pinColor,
-        height: pinSize,
-        onMouseDown: ignoreEvent,
-        onMouseUp: onMouseUp,
-        transform: 'translate(' + x + ',0)',
-        width: pinSize
-      })
-    }),
-    bodyContent,
-    React.createElement('rect', {
-      fill: selected ? primaryColor : nodeBarColor,
-      height: pinSize,
-      transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
-      width: computedWidth
-    }),
-    outs && outs.map(function (pin, i, array) {
-      var x = xOfPin(pinSize, computedWidth, array.length, i)
 
-      var onMouseDown = function onMouseDown (e) {
-        e.preventDefault()
-        e.stopPropagation()
+      if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
 
-        onCreateLink({ from: [id, i], to: null })
-      }
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
+      var disabled = outs.length === 0;
 
-      return React.createElement('rect', {
-        key: i,
-        fill: selected ? darkPrimaryColor : pinColor,
-        height: pinSize,
-        onClick: ignoreEvent,
-        onMouseLeave: ignoreEvent,
-        onMouseDown: onMouseDown,
-        transform: 'translate(' + x + ',' + (pinSize + bodyHeight) + ')',
-        width: pinSize
-      })
-    })
-  )
-}
+      return _react2.default.createElement(_MinusButton2.default, {
+        action: this.deleteOutputPin,
+        color: primaryColor,
+        disabled: disabled,
+        size: pinSize,
+        x: computedWidth + 2,
+        y: bodyHeight + pinSize
+      });
+    }
+  }, {
+    key: 'renderOutputPlus',
+    value: function renderOutputPlus() {
+      var _props9 = this.props,
+          multiSelection = _props9.multiSelection,
+          outs = _props9.outs,
+          selected = _props9.selected,
+          theme = _props9.theme;
+      var primaryColor = theme.primaryColor,
+          pinSize = theme.pinSize;
 
-Node.prototype.render = render
 
-Node.propTypes = {
-  bodyHeight: PropTypes.number,
-  createInputPin: PropTypes.func.isRequired,
-  createOutputPin: PropTypes.func.isRequired,
-  deleteInputPin: PropTypes.func.isRequired,
-  deleteNode: PropTypes.func.isRequired,
-  deleteOutputPin: PropTypes.func.isRequired,
-  dragging: PropTypes.bool.isRequired,
-  draggedLinkId: PropTypes.string,
-  fontSize: PropTypes.number.isRequired,
-  id: PropTypes.string,
-  ins: PropTypes.array,
-  multiSelection: PropTypes.bool.isRequired,
-  outs: PropTypes.array,
-  onCreateLink: PropTypes.func.isRequired,
-  selected: PropTypes.bool.isRequired,
-  selectNode: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired,
-  theme: theme.propTypes,
-  updateLink: PropTypes.func.isRequired,
-  width: PropTypes.number,
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired
-}
+      if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
+
+      var bodyHeight = this.getBodyHeight();
+      var computedWidth = this.getComputedWidth();
+
+      return _react2.default.createElement(_PlusButton2.default, {
+        action: this.createOutputPin,
+        color: primaryColor,
+        size: pinSize,
+        x: computedWidth + 4 + pinSize,
+        y: bodyHeight + pinSize
+      });
+    }
+  }]);
+
+  return Node;
+}(_react2.default.Component);
 
 Node.defaultProps = {
+  connectLinkToTarget: Function.prototype,
   createInputPin: Function.prototype,
+  createLink: Function.prototype,
   createOutputPin: Function.prototype,
-  deleteInputPin: Function.prototype,
   deleteNode: Function.prototype,
   deleteOutputPin: Function.prototype,
   dragging: false,
   draggedLinkId: null,
   multiSelection: false,
-  onCreateLink: Function.prototype,
   selected: false,
   selectNode: Function.prototype,
   text: 'Node',
-  theme: theme.defaultProps,
-  updateLink: Function.prototype
-}
-
-module.exports = exports.default = Node
+  theme: _theme.defaultTheme
+};
+exports.default = Node;

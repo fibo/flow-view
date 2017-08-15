@@ -188,24 +188,14 @@ export default class Node extends React.Component {
         {ins && ins.map((pin, i, array) => {
           const x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          var onMouseUp = (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-
-            if (draggedLinkId) {
-              connectLinkToTarget(draggedLinkId, [id, i])
-            }
-          }
-
           return (
-            <rect
-              key={i}
-              fill={selected ? darkPrimaryColor : pinColor}
-              height={pinSize}
-              onMouseDown={ignoreEvent}
-              onMouseUp={onMouseUp}
-              transform={`translate(${x},0)`}
-              width={pinSize}
+            <InputPin key={i}
+              color={selected ? darkPrimaryColor : pinColor}
+              nodeIdAndPosition={[id, i]}
+              connectLinkToTarget={draggedLinkId ? connectLinkToTarget.bind(null, draggedLinkId) : null}
+              size={pinSize}
+              x={x}
+              y={0}
             />
           )
         })}
@@ -219,21 +209,14 @@ export default class Node extends React.Component {
         {outs && outs.map((pin, i, array) => {
           var x = xOfPin(pinSize, computedWidth, array.length, i)
 
-          var onMouseDown = (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-
-            createLink({ from: [ id, i ], to: null })
-          }
-
           return (
-            <rect
-              key={i}
-              fill={selected ? darkPrimaryColor : pinColor}
-              height={pinSize}
-              onMouseDown={onMouseDown}
-              transform={`translate(${x},${pinSize + bodyHeight})`}
-              width={pinSize}
+            <OutputPin key={i}
+              color={selected ? darkPrimaryColor : pinColor}
+              createLink={createLink}
+              nodeIdAndPosition={[id, i]}
+              size={pinSize}
+              x={x}
+              y={pinSize + bodyHeight}
             />
           )
         })}

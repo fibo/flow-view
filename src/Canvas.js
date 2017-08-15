@@ -121,7 +121,7 @@ export default class Canvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
 
-  render (view: FlowView, model, callback) {
+  render (view: FlowView, model, callback): void {
     const container = this.container
     const item = this.item
 

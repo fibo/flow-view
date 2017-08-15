@@ -10,9 +10,8 @@ import CrossButton from './CrossButton'
 import MinusButton from './MinusButton'
 import PlusButton from './PlusButton'
 
-import computeNodeWidth from '../utils/computeNodeWidth'
-import ignoreEvent from '../utils/ignoreEvent'
-import xOfPin from '../utils/xOfPin'
+import InputPin from './InputPin'
+import OutputPin from './OutputPin'
 
 import {
   CreatePin,
@@ -20,36 +19,36 @@ import {
   DeleteNode,
   DeletePin,
   Id,
-  NodeIdAndPosition
+  NodeIdAndPosition,
+  Point,
+  SerializedNode
 } from './types'
 
+import computeNodeWidth from '../utils/computeNodeWidth'
+import ignoreEvent from '../utils/ignoreEvent'
+import xOfPin from '../utils/xOfPin'
+
 export default class Node extends React.Component {
-  props: {
+  props: Point & SerializedNode & {
     bodyHeight: number,
-    createInputPin: (string) => void,
-    createOutputPin: (string) => void,
+    connectLinkToTarget: (Id, NodeIdAndPosition) => void,
+    createInputPin: (Id) => void,
+    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
+    createOutputPin: (Id) => void,
     emitCreateOutputPin: CreatePin,
     emitDeleteInputPin: DeletePin,
     emitDeleteLink: DeleteLink,
     emitCreateNode: DeleteNode,
-    deleteNode: (string) => void,
-    deleteInputPin: (string) => void,
-    deleteOutputPin: (string) => void,
+    deleteNode: (Id) => void,
+    deleteInputPin: (Id) => void,
+    deleteOutputPin: (Id) => void,
     dragging: boolean,
     draggedLinkId: string,
     id: string,
-    ins: Array<any>,
     multiSelection: boolean,
-    outs: Array<any>,
-    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
     selected: boolean,
     selectNode: (MouseEvent) => void,
-    text: string,
     theme: Theme,
-    connectLinkToTarget: (Id, NodeIdAndPosition) => void,
-    width: number,
-    x: number,
-    y: number
   }
 
   static defaultProps = {
@@ -232,8 +231,6 @@ export default class Node extends React.Component {
               key={i}
               fill={selected ? darkPrimaryColor : pinColor}
               height={pinSize}
-              onClick={ignoreEvent}
-              onMouseLeave={ignoreEvent}
               onMouseDown={onMouseDown}
               transform={`translate(${x},${pinSize + bodyHeight})`}
               width={pinSize}

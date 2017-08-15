@@ -25,7 +25,7 @@ import {
   FlowView,
   Id,
   NodeIdAndPosition,
-  Rectangle,
+  Point,
   SerializedNode,
   SerializedPin
 } from './types'
@@ -76,7 +76,7 @@ export default class Frame extends React.Component {
       isMouseDown: false,
       offset: { x: 0, y: 0 },
       pointer: null,
-      rectangularSelection: { x: 10, y: 10, width: 100, height: 100 }, // TODO null
+      rectangularSelection: null,
       scroll: { x: 0, y: 0 },
       showSelector: false,
       selectedItems: [],
@@ -110,14 +110,17 @@ export default class Frame extends React.Component {
   connectLinkToTarget (linkId: Id, target: NodeIdAndPosition) {
     const view = Object.assign({}, this.state.view)
 
-
     view.link[linkId].to = target
 
-    this.setState({ view })
+    this.setState({
+      draggedLinkId: null,
+      view
+    })
+
     this.props.emitCreateLink(view.link[linkId], linkId)
   }
 
-  createInputPin (nodeId: Id, pin: SerializedPin) {
+  createInputPin (nodeId: Id, pin: SerializedPin): void {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins || []
@@ -135,7 +138,7 @@ export default class Frame extends React.Component {
     this.props.emitCreateInputPin([nodeId, position], pin)
   }
 
-  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }) {
+  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }): void {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -147,16 +150,23 @@ export default class Frame extends React.Component {
 
     // Fire createLink event only if it is not a dragging link.
     if (link.to) {
-      this.setState({ view })
+      this.setState({
+        draggedLinkId: null,
+        selectedItems: [],
+        view
+      })
       this.props.emitCreateLink(link, id)
     } else {
-      this.setState({ draggedLinkId: id })
+      this.setState({
+        draggedLinkId: id,
+        isMouseDown: true,
+        selectedItems: [],
+        view
+      })
     }
-
-    return id
   }
 
-  createNode (node: SerializedNode) {
+  createNode (node: SerializedNode): void {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -170,7 +180,7 @@ export default class Frame extends React.Component {
     return id
   }
 
-  createOutputPin (nodeId: Id, pin: SerializedPin) {
+  createOutputPin (nodeId: Id, pin: SerializedPin): void {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs || []
@@ -188,7 +198,7 @@ export default class Frame extends React.Component {
     this.props.emitCreateOutputPin([nodeId, position], pin)
   }
 
-  deleteInputPin (nodeId: Id, position?: number) {
+  deleteInputPin (nodeId: Id, position?: number): void {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins
@@ -217,7 +227,7 @@ export default class Frame extends React.Component {
     this.props.emitDeleteInputPin([nodeId, position])
   }
 
-  deleteOutputPin (nodeId: Id, position?: number) {
+  deleteOutputPin (nodeId: Id, position?: number): void {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs
@@ -246,7 +256,7 @@ export default class Frame extends React.Component {
     this.props.emitDeleteOutputPin([nodeId, position])
   }
 
-  deleteLink (id: Id) {
+  deleteLink (id: Id): void {
     const view = Object.assign({}, this.state.view)
 
     delete view.link[id]
@@ -256,7 +266,7 @@ export default class Frame extends React.Component {
     this.props.emitDeleteLink(id)
   }
 
-  deleteNode (id: Id) {
+  deleteNode (id: Id): void {
     const view = Object.assign({}, this.state.view)
 
     // Delete links connected to given node.
@@ -287,33 +297,14 @@ export default class Frame extends React.Component {
     .keys(view.node)
     .filter((id) => (draggedItems.indexOf(id) > -1))
     .forEach((id) => {
-       view.node[id].x += dragginDelta.x
-       view.node[id].y += dragginDelta.y
+      view.node[id].x += dragginDelta.x
+      view.node[id].y += dragginDelta.y
     })
 
     this.setState({ view })
   }
 
-    /* TODO
-    endDragging (selectNodes) {
-      var nodesCoordinates = {}
-
-      selectNodes.forEach((id) => {
-        nodesCoordinates.id = {}
-        nodesCoordinates.id.x = view.node[id].x
-        nodesCoordinates.id.y = view.node[id].y
-      })
-
-      this.emit('endDragging', nodesCoordinates)
-    }
-
-     // TODO this is not used buy now.
-    var renameNode = (nodeId, text) => {
-      view.node[nodeId].text = text
-    }
-    */
-
-  generateId () {
+  generateId (): Id {
     const {
       view
     } = this.state
@@ -323,7 +314,7 @@ export default class Frame extends React.Component {
     return (view.link[id] || view.node[id]) ? this.generateId() : id
   }
 
-  getCoordinates (event: MouseEvent) {
+  getCoordinates (event: MouseEvent): Point {
     const {
       offset,
       scroll
@@ -335,14 +326,14 @@ export default class Frame extends React.Component {
     }
   }
 
-  onClick (event: MouseEvent) {
+  onClick (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
     this.setState({ showSelector: false })
   }
 
-  onDocumentKeydown (event: KeyboardEvent) {
+  onDocumentKeydown (event: KeyboardEvent): void {
     const { code } = event
 
     const {
@@ -447,8 +438,16 @@ export default class Frame extends React.Component {
     event.preventDefault()
     event.stopPropagation()
 
+    const pointer = this.getCoordinates(event)
+
     this.setState({
       isMouseDown: true,
+      rectangularSelection: {
+        x: pointer.x,
+        y: pointer.y,
+        height: 0,
+        width: 0
+      },
       selectedItems: []
     })
   }
@@ -470,6 +469,7 @@ export default class Frame extends React.Component {
       draggedLinkId: null,
       isMouseDown: false,
       pointer: null,
+      rectangularSelection: null,
       showSelector: false,
       view: Object.assign({}, view, { link })
     })
@@ -482,10 +482,11 @@ export default class Frame extends React.Component {
     const {
       isMouseDown,
       pointer,
+      rectangularSelection,
       selectedItems
     } = this.state
 
-    if(!isMouseDown) return
+    if (!isMouseDown) return
 
     const nextPointer = this.getCoordinates(event)
 
@@ -498,10 +499,21 @@ export default class Frame extends React.Component {
       this.dragItems(draggingDelta, selectedItems)
     }
 
+    if (rectangularSelection) {
+      this.setState({
+        rectangularSelection: Object.assign({},
+          rectangularSelection,
+          {
+            height: nextPointer.y - rectangularSelection.y,
+            width: nextPointer.x - rectangularSelection.x
+          })
+      })
+    }
+
     this.setState({ pointer: nextPointer })
   }
 
-  onMouseUp (event: MouseEvent) {
+  onMouseUp (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
@@ -510,7 +522,6 @@ export default class Frame extends React.Component {
       view
     } = this.state
 
-    const selectedNodes = this.selectedNodes()
     const link = Object.assign({}, view.link)
 
     if (draggedLinkId) {
@@ -520,17 +531,21 @@ export default class Frame extends React.Component {
         draggedLinkId: null,
         isMouseDown: false,
         pointer: null,
+        rectangularSelection: null,
+        selectedItems: [],
         view: Object.assign({}, view, { link })
       })
     } else {
       this.setState({
+        draggedLinkId: null,
         isMouseDown: false,
-        pointer: null
+        pointer: null,
+        rectangularSelection: null
       })
     }
   }
 
-  onWindowResize (container) {
+  onWindowResize (container): void {
     return () => {
       const rect = container.getBoundingClientRect()
 
@@ -543,7 +558,7 @@ export default class Frame extends React.Component {
     }
   }
 
-  onWindowScroll () {
+  onWindowScroll (): void {
     const scroll = {
       x: window.scrollX,
       y: window.scrollY
@@ -552,7 +567,7 @@ export default class Frame extends React.Component {
     this.setState({ scroll })
   }
 
-  selectedNodes () {
+  selectedNodes (): { [Id]: SerializedNode } {
     const {
       view,
       selectedItems
@@ -563,7 +578,7 @@ export default class Frame extends React.Component {
     return selectedNodes
   }
 
-  selectorCreateNode (node) {
+  selectorCreateNode (node: SerializedNode): void {
     const id = this.createNode(node)
 
     this.setState({

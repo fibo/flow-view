@@ -1,6 +1,5 @@
 import React from 'react'
-import { Canvas } from 'flow-view'
-import { Node } from 'flow-view/components'
+import { Canvas, Node } from 'flow-view'
 
 // TODO more custom nodes, with foreign object or other stuff
 
@@ -64,7 +63,8 @@ const view = {
 }
 
 const canvas = new Canvas('drawing', {
-  node: { DefaultNode: Node, BigNode }
+  node: { DefaultNode: Node, BigNode },
+  util: { typeOfNode: (node) => (node.item || 'DefaultNode') }
 })
 
 canvas.render(view)

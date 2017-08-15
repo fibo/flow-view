@@ -26,6 +26,8 @@ import {
   Id,
   NodeIdAndPosition,
   Point,
+  Segment,
+  SerializedLink,
   SerializedNode,
   SerializedPin
 } from './types'
@@ -67,6 +69,7 @@ export default class Frame extends React.Component {
       'onWindowResize',
       'onWindowScroll',
       'selectorCreateNode',
+      'selectItem',
       'startDraggingLinkTarget'
      )
 
@@ -120,6 +123,75 @@ export default class Frame extends React.Component {
     this.props.emitCreateLink(view.link[linkId], linkId)
   }
 
+  coordinatesOfLink ({ from, to }: SerializedLink): Segment {
+    const {
+      theme
+    } = this.props
+
+    const {
+      pointer,
+      view
+    } = this.state
+
+    const {
+      fontSize,
+      nodeBodyHeight,
+      pinSize
+    } = theme
+
+    let x1 = null
+    let y1 = null
+    let x2 = null
+    let y2 = null
+
+    const nodeIds = Object.keys(view.node)
+    const idEquals = (x) => (id) => (id === x[0])
+    const sourceId = (from ? nodeIds.find(idEquals(from)) : null)
+    const targetId = (to ? nodeIds.find(idEquals(to)) : null)
+
+    let computedWidth = null
+
+    if (sourceId) {
+      const source = view.node[sourceId]
+
+      if (no(source.outs)) source.outs = {}
+
+      computedWidth = computeNodeWidth({
+        bodyHeight: nodeBodyHeight,
+        pinSize,
+        fontSize,
+        node: source
+      })
+
+      x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
+      y1 = source.y + pinSize + nodeBodyHeight
+    }
+
+    if (targetId) {
+      var target = view.node[targetId]
+
+      if (no(target.ins)) target.ins = {}
+
+      computedWidth = computeNodeWidth({
+        bodyHeight: nodeBodyHeight,
+        pinSize,
+        fontSize,
+        node: target
+      })
+
+      x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
+      y2 = target.y
+    } else {
+      // FIXME at first, pointer is null. This trick works, but,
+      // it should be reviosioned when implementing creating links
+      // in the opposite direction.
+      x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
+      y2 = pointer ? (pointer.y - pinSize) : y1
+    }
+
+    return { x1, y1, x2, y2 }
+  }
+
   createInputPin (nodeId: Id, pin: SerializedPin): void {
     const view = Object.assign({}, this.state.view)
 
@@ -138,7 +210,7 @@ export default class Frame extends React.Component {
     this.props.emitCreateInputPin([nodeId, position], pin)
   }
 
-  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }): void {
+  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }): Id {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -164,6 +236,8 @@ export default class Frame extends React.Component {
         view
       })
     }
+
+    return id
   }
 
   createNode (node: SerializedNode): void {
@@ -365,6 +439,12 @@ export default class Frame extends React.Component {
         if (thereAreSelectedNodes) draggingDelta.y = -unit
         break
 
+      case 'Backspace':
+        if (thereAreSelectedNodes) {
+          selectedNodes.forEach(this.deleteNode)
+        }
+        break
+
       case 'Escape':
         this.setState({ selectedItems: [] })
         break
@@ -519,13 +599,13 @@ export default class Frame extends React.Component {
 
     const {
       draggedLinkId,
-      view
+      rectangularSelection
     } = this.state
 
-    const link = Object.assign({}, view.link)
+    const view = Object.assign({}, this.state.view)
 
     if (draggedLinkId) {
-      delete link[draggedLinkId]
+      delete view.link[draggedLinkId]
 
       this.setState({
         draggedLinkId: null,
@@ -533,16 +613,44 @@ export default class Frame extends React.Component {
         pointer: null,
         rectangularSelection: null,
         selectedItems: [],
-        view: Object.assign({}, view, { link })
+        view: Object.assign({}, view)
       })
-    } else {
+    }
+
+    if (rectangularSelection) {
+      let selectedItems = []
+
+      // Consider when rectangular selection is reflected.
+      const boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width
+      const boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height
+
+      Object.keys(view.node).forEach((nodeId) => {
+        const { x, y } = view.node[nodeId]
+
+        const isInside = (
+          (x >= boundsX) &&
+          (y >= boundsY)
+        )
+
+        if (isInside) {
+          selectedItems.push(nodeId)
+        }
+      })
+
       this.setState({
         draggedLinkId: null,
         isMouseDown: false,
         pointer: null,
+        selectedItems,
         rectangularSelection: null
       })
     }
+
+    this.setState({
+      draggedLinkId: null,
+      isMouseDown: false,
+      pointer: null
+    })
   }
 
   onWindowResize (container): void {
@@ -589,7 +697,6 @@ export default class Frame extends React.Component {
 
   render () {
     const {
-      fontSize,
       item,
       model,
       theme
@@ -608,8 +715,8 @@ export default class Frame extends React.Component {
     const {
       frameBorder,
       fontFamily,
+      fontSize,
       lineWidth,
-      nodeBodyHeight,
       pinSize,
       primaryColor
     } = theme
@@ -623,72 +730,13 @@ export default class Frame extends React.Component {
     height = height - (2 * border)
     width = width - (2 * border)
 
-    var Link = item.link.DefaultLink
-
-    var setState = this.setState.bind(this)
-
-    var coordinatesOfLink = (link) => {
-      var from = link.from
-      var to = link.to
-
-      var x1 = null
-      var y1 = null
-      var x2 = null
-      var y2 = null
-
-      var nodeIds = Object.keys(view.node)
-      var idEquals = (x) => (id) => (id === x[0])
-      var sourceId = (from ? nodeIds.find(idEquals(from)) : null)
-      var targetId = (to ? nodeIds.find(idEquals(to)) : null)
-
-      var computedWidth = null
-
-      if (sourceId) {
-        var source = view.node[sourceId]
-
-        if (no(source.outs)) source.outs = {}
-
-        computedWidth = computeNodeWidth({
-          bodyHeight: nodeBodyHeight,
-          pinSize,
-          fontSize,
-          node: source
-        })
-
-        x1 = source.x + xOfPin(pinSize, computedWidth, source.outs.length, from[1])
-        y1 = source.y + pinSize + nodeBodyHeight
-      }
-
-      if (targetId) {
-        var target = view.node[targetId]
-
-        if (no(target.ins)) target.ins = {}
-
-        computedWidth = computeNodeWidth({
-          bodyHeight: nodeBodyHeight,
-          pinSize,
-          fontSize,
-          node: target
-        })
-
-        x2 = target.x + xOfPin(pinSize, computedWidth, target.ins.length, to[1])
-        y2 = target.y
-      } else {
-        // FIXME at first, pointer is null. This trick works, but,
-        // it should be reviosioned when implementing creating links
-        // in the opposite direction.
-        x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
-        y2 = pointer ? (pointer.y - pinSize) : y1
-      }
-
-      return { x1, y1, x2, y2 }
-    }
+    const Link = item.link.DefaultLink
 
     /**
      * Bring up selected nodes.
      */
 
-    var selectedFirst = (a, b) => {
+    const selectedFirst = (a, b) => {
       // FIXME it works, but it would be nice if the selected
       // items keep being up after deselection.
       var aIsSelected = (selectedItems.indexOf(a) > -1)
@@ -698,50 +746,6 @@ export default class Frame extends React.Component {
 
       if (aIsSelected) return 1
       if (bIsSelected) return -1
-    }
-
-    var selectItem = (id) => (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      var {
-        draggedLinkId,
-        selectedItems,
-        shiftPressed
-      } = this.state
-
-      // Do not select items when releasing a dragging link.
-
-      if (draggedLinkId) {
-        delete view.link[draggedLinkId]
-
-        setState({ draggedLinkId: null })
-
-        return
-      }
-
-      const index = selectedItems.indexOf(id)
-
-      const itemAlreadySelected = index > -1
-
-      // Shift key allows multiple selection.
-
-      if (shiftPressed) {
-        if (itemAlreadySelected) {
-          selectedItems.splice(index, 1)
-        } else {
-          selectedItems.push(id)
-        }
-      } else {
-        if (!itemAlreadySelected) {
-          selectedItems = [id]
-        }
-      }
-
-      setState({
-        isMouseDown: true,
-        selectedItems
-      })
     }
 
     return (
@@ -801,7 +805,7 @@ export default class Frame extends React.Component {
               outs={outs}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
-              selectNode={selectItem(id)}
+              selectNode={this.selectItem(id)}
               text={text}
               width={width}
               x={x}
@@ -815,7 +819,7 @@ export default class Frame extends React.Component {
             to
           } = view.link[id]
 
-          const coord = coordinatesOfLink(view.link[id])
+          const coord = this.coordinatesOfLink(view.link[id])
           const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
           const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
 
@@ -829,7 +833,7 @@ export default class Frame extends React.Component {
               startDraggingLinkTarget={this.startDraggingLinkTarget}
               pinSize={pinSize}
               selected={(selectedItems.indexOf(id) > -1)}
-              selectLink={selectItem(id)}
+              selectLink={this.selectItem(id)}
               sourceSelected={sourceSelected}
               targetSelected={targetSelected}
               to={to}
@@ -848,6 +852,57 @@ export default class Frame extends React.Component {
         />
       </svg>
     )
+  }
+
+  selectItem (id: Id): (MouseEvent) => void {
+    return (event: MouseEvent) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const {
+        draggedLinkId,
+        shiftPressed
+      } = this.state
+
+      let selectedItems = [...this.state.selectedItems]
+      let view = Object.assign({}, this.state.view)
+
+      // Do not select items when releasing a dragging link.
+
+      if (draggedLinkId) {
+        delete view.link[draggedLinkId]
+
+        this.setState({
+          draggedLinkId: null,
+          view
+        })
+
+        return
+      }
+
+      const index = selectedItems.indexOf(id)
+
+      const itemAlreadySelected = index > -1
+
+      // Shift key allows multiple selection.
+
+      if (shiftPressed) {
+        if (itemAlreadySelected) {
+          selectedItems.splice(index, 1)
+        } else {
+          selectedItems.push(id)
+        }
+      } else {
+        if (!itemAlreadySelected) {
+          selectedItems = [id]
+        }
+      }
+
+      this.setState({
+        isMouseDown: true,
+        selectedItems
+      })
+    }
   }
 
   startDraggingLinkTarget (id) {
@@ -874,7 +929,6 @@ Frame.defaultProps = {
   emitDeleteLink: Function.prototype,
   emitDeleteNode: Function.prototype,
   emitDeleteOutputPin: Function.prototype,
-  fontSize: 17, // FIXME fontSize seems to be ignored
   item: {
     link: { DefaultLink },
     node: { DefaultNode },

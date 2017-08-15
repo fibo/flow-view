@@ -1,8 +1,10 @@
-'use strict'
+"use strict";
 
-function ignoreEvent (e) {
-  e.preventDefault()
-  e.stopPropagation()
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = ignoreEvent;
+function ignoreEvent(event) {
+  event.preventDefault();
+  event.stopPropagation();
 }
-
-module.exports = exports.default = ignoreEvent

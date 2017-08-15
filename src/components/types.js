@@ -10,6 +10,8 @@ export type SerializedPin = string | { name: string }
 
 export type Point = { x: number, y: number }
 
+export type Segment = { x1: number, y1: number, x2: number, y2: number }
+
 // Derived types.
 
 export type Rectangle = Area & Point

@@ -5,15 +5,18 @@ import bindme from 'bindme'
 
 import ignoreEvent from '../utils/ignoreEvent'
 import { defaultTheme, Theme } from './theme'
-import { NodeIdAndPosition } from './types'
+import {
+  Id,
+  NodeIdAndPosition
+} from './types'
 
 export default class Link extends React.Component {
   props: {
+    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
     deleteLink: (string) => void,
     id: string,
     from: NodeIdAndPosition,
-    onCreateLink: ({ from: NodeIdAndPosition, to: ?NodeIdAndPosition }) => void,
-    startDraggingLinkTarget: (string) => void,
+    startDraggingLinkTarget: (Id) => void,
     pinSize: number,
     selected: boolean,
     selectLink: (MouseEvent) => void,
@@ -28,8 +31,8 @@ export default class Link extends React.Component {
   }
 
   static defaultProps = {
+    createLink: Function.prototype,
     deleteLink: Function.prototype,
-    onCreateLink: Function.prototype,
     startDraggingLinkTarget: Function.prototype,
     selected: false,
     selectLink: Function.prototype,
@@ -46,7 +49,10 @@ export default class Link extends React.Component {
     )
   }
 
-  onPathMouseDown (event: MouseEvent) {
+  onPathMouseDown (event: MouseEvent): void {
+    event.preventDefault()
+    event.stopPropagation()
+
     const {
       id,
       deleteLink,
@@ -56,19 +62,19 @@ export default class Link extends React.Component {
     if (selected) deleteLink(id)
   }
 
-  onSourceMouseDown (event: MouseEvent) {
+  onSourceMouseDown (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
     const {
       from,
-      onCreateLink
+      createLink
     } = this.props
 
-    onCreateLink({ from, to: null })
+    createLink({ from })
   }
 
-  onTargetMouseDown (event: MouseEvent) {
+  onTargetMouseDown (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 

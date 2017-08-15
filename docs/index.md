@@ -177,19 +177,17 @@ Theme is a prop object with the following attributes
 See [event/emitter.js][example_event_emitter] example.
 The following events are emitted by [canvas](#canvas):
 
-| name              | arguments             |
-|-------------------|-----------------------|
-| `createLink`      | link, linkId          |
-| `createNode`      | node, nodeId          |
-| `createInputPin`  | nodeId, position, pin |
-| `createOutputPin` | nodeId, position, pin |
-| `deleteLink`      | linkId                |
-| `deleteNode`      | nodeId                |
-| `deleteInputPin`  | nodeId, position      |
-| `deleteOutputPin` | nodeId, position      |
-| `endDragging`     | { nodeId: { x, y } }  |
-| `selectLink`      | linkId                |
-| `selectNode`      | nodeId                |
+| name              | arguments               |
+|-------------------|-------------------------|
+| `createLink`      | link, linkId            |
+| `createNode`      | node, nodeId            |
+| `createInputPin`  | [nodeId, position], pin |
+| `createOutputPin` | [nodeId, position], pin |
+| `deleteLink`      | linkId                  |
+| `deleteNode`      | nodeId                  |
+| `deleteInputPin`  | [nodeId, position]      |
+| `deleteOutputPin` | [nodeId, position]      |
+| `endDragging`     | { nodeId: { x, y } }    |
 
 ### Hotkeys
 

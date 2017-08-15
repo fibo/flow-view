@@ -1,31 +1,33 @@
-'use strict'
+"use strict";
 
-function computeNodeWidth (arg) {
-  var bodyHeight = arg.bodyHeight
-  var pinSize = arg.pinSize
-  var fontSize = arg.fontSize
-  var node = arg.node
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = computeNodeWidth;
+function computeNodeWidth(_ref) {
+  var bodyHeight = _ref.bodyHeight,
+      pinSize = _ref.pinSize,
+      fontSize = _ref.fontSize,
+      node = _ref.node;
 
-  var ins = node.ins || []
-  var outs = node.outs || []
-  var text = node.text
-  var width = node.width
+  var ins = node.ins || [];
+  var outs = node.outs || [];
+  var text = node.text;
+  var width = node.width;
 
-  var defaultWidth = width || bodyHeight + pinSize * 2
+  var defaultWidth = width || bodyHeight + pinSize * 2;
 
-  var fontAspectRatio = 0.64
+  var fontAspectRatio = 0.64;
 
-  var textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio
+  var textWidth = pinSize * 2 + text.length * fontSize * fontAspectRatio;
 
-  var numPins = Math.max(ins.length, outs.length)
+  var numPins = Math.max(ins.length, outs.length);
 
-  var pinsWidth = numPins * pinSize * 2
+  var pinsWidth = numPins * pinSize * 2;
 
-  var dynamicWidth = Math.max(textWidth, pinsWidth)
+  var dynamicWidth = Math.max(textWidth, pinsWidth);
 
-  var computedWidth = Math.max(defaultWidth, dynamicWidth)
+  var computedWidth = Math.max(defaultWidth, dynamicWidth);
 
-  return computedWidth
+  return computedWidth;
 }
-
-module.exports = exports.default = computeNodeWidth

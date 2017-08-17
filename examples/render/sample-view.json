@@ -5,21 +5,21 @@
     "a": {
       "text": "your engine",
       "outs": ["out0", "out1"],
-      "x": 270,
+      "x": 170,
       "y": 10
     },
     "b": {
       "text": "flow-view",
       "ins": ["in"],
       "outs": ["out"],
-      "x": 300,
+      "x": 117,
       "y": 100
     },
     "c": {
       "text": "a cool app!",
       "ins": ["in0", "in1", "in2"],
       "outs": ["out"],
-      "x": 300,
+      "x": 150,
       "y": 170
     }
   },

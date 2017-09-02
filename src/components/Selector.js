@@ -1,20 +1,23 @@
-// @flow
 import React from 'react'
 
-import {
+import type {
   Area,
   Point,
   SerializedNode
 } from './types'
 
-export default class Selector extends React.PureComponent {
-  props: Area & {
-    createNode: (SerializedNode) => void,
-    nodelist: Array<string>,
-    pointer: Point,
-    show: boolean
-  }
+type Props = Area & {
+  createNode: (SerializedNode) => void,
+  nodelist: Array<string>,
+  pointer: Point,
+  show: boolean
+}
 
+type State = {
+  text: string
+}
+
+export default class Selector extends React.PureComponent<Props, State> {
   static defaultProps = {
     height: 20,
     width: 200

@@ -1,10 +1,9 @@
-// @flow
 import React from 'react'
 
 import bindme from 'bindme'
 import no from 'not-defined'
 
-import { defaultTheme, Theme } from './theme'
+import { defaultTheme } from './theme'
 
 import CrossButton from './CrossButton'
 import MinusButton from './MinusButton'
@@ -13,7 +12,8 @@ import PlusButton from './PlusButton'
 import InputPin from './InputPin'
 import OutputPin from './OutputPin'
 
-import {
+import type { Theme } from './theme'
+import type {
   CreatePin,
   DeleteLink,
   DeleteNode,
@@ -28,29 +28,29 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-export default class Node extends React.PureComponent {
-  props: Point & SerializedNode & {
-    bodyHeight: number,
-    connectLinkToTarget: (Id, NodeIdAndPosition) => void,
-    createInputPin: (Id) => void,
-    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
-    createOutputPin: (Id) => void,
-    emitCreateOutputPin: CreatePin,
-    emitDeleteInputPin: DeletePin,
-    emitDeleteLink: DeleteLink,
-    emitCreateNode: DeleteNode,
-    deleteNode: (Id) => void,
-    deleteInputPin: (Id) => void,
-    deleteOutputPin: (Id) => void,
-    dragging: boolean,
-    draggedLinkId: string,
-    id: string,
-    multiSelection: boolean,
-    selected: boolean,
-    selectNode: (MouseEvent) => void,
-    theme: Theme,
-  }
+type Props = Point & SerializedNode & {
+  bodyHeight: number,
+  connectLinkToTarget: (Id, NodeIdAndPosition) => void,
+  createInputPin: (Id) => void,
+  createLink: ({ from: NodeIdAndPosition, to: ?NodeIdAndPosition }) => Id,
+  createOutputPin: (Id) => void,
+  emitCreateOutputPin: CreatePin,
+  emitDeleteInputPin: DeletePin,
+  emitDeleteLink: DeleteLink,
+  emitCreateNode: DeleteNode,
+  deleteNode: (Id) => void,
+  deleteInputPin: (Id) => void,
+  deleteOutputPin: (Id) => void,
+  dragging: boolean,
+  draggedLinkId: string,
+  id: string,
+  multiSelection: boolean,
+  selected: boolean,
+  selectNode: (MouseEvent) => void,
+  theme: Theme,
+}
 
+export default class Node extends React.PureComponent<Props> {
   static defaultProps = {
     connectLinkToTarget: Function.prototype,
     createInputPin: Function.prototype,

@@ -14,8 +14,11 @@ import randomString from '../utils/randomString'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-import { defaultTheme, Theme } from './theme'
-import {
+import { defaultTheme } from './theme'
+
+import type { Theme } from './theme'
+import type {
+  Area,
   CreateLink,
   CreateNode,
   CreatePin,
@@ -32,22 +35,36 @@ import {
   SerializedPin
 } from './types'
 
-export default class Frame extends React.PureComponent {
-  props: {
-    emitCreateInputPin: CreatePin,
-    emitCreateLink: CreateLink,
-    emitCreateNode: CreateNode,
-    emitCreateOutputPin: CreatePin,
-    emitDeleteInputPin: DeletePin,
-    emitDeleteLink: DeleteLink,
-    emitCreateNode: DeleteNode,
-    emitDeleteOutputPin: DeletePin,
-    rectangularSelection: ?RectangularSelection,
-    theme: Theme,
-    view: FlowView
-  }
+type Props = {
+  emitCreateInputPin: CreatePin,
+  emitCreateLink: CreateLink,
+  emitCreateNode: CreateNode,
+  emitCreateOutputPin: CreatePin,
+  emitDeleteInputPin: DeletePin,
+  emitDeleteLink: DeleteLink,
+  emitCreateNode: DeleteNode,
+  emitDeleteOutputPin: DeletePin,
+  rectangularSelection: ?RectangularSelection,
+  theme: Theme,
+  view: FlowView
+}
 
-  constructor (props) {
+type State = {
+  dynamicView: { height: ?number, width: ?number },
+  draggedLinkId: ?Id,
+  isMouseDown: boolean,
+  offset: Point,
+  pointer: ?Point,
+  rectangularSelection: ?Area,
+  scroll: Point,
+  showSelector: boolean,
+  selectedItems: Array,
+  shiftPressed: boolean,
+  view: ?FlowView
+}
+
+export default class Frame extends React.PureComponent<Props, State> {
+  constructor (props: Props) {
     bindme(super(props),
       'connectLinkToTarget',
       'createLink',

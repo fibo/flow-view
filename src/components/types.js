@@ -1,3 +1,5 @@
+// @flow
+
 // Primitive types.
 
 export type Area = { height: number, width: number }

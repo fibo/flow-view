@@ -4,7 +4,7 @@ import bindme from 'bindme'
 
 import { Point } from './types'
 
-export default class NodeButton extends React.Component {
+export default class NodeButton extends React.PureComponent {
   props: Point & {
     action: () => void,
     color: string,

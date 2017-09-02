@@ -10,7 +10,7 @@ import {
   NodeIdAndPosition
 } from './types'
 
-export default class Link extends React.Component {
+export default class Link extends React.PureComponent {
   props: {
     createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
     deleteLink: (string) => void,

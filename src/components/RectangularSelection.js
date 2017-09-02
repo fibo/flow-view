@@ -3,7 +3,7 @@ import React from 'react'
 
 import { Color, Rectangle } from './types'
 
-export default class RectangularSelection extends React.Component {
+export default class RectangularSelection extends React.PureComponent {
   props: Rectangle & Color
 
   render () {

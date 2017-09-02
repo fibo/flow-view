@@ -1,7 +1,8 @@
+// @flow
 import Pin from './Pin'
 
 export default class OutputPin extends Pin {
-  onMouseDown (event) {
+  onMouseDown (event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
 

@@ -17,7 +17,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link to Changelog page
 
-## [Unreleased]
+## [v2.15.1] - 2017-09-02
 
 ### Added
 

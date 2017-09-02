@@ -1,3 +1,4 @@
+// @flow
 import Canvas from './Canvas'
 import Node from './components/Node'
 

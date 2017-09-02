@@ -2,21 +2,20 @@ import React from 'react'
 
 import bindme from 'bindme'
 
-import {
+import type {
   Color,
   Id,
   NodeIdAndPosition,
   Point
 } from './types'
 
-export default class Pin extends React.PureComponent {
-  props: Point & {
-    color: Color,
-    createLink: ?({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
-    nodeIdAndPosition: NodeIdAndPosition,
-    size: number
-  }
+type Props = Point & {
+  color: Color,
+  nodeIdAndPosition: NodeIdAndPosition,
+  size: number
+}
 
+export default class Pin extends React.PureComponent<Props> {
   static defaultProps = {
     onMouseDown: Function.prototype,
     onMouseUp: Function.prototype

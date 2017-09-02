@@ -1,11 +1,13 @@
 // @flow
 import React from 'react'
 
-import { Color, Rectangle } from './types'
+import type { Color, Rectangle } from './types'
 
-export default class RectangularSelection extends React.PureComponent {
-  props: Rectangle & Color
+type Props = Rectangle & {
+  color: Color
+}
 
+export default class RectangularSelection extends React.PureComponent<Props> {
   render () {
     const {
       color,

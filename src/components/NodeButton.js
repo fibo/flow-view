@@ -2,16 +2,16 @@ import React from 'react'
 
 import bindme from 'bindme'
 
-import { Point } from './types'
+import type { Point } from './types'
 
-export default class NodeButton extends React.PureComponent {
-  props: Point & {
-    action: () => void,
-    color: string,
-    disabled: boolean,
-    size: number
-  }
+type Props = Point & {
+  action: () => void,
+  color: string,
+  disabled: boolean,
+  size: number
+}
 
+export default class NodeButton extends React.PureComponent<Props> {
   static defaultProps = {
     disabled: false
   }

@@ -4,32 +4,34 @@ import React from 'react'
 import bindme from 'bindme'
 
 import ignoreEvent from '../utils/ignoreEvent'
-import { defaultTheme, Theme } from './theme'
-import {
+import { defaultTheme } from './theme'
+
+import type { Theme } from './theme'
+import type {
   Id,
   NodeIdAndPosition
 } from './types'
 
-export default class Link extends React.PureComponent {
-  props: {
-    createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
-    deleteLink: (string) => void,
-    id: string,
-    from: NodeIdAndPosition,
-    startDraggingLinkTarget: (Id) => void,
-    pinSize: number,
-    selected: boolean,
-    selectLink: (MouseEvent) => void,
-    sourceSelected: boolean,
-    targetSelected: boolean,
-    theme: Theme,
-    to: NodeIdAndPosition,
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number
-  }
+type Props = {
+  createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
+  deleteLink: (string) => void,
+  id: string,
+  from: NodeIdAndPosition,
+  startDraggingLinkTarget: (Id) => void,
+  pinSize: number,
+  selected: boolean,
+  selectLink: (MouseEvent) => void,
+  sourceSelected: boolean,
+  targetSelected: boolean,
+  theme: Theme,
+  to: NodeIdAndPosition,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+}
 
+export default class Link extends React.PureComponent<Props> {
   static defaultProps = {
     createLink: Function.prototype,
     deleteLink: Function.prototype,

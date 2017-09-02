@@ -1,3 +1,5 @@
+// @flow
+
 /*
  * Palette from https://www.materialpalette.com/lime/grey
  *
@@ -15,6 +17,8 @@
  * divider color #BDBDBD
  */
 
+import type { Color } from './types'
+
 export const defaultTheme = {
   fontFamily: 'Courier',
   fontSize: 17,
@@ -30,13 +34,14 @@ export const defaultTheme = {
 }
 
 export type Theme = {
+  darkPrimaryColor: Color,
   fontFamily: string,
   fontSize: number,
-  primaryColor: string,
+  primaryColor: Color,
   lineWidth: number,
-  linkColor: string,
-  nodeBarColor: string,
+  linkColor: Color,
+  nodeBarColor: Color,
   nodeBodyHeight: number,
-  pinColor: string,
+  pinColor: Color,
   pinSize: number
 }

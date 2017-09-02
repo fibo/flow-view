@@ -9,7 +9,7 @@ import {
   Point
 } from './types'
 
-export default class Pin extends React.Component {
+export default class Pin extends React.PureComponent {
   props: Point & {
     color: Color,
     createLink: ?({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,

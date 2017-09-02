@@ -7,7 +7,7 @@ import {
   SerializedNode
 } from './types'
 
-export default class Selector extends React.Component {
+export default class Selector extends React.PureComponent {
   props: Area & {
     createNode: (SerializedNode) => void,
     nodelist: Array<string>,

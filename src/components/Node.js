@@ -28,7 +28,7 @@ import computeNodeWidth from '../utils/computeNodeWidth'
 import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
-export default class Node extends React.Component {
+export default class Node extends React.PureComponent {
   props: Point & SerializedNode & {
     bodyHeight: number,
     connectLinkToTarget: (Id, NodeIdAndPosition) => void,

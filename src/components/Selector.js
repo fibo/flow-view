@@ -17,7 +17,7 @@ type State = {
   text: string
 }
 
-export default class Selector extends React.PureComponent<Props, State> {
+export default class Selector extends React.Component<Props, State> {
   static defaultProps = {
     height: 20,
     width: 200

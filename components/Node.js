@@ -40,8 +40,6 @@ var _OutputPin = require('./OutputPin');
 
 var _OutputPin2 = _interopRequireDefault(_OutputPin);
 
-var _types = require('./types');
-
 var _computeNodeWidth = require('../utils/computeNodeWidth');
 
 var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
@@ -62,8 +60,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Node = function (_React$Component) {
-  _inherits(Node, _React$Component);
+var Node = function (_React$PureComponent) {
+  _inherits(Node, _React$PureComponent);
 
   function Node() {
     var _this;
@@ -372,7 +370,7 @@ var Node = function (_React$Component) {
   }]);
 
   return Node;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 Node.defaultProps = {
   connectLinkToTarget: Function.prototype,

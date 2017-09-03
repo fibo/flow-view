@@ -21,8 +21,8 @@ New g14n.info layouts, with link to Changelog page
 
 ### Added
 
-- Using React PureComponent instead of Component.
 - Updated deps.
+- More flow coverage.
 
 ## [v2.15.0] - 2017-08-15
 

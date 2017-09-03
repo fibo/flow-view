@@ -20,6 +20,11 @@ export type Rectangle = Area & Point
 
 export type NodeIdAndPosition = [Id, number]
 
+export type SemiLink = {
+  from: NodeIdAndPosition,
+  to: ?NodeIdAndPosition
+}
+
 export type SerializedLink = {
   from: NodeIdAndPosition,
   to: NodeIdAndPosition
@@ -34,7 +39,7 @@ export type SerializedNode = Point & Area & {
 export type CreatePin = (NodeIdAndPosition, SerializedPin) => void
 export type DeletePin = (NodeIdAndPosition) => void
 
-export type CreateLink = (SerializedLink, Id) => void
+export type CreateLink = (SemiLink, Id) => void
 export type DeleteLink = (Id) => void
 
 export type CreateNode = (SerializedNode, Id) => void

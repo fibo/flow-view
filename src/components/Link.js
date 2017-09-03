@@ -31,7 +31,7 @@ type Props = {
   y2: number
 }
 
-export default class Link extends React.PureComponent<Props> {
+export default class Link extends React.Component<Props> {
   static defaultProps = {
     createLink: Function.prototype,
     deleteLink: Function.prototype,

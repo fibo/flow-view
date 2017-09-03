@@ -40,8 +40,6 @@ export default class Canvas extends EventEmitter {
     this.view = Frame.defaultProps.view
 
     if (no(item)) item = defaultItem
-    if (no(item.link)) item.link = defaultItem.link
-    if (no(item.link.DefaultLink)) item.link = defaultItem.link.DefaultLink
     if (no(item.node)) item.node = defaultItem.node
     if (no(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode
     if (no(item.nodeList)) item.nodeList = defaultItem.nodeList

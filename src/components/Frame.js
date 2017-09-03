@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import bindme from 'bindme'
 import no from 'not-defined'
 
-import DefaultLink from './Link'
+import Link from './Link'
 import DefaultNode from './Node'
 import RectangularSelection from './RectangularSelection'
 import Selector from './Selector'
@@ -63,7 +63,7 @@ type State = {
   view: ?FlowView
 }
 
-export default class Frame extends React.PureComponent<Props, State> {
+export default class Frame extends React.Component<Props, State> {
   constructor (props: Props) {
     bindme(super(props),
       'connectLinkToTarget',
@@ -747,8 +747,6 @@ export default class Frame extends React.PureComponent<Props, State> {
     height = height - (2 * border)
     width = width - (2 * border)
 
-    const Link = item.link.DefaultLink
-
     /**
      * Bring up selected nodes.
      */
@@ -947,7 +945,6 @@ Frame.defaultProps = {
   emitDeleteNode: Function.prototype,
   emitDeleteOutputPin: Function.prototype,
   item: {
-    link: { DefaultLink },
     node: { DefaultNode },
     nodeList: [],
     util: {

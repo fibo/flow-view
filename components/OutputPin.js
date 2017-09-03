@@ -4,7 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _bindme = require('bindme');
+
+var _bindme2 = _interopRequireDefault(_bindme);
 
 var _Pin2 = require('./Pin');
 
@@ -22,9 +32,12 @@ var OutputPin = function (_Pin) {
   _inherits(OutputPin, _Pin);
 
   function OutputPin() {
+    var _this;
+
     _classCallCheck(this, OutputPin);
 
-    return _possibleConstructorReturn(this, (OutputPin.__proto__ || Object.getPrototypeOf(OutputPin)).apply(this, arguments));
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (OutputPin.__proto__ || Object.getPrototypeOf(OutputPin)).call(this)), _this), 'onMouseDown');
+    return _this;
   }
 
   _createClass(OutputPin, [{
@@ -40,9 +53,19 @@ var OutputPin = function (_Pin) {
 
       createLink({ from: nodeIdAndPosition });
     }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(_Pin3.default, _extends({}, this.props, {
+        onMouseDown: this.onMouseDown
+      }));
+    }
   }]);
 
   return OutputPin;
 }(_Pin3.default);
 
+OutputPin.defaultProps = {
+  createLink: Function.prototype
+};
 exports.default = OutputPin;

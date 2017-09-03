@@ -63,8 +63,6 @@ var Canvas = function (_EventEmitter) {
     _this.view = _Frame2.default.defaultProps.view;
 
     if ((0, _notDefined2.default)(item)) item = defaultItem;
-    if ((0, _notDefined2.default)(item.link)) item.link = defaultItem.link;
-    if ((0, _notDefined2.default)(item.link.DefaultLink)) item.link = defaultItem.link.DefaultLink;
     if ((0, _notDefined2.default)(item.node)) item.node = defaultItem.node;
     if ((0, _notDefined2.default)(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode;
     if ((0, _notDefined2.default)(item.nodeList)) item.nodeList = defaultItem.nodeList;

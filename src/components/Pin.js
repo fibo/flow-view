@@ -1,8 +1,6 @@
 // @flow
 import React from 'react'
 
-import bindme from 'bindme'
-
 import type {
   Color,
   NodeIdAndPosition,
@@ -12,6 +10,8 @@ import type {
 export type Props = Point & {
   color: Color,
   nodeIdAndPosition: NodeIdAndPosition,
+  onMouseDown: (MouseEvent) => void,
+  onMouseUp: (MouseEvent) => void,
   size: number
 }
 
@@ -21,20 +21,11 @@ export default class Pin extends React.Component<Props> {
     onMouseUp: Function.prototype
   }
 
-  constructor () {
-    bindme(super(),
-      'onMouseDown',
-      'onMouseUp'
-    )
-  }
-
-  onMouseDown (event: MouseEvent): void { /* to be overridden */ }
-
-  onMouseUp (event: MouseEvent): void { /* to be overridden */ }
-
   render () {
     const {
       color,
+      onMouseDown,
+      onMouseUp,
       size,
       x,
       y
@@ -44,8 +35,8 @@ export default class Pin extends React.Component<Props> {
       <rect
         fill={color}
         height={size}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
         transform={`translate(${x},${y})`}
         width={size}
       />

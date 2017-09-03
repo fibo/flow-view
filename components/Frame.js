@@ -68,8 +68,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Frame = function (_React$PureComponent) {
-  _inherits(Frame, _React$PureComponent);
+var Frame = function (_React$Component) {
+  _inherits(Frame, _React$Component);
 
   function Frame(props) {
     var _this;
@@ -757,8 +757,6 @@ var Frame = function (_React$PureComponent) {
       height = height - 2 * border;
       width = width - 2 * border;
 
-      var Link = item.link.DefaultLink;
-
       var selectedFirst = function selectedFirst(a, b) {
         var aIsSelected = selectedItems.indexOf(a) > -1;
         var bIsSelected = selectedItems.indexOf(b) > -1;
@@ -839,7 +837,7 @@ var Frame = function (_React$PureComponent) {
           var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
           var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
 
-          return _react2.default.createElement(Link, { key: i,
+          return _react2.default.createElement(_Link2.default, { key: i,
             deleteLink: _this7.deleteLink,
             from: from,
             lineWidth: lineWidth,
@@ -929,7 +927,7 @@ var Frame = function (_React$PureComponent) {
   }]);
 
   return Frame;
-}(_react2.default.PureComponent);
+}(_react2.default.Component);
 
 exports.default = Frame;
 
@@ -944,7 +942,6 @@ Frame.defaultProps = {
   emitDeleteNode: Function.prototype,
   emitDeleteOutputPin: Function.prototype,
   item: {
-    link: { DefaultLink: _Link2.default },
     node: { DefaultNode: _Node2.default },
     nodeList: [],
     util: {

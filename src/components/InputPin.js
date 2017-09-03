@@ -15,6 +15,10 @@ type Props = PinProps & {
 }
 
 export default class InputPin extends React.Component<Props> {
+  static defaultProps = {
+    connectLinkToTarget: Function.prototype
+  }
+
   constructor () {
     bindme(super(), 'onMouseUp')
   }

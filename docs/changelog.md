@@ -17,12 +17,13 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 New g14n.info layouts, with link to Changelog page
 
-## [v2.15.1] - 2017-09-02
+## [v2.15.1] - 2017-09-03
 
 ### Added
 
 - Updated deps.
 - More flow coverage.
+- Composition over inheritance.
 
 ## [v2.15.0] - 2017-08-15
 

@@ -18,8 +18,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Selector = function (_React$PureComponent) {
-  _inherits(Selector, _React$PureComponent);
+var Selector = function (_React$Component) {
+  _inherits(Selector, _React$Component);
 
   function Selector() {
     var _ref;
@@ -117,7 +117,7 @@ var Selector = function (_React$PureComponent) {
   }]);
 
   return Selector;
-}(_react2.default.PureComponent);
+}(_react2.default.Component);
 
 Selector.defaultProps = {
   height: 20,

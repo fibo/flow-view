@@ -10,10 +10,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _bindme = require('bindme');
-
-var _bindme2 = _interopRequireDefault(_bindme);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22,29 +18,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Pin = function (_React$PureComponent) {
-  _inherits(Pin, _React$PureComponent);
+var Pin = function (_React$Component) {
+  _inherits(Pin, _React$Component);
 
   function Pin() {
-    var _this;
-
     _classCallCheck(this, Pin);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Pin.__proto__ || Object.getPrototypeOf(Pin)).call(this)), _this), 'onMouseDown', 'onMouseUp');
-    return _this;
+    return _possibleConstructorReturn(this, (Pin.__proto__ || Object.getPrototypeOf(Pin)).apply(this, arguments));
   }
 
   _createClass(Pin, [{
-    key: 'onMouseDown',
-    value: function onMouseDown() {}
-  }, {
-    key: 'onMouseUp',
-    value: function onMouseUp() {}
-  }, {
     key: 'render',
     value: function render() {
       var _props = this.props,
           color = _props.color,
+          onMouseDown = _props.onMouseDown,
+          onMouseUp = _props.onMouseUp,
           size = _props.size,
           x = _props.x,
           y = _props.y;
@@ -53,8 +42,8 @@ var Pin = function (_React$PureComponent) {
       return _react2.default.createElement('rect', {
         fill: color,
         height: size,
-        onMouseDown: this.onMouseDown,
-        onMouseUp: this.onMouseUp,
+        onMouseDown: onMouseDown,
+        onMouseUp: onMouseUp,
         transform: 'translate(' + x + ',' + y + ')',
         width: size
       });
@@ -62,7 +51,7 @@ var Pin = function (_React$PureComponent) {
   }]);
 
   return Pin;
-}(_react2.default.PureComponent);
+}(_react2.default.Component);
 
 Pin.defaultProps = {
   onMouseDown: Function.prototype,

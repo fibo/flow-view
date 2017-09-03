@@ -50,7 +50,7 @@ type Props = Point & SerializedNode & {
   theme: Theme,
 }
 
-export default class Node extends React.PureComponent<Props> {
+export default class Node extends React.Component<Props> {
   static defaultProps = {
     connectLinkToTarget: Function.prototype,
     createInputPin: Function.prototype,

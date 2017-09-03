@@ -58,8 +58,6 @@ var _xOfPin2 = _interopRequireDefault(_xOfPin);
 
 var _theme = require('./theme');
 
-var _types = require('./types');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -70,8 +68,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Frame = function (_React$Component) {
-  _inherits(Frame, _React$Component);
+var Frame = function (_React$PureComponent) {
+  _inherits(Frame, _React$PureComponent);
 
   function Frame(props) {
     var _this;
@@ -644,7 +642,7 @@ var Frame = function (_React$Component) {
       }
 
       if (rectangularSelection) {
-        var selectedItems = [];
+        var _selectedItems = [];
 
         var boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width;
         var boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height;
@@ -658,7 +656,7 @@ var Frame = function (_React$Component) {
           var isInside = x >= boundsX && y >= boundsY;
 
           if (isInside) {
-            selectedItems.push(nodeId);
+            _selectedItems.push(nodeId);
           }
         });
 
@@ -666,7 +664,7 @@ var Frame = function (_React$Component) {
           draggedLinkId: null,
           isMouseDown: false,
           pointer: null,
-          selectedItems: selectedItems,
+          selectedItems: _selectedItems,
           rectangularSelection: null
         });
       }
@@ -931,7 +929,7 @@ var Frame = function (_React$Component) {
   }]);
 
   return Frame;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 exports.default = Frame;
 

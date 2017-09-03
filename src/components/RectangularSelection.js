@@ -7,7 +7,7 @@ type Props = Rectangle & {
   color: Color
 }
 
-export default class RectangularSelection extends React.PureComponent<Props> {
+export default class RectangularSelection extends React.Component<Props> {
   render () {
     const {
       color,

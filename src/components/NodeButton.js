@@ -11,7 +11,7 @@ type Props = Point & {
   size: number
 }
 
-export default class NodeButton extends React.PureComponent<Props> {
+export default class NodeButton extends React.Component<Props> {
   static defaultProps = {
     disabled: false
   }

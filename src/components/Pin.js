@@ -1,21 +1,21 @@
+// @flow
 import React from 'react'
 
 import bindme from 'bindme'
 
 import type {
   Color,
-  Id,
   NodeIdAndPosition,
   Point
 } from './types'
 
-type Props = Point & {
+export type Props = Point & {
   color: Color,
   nodeIdAndPosition: NodeIdAndPosition,
   size: number
 }
 
-export default class Pin extends React.PureComponent<Props> {
+export default class Pin extends React.Component<Props> {
   static defaultProps = {
     onMouseDown: Function.prototype,
     onMouseUp: Function.prototype
@@ -28,9 +28,9 @@ export default class Pin extends React.PureComponent<Props> {
     )
   }
 
-  onMouseDown () { /* to be overridden */ }
+  onMouseDown (event: MouseEvent): void { /* to be overridden */ }
 
-  onMouseUp () { /* to be overridden */ }
+  onMouseUp (event: MouseEvent): void { /* to be overridden */ }
 
   render () {
     const {

@@ -1,7 +1,6 @@
 import React from 'react'
 
 import bindme from 'bindme'
-import no from 'not-defined'
 
 import { defaultTheme } from './theme'
 
@@ -288,7 +287,7 @@ export default class Node extends React.Component<Props> {
       pinSize
     } = theme
 
-    if (no(ins) || (selected === false) || multiSelection) return null
+    if (!ins || (selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
     const disabled = ins.length === 0
@@ -318,7 +317,7 @@ export default class Node extends React.Component<Props> {
       pinSize
     } = theme
 
-    if (no(ins) || (selected === false) || multiSelection) return null
+    if (!ins || (selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
 
@@ -346,7 +345,7 @@ export default class Node extends React.Component<Props> {
       pinSize
     } = theme
 
-    if (no(outs) || (selected === false) || multiSelection) return null
+    if (!outs || (selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
@@ -377,7 +376,7 @@ export default class Node extends React.Component<Props> {
       pinSize
     } = theme
 
-    if (no(outs) || (selected === false) || multiSelection) return null
+    if (!outs || (selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()

@@ -15,6 +15,8 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+## [v2.15.2] - 2017-09-05
+
 ### Added
 
 - More snapshot tests.
@@ -22,6 +24,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Fixed
 
 - Avoid using width and height on server side rendering, use viewBox to make frames responsive.
+- Node plus and minus buttons disappeared when all pins were deleted.
 
 ## [v2.15.1] - 2017-09-03
 

@@ -277,7 +277,7 @@ var Node = function (_React$Component) {
           pinSize = theme.pinSize;
 
 
-      if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
+      if (!ins || selected === false || multiSelection) return null;
 
       var computedWidth = this.getComputedWidth();
       var disabled = ins.length === 0;
@@ -303,7 +303,7 @@ var Node = function (_React$Component) {
           pinSize = theme.pinSize;
 
 
-      if ((0, _notDefined2.default)(ins) || selected === false || multiSelection) return null;
+      if (!ins || selected === false || multiSelection) return null;
 
       var computedWidth = this.getComputedWidth();
 
@@ -327,7 +327,7 @@ var Node = function (_React$Component) {
           pinSize = theme.pinSize;
 
 
-      if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
+      if (!outs || selected === false || multiSelection) return null;
 
       var bodyHeight = this.getBodyHeight();
       var computedWidth = this.getComputedWidth();
@@ -354,7 +354,7 @@ var Node = function (_React$Component) {
           pinSize = theme.pinSize;
 
 
-      if ((0, _notDefined2.default)(outs) || selected === false || multiSelection) return null;
+      if (!outs || selected === false || multiSelection) return null;
 
       var bodyHeight = this.getBodyHeight();
       var computedWidth = this.getComputedWidth();

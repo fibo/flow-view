@@ -13,9 +13,15 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
-## TODO
+## Unreleased
 
-New g14n.info layouts, with link to Changelog page
+### Added
+
+- More snapshot tests.
+
+### Fixed
+
+- Avoid using width and height, use viewBox to make frames responsive.
 
 ## [v2.15.1] - 2017-09-03
 

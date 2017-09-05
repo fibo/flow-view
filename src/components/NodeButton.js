@@ -13,6 +13,7 @@ type Props = Point & {
 
 export default class NodeButton extends React.Component<Props> {
   static defaultProps = {
+    action: Function.prototype,
     disabled: false
   }
 

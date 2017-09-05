@@ -767,7 +767,6 @@ export default class Frame extends React.Component<Props, State> {
       <svg
         fontFamily={fontFamily}
         fontSize={fontSize}
-        height={height}
         onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
@@ -777,7 +776,7 @@ export default class Frame extends React.Component<Props, State> {
         onMouseUp={this.onMouseUp}
         textAnchor='start'
         style={{border: frameBorder}}
-        width={width}
+        viewBox={`0 0 ${width} ${height}`}
       >
         {rectangularSelection ? (
           <RectangularSelection

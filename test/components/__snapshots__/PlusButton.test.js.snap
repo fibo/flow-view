@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<g
+  onMouseDown={[Function]}
+  onMouseEnter={[Function]}
+  onMouseLeave={[Function]}
+>
+  <path
+    d="M 0 3.8214886980224207 V 6.178511301977579 H 3.8214886980224207 V 10 H 6.178511301977579 V 6.178511301977579 H 10 V 3.8214886980224207 H 6.178511301977579 V 0 H 3.8214886980224207 V 3.8214886980224207 Z"
+    fill="black"
+    onMouseDown={[Function]}
+    stroke="black"
+    transform="translate(undefined,undefined)"
+  />
+  <circle
+    cx={NaN}
+    cy={NaN}
+    fill="transparent"
+    r={6}
+    stroke="transparent"
+  />
+</g>
+`;

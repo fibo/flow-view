@@ -81,12 +81,12 @@
     "bindme": "^1.0.0",
     "events": "^1.1.1",
     "not-defined": "^2.0.0",
-    "svgx": "^0.7.3"
+    "svgx": "^0.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
-    "babel-jest": "^20.0.3",
+    "babel-jest": "^21.0.0",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
@@ -99,7 +99,7 @@
     "dot-editorconfig": "^1.0.1",
     "eslint-plugin-flowtype": "^2.35.1",
     "flow-bin": "^0.54.0",
-    "jest": "^20.0.4",
+    "jest": "^21.0.1",
     "pre-commit": "^1.2.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

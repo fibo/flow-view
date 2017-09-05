@@ -164,7 +164,7 @@ export default class Canvas extends EventEmitter {
       var opts = { doctype: true, xmlns: true }
 
       var jsx = (
-        <Frame
+        <Frame responsive
           item={item}
           view={view}
          />

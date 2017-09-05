@@ -733,6 +733,7 @@ var Frame = function (_React$Component) {
       var _props = this.props,
           item = _props.item,
           model = _props.model,
+          responsive = _props.responsive,
           theme = _props.theme;
       var _state8 = this.state,
           draggedLinkId = _state8.draggedLinkId,
@@ -772,7 +773,7 @@ var Frame = function (_React$Component) {
         {
           fontFamily: fontFamily,
           fontSize: fontSize,
-          height: height,
+          height: responsive ? null : height,
           onClick: this.onClick,
           onDoubleClick: this.onDoubleClick,
           onMouseDown: this.onMouseDown,
@@ -782,7 +783,8 @@ var Frame = function (_React$Component) {
           onMouseUp: this.onMouseUp,
           textAnchor: 'start',
           style: { border: frameBorder },
-          width: width
+          viewBox: responsive ? '0 0 ' + width + ' ' + height : null,
+          width: responsive ? null : width
         },
         rectangularSelection ? _react2.default.createElement(_RectangularSelection2.default, _extends({
           color: primaryColor
@@ -950,6 +952,7 @@ Frame.defaultProps = {
       }
     }
   },
+  responsive: false,
   theme: _theme.defaultTheme,
   updateLink: Function.prototype,
   view: {

@@ -97,6 +97,7 @@ var NodeButton = function (_React$Component) {
 }(_react2.default.Component);
 
 NodeButton.defaultProps = {
+  action: Function.prototype,
   disabled: false
 };
 exports.default = NodeButton;

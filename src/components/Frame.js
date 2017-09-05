@@ -45,6 +45,7 @@ type Props = {
   emitCreateNode: DeleteNode,
   emitDeleteOutputPin: DeletePin,
   rectangularSelection: ?RectangularSelection,
+  responsive: boolean,
   theme: Theme,
   view: FlowView
 }
@@ -716,6 +717,7 @@ export default class Frame extends React.Component<Props, State> {
     const {
       item,
       model,
+      responsive,
       theme
     } = this.props
 
@@ -742,7 +744,7 @@ export default class Frame extends React.Component<Props, State> {
     let width = dynamicView.width || view.width
 
     // Remove border, otherwise also server side SVGx renders
-    // missing the bottom and right border.
+    // with the bottom and right border missing.
     const border = 1 // TODO frameBorder is 1px, make it dynamic
     height = height - (2 * border)
     width = width - (2 * border)
@@ -767,6 +769,7 @@ export default class Frame extends React.Component<Props, State> {
       <svg
         fontFamily={fontFamily}
         fontSize={fontSize}
+        height={responsive ? null : height}
         onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
@@ -776,7 +779,8 @@ export default class Frame extends React.Component<Props, State> {
         onMouseUp={this.onMouseUp}
         textAnchor='start'
         style={{border: frameBorder}}
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={responsive ? `0 0 ${width} ${height}` : null}
+        width={responsive ? null : width}
       >
         {rectangularSelection ? (
           <RectangularSelection
@@ -952,6 +956,7 @@ Frame.defaultProps = {
       }
     }
   },
+  responsive: false,
   theme: defaultTheme,
   updateLink: Function.prototype,
   view: {

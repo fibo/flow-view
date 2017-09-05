@@ -21,7 +21,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### Fixed
 
-- Avoid using width and height, use viewBox to make frames responsive.
+- Avoid using width and height on server side rendering, use viewBox to make frames responsive.
 
 ## [v2.15.1] - 2017-09-03
 

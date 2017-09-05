@@ -180,7 +180,7 @@ var Canvas = function (_EventEmitter) {
 
         var opts = { doctype: true, xmlns: true };
 
-        var jsx = _react2.default.createElement(_Frame2.default, {
+        var jsx = _react2.default.createElement(_Frame2.default, { responsive: true,
           item: item,
           view: view
         });

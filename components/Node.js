@@ -14,10 +14,6 @@ var _bindme = require('bindme');
 
 var _bindme2 = _interopRequireDefault(_bindme);
 
-var _notDefined = require('not-defined');
-
-var _notDefined2 = _interopRequireDefault(_notDefined);
-
 var _theme = require('./theme');
 
 var _CrossButton = require('./CrossButton');

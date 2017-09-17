@@ -15,6 +15,7 @@
     "browserify_example": "NODE_ENV=production NODE_PATH=src browserify --no-bundle-external examples/render/clientside.js -o docs/example/bundle.js",
     "browserify_dist": "BABEL_ENV=umd NODE_ENV=production browserify -r ./${npm_package_name}.js:${npm_package_name} -t babelify -o dist/${npm_package_name}.js",
     "build": "npm run example_render_serverside; npm run browserify && npm run minify; npm run jekyll; git status",
+    "copy_schema": "cp src/schema.json docs/",
     "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
     "docs:_data:package.json": "cp package.json docs/_data/",
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
@@ -26,8 +27,7 @@
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > docs/svg/sample-view.svg",
     "flow": "flow",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
-    "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
-    "jekyll:serve": "npm run browserify; npm run homepage; cd docs; jekyll serve; cd ..",
+    "jekyll": "npm run homepage; npm run copy_schema; npm run docs:_data; cd docs; jekyll build; cd ..",
     "lint": "for x in src examples; do npm run lint_$x; done",
     "lint_src": "cd src; standard; cd ..",
     "lint_examples": "cd examples; standard; cd ..",
@@ -37,15 +37,19 @@
     "postversion": "git push origin v${npm_package_version}; npm publish",
     "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "test": "for x in serverside jest; do npm run test_$x; done",
+    "test": "for x in jest serverside validate; do npm run test_$x; done",
     "test_jest": "NODE_PATH=src BABEL_ENV=umd NODE_PATH=src jest",
-    "test_serverside": "NODE_PATH=. tape test/serverside.js"
+    "test_serverside": "NODE_PATH=. tape test/serverside.js",
+    "test_validate": "NODE_PATH=. tape test/validate.js"
   },
   "pre-commit": [
     "lint",
     "flow",
     "test"
   ],
+  "jest": {
+    "modulePathIgnorePatterns": ["docs"]
+  },
   "standard": {
     "globals": [
       "KeyboardEvent",
@@ -87,6 +91,7 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^21.0.0",
+    "babel-plugin-inline-json-import": "^0.2.1",
     "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
@@ -100,6 +105,7 @@
     "eslint-plugin-flowtype": "^2.35.1",
     "flow-bin": "^0.54.0",
     "jest": "^21.0.1",
+    "jsonschema": "^1.2.0",
     "pre-commit": "^1.2.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

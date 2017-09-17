@@ -15,6 +15,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Fixed
+
+- Jest warning `Duplicate module name`.
+
 ## [v2.15.2] - 2017-09-05
 
 ### Added

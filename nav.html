@@ -7,8 +7,11 @@
   {% for item in nav %}
     <li><a href="{{ item[1] }}" onclick="toggleNav()">{{ item[0] }}</a></li>
   {% endfor %}
+  {% if site.data.package.name %}
+    <li><a href="https://www.npmjs.com/package/{{ site.data.package.name }}">npm</a></li>
+  {% endif %}
   {% unless site.data.package.private %}
-    <li><a href="{{ site.github.repository_url }}" target="_blank">Code</a></li>
+    <li><a href="{{ site.github.repository_url }}">Code</a></li>
   {% endunless %}
     <li id="hamburgericon" onclick="toggleNav()">
       <span></span>

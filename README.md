@@ -33,7 +33,7 @@ If you are in a new cloned repo, you need to [add remote](#add-remote) first.
 
 In a working tree with all modifications committed, launch
 
-```
+```bash
 git subtree --prefix=docs/_includes/common/ pull common_includes master
 ```
 

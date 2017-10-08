@@ -128,6 +128,14 @@ export default class Frame extends React.Component<Props, State> {
     this.setState({ offset, scroll })
   }
 
+  componentWillUnmount () {
+    document.removeEventListener('keydown', this.onDocumentKeydown)
+    document.removeEventListener('keyup', this.onDocumentKeyup)
+
+    window.removeEventListener('scroll', this.onWindowScroll)
+    window.removeEventListener('resize', this.onWindowResize(container))
+  }
+
   connectLinkToTarget (linkId: Id, target: NodeIdAndPosition) {
     const view = Object.assign({}, this.state.view)
 

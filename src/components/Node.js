@@ -150,6 +150,7 @@ export default class Node extends React.Component<Props> {
     const {
       darkPrimaryColor,
       nodeBarColor,
+      nodeBodyColor,
       pinColor,
       pinSize,
       primaryColor
@@ -173,7 +174,7 @@ export default class Node extends React.Component<Props> {
         {this.renderOutputMinus()}
         {this.renderOutputPlus()}
         <rect
-          fillOpacity={0}
+          fill={nodeBodyColor}
           height={bodyHeight + (2 * pinSize)}
           stroke={selected ? primaryColor : nodeBarColor}
           strokeWidth={1}

@@ -118,6 +118,17 @@ var Frame = function (_React$Component) {
       this.setState({ offset: offset, scroll: scroll });
     }
   }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      var container = _reactDom2.default.findDOMNode(this).parentNode;
+
+      document.removeEventListener('keydown', this.onDocumentKeydown);
+      document.removeEventListener('keyup', this.onDocumentKeyup);
+
+      window.removeEventListener('scroll', this.onWindowScroll);
+      window.removeEventListener('resize', this.onWindowResize(container));
+    }
+  }, {
     key: 'connectLinkToTarget',
     value: function connectLinkToTarget(linkId, target) {
       var view = Object.assign({}, this.state.view);
@@ -789,6 +800,35 @@ var Frame = function (_React$Component) {
         rectangularSelection ? _react2.default.createElement(_RectangularSelection2.default, _extends({
           color: primaryColor
         }, rectangularSelection)) : null,
+        Object.keys(view.link).map(function (id, i) {
+          var _view$link$id = view.link[id],
+              from = _view$link$id.from,
+              to = _view$link$id.to;
+
+
+          var coord = _this7.coordinatesOfLink(view.link[id]);
+          var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
+          var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
+
+          return _react2.default.createElement(_Link2.default, { key: i,
+            deleteLink: _this7.deleteLink,
+            from: from,
+            lineWidth: lineWidth,
+            id: id,
+            createLink: _this7.createLink,
+            startDraggingLinkTarget: _this7.startDraggingLinkTarget,
+            pinSize: pinSize,
+            selected: selectedItems.indexOf(id) > -1,
+            selectLink: _this7.selectItem(id),
+            sourceSelected: sourceSelected,
+            targetSelected: targetSelected,
+            to: to,
+            x1: coord.x1,
+            y1: coord.y1,
+            x2: coord.x2,
+            y2: coord.y2
+          });
+        }),
         Object.keys(view.node).sort(selectedFirst).map(function (id, i) {
           var node = view.node[id];
 
@@ -827,35 +867,6 @@ var Frame = function (_React$Component) {
             width: width,
             x: x,
             y: y
-          });
-        }),
-        Object.keys(view.link).map(function (id, i) {
-          var _view$link$id = view.link[id],
-              from = _view$link$id.from,
-              to = _view$link$id.to;
-
-
-          var coord = _this7.coordinatesOfLink(view.link[id]);
-          var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
-          var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
-
-          return _react2.default.createElement(_Link2.default, { key: i,
-            deleteLink: _this7.deleteLink,
-            from: from,
-            lineWidth: lineWidth,
-            id: id,
-            createLink: _this7.createLink,
-            startDraggingLinkTarget: _this7.startDraggingLinkTarget,
-            pinSize: pinSize,
-            selected: selectedItems.indexOf(id) > -1,
-            selectLink: _this7.selectItem(id),
-            sourceSelected: sourceSelected,
-            targetSelected: targetSelected,
-            to: to,
-            x1: coord.x1,
-            y1: coord.y1,
-            x2: coord.x2,
-            y2: coord.y2
           });
         }),
         _react2.default.createElement(_Selector2.default, {

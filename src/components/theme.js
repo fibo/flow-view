@@ -27,6 +27,7 @@ export const defaultTheme = {
   primaryColor: '#CDDC39',
   lineWidth: 3,
   nodeBarColor: '#BDBDBD',
+  nodeBodyColor: '#FFFFFF',
   nodeBodyHeight: 20,
   pinColor: '#757575',
   linkColor: '#9E9E9E',

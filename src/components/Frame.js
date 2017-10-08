@@ -129,6 +129,8 @@ export default class Frame extends React.Component<Props, State> {
   }
 
   componentWillUnmount () {
+    const container = ReactDOM.findDOMNode(this).parentNode
+
     document.removeEventListener('keydown', this.onDocumentKeydown)
     document.removeEventListener('keyup', this.onDocumentKeyup)
 
@@ -209,7 +211,7 @@ export default class Frame extends React.Component<Props, State> {
       y2 = target.y
     } else {
       // FIXME at first, pointer is null. This trick works, but,
-      // it should be reviosioned when implementing creating links
+      // it should be revisioned when implementing creating links
       // in the opposite direction.
       x2 = pointer ? (pointer.x - (pinSize / 2)) : x1
       y2 = pointer ? (pointer.y - pinSize) : y1
@@ -796,6 +798,37 @@ export default class Frame extends React.Component<Props, State> {
             {...rectangularSelection}
           />
         ) : null}
+        {Object.keys(view.link).map((id, i) => {
+          const {
+            from,
+            to
+          } = view.link[id]
+
+          const coord = this.coordinatesOfLink(view.link[id])
+          const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
+          const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
+
+          return (
+            <Link key={i}
+              deleteLink={this.deleteLink}
+              from={from}
+              lineWidth={lineWidth}
+              id={id}
+              createLink={this.createLink}
+              startDraggingLinkTarget={this.startDraggingLinkTarget}
+              pinSize={pinSize}
+              selected={(selectedItems.indexOf(id) > -1)}
+              selectLink={this.selectItem(id)}
+              sourceSelected={sourceSelected}
+              targetSelected={targetSelected}
+              to={to}
+              x1={coord.x1}
+              y1={coord.y1}
+              x2={coord.x2}
+              y2={coord.y2}
+            />
+          )
+        })}
         {Object.keys(view.node).sort(selectedFirst).map((id, i) => {
           const node = view.node[id]
 
@@ -836,37 +869,6 @@ export default class Frame extends React.Component<Props, State> {
               width={width}
               x={x}
               y={y}
-            />
-          )
-        })}
-        {Object.keys(view.link).map((id, i) => {
-          const {
-            from,
-            to
-          } = view.link[id]
-
-          const coord = this.coordinatesOfLink(view.link[id])
-          const sourceSelected = from ? (selectedItems.indexOf(from[0]) > -1) : false
-          const targetSelected = to ? (selectedItems.indexOf(to[0]) > -1) : false
-
-          return (
-            <Link key={i}
-              deleteLink={this.deleteLink}
-              from={from}
-              lineWidth={lineWidth}
-              id={id}
-              createLink={this.createLink}
-              startDraggingLinkTarget={this.startDraggingLinkTarget}
-              pinSize={pinSize}
-              selected={(selectedItems.indexOf(id) > -1)}
-              selectLink={this.selectItem(id)}
-              sourceSelected={sourceSelected}
-              targetSelected={targetSelected}
-              to={to}
-              x1={coord.x1}
-              y1={coord.y1}
-              x2={coord.x2}
-              y2={coord.y2}
             />
           )
         })}

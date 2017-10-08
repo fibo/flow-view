@@ -15,6 +15,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Added
+
+- Links drawn behind nodes.
+- Nodes filled with `nodeBodyColor` instead of transparent.
+
 ### Fixed
 
 - Clean up document and window event listener on Frame unmount.

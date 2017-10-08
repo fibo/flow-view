@@ -15,6 +15,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Fixed
+
+- Clean up document and window event listener on Frame unmount.
+
 ## [v2.16.0] - 2017-10-08
 
 ### Added

@@ -48,7 +48,9 @@
     "test"
   ],
   "jest": {
-    "modulePathIgnorePatterns": ["docs"]
+    "modulePathIgnorePatterns": [
+      "docs"
+    ]
   },
   "standard": {
     "globals": [

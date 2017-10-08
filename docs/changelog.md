@@ -15,6 +15,13 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+## [v2.16.0] - 2017-10-08
+
+### Added
+
+- Using `ReactDOM.unmountComponentAtNode(container)` before mounting `Frame`, calling `Canvas.render()` multiple times will work as expected.
+- Updated deps.
+
 ### Fixed
 
 - Jest warning `Duplicate module name`.

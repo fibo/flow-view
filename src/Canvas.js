@@ -142,7 +142,14 @@ export default class Canvas extends EventEmitter {
     if (no(view.width)) view.width = width
 
     if (container) {
-     // Client side rendering.
+      // Client side rendering.
+
+      // If no component is mounted in the container,
+      // calling this function does nothing. It removes
+      // the mounted React component from the DOM and
+      // cleans up its event handlers and state.
+      ReactDOM.unmountComponentAtNode(container)
+
       ReactDOM.render(
         <Frame
           emitCreateInputPin={this.emitCreateInputPin}

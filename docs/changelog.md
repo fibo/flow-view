@@ -20,7 +20,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Added
 
 - Using `ReactDOM.unmountComponentAtNode(container)` before mounting `Frame`, calling `Canvas.render()` multiple times will work as expected.
-- Updated deps.
+- Updated deps, in particular to React 16.
 
 ### Fixed
 

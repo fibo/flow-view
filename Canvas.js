@@ -162,7 +162,6 @@ var Canvas = function (_EventEmitter) {
       if ((0, _notDefined2.default)(view.width)) view.width = width;
 
       if (container) {
-
         _reactDom2.default.unmountComponentAtNode(container);
 
         _reactDom2.default.render(_react2.default.createElement(_Frame2.default, {

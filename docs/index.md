@@ -168,6 +168,7 @@ Theme is a prop object with the following attributes
 * lineWidth
 * linkColor
 * nodeBarColor
+* nodeBodyColor
 * nodeBodyHeight
 * pinColor
 * pinSize

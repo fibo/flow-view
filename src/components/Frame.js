@@ -444,6 +444,9 @@ export default class Frame extends React.Component<Props, State> {
       view
     } = this.state
 
+    const selectedLinks = this.selectedLinks()
+    const thereAreSelectedLinks = (selectedLinks.length > 0)
+
     const selectedNodes = this.selectedNodes()
     const thereAreSelectedNodes = (selectedNodes.length > 0)
 
@@ -468,9 +471,14 @@ export default class Frame extends React.Component<Props, State> {
         break
 
       case 'Backspace':
+        if (thereAreSelectedLinks) {
+          selectedLinks.forEach(this.deleteLink)
+        }
+
         if (thereAreSelectedNodes) {
           selectedNodes.forEach(this.deleteNode)
         }
+
         break
 
       case 'Escape':
@@ -701,6 +709,17 @@ export default class Frame extends React.Component<Props, State> {
     }
 
     this.setState({ scroll })
+  }
+
+  selectedLinks (): { [Id]: SerializedLink } {
+    const {
+      view,
+      selectedItems
+    } = this.state
+
+    const selectedLinks = Object.keys(view.link).filter((id) => selectedItems.indexOf(id) > -1)
+
+    return selectedLinks
   }
 
   selectedNodes (): { [Id]: SerializedNode } {

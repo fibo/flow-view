@@ -13,6 +13,7 @@ import OutputPin from './OutputPin'
 
 import type { Theme } from './theme'
 import type {
+  ConnectLinkToTarget,
   CreatePin,
   DeleteLink,
   DeleteNode,
@@ -29,7 +30,7 @@ import xOfPin from '../utils/xOfPin'
 
 type Props = Point & SerializedNode & {
   bodyHeight: number,
-  connectLinkToTarget: (Id, NodeIdAndPosition) => void,
+  connectLinkToTarget: ConnectLinkToTarget,
   createInputPin: (Id) => void,
   createLink: ({ from: NodeIdAndPosition, to: ?NodeIdAndPosition }) => Id,
   createOutputPin: (Id) => void,
@@ -41,7 +42,7 @@ type Props = Point & SerializedNode & {
   deleteInputPin: (Id) => void,
   deleteOutputPin: (Id) => void,
   dragging: boolean,
-  draggedLinkId: string,
+  draggedLinkId: ?Id,
   id: string,
   multiSelection: boolean,
   selected: boolean,
@@ -191,8 +192,9 @@ export default class Node extends React.Component<Props> {
           return (
             <InputPin key={i}
               color={selected ? darkPrimaryColor : pinColor}
+              draggedLinkId={draggedLinkId}
               nodeIdAndPosition={[id, i]}
-              connectLinkToTarget={draggedLinkId ? connectLinkToTarget.bind(null, draggedLinkId) : null}
+              connectLinkToTarget={connectLinkToTarget}
               size={pinSize}
               x={x}
               y={0}

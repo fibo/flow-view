@@ -6,21 +6,29 @@ import bindme from 'bindme'
 import Pin from './Pin'
 
 import type {
-  NodeIdAndPosition
+  ConnectLinkToTarget,
+  Id
 } from './types'
 import type { Props as PinProps } from './Pin'
 
 type Props = PinProps & {
-  connectLinkToTarget: (NodeIdAndPosition) => void
+  connectLinkToTarget: ConnectLinkToTarget,
+  draggedLinkId: ?Id
 }
 
 export default class InputPin extends React.Component<Props> {
   static defaultProps = {
-    connectLinkToTarget: Function.prototype
+    connectLinkToTarget: Function.prototype,
+    draggedLinkId: null
   }
 
   constructor () {
     bindme(super(), 'onMouseUp')
+  }
+
+  onMouseDown (event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   onMouseUp (event: MouseEvent) {
@@ -29,16 +37,20 @@ export default class InputPin extends React.Component<Props> {
 
     const {
       connectLinkToTarget,
+      draggedLinkId,
       nodeIdAndPosition
     } = this.props
 
-    connectLinkToTarget(nodeIdAndPosition)
+    if (draggedLinkId) {
+      connectLinkToTarget(draggedLinkId, nodeIdAndPosition)
+    }
   }
 
   render () {
     return (
       <Pin
         {...this.props}
+        onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
       />
     )

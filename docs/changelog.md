@@ -22,7 +22,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### Fixed
 
-- Clean up document and window event listener on Frame unmount.
+- Clean up document and window event listeners on Frame unmount.
+- On mousedown on an input pin should not start node dragging.
+- On mouseup on an input `connectLinkToTarget` was not defined.
+- Delete selected link with backspace.
 
 ## [v2.16.0] - 2017-10-08
 

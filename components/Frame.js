@@ -446,6 +446,9 @@ var Frame = function (_React$Component) {
           view = _state3.view;
 
 
+      var selectedLinks = this.selectedLinks();
+      var thereAreSelectedLinks = selectedLinks.length > 0;
+
       var selectedNodes = this.selectedNodes();
       var thereAreSelectedNodes = selectedNodes.length > 0;
 
@@ -470,9 +473,14 @@ var Frame = function (_React$Component) {
           break;
 
         case 'Backspace':
+          if (thereAreSelectedLinks) {
+            selectedLinks.forEach(this.deleteLink);
+          }
+
           if (thereAreSelectedNodes) {
             selectedNodes.forEach(this.deleteNode);
           }
+
           break;
 
         case 'Escape':
@@ -713,11 +721,25 @@ var Frame = function (_React$Component) {
       this.setState({ scroll: scroll });
     }
   }, {
-    key: 'selectedNodes',
-    value: function selectedNodes() {
+    key: 'selectedLinks',
+    value: function selectedLinks() {
       var _state7 = this.state,
           view = _state7.view,
           selectedItems = _state7.selectedItems;
+
+
+      var selectedLinks = Object.keys(view.link).filter(function (id) {
+        return selectedItems.indexOf(id) > -1;
+      });
+
+      return selectedLinks;
+    }
+  }, {
+    key: 'selectedNodes',
+    value: function selectedNodes() {
+      var _state8 = this.state,
+          view = _state8.view,
+          selectedItems = _state8.selectedItems;
 
 
       var selectedNodes = Object.keys(view.node).filter(function (id) {
@@ -746,14 +768,14 @@ var Frame = function (_React$Component) {
           model = _props.model,
           responsive = _props.responsive,
           theme = _props.theme;
-      var _state8 = this.state,
-          draggedLinkId = _state8.draggedLinkId,
-          dynamicView = _state8.dynamicView,
-          pointer = _state8.pointer,
-          rectangularSelection = _state8.rectangularSelection,
-          selectedItems = _state8.selectedItems,
-          showSelector = _state8.showSelector,
-          view = _state8.view;
+      var _state9 = this.state,
+          draggedLinkId = _state9.draggedLinkId,
+          dynamicView = _state9.dynamicView,
+          pointer = _state9.pointer,
+          rectangularSelection = _state9.rectangularSelection,
+          selectedItems = _state9.selectedItems,
+          showSelector = _state9.showSelector,
+          view = _state9.view;
       var frameBorder = theme.frameBorder,
           fontFamily = theme.fontFamily,
           fontSize = theme.fontSize,
@@ -886,9 +908,9 @@ var Frame = function (_React$Component) {
         event.preventDefault();
         event.stopPropagation();
 
-        var _state9 = _this8.state,
-            draggedLinkId = _state9.draggedLinkId,
-            shiftPressed = _state9.shiftPressed;
+        var _state10 = _this8.state,
+            draggedLinkId = _state10.draggedLinkId,
+            shiftPressed = _state10.shiftPressed;
 
 
         var selectedItems = [].concat(_toConsumableArray(_this8.state.selectedItems));

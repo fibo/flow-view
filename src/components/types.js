@@ -20,6 +20,8 @@ export type Rectangle = Area & Point
 
 export type NodeIdAndPosition = [Id, number]
 
+export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
+
 export type SemiLink = {
   from: NodeIdAndPosition,
   to: ?NodeIdAndPosition

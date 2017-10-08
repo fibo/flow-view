@@ -41,6 +41,12 @@ var InputPin = function (_React$Component) {
   }
 
   _createClass(InputPin, [{
+    key: 'onMouseDown',
+    value: function onMouseDown(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, {
     key: 'onMouseUp',
     value: function onMouseUp(event) {
       event.preventDefault();
@@ -48,15 +54,19 @@ var InputPin = function (_React$Component) {
 
       var _props = this.props,
           connectLinkToTarget = _props.connectLinkToTarget,
+          draggedLinkId = _props.draggedLinkId,
           nodeIdAndPosition = _props.nodeIdAndPosition;
 
 
-      connectLinkToTarget(nodeIdAndPosition);
+      if (draggedLinkId) {
+        connectLinkToTarget(draggedLinkId, nodeIdAndPosition);
+      }
     }
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(_Pin2.default, _extends({}, this.props, {
+        onMouseDown: this.onMouseDown,
         onMouseUp: this.onMouseUp
       }));
     }
@@ -66,6 +76,7 @@ var InputPin = function (_React$Component) {
 }(_react2.default.Component);
 
 InputPin.defaultProps = {
-  connectLinkToTarget: Function.prototype
+  connectLinkToTarget: Function.prototype,
+  draggedLinkId: null
 };
 exports.default = InputPin;

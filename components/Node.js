@@ -145,6 +145,7 @@ var Node = function (_React$Component) {
           y = _props3.y;
       var darkPrimaryColor = theme.darkPrimaryColor,
           nodeBarColor = theme.nodeBarColor,
+          nodeBodyColor = theme.nodeBodyColor,
           pinColor = theme.pinColor,
           pinSize = theme.pinSize,
           primaryColor = theme.primaryColor;
@@ -169,7 +170,7 @@ var Node = function (_React$Component) {
         this.renderOutputMinus(),
         this.renderOutputPlus(),
         _react2.default.createElement('rect', {
-          fillOpacity: 0,
+          fill: nodeBodyColor,
           height: bodyHeight + 2 * pinSize,
           stroke: selected ? primaryColor : nodeBarColor,
           strokeWidth: 1,
@@ -185,8 +186,9 @@ var Node = function (_React$Component) {
 
           return _react2.default.createElement(_InputPin2.default, { key: i,
             color: selected ? darkPrimaryColor : pinColor,
+            draggedLinkId: draggedLinkId,
             nodeIdAndPosition: [id, i],
-            connectLinkToTarget: draggedLinkId ? connectLinkToTarget.bind(null, draggedLinkId) : null,
+            connectLinkToTarget: connectLinkToTarget,
             size: pinSize,
             x: x,
             y: 0

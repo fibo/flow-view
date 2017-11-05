@@ -15,6 +15,8 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+## [v2.17.0] - 2017-10-09
+
 ### Added
 
 - Links drawn behind nodes.

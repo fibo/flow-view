@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+nav {
+  background-color: black;
+}
+
+nav ul li {
+  padding: 1em;
+  list-style-type: none;
+}
+
+nav ul li a {
+  color: white;
+}

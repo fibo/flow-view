@@ -15,6 +15,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Added
+
+- Page with nav in basic example.
+- Updated Jekyll includes.
+
 ## [v2.17.0] - 2017-10-09
 
 ### Added

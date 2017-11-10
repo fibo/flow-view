@@ -18,7 +18,7 @@
     "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
     "docs:_data:package.json": "cp package.json docs/_data/",
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
-    "example_basic_usage": "NODE_PATH=src budo --open examples/basic/usage.js -- -t babelify ",
+    "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js -- -t babelify ",
     "example_custom_item": "NODE_PATH=src budo --open examples/custom/item.js -- -t babelify ",
     "example_empty_canvas": "NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify ",
     "example_event_emitter": "NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify ",
@@ -79,18 +79,21 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "peerDependencies": {
-    "react": "15.x",
-    "react-dom": "15.x"
+    "react": "16.x",
+    "react-dom": "16.x"
   },
   "dependencies": {
     "bindme": "^1.0.1",
     "events": "^1.1.1",
     "not-defined": "^2.0.1",
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0",
+    "react-test-renderer": "^16.1.0",
     "svgx": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.1",
+    "babel-eslint": "^8.0.2",
     "babel-jest": "^21.0.0",
     "babel-plugin-inline-json-import": "^0.2.1",
     "babel-plugin-react-transform": "^3.0.0",
@@ -99,20 +102,17 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
-    "babelify": "^7.3.0",
+    "babelify": "^8.0.0",
     "brfs": "^1.4.3",
     "budo": "^10.0.3",
     "dot-editorconfig": "^1.0.1",
     "eslint-plugin-flowtype": "^2.39.1",
-    "flow-bin": "^0.56.0",
+    "flow-bin": "^0.59.0",
     "jest": "^21.0.1",
     "jsonschema": "^1.2.0",
     "pre-commit": "^1.2.2",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
-    "react-test-renderer": "^16.0.0",
     "standard": "^10.0.2",
     "tape": "^4.6.2",
-    "uglify-js": "^3.1.3"
+    "uglify-js": "^3.1.8"
   }
 }

@@ -19,6 +19,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 - Page with nav in basic example.
 - Updated Jekyll includes.
+- Updated deps.
+
+### Fixed
+
+- Require React 16 as peer deps.
 
 ## [v2.17.0] - 2017-10-09
 

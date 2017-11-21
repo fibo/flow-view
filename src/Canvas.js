@@ -24,7 +24,7 @@ import {
 const defaultItem = FlowViewFrame.defaultProps.item
 
 export default class FlowViewCanvas extends EventEmitter {
-  constructor (containerId, item) {
+  constructor (container, item) {
     bindme(super(),
       'emitCreateInputPin',
       'emitCreateLink',
@@ -47,29 +47,37 @@ export default class FlowViewCanvas extends EventEmitter {
 
     this.item = item
 
-    // Check that containerId is a string.
-    if (typeof containerId !== 'string') {
-      throw new TypeError('containerId must be a string', containerId)
-    }
+    let containerElement
+    let containerNotFound = false
 
     // If we are in browser context, get the document element containing
     // the canvas or create it.
     //
     // Cannot use `if (document)` or `if(no(document))` otherwise
     // test/serverside/works.js will fail.
-    if (typeof document !== 'undefined') {
-      var container = document.getElementById(containerId)
+    if (typeof document === 'undefined') {
+      // Check if container is a String.
+      if (typeof container === 'string') {
+        containerElement = document.getElementById(container)
+        console.log(containerElement)
 
-      if (container === null) {
-        container = document.createElement('div')
-        container.id = containerId
-
-        container.setAttribute('style', 'display: inline-block; height: 100%; width: 100%;')
-
-        document.body.appendChild(container)
+        if (no(containerElement)) {
+          containerNotFound = true
+        } else {
+          this.container = containerElement
+        }
+      // Check if container is an HTMLElement.
+      } else {
+        if (document.body.contains(container)) {
+          this.container = containerElement
+        } else {
+          containerNotFound = true
+        }
       }
 
-      this.container = container
+      if (containerNotFound) {
+        throw new TypeError('container must be a String or an HTMLElement')
+      }
     } else {
       this.container = null
     }

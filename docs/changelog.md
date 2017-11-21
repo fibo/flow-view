@@ -18,6 +18,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Added
 
 - Nested theme props, improved structure.
+- Renamed Canvas component to *FlowViewCanvas* so it will be recognizable in React Chrome extension or similar contexts.
 
 ### Fixed
 

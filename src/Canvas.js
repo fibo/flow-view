@@ -10,7 +10,7 @@ import bindme from 'bindme'
 import no from 'not-defined'
 import svgx from 'svgx'
 
-import Frame from './components/Frame'
+import FlowViewFrame from './components/Frame'
 
 import {
   FlowView,
@@ -21,9 +21,9 @@ import {
   SerializedNode
 } from './components/types'
 
-const defaultItem = Frame.defaultProps.item
+const defaultItem = FlowViewFrame.defaultProps.item
 
-export default class Canvas extends EventEmitter {
+export default class FlowViewCanvas extends EventEmitter {
   constructor (containerId, item) {
     bindme(super(),
       'emitCreateInputPin',
@@ -37,7 +37,7 @@ export default class Canvas extends EventEmitter {
       'emitDeleteOutputPin'
     )
 
-    this.view = Frame.defaultProps.view
+    this.view = FlowViewFrame.defaultProps.view
 
     if (no(item)) item = defaultItem
     if (no(item.node)) item.node = defaultItem.node
@@ -151,7 +151,7 @@ export default class Canvas extends EventEmitter {
       ReactDOM.unmountComponentAtNode(container)
 
       ReactDOM.render(
-        <Frame
+        <FlowViewFrame
           emitCreateInputPin={this.emitCreateInputPin}
           emitCreateLink={this.emitCreateLink}
           emitCreateNode={this.emitCreateNode}
@@ -171,7 +171,7 @@ export default class Canvas extends EventEmitter {
       var opts = { doctype: true, xmlns: true }
 
       var jsx = (
-        <Frame responsive
+        <FlowViewFrame responsive
           item={item}
           view={view}
          />

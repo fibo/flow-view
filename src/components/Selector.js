@@ -4,7 +4,7 @@ import type {
   Area,
   Point,
   SerializedNode,
-  SelectorTheme
+  Theme
 } from './types'
 
 type Props = Area & {
@@ -12,7 +12,7 @@ type Props = Area & {
   nodelist: Array<string>,
   pointer: Point,
   show: boolean,
-  theme: SelectorTheme
+  theme: Theme
 }
 
 type State = {
@@ -38,7 +38,9 @@ export default class Selector extends React.Component<Props, State> {
       width
     } = this.props
 
-    const border = theme.border
+    const border = theme.selector.border
+    const fontFamily = theme.frame.font.family
+    const fontSize = theme.frame.font.size
 
     var text = this.state.text
 
@@ -88,8 +90,10 @@ export default class Selector extends React.Component<Props, State> {
             if (input !== null) input.focus()
           }}
           style={{
-            outline: 'none',
-            border: `${border.width}px ${border.style} ${border.color}`
+            border: `${border.width}px ${border.style} ${border.color}`,
+            fontFamily,
+            fontSize,
+            outline: 'none'
           }}
           onChange={onChange}
           onKeyPress={onKeyPress}

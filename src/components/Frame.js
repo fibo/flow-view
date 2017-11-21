@@ -1,3 +1,4 @@
+// TODO flow@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -16,7 +17,6 @@ import xOfPin from '../utils/xOfPin'
 
 import { defaultTheme } from './theme'
 
-import type { Theme } from './theme'
 import type {
   Area,
   CreateLink,
@@ -32,7 +32,8 @@ import type {
   Segment,
   SerializedLink,
   SerializedNode,
-  SerializedPin
+  SerializedPin,
+  Theme
 } from './types'
 
 type Props = {
@@ -158,7 +159,7 @@ export default class Frame extends React.Component<Props, State> {
       view
     } = this.state
 
-    const { fontSize } = theme
+    const fontSize = theme.frame.font.size
 
     const nodeBodyHeight = theme.node.body.height
     const pinSize = theme.node.pin.size
@@ -750,14 +751,11 @@ export default class Frame extends React.Component<Props, State> {
       view
     } = this.state
 
-    const {
-      fontFamily,
-      fontSize,
-      lineWidth,
-      primaryColor
-    } = theme
+    const primaryColor = theme.frame.color.primary
 
     const border = theme.frame.border
+    const fontFamily = theme.frame.font.family
+    const fontSize = theme.frame.font.size
     const pinSize = theme.node.pin.size
 
     let height = dynamicView.height || view.height
@@ -823,7 +821,6 @@ export default class Frame extends React.Component<Props, State> {
             <Link key={i}
               deleteLink={this.deleteLink}
               from={from}
-              lineWidth={lineWidth}
               id={id}
               createLink={this.createLink}
               startDraggingLinkTarget={this.startDraggingLinkTarget}
@@ -888,7 +885,7 @@ export default class Frame extends React.Component<Props, State> {
           nodeList={item.nodeList}
           pointer={showSelector ? pointer : null}
           show={showSelector}
-          theme={theme.selector}
+          theme={theme}
         />
       </svg>
     )

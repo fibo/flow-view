@@ -4,12 +4,13 @@ import React from 'react'
 import bindme from 'bindme'
 
 import ignoreEvent from '../utils/ignoreEvent'
+
 import { defaultTheme } from './theme'
 
-import type { Theme } from './theme'
 import type {
   Id,
-  NodeIdAndPosition
+  NodeIdAndPosition,
+  Theme
 } from './types'
 
 type Props = {
@@ -101,10 +102,8 @@ export default class Link extends React.Component<Props> {
       y2
     } = this.props
 
-    const {
-      darkPrimaryColor,
-      primaryColor
-    } = theme
+    const darkColor = theme.frame.color.dark
+    const primaryColor = theme.frame.color.primary
 
     const baseColor = theme.link.color
     const linkWidth = theme.link.width
@@ -136,7 +135,7 @@ export default class Link extends React.Component<Props> {
           strokeWidth={linkWidth}
         />
         <rect
-          fill={(selected || sourceSelected) ? darkPrimaryColor : baseColor}
+          fill={(selected || sourceSelected) ? darkColor : baseColor}
           height={pinSize}
           onMouseDown={this.onSourceMouseDown}
           width={pinSize}
@@ -145,7 +144,7 @@ export default class Link extends React.Component<Props> {
         />
         {to ? (
           <rect
-            fill={(selected || targetSelected) ? darkPrimaryColor : baseColor}
+            fill={(selected || targetSelected) ? darkColor : baseColor}
             height={pinSize}
             onMouseDown={this.onTargetMouseDown}
             width={pinSize}

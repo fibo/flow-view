@@ -8,6 +8,8 @@ export type BorderStyle = string
 
 export type Color = string
 
+export type FontFamily = string
+
 export type Id = string
 
 export type SerializedPin = string | { name: string }
@@ -60,7 +62,17 @@ export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
 export type LinkCollection = { [Id]: SerializedLink }
 export type NodeCollection = { [Id]: SerializedNode }
 
-export type FrameTheme = { border: BorderTheme }
+export type FrameTheme = {
+  border: BorderTheme,
+  color: {
+    primary: Color,
+    dark: Color
+  },
+  font: {
+    family: FontFamily,
+    size: number
+  }
+}
 
 export type LinkTheme = {
   color: Color,
@@ -86,4 +98,11 @@ export type SelectorTheme = { border: BorderTheme }
 export type FlowView = {
   link: LinkCollection,
   node: NodeCollection
+}
+
+export type Theme = {
+  frame: FrameTheme,
+  link: LinkTheme,
+  node: NodeTheme,
+  selector: SelectorTheme
 }

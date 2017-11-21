@@ -1,13 +1,5 @@
 // @flow
 
-import type {
-  FrameTheme,
-  Color,
-  LinkTheme,
-  NodeTheme,
-  SelectorTheme
-} from './types'
-
 const baseColor = 'gainsboro'
 
 const defaultBorder = {
@@ -17,10 +9,20 @@ const defaultBorder = {
 }
 
 export const defaultTheme = {
-  fontFamily: 'Courier',
-  fontSize: 17,
   frame: {
-    border: defaultBorder
+    border: defaultBorder,
+    color: {
+      primary: '#A9DFBF',
+      dark: '#52BE80'
+    },
+    font: {
+      family: 'Courier',
+      size: 17
+    }
+  },
+  link: {
+    color: 'darkgrey',
+    width: 3
   },
   node: {
     body: {
@@ -33,22 +35,5 @@ export const defaultTheme = {
       size: 10
     }
   },
-  darkPrimaryColor: '#52BE80',
-  primaryColor: '#A9DFBF',
-  link: {
-    color: 'darkgrey',
-    width: 3
-  },
   selector: { border: defaultBorder }
-}
-
-export type Theme = {
-  darkPrimaryColor: Color,
-  fontFamily: string,
-  fontSize: number,
-  frame: FrameTheme,
-  link: LinkTheme,
-  node: NodeTheme,
-  primaryColor: Color,
-  selector: SelectorTheme
 }

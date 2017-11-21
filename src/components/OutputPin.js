@@ -7,6 +7,7 @@ import Pin from './Pin'
 import type {
   NodeIdAndPosition
 } from './types'
+
 import type { Props as PinProps } from './Pin'
 
 type Props = PinProps & {

@@ -11,7 +11,6 @@ import PlusButton from './PlusButton'
 import InputPin from './InputPin'
 import OutputPin from './OutputPin'
 
-import type { Theme } from './theme'
 import type {
   ConnectLinkToTarget,
   CreatePin,
@@ -21,7 +20,8 @@ import type {
   Id,
   NodeIdAndPosition,
   Point,
-  SerializedNode
+  SerializedNode,
+  Theme
 } from './types'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
@@ -106,7 +106,7 @@ export default class Node extends React.Component<Props> {
       width
     } = this.props
 
-    const { fontSize } = theme
+    const fontSize = theme.frame.font.size
 
     const pinSize = theme.node.pin.size
 
@@ -147,10 +147,8 @@ export default class Node extends React.Component<Props> {
       y
     } = this.props
 
-    const {
-      darkPrimaryColor,
-      primaryColor
-    } = theme
+    const darkColor = theme.frame.color.dark
+    const primaryColor = theme.frame.color.primary
 
     const baseColor = theme.node.color
     const bodyColor = theme.node.body.color
@@ -191,7 +189,7 @@ export default class Node extends React.Component<Props> {
 
           return (
             <InputPin key={i}
-              color={selected ? darkPrimaryColor : pinColor}
+              color={selected ? darkColor : pinColor}
               draggedLinkId={draggedLinkId}
               nodeIdAndPosition={[id, i]}
               connectLinkToTarget={connectLinkToTarget}
@@ -213,7 +211,7 @@ export default class Node extends React.Component<Props> {
 
           return (
             <OutputPin key={i}
-              color={selected ? darkPrimaryColor : pinColor}
+              color={selected ? darkColor : pinColor}
               createLink={createLink}
               nodeIdAndPosition={[id, i]}
               size={pinSize}
@@ -232,13 +230,14 @@ export default class Node extends React.Component<Props> {
       text
     } = this.props
 
-    const { fontSize } = theme
+    const fontSize = theme.frame.font.size
 
     const pinSize = theme.node.pin.size
 
     const bodyHeight = this.getBodyHeight()
 
-    // Heuristic value, based on Courier font.
+    // FIXME Heuristic value, based on Courier font.
+    // How to get the margin pase on fonts? Maybe it could be a theme prop.
     const margin = fontSize * 0.2
 
     return (
@@ -258,7 +257,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const { primaryColor } = theme
+    const primaryColor = theme.frame.color.primary
 
     const pinSize = theme.node.pin.size
 
@@ -283,7 +282,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const { primaryColor } = theme
+    const primaryColor = theme.frame.color.primary
 
     const pinSize = theme.node.pin.size
 
@@ -312,7 +311,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const { primaryColor } = theme
+    const primaryColor = theme.frame.color.primary
 
     const pinSize = theme.node.pin.size
 
@@ -339,7 +338,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const { primaryColor } = theme
+    const primaryColor = theme.frame.color.primary
 
     const pinSize = theme.node.pin.size
 
@@ -369,7 +368,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const { primaryColor } = theme
+    const primaryColor = theme.frame.color.primary
 
     const pinSize = theme.node.pin.size
 

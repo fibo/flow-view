@@ -65,7 +65,34 @@ type State = {
   view: ?FlowView
 }
 
-export default class Frame extends React.Component<Props, State> {
+export default class FlowViewFrame extends React.Component<Props, State> {
+  static defaultProps = {
+    emitCreateInputPin: Function.prototype,
+    emitCreateLink: Function.prototype,
+    emitCreateNode: Function.prototype,
+    emitCreateOutputPin: Function.prototype,
+    emitDeleteInputPin: Function.prototype,
+    emitDeleteLink: Function.prototype,
+    emitDeleteNode: Function.prototype,
+    emitDeleteOutputPin: Function.prototype,
+    item: {
+      node: { DefaultNode },
+      nodeList: [],
+      util: {
+        typeOfNode: function (node) {
+          return 'DefaultNode'
+        }
+      }
+    },
+    responsive: false,
+    theme: defaultTheme,
+    updateLink: Function.prototype,
+    view: {
+      link: {},
+      node: {}
+    }
+  }
+
   constructor (props: Props) {
     bindme(super(props),
       'connectLinkToTarget',
@@ -958,32 +985,5 @@ export default class Frame extends React.Component<Props, State> {
     // target and then drop it again in the same target.
     const draggedLinkId = this.createLink({ from })
     this.setState({ draggedLinkId })
-  }
-}
-
-Frame.defaultProps = {
-  emitCreateInputPin: Function.prototype,
-  emitCreateLink: Function.prototype,
-  emitCreateNode: Function.prototype,
-  emitCreateOutputPin: Function.prototype,
-  emitDeleteInputPin: Function.prototype,
-  emitDeleteLink: Function.prototype,
-  emitDeleteNode: Function.prototype,
-  emitDeleteOutputPin: Function.prototype,
-  item: {
-    node: { DefaultNode },
-    nodeList: [],
-    util: {
-      typeOfNode: function (node) {
-        return 'DefaultNode'
-      }
-    }
-  },
-  responsive: false,
-  theme: defaultTheme,
-  updateLink: Function.prototype,
-  view: {
-    link: {},
-    node: {}
   }
 }

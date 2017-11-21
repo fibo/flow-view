@@ -50,15 +50,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var defaultItem = _Frame2.default.defaultProps.item;
 
-var Canvas = function (_EventEmitter) {
-  _inherits(Canvas, _EventEmitter);
+var FlowViewCanvas = function (_EventEmitter) {
+  _inherits(FlowViewCanvas, _EventEmitter);
 
-  function Canvas(containerId, item) {
+  function FlowViewCanvas(containerId, item) {
     var _this;
 
-    _classCallCheck(this, Canvas);
+    _classCallCheck(this, FlowViewCanvas);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin');
 
     _this.view = _Frame2.default.defaultProps.view;
 
@@ -81,7 +81,7 @@ var Canvas = function (_EventEmitter) {
         container = document.createElement('div');
         container.id = containerId;
 
-        container.setAttribute('style', 'display: inline-block; height: 400px; width: 100%;');
+        container.setAttribute('style', 'display: inline-block; height: 100%; width: 100%;');
 
         document.body.appendChild(container);
       }
@@ -93,7 +93,7 @@ var Canvas = function (_EventEmitter) {
     return _this;
   }
 
-  _createClass(Canvas, [{
+  _createClass(FlowViewCanvas, [{
     key: 'emitCreateInputPin',
     value: function emitCreateInputPin(nodeIdAndPosition, pin) {
       this.emit('createInputPin', nodeIdAndPosition, pin);
@@ -196,7 +196,7 @@ var Canvas = function (_EventEmitter) {
     }
   }]);
 
-  return Canvas;
+  return FlowViewCanvas;
 }(_events2.default);
 
-exports.default = Canvas;
+exports.default = FlowViewCanvas;

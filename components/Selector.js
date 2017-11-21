@@ -10,6 +10,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _bindme = require('bindme');
+
+var _bindme2 = _interopRequireDefault(_bindme);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22,62 +26,63 @@ var Selector = function (_React$Component) {
   _inherits(Selector, _React$Component);
 
   function Selector() {
-    var _ref;
-
-    var _temp, _this, _ret;
+    var _temp, _this;
 
     _classCallCheck(this, Selector);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Selector.__proto__ || Object.getPrototypeOf(Selector)).call.apply(_ref, [this].concat(args))), _this), _this.state = { text: '' }, _temp), _possibleConstructorReturn(_this, _ret);
+    (0, _bindme2.default)((_temp = (_this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this)), _this), _this.state = { text: '' }, _temp), 'onChange', 'onKeyPress');
+    return _this;
   }
 
   _createClass(Selector, [{
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
+    key: 'onChange',
+    value: function onChange(event) {
+      this.setState({ text: event.target.value });
+    }
+  }, {
+    key: 'onKeyPress',
+    value: function onKeyPress(event) {
       var _props = this.props,
           createNode = _props.createNode,
-          height = _props.height,
-          nodeList = _props.nodeList,
-          pointer = _props.pointer,
-          show = _props.show,
-          width = _props.width;
+          pointer = _props.pointer;
 
+
+      var text = event.target.value.trim();
+
+      var pressedEnter = event.key === 'Enter';
+      var textIsNotBlank = text.length > 0;
+
+      if (pressedEnter) {
+        if (textIsNotBlank) {
+          createNode({
+            ins: [],
+            outs: [],
+            text: text,
+            x: pointer.x,
+            y: pointer.y
+          });
+        }
+
+        this.setState({ text: '' });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props2 = this.props,
+          height = _props2.height,
+          nodeList = _props2.nodeList,
+          pointer = _props2.pointer,
+          show = _props2.show,
+          theme = _props2.theme,
+          width = _props2.width;
+
+
+      var border = theme.selector.border;
+      var fontFamily = theme.frame.font.family;
+      var fontSize = theme.frame.font.size;
 
       var text = this.state.text;
-
-      var onChange = function onChange(e) {
-        var text = e.target.value;
-
-        _this2.setState({ text: text });
-      };
-
-      var onKeyPress = function onKeyPress(e) {
-        var text = e.target.value.trim();
-        var pointer = _this2.props.pointer;
-
-        var pressedEnter = e.key === 'Enter';
-        var textIsNotBlank = text.length > 0;
-
-        if (pressedEnter) {
-          if (textIsNotBlank) {
-            createNode({
-              ins: [],
-              outs: [],
-              text: text,
-              x: pointer.x,
-              y: pointer.y
-            });
-          }
-
-          _this2.setState({ text: '' });
-        }
-      };
 
       var hidden = { display: 'none', overflow: 'hidden' };
       var visible = { display: 'inline', overflow: 'visible' };
@@ -97,16 +102,21 @@ var Selector = function (_React$Component) {
           ref: function ref(input) {
             if (input !== null) input.focus();
           },
-          style: { outline: 'none' },
-          onChange: onChange,
-          onKeyPress: onKeyPress,
+          style: {
+            border: border.width + 'px ' + border.style + ' ' + border.color,
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            outline: 'none'
+          },
+          onChange: this.onChange,
+          onKeyPress: this.onKeyPress,
           value: text
         }),
         nodeList ? _react2.default.createElement(
           'datalist',
           {
             id: 'nodes',
-            onChange: onChange
+            onChange: this.onChange
           },
           nodeList.map(function (item, i) {
             return _react2.default.createElement('option', { key: i, value: item });

@@ -3,17 +3,42 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+
+var baseColor = 'gainsboro';
+
+var defaultBorder = {
+  width: 1,
+  style: 'solid',
+  color: baseColor
+};
+
 var defaultTheme = exports.defaultTheme = {
-  fontFamily: 'Courier',
-  fontSize: 17,
-  frameBorder: '1px solid #F0F4C3',
-  darkPrimaryColor: '#52BE80',
-  primaryColor: '#A9DFBF',
-  lineWidth: 3,
-  nodeBarColor: '#BDBDBD',
-  nodeBodyColor: '#FFFFFF',
-  nodeBodyHeight: 20,
-  pinColor: '#757575',
-  linkColor: '#9E9E9E',
-  pinSize: 10
+  frame: {
+    border: defaultBorder,
+    color: {
+      primary: '#A9DFBF',
+      dark: '#52BE80'
+    },
+    font: {
+      family: 'Courier',
+      size: 17
+    }
+  },
+  link: {
+    color: 'darkgrey',
+    width: 3
+  },
+  node: {
+    body: {
+      color: 'white',
+      height: 20
+    },
+    color: baseColor,
+    pin: {
+      color: 'darkgrey',
+      size: 10
+    }
+  },
+  selector: { border: defaultBorder }
 };

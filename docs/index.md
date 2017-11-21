@@ -157,22 +157,6 @@ canvas.render({
 })
 ```
 
-### Theme
-
-Theme is a prop object with the following attributes
-
-* fontFamily
-* frameBorder
-* darkPrimaryColor
-* primaryColor
-* lineWidth
-* linkColor
-* nodeBarColor
-* nodeBodyColor
-* nodeBodyHeight
-* pinColor
-* pinSize
-
 ### Events
 
 See [event/emitter.js][example_event_emitter] example.

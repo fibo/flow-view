@@ -53,9 +53,11 @@
   },
   "standard": {
     "globals": [
+      "Event",
+      "HTMLInputEvent",
       "KeyboardEvent",
       "MouseEvent",
-      "Event",
+      "SyntheticKeyboardEvent",
       "it",
       "expect"
     ],
@@ -86,9 +88,6 @@
     "bindme": "^1.0.1",
     "events": "^1.1.1",
     "not-defined": "^2.0.1",
-    "react": "^16.1.0",
-    "react-dom": "^16.1.0",
-    "react-test-renderer": "^16.1.0",
     "svgx": "^1.0.0"
   },
   "devDependencies": {
@@ -109,10 +108,11 @@
     "eslint-plugin-flowtype": "^2.39.1",
     "flow-bin": "^0.59.0",
     "jest": "^21.0.1",
-    "jsonschema": "^1.2.0",
     "pre-commit": "^1.2.2",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-test-renderer": "^16.1.1",
     "standard": "^10.0.2",
-    "tape": "^4.6.2",
-    "uglify-js": "^3.1.8"
+    "tape": "^4.6.2"
   }
 }

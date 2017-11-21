@@ -68,15 +68,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Frame = function (_React$Component) {
-  _inherits(Frame, _React$Component);
+var FlowViewFrame = function (_React$Component) {
+  _inherits(FlowViewFrame, _React$Component);
 
-  function Frame(props) {
+  function FlowViewFrame(props) {
     var _this;
 
-    _classCallCheck(this, Frame);
+    _classCallCheck(this, FlowViewFrame);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Frame.__proto__ || Object.getPrototypeOf(Frame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onClick', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowResize', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewFrame.__proto__ || Object.getPrototypeOf(FlowViewFrame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowResize', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
 
     _this.state = {
       dynamicView: { height: null, width: null },
@@ -94,7 +94,7 @@ var Frame = function (_React$Component) {
     return _this;
   }
 
-  _createClass(Frame, [{
+  _createClass(FlowViewFrame, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var container = _reactDom2.default.findDOMNode(this).parentNode;
@@ -151,15 +151,17 @@ var Frame = function (_React$Component) {
       var _state = this.state,
           pointer = _state.pointer,
           view = _state.view;
-      var fontSize = theme.fontSize,
-          nodeBodyHeight = theme.nodeBodyHeight,
-          pinSize = theme.pinSize;
 
 
-      var x1 = null;
-      var y1 = null;
-      var x2 = null;
-      var y2 = null;
+      var fontSize = theme.frame.font.size;
+
+      var nodeBodyHeight = theme.node.body.height;
+      var pinSize = theme.node.pin.size;
+
+      var x1 = void 0;
+      var y1 = void 0;
+      var x2 = void 0;
+      var y2 = void 0;
 
       var nodeIds = Object.keys(view.node);
       var idEquals = function idEquals(x) {
@@ -427,14 +429,6 @@ var Frame = function (_React$Component) {
       };
     }
   }, {
-    key: 'onClick',
-    value: function onClick(event) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      this.setState({ showSelector: false });
-    }
-  }, {
     key: 'onDocumentKeydown',
     value: function onDocumentKeydown(event) {
       var _this5 = this;
@@ -570,7 +564,8 @@ var Frame = function (_React$Component) {
           height: 0,
           width: 0
         },
-        selectedItems: []
+        selectedItems: [],
+        showSelector: false
       });
     }
   }, {
@@ -776,20 +771,20 @@ var Frame = function (_React$Component) {
           selectedItems = _state9.selectedItems,
           showSelector = _state9.showSelector,
           view = _state9.view;
-      var frameBorder = theme.frameBorder,
-          fontFamily = theme.fontFamily,
-          fontSize = theme.fontSize,
-          lineWidth = theme.lineWidth,
-          pinSize = theme.pinSize,
-          primaryColor = theme.primaryColor;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var border = theme.frame.border;
+      var fontFamily = theme.frame.font.family;
+      var fontSize = theme.frame.font.size;
+      var pinSize = theme.node.pin.size;
 
       var height = dynamicView.height || view.height;
       var width = dynamicView.width || view.width;
 
-      var border = 1;
-      height = height - 2 * border;
-      width = width - 2 * border;
+      height = height - 2 * border.width;
+      width = width - 2 * border.width;
 
       var selectedFirst = function selectedFirst(a, b) {
         var aIsSelected = selectedItems.indexOf(a) > -1;
@@ -815,7 +810,9 @@ var Frame = function (_React$Component) {
           onMouseMove: this.onMouseMove,
           onMouseUp: this.onMouseUp,
           textAnchor: 'start',
-          style: { border: frameBorder },
+          style: {
+            border: border.width + 'px ' + border.style + ' ' + border.color
+          },
           viewBox: responsive ? '0 0 ' + width + ' ' + height : null,
           width: responsive ? null : width
         },
@@ -835,7 +832,6 @@ var Frame = function (_React$Component) {
           return _react2.default.createElement(_Link2.default, { key: i,
             deleteLink: _this7.deleteLink,
             from: from,
-            lineWidth: lineWidth,
             id: id,
             createLink: _this7.createLink,
             startDraggingLinkTarget: _this7.startDraggingLinkTarget,
@@ -895,7 +891,8 @@ var Frame = function (_React$Component) {
           createNode: this.selectorCreateNode,
           nodeList: item.nodeList,
           pointer: showSelector ? pointer : null,
-          show: showSelector
+          show: showSelector,
+          theme: theme
         })
       );
     }
@@ -915,6 +912,8 @@ var Frame = function (_React$Component) {
 
         var selectedItems = [].concat(_toConsumableArray(_this8.state.selectedItems));
         var view = Object.assign({}, _this8.state.view);
+
+        var pointer = _this8.getCoordinates(event);
 
         if (draggedLinkId) {
           delete view.link[draggedLinkId];
@@ -945,7 +944,9 @@ var Frame = function (_React$Component) {
 
         _this8.setState({
           isMouseDown: true,
-          selectedItems: selectedItems
+          pointer: pointer,
+          selectedItems: selectedItems,
+          showSelector: false
         });
       };
     }
@@ -961,13 +962,10 @@ var Frame = function (_React$Component) {
     }
   }]);
 
-  return Frame;
+  return FlowViewFrame;
 }(_react2.default.Component);
 
-exports.default = Frame;
-
-
-Frame.defaultProps = {
+FlowViewFrame.defaultProps = {
   emitCreateInputPin: Function.prototype,
   emitCreateLink: Function.prototype,
   emitCreateNode: Function.prototype,
@@ -993,3 +991,4 @@ Frame.defaultProps = {
     node: {}
   }
 };
+exports.default = FlowViewFrame;

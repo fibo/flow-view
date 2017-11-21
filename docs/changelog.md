@@ -21,16 +21,16 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Add @flow to Canvas and FlowViewFrame.
 - Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
 
-## [v2.18.0] - 2017-11-21
-
 ### Added
 
 - Nested theme props, improved structure.
 - Renamed Canvas component to *FlowViewCanvas* so it will be recognizable in React Chrome extension or similar contexts.
+- Updated deps.
 
 ### Fixed
 
 - Improved Selector: solved dragging issues, and unnecessary rendering.
+- Do not require React as a dependency. Also move react-test-renderer to dev deps.
 
 ## [v2.17.1] - 2017-11-10
 

@@ -19,10 +19,10 @@
     "docs:_data:package.json": "cp package.json docs/_data/",
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js -- -t babelify ",
-    "example_custom_item": "NODE_PATH=src budo --open examples/custom/item.js -- -t babelify ",
-    "example_empty_canvas": "NODE_PATH=src budo --open examples/empty/canvas.js -- -t babelify ",
-    "example_event_emitter": "NODE_PATH=src budo --open examples/event/emitter.js -- -t babelify ",
-    "example_genealogic_tree": "NODE_PATH=src budo --open examples/genealogic/tree.js -- -t babelify ",
+    "example_custom_item": "NODE_PATH=src budo --serve bundle.js --open examples/custom/item.js -- -t babelify ",
+    "example_empty_canvas": "NODE_PATH=src budo --serve bundle.js --open examples/empty/canvas.js -- -t babelify ",
+    "example_event_emitter": "NODE_PATH=src budo --serve bundle.js --open examples/event/emitter.js -- -t babelify ",
+    "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --open examples/genealogic/tree.js -- -t babelify ",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > docs/svg/sample-view.svg",
     "flow": "flow",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
@@ -88,9 +88,6 @@
     "bindme": "^1.0.1",
     "events": "^1.1.1",
     "not-defined": "^2.0.1",
-    "react": "^16.1.0",
-    "react-dom": "^16.1.0",
-    "react-test-renderer": "^16.1.0",
     "svgx": "^1.0.0"
   },
   "devDependencies": {
@@ -111,10 +108,11 @@
     "eslint-plugin-flowtype": "^2.39.1",
     "flow-bin": "^0.59.0",
     "jest": "^21.0.1",
-    "jsonschema": "^1.2.0",
     "pre-commit": "^1.2.2",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-test-renderer": "^16.1.1",
     "standard": "^10.0.2",
-    "tape": "^4.6.2",
-    "uglify-js": "^3.1.8"
+    "tape": "^4.6.2"
   }
 }

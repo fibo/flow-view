@@ -102,9 +102,11 @@ var Node = function (_React$Component) {
           text = _props.text,
           theme = _props.theme,
           width = _props.width;
-      var fontSize = theme.fontSize,
-          pinSize = theme.pinSize;
 
+
+      var fontSize = theme.frame.font.size;
+
+      var pinSize = theme.node.pin.size;
 
       var bodyHeight = this.getBodyHeight();
 
@@ -125,7 +127,7 @@ var Node = function (_React$Component) {
           theme = _props2.theme;
 
 
-      return bodyHeight || theme.nodeBodyHeight;
+      return bodyHeight || theme.node.body.height;
     }
   }, {
     key: 'render',
@@ -143,13 +145,15 @@ var Node = function (_React$Component) {
           theme = _props3.theme,
           x = _props3.x,
           y = _props3.y;
-      var darkPrimaryColor = theme.darkPrimaryColor,
-          nodeBarColor = theme.nodeBarColor,
-          nodeBodyColor = theme.nodeBodyColor,
-          pinColor = theme.pinColor,
-          pinSize = theme.pinSize,
-          primaryColor = theme.primaryColor;
 
+
+      var darkColor = theme.frame.color.dark;
+      var primaryColor = theme.frame.color.primary;
+
+      var baseColor = theme.node.color;
+      var bodyColor = theme.node.body.color;
+      var pinColor = theme.node.pin.color;
+      var pinSize = theme.node.pin.size;
 
       var bodyHeight = this.getBodyHeight();
       var computedWidth = this.getComputedWidth();
@@ -170,14 +174,14 @@ var Node = function (_React$Component) {
         this.renderOutputMinus(),
         this.renderOutputPlus(),
         _react2.default.createElement('rect', {
-          fill: nodeBodyColor,
+          fill: bodyColor,
           height: bodyHeight + 2 * pinSize,
-          stroke: selected ? primaryColor : nodeBarColor,
+          stroke: selected ? primaryColor : baseColor,
           strokeWidth: 1,
           width: computedWidth
         }),
         _react2.default.createElement('rect', {
-          fill: selected ? primaryColor : nodeBarColor,
+          fill: selected ? primaryColor : baseColor,
           height: pinSize,
           width: computedWidth
         }),
@@ -185,7 +189,7 @@ var Node = function (_React$Component) {
           var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
           return _react2.default.createElement(_InputPin2.default, { key: i,
-            color: selected ? darkPrimaryColor : pinColor,
+            color: selected ? darkColor : pinColor,
             draggedLinkId: draggedLinkId,
             nodeIdAndPosition: [id, i],
             connectLinkToTarget: connectLinkToTarget,
@@ -196,7 +200,7 @@ var Node = function (_React$Component) {
         }),
         this.renderBody(),
         _react2.default.createElement('rect', {
-          fill: selected ? primaryColor : nodeBarColor,
+          fill: selected ? primaryColor : baseColor,
           height: pinSize,
           transform: 'translate(0,' + (pinSize + bodyHeight) + ')',
           width: computedWidth
@@ -205,7 +209,7 @@ var Node = function (_React$Component) {
           var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
           return _react2.default.createElement(_OutputPin2.default, { key: i,
-            color: selected ? darkPrimaryColor : pinColor,
+            color: selected ? darkColor : pinColor,
             createLink: createLink,
             nodeIdAndPosition: [id, i],
             size: pinSize,
@@ -221,9 +225,11 @@ var Node = function (_React$Component) {
       var _props4 = this.props,
           theme = _props4.theme,
           text = _props4.text;
-      var fontSize = theme.fontSize,
-          pinSize = theme.pinSize;
 
+
+      var fontSize = theme.frame.font.size;
+
+      var pinSize = theme.node.pin.size;
 
       var bodyHeight = this.getBodyHeight();
 
@@ -249,9 +255,11 @@ var Node = function (_React$Component) {
           multiSelection = _props5.multiSelection,
           selected = _props5.selected,
           theme = _props5.theme;
-      var primaryColor = theme.primaryColor,
-          pinSize = theme.pinSize;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var pinSize = theme.node.pin.size;
 
       if (selected === false || multiSelection) return null;
 
@@ -271,9 +279,11 @@ var Node = function (_React$Component) {
           multiSelection = _props6.multiSelection,
           selected = _props6.selected,
           theme = _props6.theme;
-      var primaryColor = theme.primaryColor,
-          pinSize = theme.pinSize;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var pinSize = theme.node.pin.size;
 
       if (!ins || selected === false || multiSelection) return null;
 
@@ -297,9 +307,11 @@ var Node = function (_React$Component) {
           multiSelection = _props7.multiSelection,
           selected = _props7.selected,
           theme = _props7.theme;
-      var primaryColor = theme.primaryColor,
-          pinSize = theme.pinSize;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var pinSize = theme.node.pin.size;
 
       if (!ins || selected === false || multiSelection) return null;
 
@@ -321,9 +333,11 @@ var Node = function (_React$Component) {
           outs = _props8.outs,
           selected = _props8.selected,
           theme = _props8.theme;
-      var primaryColor = theme.primaryColor,
-          pinSize = theme.pinSize;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var pinSize = theme.node.pin.size;
 
       if (!outs || selected === false || multiSelection) return null;
 
@@ -348,9 +362,11 @@ var Node = function (_React$Component) {
           outs = _props9.outs,
           selected = _props9.selected,
           theme = _props9.theme;
-      var primaryColor = theme.primaryColor,
-          pinSize = theme.pinSize;
 
+
+      var primaryColor = theme.frame.color.primary;
+
+      var pinSize = theme.node.pin.size;
 
       if (!outs || selected === false || multiSelection) return null;
 

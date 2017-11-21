@@ -94,12 +94,14 @@ var Link = function (_React$Component) {
           y1 = _props4.y1,
           x2 = _props4.x2,
           y2 = _props4.y2;
-      var darkPrimaryColor = theme.darkPrimaryColor,
-          primaryColor = theme.primaryColor,
-          linkColor = theme.linkColor,
-          lineWidth = theme.lineWidth,
-          pinSize = theme.pinSize;
 
+
+      var darkColor = theme.frame.color.dark;
+      var primaryColor = theme.frame.color.primary;
+
+      var baseColor = theme.link.color;
+      var linkWidth = theme.link.width;
+      var pinSize = theme.node.pin.size;
 
       var startX = x1 + pinSize / 2;
       var startY = y1 + pinSize / 2;
@@ -124,11 +126,11 @@ var Link = function (_React$Component) {
           fill: 'transparent',
           onMouseDown: this.onPathMouseDown,
           onMouseUp: selectLink,
-          stroke: selected ? primaryColor : linkColor,
-          strokeWidth: lineWidth
+          stroke: selected ? primaryColor : baseColor,
+          strokeWidth: linkWidth
         }),
         _react2.default.createElement('rect', {
-          fill: selected || sourceSelected ? darkPrimaryColor : linkColor,
+          fill: selected || sourceSelected ? darkColor : baseColor,
           height: pinSize,
           onMouseDown: this.onSourceMouseDown,
           width: pinSize,
@@ -136,7 +138,7 @@ var Link = function (_React$Component) {
           y: y1
         }),
         to ? _react2.default.createElement('rect', {
-          fill: selected || targetSelected ? darkPrimaryColor : linkColor,
+          fill: selected || targetSelected ? darkColor : baseColor,
           height: pinSize,
           onMouseDown: this.onTargetMouseDown,
           width: pinSize,

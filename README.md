@@ -74,11 +74,11 @@ Adding this to your HTML page
 
 <a name="canvas"></a>
 
-### `new Canvas()`
+### `new Canvas(id|element)`
 
 > flow-view Canvas constructor
 
-* **@param** `{String}` **containerId**
+* **@param** `{String|HTMLElement}` **container** id or element
 * **@param** `{Object}` **[item]** collection to be customized
 * **@param** `{Object}` **[item.node]** collection of custom nodes
 * **@param** `{Object}` **[item.node.DefaultNode]**
@@ -112,7 +112,7 @@ Note that nothing will happen until you call the [`canvas.render(view)`](#canvas
 
 It is the DOM element container, if any. On server side, this attribute is `null`.
 
-### `canvas.render()`
+### `canvas.render(view?)`
 
 Draws a view, that is a collection of nodes and links.
 On server side it generates an SVG output like the one you see on top of this README.md,

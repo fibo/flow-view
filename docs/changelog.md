@@ -20,6 +20,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Check out how many time render is invoked, and optimize it.
 - Add @flow to Canvas and FlowViewFrame.
 - Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
+- container should be passed explicitly in the contructor it does not make sense to create it.
 
 ### Added
 

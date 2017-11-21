@@ -12,7 +12,7 @@ exports[`renders correctly 1`] = `
   transform="translate(0,0)"
 >
   <rect
-    fill="#FFFFFF"
+    fill="white"
     height={40}
     stroke="gainsboro"
     strokeWidth={1}

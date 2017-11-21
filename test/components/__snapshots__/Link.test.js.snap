@@ -10,11 +10,11 @@ exports[`renders correctly 1`] = `
     fill="transparent"
     onMouseDown={[Function]}
     onMouseUp={[Function]}
-    stroke="#9E9E9E"
+    stroke="darkgrey"
     strokeWidth={3}
   />
   <rect
-    fill="#9E9E9E"
+    fill="darkgrey"
     height={10}
     onMouseDown={[Function]}
     width={10}

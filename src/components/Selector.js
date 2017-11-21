@@ -1,5 +1,7 @@
 import React from 'react'
 
+import bindme from 'bindme'
+
 import type {
   Area,
   Point,
@@ -27,9 +29,45 @@ export default class Selector extends React.Component<Props, State> {
 
   state = { text: '' }
 
-  render () {
-    var {
+  constructor () {
+    bindme(super(),
+      'onChange',
+      'onKeyPress'
+    )
+  }
+
+  onChange (event): void {
+    this.setState({ text: event.target.value })
+  }
+
+  onKeyPress (event): void {
+    const {
       createNode,
+      pointer
+    } = this.props
+
+    const text = event.target.value.trim()
+
+    const pressedEnter = (event.key === 'Enter')
+    const textIsNotBlank = text.length > 0
+
+    if (pressedEnter) {
+      if (textIsNotBlank) {
+        createNode({
+          ins: [],
+          outs: [],
+          text,
+          x: pointer.x,
+          y: pointer.y
+        })
+      }
+
+      this.setState({ text: '' })
+    }
+  }
+
+  render () {
+    const {
       height,
       nodeList,
       pointer,
@@ -42,35 +80,7 @@ export default class Selector extends React.Component<Props, State> {
     const fontFamily = theme.frame.font.family
     const fontSize = theme.frame.font.size
 
-    var text = this.state.text
-
-    var onChange = (e) => {
-      var text = e.target.value
-
-      this.setState({ text })
-    }
-
-    var onKeyPress = (e) => {
-      var text = e.target.value.trim()
-      var pointer = this.props.pointer
-
-      var pressedEnter = (e.key === 'Enter')
-      var textIsNotBlank = text.length > 0
-
-      if (pressedEnter) {
-        if (textIsNotBlank) {
-          createNode({
-            ins: [],
-            outs: [],
-            text,
-            x: pointer.x,
-            y: pointer.y
-          })
-        }
-
-        this.setState({ text: '' })
-      }
-    }
+    const text = this.state.text
 
     const hidden = { display: 'none', overflow: 'hidden' }
     const visible = { display: 'inline', overflow: 'visible' }
@@ -95,14 +105,14 @@ export default class Selector extends React.Component<Props, State> {
             fontSize,
             outline: 'none'
           }}
-          onChange={onChange}
-          onKeyPress={onKeyPress}
+          onChange={this.onChange}
+          onKeyPress={this.onKeyPress}
           value={text}
         />
         {nodeList ? (
           <datalist
             id='nodes'
-            onChange={onChange}
+            onChange={this.onChange}
           >
             {nodeList.map((item, i) => (<option key={i} value={item} />))}
           </datalist>

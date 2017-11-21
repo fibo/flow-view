@@ -15,6 +15,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### TODO
+
+Check out how many time render is invoked, and optimize it.
+Add @flow to Canvas and FlowViewFrame.
+
 ### Added
 
 - Nested theme props, improved structure.

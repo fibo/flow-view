@@ -17,8 +17,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### TODO
 
-Check out how many time render is invoked, and optimize it.
-Add @flow to Canvas and FlowViewFrame.
+- Check out how many time render is invoked, and optimize it.
+- Add @flow to Canvas and FlowViewFrame.
+- Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
+
+## [v2.18.0] - 2017-11-21
 
 ### Added
 

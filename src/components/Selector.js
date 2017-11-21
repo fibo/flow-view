@@ -3,14 +3,16 @@ import React from 'react'
 import type {
   Area,
   Point,
-  SerializedNode
+  SerializedNode,
+  SelectorTheme
 } from './types'
 
 type Props = Area & {
   createNode: (SerializedNode) => void,
   nodelist: Array<string>,
   pointer: Point,
-  show: boolean
+  show: boolean,
+  theme: SelectorTheme
 }
 
 type State = {
@@ -32,8 +34,11 @@ export default class Selector extends React.Component<Props, State> {
       nodeList,
       pointer,
       show,
+      theme,
       width
     } = this.props
+
+    const border = theme.border
 
     var text = this.state.text
 
@@ -82,7 +87,10 @@ export default class Selector extends React.Component<Props, State> {
           ref={(input) => {
             if (input !== null) input.focus()
           }}
-          style={{ outline: 'none' }}
+          style={{
+            outline: 'none',
+            border: `${border.width}px ${border.style} ${border.color}`
+          }}
           onChange={onChange}
           onKeyPress={onKeyPress}
           value={text}

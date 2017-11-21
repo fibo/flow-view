@@ -64,7 +64,7 @@ export default class Canvas extends EventEmitter {
         container = document.createElement('div')
         container.id = containerId
 
-        container.setAttribute('style', 'display: inline-block; height: 400px; width: 100%;')
+        container.setAttribute('style', 'display: inline-block; height: 100%; width: 100%;')
 
         document.body.appendChild(container)
       }
@@ -75,35 +75,35 @@ export default class Canvas extends EventEmitter {
     }
   }
 
-  emitCreateInputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin) {
+  emitCreateInputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin): void {
     this.emit('createInputPin', nodeIdAndPosition, pin)
   }
 
-  emitCreateLink (link: SerializedLink, id: Id) {
+  emitCreateLink (link: SerializedLink, id: Id): void {
     this.emit('createLink', link, id)
   }
 
-  emitCreateNode (node: SerializedNode, id: Id) {
+  emitCreateNode (node: SerializedNode, id: Id): void {
     this.emit('createNode', node, id)
   }
 
-  emitCreateOutputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin) {
+  emitCreateOutputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin): void {
     this.emit('createOutputPin', nodeIdAndPosition, pin)
   }
 
-  emitDeleteInputPin (nodeIdAndPosition: NodeIdAndPosition) {
+  emitDeleteInputPin (nodeIdAndPosition: NodeIdAndPosition): void {
     this.emit('deleteInputPin', nodeIdAndPosition)
   }
 
-  emitDeleteLink (id: Id) {
+  emitDeleteLink (id: Id): void {
     this.emit('deleteLink', id)
   }
 
-  emitDeleteNode (id: Id) {
+  emitDeleteNode (id: Id): void {
     this.emit('deleteNode', id)
   }
 
-  emitDeleteOutputPin (nodeIdAndPosition: NodeIdAndPosition) {
+  emitDeleteOutputPin (nodeIdAndPosition: NodeIdAndPosition): void {
     this.emit('deleteOutputPin', nodeIdAndPosition)
   }
 

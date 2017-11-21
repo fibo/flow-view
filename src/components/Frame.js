@@ -76,7 +76,6 @@ export default class Frame extends React.Component<Props, State> {
       'deleteOutputPin',
       'deleteLink',
       'deleteNode',
-      'onClick',
       'onDocumentKeydown',
       'onDocumentKeyup',
       'onDoubleClick',
@@ -428,13 +427,6 @@ export default class Frame extends React.Component<Props, State> {
     }
   }
 
-  onClick (event: MouseEvent): void {
-    event.preventDefault()
-    event.stopPropagation()
-
-    this.setState({ showSelector: false })
-  }
-
   onDocumentKeydown (event: KeyboardEvent): void {
     const { code } = event
 
@@ -564,11 +556,12 @@ export default class Frame extends React.Component<Props, State> {
         height: 0,
         width: 0
       },
-      selectedItems: []
+      selectedItems: [],
+      showSelector: false
     })
   }
 
-  onMouseLeave (event: MouseEvent) {
+  onMouseLeave (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
@@ -761,7 +754,6 @@ export default class Frame extends React.Component<Props, State> {
     } = this.state
 
     const {
-      frameBorder,
       fontFamily,
       fontSize,
       lineWidth,
@@ -769,14 +761,15 @@ export default class Frame extends React.Component<Props, State> {
       primaryColor
     } = theme
 
+    const border = theme.frame.border
+
     let height = dynamicView.height || view.height
     let width = dynamicView.width || view.width
 
-    // Remove border, otherwise also server side SVGx renders
+    // Subtract border width, otherwise also server side SVGx renders
     // with the bottom and right border missing.
-    const border = 1 // TODO frameBorder is 1px, make it dynamic
-    height = height - (2 * border)
-    width = width - (2 * border)
+    height = height - (2 * border.width)
+    width = width - (2 * border.width)
 
     /**
      * Bring up selected nodes.
@@ -807,7 +800,9 @@ export default class Frame extends React.Component<Props, State> {
         onMouseMove={this.onMouseMove}
         onMouseUp={this.onMouseUp}
         textAnchor='start'
-        style={{border: frameBorder}}
+        style={{
+          border: `${border.width}px ${border.style} ${border.color}`
+        }}
         viewBox={responsive ? `0 0 ${width} ${height}` : null}
         width={responsive ? null : width}
       >
@@ -896,6 +891,7 @@ export default class Frame extends React.Component<Props, State> {
           nodeList={item.nodeList}
           pointer={showSelector ? pointer : null}
           show={showSelector}
+          theme={theme.selector}
         />
       </svg>
     )
@@ -913,6 +909,8 @@ export default class Frame extends React.Component<Props, State> {
 
       let selectedItems = [...this.state.selectedItems]
       let view = Object.assign({}, this.state.view)
+
+      const pointer = this.getCoordinates(event)
 
       // Do not select items when releasing a dragging link.
 
@@ -947,7 +945,9 @@ export default class Frame extends React.Component<Props, State> {
 
       this.setState({
         isMouseDown: true,
-        selectedItems
+        pointer,
+        selectedItems,
+        showSelector: false
       })
     }
   }

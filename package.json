@@ -53,9 +53,11 @@
   },
   "standard": {
     "globals": [
+      "Event",
+      "HTMLInputEvent",
       "KeyboardEvent",
       "MouseEvent",
-      "Event",
+      "SyntheticKeyboardEvent",
       "it",
       "expect"
     ],

@@ -4,6 +4,8 @@
 
 export type Area = { height: number, width: number }
 
+export type BorderStyle = string
+
 export type Color = string
 
 export type Id = string
@@ -16,11 +18,15 @@ export type Segment = { x1: number, y1: number, x2: number, y2: number }
 
 // Derived types.
 
-export type Rectangle = Area & Point
+type BorderTheme = {
+  width: number,
+  style: BorderStyle,
+  color: Color
+}
 
 export type NodeIdAndPosition = [Id, number]
 
-export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
+export type Rectangle = Area & Point
 
 export type SemiLink = {
   from: NodeIdAndPosition,
@@ -49,10 +55,19 @@ export type DeleteNode = (Id) => void
 
 // Secondly derived types
 
+export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
+
+export type FrameTheme = { border: BorderTheme }
+
 export type LinkCollection = { [Id]: SerializedLink }
 export type NodeCollection = { [Id]: SerializedNode }
+
+export type SelectorTheme = { border: BorderTheme }
+
+// Thirdly derived types.
 
 export type FlowView = {
   link: LinkCollection,
   node: NodeCollection
 }
+

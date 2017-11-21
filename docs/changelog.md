@@ -15,6 +15,12 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Fixed
+
+- Improved Selector: dragging issues, unnecessary rendering.
+
+## [v2.17.1] - 2017-11-10
+
 ### Added
 
 - Page with nav in basic example.

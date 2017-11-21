@@ -15,9 +15,13 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
+### Added
+
+- Nested theme props, improved structure.
+
 ### Fixed
 
-- Improved Selector: dragging issues, unnecessary rendering.
+- Improved Selector: solved dragging issues, and unnecessary rendering.
 
 ## [v2.17.1] - 2017-11-10
 

@@ -57,10 +57,27 @@ export type DeleteNode = (Id) => void
 
 export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
 
-export type FrameTheme = { border: BorderTheme }
-
 export type LinkCollection = { [Id]: SerializedLink }
 export type NodeCollection = { [Id]: SerializedNode }
+
+export type FrameTheme = { border: BorderTheme }
+
+export type LinkTheme = {
+  color: Color,
+  width: number
+}
+
+export type NodeTheme = {
+  body: {
+    color: Color,
+    height: number
+  },
+  color: Color,
+  pin: {
+    color: Color,
+    size: number
+  }
+}
 
 export type SelectorTheme = { border: BorderTheme }
 
@@ -70,4 +87,3 @@ export type FlowView = {
   link: LinkCollection,
   node: NodeCollection
 }
-

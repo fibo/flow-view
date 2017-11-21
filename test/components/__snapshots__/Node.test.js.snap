@@ -14,12 +14,12 @@ exports[`renders correctly 1`] = `
   <rect
     fill="#FFFFFF"
     height={40}
-    stroke="#BDBDBD"
+    stroke="gainsboro"
     strokeWidth={1}
     width={63.52}
   />
   <rect
-    fill="#BDBDBD"
+    fill="gainsboro"
     height={10}
     width={63.52}
   />
@@ -32,7 +32,7 @@ exports[`renders correctly 1`] = `
     </tspan>
   </text>
   <rect
-    fill="#BDBDBD"
+    fill="gainsboro"
     height={10}
     transform="translate(0,30)"
     width={63.52}

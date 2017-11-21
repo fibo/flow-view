@@ -3,30 +3,42 @@
 import type {
   FrameTheme,
   Color,
+  LinkTheme,
+  NodeTheme,
   SelectorTheme
 } from './types'
 
-const nodeBarColor = 'gainsboro'
+const baseColor = 'gainsboro'
 
 const defaultBorder = {
   width: 1,
   style: 'solid',
-  color: nodeBarColor
+  color: baseColor
 }
 
 export const defaultTheme = {
   fontFamily: 'Courier',
   fontSize: 17,
-  frame: { border: defaultBorder },
+  frame: {
+    border: defaultBorder
+  },
+  node: {
+    body: {
+      color: 'white',
+      height: 20
+    },
+    color: baseColor,
+    pin: {
+      color: 'darkgrey',
+      size: 10
+    }
+  },
   darkPrimaryColor: '#52BE80',
   primaryColor: '#A9DFBF',
-  lineWidth: 3,
-  nodeBarColor,
-  nodeBodyColor: '#FFFFFF',
-  nodeBodyHeight: 20,
-  pinColor: '#757575',
-  linkColor: '#9E9E9E',
-  pinSize: 10,
+  link: {
+    color: 'darkgrey',
+    width: 3
+  },
   selector: { border: defaultBorder }
 }
 
@@ -35,12 +47,8 @@ export type Theme = {
   fontFamily: string,
   fontSize: number,
   frame: FrameTheme,
+  link: LinkTheme,
+  node: NodeTheme,
   primaryColor: Color,
-  lineWidth: number,
-  linkColor: Color,
-  nodeBarColor: Color,
-  nodeBodyHeight: number,
-  pinColor: Color,
-  pinSize: number,
   selector: SelectorTheme
 }

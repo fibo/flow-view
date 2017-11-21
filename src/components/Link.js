@@ -18,7 +18,6 @@ type Props = {
   id: string,
   from: NodeIdAndPosition,
   startDraggingLinkTarget: (Id) => void,
-  pinSize: number,
   selected: boolean,
   selectLink: (MouseEvent) => void,
   sourceSelected: boolean,
@@ -104,11 +103,12 @@ export default class Link extends React.Component<Props> {
 
     const {
       darkPrimaryColor,
-      primaryColor,
-      linkColor,
-      lineWidth,
-      pinSize
+      primaryColor
     } = theme
+
+    const baseColor = theme.link.color
+    const linkWidth = theme.link.width
+    const pinSize = theme.node.pin.size
 
     const startX = x1 + (pinSize / 2)
     const startY = y1 + (pinSize / 2)
@@ -132,11 +132,11 @@ export default class Link extends React.Component<Props> {
           fill='transparent'
           onMouseDown={this.onPathMouseDown}
           onMouseUp={selectLink}
-          stroke={selected ? primaryColor : linkColor}
-          strokeWidth={lineWidth}
+          stroke={selected ? primaryColor : baseColor}
+          strokeWidth={linkWidth}
         />
         <rect
-          fill={(selected || sourceSelected) ? darkPrimaryColor : linkColor}
+          fill={(selected || sourceSelected) ? darkPrimaryColor : baseColor}
           height={pinSize}
           onMouseDown={this.onSourceMouseDown}
           width={pinSize}
@@ -145,7 +145,7 @@ export default class Link extends React.Component<Props> {
         />
         {to ? (
           <rect
-            fill={(selected || targetSelected) ? darkPrimaryColor : linkColor}
+            fill={(selected || targetSelected) ? darkPrimaryColor : baseColor}
             height={pinSize}
             onMouseDown={this.onTargetMouseDown}
             width={pinSize}

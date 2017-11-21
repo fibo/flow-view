@@ -106,10 +106,9 @@ export default class Node extends React.Component<Props> {
       width
     } = this.props
 
-    const {
-      fontSize,
-      pinSize
-    } = theme
+    const { fontSize } = theme
+
+    const pinSize = theme.node.pin.size
 
     const bodyHeight = this.getBodyHeight()
 
@@ -129,7 +128,7 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    return bodyHeight || theme.nodeBodyHeight
+    return bodyHeight || theme.node.body.height
   }
 
   render () {
@@ -150,12 +149,13 @@ export default class Node extends React.Component<Props> {
 
     const {
       darkPrimaryColor,
-      nodeBarColor,
-      nodeBodyColor,
-      pinColor,
-      pinSize,
       primaryColor
     } = theme
+
+    const baseColor = theme.node.color
+    const bodyColor = theme.node.body.color
+    const pinColor = theme.node.pin.color
+    const pinSize = theme.node.pin.size
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
@@ -175,14 +175,14 @@ export default class Node extends React.Component<Props> {
         {this.renderOutputMinus()}
         {this.renderOutputPlus()}
         <rect
-          fill={nodeBodyColor}
+          fill={bodyColor}
           height={bodyHeight + (2 * pinSize)}
-          stroke={selected ? primaryColor : nodeBarColor}
+          stroke={selected ? primaryColor : baseColor}
           strokeWidth={1}
           width={computedWidth}
         />
         <rect
-          fill={selected ? primaryColor : nodeBarColor}
+          fill={selected ? primaryColor : baseColor}
           height={pinSize}
           width={computedWidth}
         />
@@ -203,7 +203,7 @@ export default class Node extends React.Component<Props> {
         })}
         {this.renderBody()}
         <rect
-          fill={selected ? primaryColor : nodeBarColor}
+          fill={selected ? primaryColor : baseColor}
           height={pinSize}
           transform={`translate(0,${pinSize + bodyHeight})`}
           width={computedWidth}
@@ -232,10 +232,9 @@ export default class Node extends React.Component<Props> {
       text
     } = this.props
 
-    const {
-      fontSize,
-      pinSize
-    } = theme
+    const { fontSize } = theme
+
+    const pinSize = theme.node.pin.size
 
     const bodyHeight = this.getBodyHeight()
 
@@ -259,10 +258,9 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const {
-      primaryColor,
-      pinSize
-    } = theme
+    const { primaryColor } = theme
+
+    const pinSize = theme.node.pin.size
 
     if ((selected === false) || multiSelection) return null
 
@@ -285,10 +283,9 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const {
-      primaryColor,
-      pinSize
-    } = theme
+    const { primaryColor } = theme
+
+    const pinSize = theme.node.pin.size
 
     if (!ins || (selected === false) || multiSelection) return null
 
@@ -315,10 +312,9 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const {
-      primaryColor,
-      pinSize
-    } = theme
+    const { primaryColor } = theme
+
+    const pinSize = theme.node.pin.size
 
     if (!ins || (selected === false) || multiSelection) return null
 
@@ -343,10 +339,9 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const {
-      primaryColor,
-      pinSize
-    } = theme
+    const { primaryColor } = theme
+
+    const pinSize = theme.node.pin.size
 
     if (!outs || (selected === false) || multiSelection) return null
 
@@ -374,10 +369,9 @@ export default class Node extends React.Component<Props> {
       theme
     } = this.props
 
-    const {
-      primaryColor,
-      pinSize
-    } = theme
+    const { primaryColor } = theme
+
+    const pinSize = theme.node.pin.size
 
     if (!outs || (selected === false) || multiSelection) return null
 

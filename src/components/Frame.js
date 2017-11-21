@@ -137,7 +137,7 @@ export default class Frame extends React.Component<Props, State> {
     window.removeEventListener('resize', this.onWindowResize(container))
   }
 
-  connectLinkToTarget (linkId: Id, target: NodeIdAndPosition) {
+  connectLinkToTarget (linkId: Id, target: NodeIdAndPosition): void {
     const view = Object.assign({}, this.state.view)
 
     view.link[linkId].to = target
@@ -151,25 +151,22 @@ export default class Frame extends React.Component<Props, State> {
   }
 
   coordinatesOfLink ({ from, to }: SerializedLink): Segment {
-    const {
-      theme
-    } = this.props
+    const { theme } = this.props
 
     const {
       pointer,
       view
     } = this.state
 
-    const {
-      fontSize,
-      nodeBodyHeight,
-      pinSize
-    } = theme
+    const { fontSize } = theme
 
-    let x1 = null
-    let y1 = null
-    let x2 = null
-    let y2 = null
+    const nodeBodyHeight = theme.node.body.height
+    const pinSize = theme.node.pin.size
+
+    let x1
+    let y1
+    let x2
+    let y2
 
     const nodeIds = Object.keys(view.node)
     const idEquals = (x) => (id) => (id === x[0])
@@ -757,11 +754,11 @@ export default class Frame extends React.Component<Props, State> {
       fontFamily,
       fontSize,
       lineWidth,
-      pinSize,
       primaryColor
     } = theme
 
     const border = theme.frame.border
+    const pinSize = theme.node.pin.size
 
     let height = dynamicView.height || view.height
     let width = dynamicView.width || view.width

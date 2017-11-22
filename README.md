@@ -87,16 +87,19 @@ Adding this to your HTML page
 * **@param** `{Function}` **[item.util.typeOfNode]**
 * **@returns** `{Object}` **canvas**
 
-Suppose your *containerId* is `drawing`.
-In your HTML, **optionally** place a div where you want to mount the canvas.
+Suppose your *container id* is `drawing`.
+In your HTML, place a div where you want to mount the canvas.
 
 ```html
+<style>
+  #drawing {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 <div id="drawing"></div>
 ```
-
-If *flow-view* finds a `document` and does not exist a DOM element
-with given *containerId*, a brand new `div` is created and appended
-to the page *body*.
 
 Create an empty canvas
 

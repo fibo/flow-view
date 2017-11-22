@@ -55,16 +55,15 @@ export default class FlowViewCanvas extends EventEmitter {
     //
     // Cannot use `if (document)` or `if(no(document))` otherwise
     // test/serverside/works.js will fail.
-    if (typeof document === 'undefined') {
+    if (typeof document !== 'undefined') {
       // Check if container is a String.
       if (typeof container === 'string') {
         containerElement = document.getElementById(container)
-        console.log(containerElement)
 
-        if (no(containerElement)) {
-          containerNotFound = true
-        } else {
+        if (document.body.contains(containerElement)) {
           this.container = containerElement
+        } else {
+          containerNotFound = true
         }
       // Check if container is an HTMLElement.
       } else {

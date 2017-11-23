@@ -32,13 +32,37 @@ export default class Selector extends React.Component<Props, State> {
   constructor () {
     bindme(super(),
       'onChange',
-      'onKeyPress'
+      'onClick',
+      'onDoubleClick',
+      'onKeyPress',
+      'onMouseDown',
+      'onMouseUp'
     )
+  }
+
+  inputStyle () {
+    const { theme } = this.props
+
+    const border = theme.selector.border
+    const fontFamily = theme.frame.font.family
+    const fontSize = theme.frame.font.size
+
+    return {
+      border: `${border.width}px ${border.style} ${border.color}`,
+      fontFamily,
+      fontSize,
+      outline: 'none',
+      width: 200
+    }
   }
 
   onChange (event): void {
     this.setState({ text: event.target.value })
   }
+
+  onClick (event): void { event.stopPropagation() }
+
+  onDoubleClick (event): void { event.stopPropagation() }
 
   onKeyPress (event): void {
     const {
@@ -66,6 +90,10 @@ export default class Selector extends React.Component<Props, State> {
     }
   }
 
+  onMouseDown (event): void { event.stopPropagation() }
+
+  onMouseUp (event): void { event.stopPropagation() }
+
   render () {
     const {
       height,
@@ -76,14 +104,12 @@ export default class Selector extends React.Component<Props, State> {
       width
     } = this.props
 
-    const border = theme.selector.border
-    const fontFamily = theme.frame.font.family
-    const fontSize = theme.frame.font.size
-
     const text = this.state.text
 
     const hidden = { display: 'none', overflow: 'hidden' }
     const visible = { display: 'inline', overflow: 'visible' }
+
+    const inputStyle = this.inputStyle()
 
     return (
       <foreignObject
@@ -96,28 +122,26 @@ export default class Selector extends React.Component<Props, State> {
         <input
           list='nodes'
           type='text'
-          ref={(input) => {
-            if (input !== null) input.focus()
-          }}
-          style={{
-            border: `${border.width}px ${border.style} ${border.color}`,
-            fontFamily,
-            fontSize,
-            outline: 'none'
-          }}
+          ref={(input) => { if (input !== null) input.focus() }}
+          style={inputStyle}
           onChange={this.onChange}
+          onClick={this.onClick}
+          onDoubleClick={this.onDoubleClick}
           onKeyPress={this.onKeyPress}
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
           value={text}
         />
         {nodeList ? (
-          <datalist
-            id='nodes'
-            onChange={this.onChange}
-          >
+          <datalist id='nodes'>
             {nodeList.map((item, i) => (<option key={i} value={item} />))}
           </datalist>
         ) : null}
       </foreignObject>
     )
+  }
+
+  shouldComponentUpdate (nextProps) {
+    return this.props.show || nextProps.show
   }
 }

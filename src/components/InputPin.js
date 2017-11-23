@@ -26,10 +26,7 @@ export default class InputPin extends React.Component<Props> {
     bindme(super(), 'onMouseUp')
   }
 
-  onMouseDown (event: MouseEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-  }
+  onMouseDown (event: MouseEvent) { event.stopPropagation() }
 
   onMouseUp (event: MouseEvent) {
     event.preventDefault()

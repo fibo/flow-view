@@ -3,8 +3,6 @@ import React from 'react'
 
 import bindme from 'bindme'
 
-import ignoreEvent from '../utils/ignoreEvent'
-
 import { defaultTheme } from './theme'
 
 import type {
@@ -45,11 +43,17 @@ export default class Link extends React.Component<Props> {
 
   constructor () {
     bindme(super(),
+      'onClick',
+      'onDoubleClick',
       'onPathMouseDown',
       'onSourceMouseDown',
       'onTargetMouseDown'
     )
   }
+
+  onClick (event: MouseEvent): void { event.stopPropagation() }
+
+  onDoubleClick (event: MouseEvent): void { event.stopPropagation() }
 
   onPathMouseDown (event: MouseEvent): void {
     event.preventDefault()
@@ -123,8 +127,8 @@ export default class Link extends React.Component<Props> {
 
     return (
       <g
-        onClick={ignoreEvent}
-        onDoubleClick={ignoreEvent}
+        onClick={this.onClick}
+        onDoubleClick={this.onDoubleClick}
       >
         <path
           d={startY <= endY ? `M ${startX} ${startY} C ${controlPointX1} ${controlPointY1}, ${controlPointX2} ${controlPointY2} ,${endX} ${endY}` : `M ${startX} ${startY} L ${endX} ${endY}`}

@@ -25,7 +25,6 @@ import type {
 } from './types'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
-import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
 type Props = Point & SerializedNode & {
@@ -73,7 +72,8 @@ export default class Node extends React.Component<Props> {
       'createOutputPin',
       'deleteInputPin',
       'deleteNode',
-      'deleteOutputPin'
+      'deleteOutputPin',
+      'onDoubleClick'
     )
   }
 
@@ -122,7 +122,7 @@ export default class Node extends React.Component<Props> {
     return computedWidth
   }
 
-  getBodyHeight () {
+  getBodyHeight (): number {
     const {
       bodyHeight,
       theme
@@ -130,6 +130,8 @@ export default class Node extends React.Component<Props> {
 
     return bodyHeight || theme.node.body.height
   }
+
+  onDoubleClick (event: MouseEvent) { event.stopPropagation() }
 
   render () {
     const {
@@ -160,7 +162,7 @@ export default class Node extends React.Component<Props> {
 
     return (
       <g
-        onDoubleClick={ignoreEvent}
+        onDoubleClick={this.onDoubleClick}
         onMouseDown={selectNode}
         style={{
           cursor: (dragging ? 'pointer' : 'default')

@@ -30,14 +30,42 @@ var Selector = function (_React$Component) {
 
     _classCallCheck(this, Selector);
 
-    (0, _bindme2.default)((_temp = (_this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this)), _this), _this.state = { text: '' }, _temp), 'onChange', 'onKeyPress');
+    (0, _bindme2.default)((_temp = (_this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this)), _this), _this.state = { text: '' }, _temp), 'onChange', 'onClick', 'onDoubleClick', 'onKeyPress', 'onMouseDown', 'onMouseUp');
     return _this;
   }
 
   _createClass(Selector, [{
+    key: 'inputStyle',
+    value: function inputStyle() {
+      var theme = this.props.theme;
+
+
+      var border = theme.selector.border;
+      var fontFamily = theme.frame.font.family;
+      var fontSize = theme.frame.font.size;
+
+      return {
+        border: border.width + 'px ' + border.style + ' ' + border.color,
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        outline: 'none',
+        width: 200
+      };
+    }
+  }, {
     key: 'onChange',
     value: function onChange(event) {
       this.setState({ text: event.target.value });
+    }
+  }, {
+    key: 'onClick',
+    value: function onClick(event) {
+      event.stopPropagation();
+    }
+  }, {
+    key: 'onDoubleClick',
+    value: function onDoubleClick(event) {
+      event.stopPropagation();
     }
   }, {
     key: 'onKeyPress',
@@ -67,6 +95,16 @@ var Selector = function (_React$Component) {
       }
     }
   }, {
+    key: 'onMouseDown',
+    value: function onMouseDown(event) {
+      event.stopPropagation();
+    }
+  }, {
+    key: 'onMouseUp',
+    value: function onMouseUp(event) {
+      event.stopPropagation();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _props2 = this.props,
@@ -74,18 +112,15 @@ var Selector = function (_React$Component) {
           nodeList = _props2.nodeList,
           pointer = _props2.pointer,
           show = _props2.show,
-          theme = _props2.theme,
           width = _props2.width;
 
-
-      var border = theme.selector.border;
-      var fontFamily = theme.frame.font.family;
-      var fontSize = theme.frame.font.size;
 
       var text = this.state.text;
 
       var hidden = { display: 'none', overflow: 'hidden' };
       var visible = { display: 'inline', overflow: 'visible' };
+
+      var inputStyle = this.inputStyle();
 
       return _react2.default.createElement(
         'foreignObject',
@@ -102,27 +137,28 @@ var Selector = function (_React$Component) {
           ref: function ref(input) {
             if (input !== null) input.focus();
           },
-          style: {
-            border: border.width + 'px ' + border.style + ' ' + border.color,
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            outline: 'none'
-          },
+          style: inputStyle,
           onChange: this.onChange,
+          onClick: this.onClick,
+          onDoubleClick: this.onDoubleClick,
           onKeyPress: this.onKeyPress,
+          onMouseDown: this.onMouseDown,
+          onMouseUp: this.onMouseUp,
           value: text
         }),
         nodeList ? _react2.default.createElement(
           'datalist',
-          {
-            id: 'nodes',
-            onChange: this.onChange
-          },
+          { id: 'nodes' },
           nodeList.map(function (item, i) {
             return _react2.default.createElement('option', { key: i, value: item });
           })
         ) : null
       );
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps) {
+      return this.props.show || nextProps.show;
     }
   }]);
 

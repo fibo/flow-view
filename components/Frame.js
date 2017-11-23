@@ -48,10 +48,6 @@ var _randomString = require('../utils/randomString');
 
 var _randomString2 = _interopRequireDefault(_randomString);
 
-var _ignoreEvent = require('../utils/ignoreEvent');
-
-var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
 var _xOfPin = require('../utils/xOfPin');
 
 var _xOfPin2 = _interopRequireDefault(_xOfPin);
@@ -76,7 +72,7 @@ var FlowViewFrame = function (_React$Component) {
 
     _classCallCheck(this, FlowViewFrame);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewFrame.__proto__ || Object.getPrototypeOf(FlowViewFrame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowResize', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewFrame.__proto__ || Object.getPrototypeOf(FlowViewFrame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseEnter', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowResize', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
 
     _this.state = {
       dynamicView: { height: null, width: null },
@@ -569,6 +565,11 @@ var FlowViewFrame = function (_React$Component) {
       });
     }
   }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter(event) {
+      event.stopPropagation();
+    }
+  }, {
     key: 'onMouseLeave',
     value: function onMouseLeave(event) {
       event.preventDefault();
@@ -586,9 +587,7 @@ var FlowViewFrame = function (_React$Component) {
       this.setState({
         draggedLinkId: null,
         isMouseDown: false,
-        pointer: null,
         rectangularSelection: null,
-        showSelector: false,
         view: Object.assign({}, view, { link: link })
       });
     }
@@ -805,7 +804,7 @@ var FlowViewFrame = function (_React$Component) {
           onClick: this.onClick,
           onDoubleClick: this.onDoubleClick,
           onMouseDown: this.onMouseDown,
-          onMouseEnter: _ignoreEvent2.default,
+          onMouseEnter: this.onMouseEnter,
           onMouseLeave: this.onMouseLeave,
           onMouseMove: this.onMouseMove,
           onMouseUp: this.onMouseUp,

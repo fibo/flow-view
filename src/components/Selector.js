@@ -100,7 +100,6 @@ export default class Selector extends React.Component<Props, State> {
       nodeList,
       pointer,
       show,
-      theme,
       width
     } = this.props
 

@@ -53,7 +53,7 @@ var defaultItem = _Frame2.default.defaultProps.item;
 var FlowViewCanvas = function (_EventEmitter) {
   _inherits(FlowViewCanvas, _EventEmitter);
 
-  function FlowViewCanvas(containerId, item) {
+  function FlowViewCanvas(container, item) {
     var _this;
 
     _classCallCheck(this, FlowViewCanvas);
@@ -70,23 +70,29 @@ var FlowViewCanvas = function (_EventEmitter) {
 
     _this.item = item;
 
-    if (typeof containerId !== 'string') {
-      throw new TypeError('containerId must be a string', containerId);
-    }
+    var containerElement = void 0;
+    var containerNotFound = false;
 
     if (typeof document !== 'undefined') {
-      var container = document.getElementById(containerId);
+      if (typeof container === 'string') {
+        containerElement = document.getElementById(container);
 
-      if (container === null) {
-        container = document.createElement('div');
-        container.id = containerId;
-
-        container.setAttribute('style', 'display: inline-block; height: 100%; width: 100%;');
-
-        document.body.appendChild(container);
+        if (document.body.contains(containerElement)) {
+          _this.container = containerElement;
+        } else {
+          containerNotFound = true;
+        }
+      } else {
+        if (document.body.contains(container)) {
+          _this.container = containerElement;
+        } else {
+          containerNotFound = true;
+        }
       }
 
-      _this.container = container;
+      if (containerNotFound) {
+        throw new TypeError('container must be a String or an HTMLElement');
+      }
     } else {
       _this.container = null;
     }

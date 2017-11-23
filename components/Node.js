@@ -40,10 +40,6 @@ var _computeNodeWidth = require('../utils/computeNodeWidth');
 
 var _computeNodeWidth2 = _interopRequireDefault(_computeNodeWidth);
 
-var _ignoreEvent = require('../utils/ignoreEvent');
-
-var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
 var _xOfPin = require('../utils/xOfPin');
 
 var _xOfPin2 = _interopRequireDefault(_xOfPin);
@@ -64,7 +60,7 @@ var Node = function (_React$Component) {
 
     _classCallCheck(this, Node);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Node.__proto__ || Object.getPrototypeOf(Node)).call(this)), _this), 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteNode', 'deleteOutputPin');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Node.__proto__ || Object.getPrototypeOf(Node)).call(this)), _this), 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteNode', 'deleteOutputPin', 'onDoubleClick');
     return _this;
   }
 
@@ -130,6 +126,11 @@ var Node = function (_React$Component) {
       return bodyHeight || theme.node.body.height;
     }
   }, {
+    key: 'onDoubleClick',
+    value: function onDoubleClick(event) {
+      event.stopPropagation();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _props3 = this.props,
@@ -161,7 +162,7 @@ var Node = function (_React$Component) {
       return _react2.default.createElement(
         'g',
         {
-          onDoubleClick: _ignoreEvent2.default,
+          onDoubleClick: this.onDoubleClick,
           onMouseDown: selectNode,
           style: {
             cursor: dragging ? 'pointer' : 'default'

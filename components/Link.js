@@ -14,10 +14,6 @@ var _bindme = require('bindme');
 
 var _bindme2 = _interopRequireDefault(_bindme);
 
-var _ignoreEvent = require('../utils/ignoreEvent');
-
-var _ignoreEvent2 = _interopRequireDefault(_ignoreEvent);
-
 var _theme = require('./theme');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -36,11 +32,21 @@ var Link = function (_React$Component) {
 
     _classCallCheck(this, Link);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).call(this)), _this), 'onPathMouseDown', 'onSourceMouseDown', 'onTargetMouseDown');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).call(this)), _this), 'onClick', 'onDoubleClick', 'onPathMouseDown', 'onSourceMouseDown', 'onTargetMouseDown');
     return _this;
   }
 
   _createClass(Link, [{
+    key: 'onClick',
+    value: function onClick(event) {
+      event.stopPropagation();
+    }
+  }, {
+    key: 'onDoubleClick',
+    value: function onDoubleClick(event) {
+      event.stopPropagation();
+    }
+  }, {
     key: 'onPathMouseDown',
     value: function onPathMouseDown(event) {
       event.preventDefault();
@@ -118,8 +124,8 @@ var Link = function (_React$Component) {
       return _react2.default.createElement(
         'g',
         {
-          onClick: _ignoreEvent2.default,
-          onDoubleClick: _ignoreEvent2.default
+          onClick: this.onClick,
+          onDoubleClick: this.onDoubleClick
         },
         _react2.default.createElement('path', {
           d: startY <= endY ? 'M ' + startX + ' ' + startY + ' C ' + controlPointX1 + ' ' + controlPointY1 + ', ' + controlPointX2 + ' ' + controlPointY2 + ' ,' + endX + ' ' + endY : 'M ' + startX + ' ' + startY + ' L ' + endX + ' ' + endY,

@@ -17,9 +17,11 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### TODO
 
-- Check out how many time render is invoked, and optimize it.
+- Check out how many time render is invoked, and optimize it as done with Selector.
 - Add @flow to Canvas and FlowViewFrame.
 - Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
+
+## [v2.18.0] - 2017-11-23
 
 ### Added
 
@@ -39,7 +41,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Removed
 
 - The utils/ignoreEvent.js was removed cause handling on every class method is better for maintenance.
--
+
 ## [v2.17.1] - 2017-11-10
 
 ### Added

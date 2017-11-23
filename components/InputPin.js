@@ -43,7 +43,6 @@ var InputPin = function (_React$Component) {
   _createClass(InputPin, [{
     key: 'onMouseDown',
     value: function onMouseDown(event) {
-      event.preventDefault();
       event.stopPropagation();
     }
   }, {

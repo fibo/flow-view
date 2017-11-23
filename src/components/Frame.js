@@ -12,7 +12,6 @@ import Selector from './Selector'
 
 import computeNodeWidth from '../utils/computeNodeWidth'
 import randomString from '../utils/randomString'
-import ignoreEvent from '../utils/ignoreEvent'
 import xOfPin from '../utils/xOfPin'
 
 import { defaultTheme } from './theme'
@@ -108,6 +107,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       'onDocumentKeyup',
       'onDoubleClick',
       'onMouseDown',
+      'onMouseEnter',
       'onMouseLeave',
       'onMouseMove',
       'onMouseUp',
@@ -586,6 +586,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     })
   }
 
+  onMouseEnter (event: MouseEvent): void { event.stopPropagation() }
+
   onMouseLeave (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
@@ -602,9 +604,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({
       draggedLinkId: null,
       isMouseDown: false,
-      pointer: null,
       rectangularSelection: null,
-      showSelector: false,
       view: Object.assign({}, view, { link })
     })
   }
@@ -817,7 +817,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
-        onMouseEnter={ignoreEvent}
+        onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         onMouseMove={this.onMouseMove}
         onMouseUp={this.onMouseUp}

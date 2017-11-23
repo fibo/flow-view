@@ -20,7 +20,6 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Check out how many time render is invoked, and optimize it.
 - Add @flow to Canvas and FlowViewFrame.
 - Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
-- container should be passed explicitly in the contructor it does not make sense to create it.
 
 ### Added
 
@@ -28,11 +27,19 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Renamed Canvas component to *FlowViewCanvas* so it will be recognizable in React Chrome extension or similar contexts.
 - Updated deps.
 
+### Changed
+
+- The container should be passed explicitly in the Canvas contructor it does not make sense to create it.
+
 ### Fixed
 
-- Improved Selector: solved dragging issues, and unnecessary rendering.
+- Improved Selector: solved dragging and other minor issues.
 - Do not require React as a dependency. Also move react-test-renderer to dev deps.
 
+### Removed
+
+- The utils/ignoreEvent.js was removed cause handling on every class method is better for maintenance.
+-
 ## [v2.17.1] - 2017-11-10
 
 ### Added

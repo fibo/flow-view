@@ -101,7 +101,9 @@ export type SerializedNodes = { [Id]: SerializedNode }
 
 export type FlowView = {
   link: LinkCollection,
-  node: NodeCollection
+  node: NodeCollection,
+  height?: number,
+  width?: number
 }
 
 export type Theme = {

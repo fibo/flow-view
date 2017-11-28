@@ -1,4 +1,4 @@
-// TODO flow@
+// flow@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -37,7 +37,7 @@ import type {
   UpdateNodesGeometry
 } from './types'
 
-type Props = {
+export type Props = {
   emitCreateInputPin: CreatePin,
   emitCreateLink: CreateLink,
   emitCreateNode: CreateNode,
@@ -47,6 +47,11 @@ type Props = {
   emitCreateNode: DeleteNode,
   emitDeleteOutputPin: DeletePin,
   emitUpdateNodesGeometry: UpdateNodesGeometry,
+  opt: {
+    node: {},
+    nodeList?: Array<string>,
+    util: { typeOfNode: () => string }
+  },
   rectangularSelection: ?RectangularSelection,
   responsive: boolean,
   theme: Theme,
@@ -79,7 +84,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     emitDeleteNode: Function.prototype,
     emitDeleteOutputPin: Function.prototype,
     emitUpdateNodesGeometry: Function.prototype,
-    item: {
+    opt: {
       node: { DefaultNode },
       nodeList: [],
       util: {
@@ -823,7 +828,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   render () {
     const {
-      item,
+      opt,
       model,
       responsive,
       theme
@@ -938,8 +943,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
             y
           } = node
 
-          const nodeType = item.util.typeOfNode(node)
-          const Node = item.node[nodeType]
+          const nodeType = opt.util.typeOfNode(node)
+          const Node = opt.node[nodeType]
 
           return (
             <Node key={i}
@@ -969,7 +974,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         })}
         <Selector
           createNode={this.selectorCreateNode}
-          nodeList={item.nodeList}
+          nodeList={opt.nodeList}
           pointer={showSelector ? pointer : null}
           show={showSelector}
           theme={theme}

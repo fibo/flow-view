@@ -1,3 +1,7 @@
+// @flow
+// TODO Element is required by flow, but it is not imported, it seems
+//      to be a builtin. By now I make it global, it makes linter happy.
+/* global Element */
 import React from 'react'
 
 import ReactDOM from 'react-dom'
@@ -11,20 +15,25 @@ import no from 'not-defined'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
+import type { Props as FramePropType } from './components/Frame'
 
-import {
+import type {
   FlowView,
   Id,
   NodeIdAndPosition,
-  Pin,
   SerializedLink,
-  SerializedNode
+  SerializedNode,
+  SerializedPin
 } from './components/types'
 
-const defaultItem = FlowViewFrame.defaultProps.item
+const defaultOpt = FlowViewFrame.defaultProps.opt
 
 export default class FlowViewCanvas extends EventEmitter {
-  constructor (container, item) {
+  container: ?Element
+  opt: FramePropType.opt
+  view: FlowView
+
+  constructor (container: Element | string, opt: FramePropType.opt) {
     bindme(super(),
       'emitCreateInputPin',
       'emitCreateLink',
@@ -40,13 +49,13 @@ export default class FlowViewCanvas extends EventEmitter {
 
     this.view = FlowViewFrame.defaultProps.view
 
-    if (no(item)) item = defaultItem
-    if (no(item.node)) item.node = defaultItem.node
-    if (no(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode
-    if (no(item.nodeList)) item.nodeList = defaultItem.nodeList
-    if (no(item.util)) item.util = defaultItem.util
+    if (no(opt)) opt = defaultOpt
+    if (no(opt.node)) opt.node = defaultOpt.node
+    if (no(opt.node.DefaultNode)) opt.node.DefaultNode = defaultOpt.node.DefaultNode
+    if (no(opt.nodeList)) opt.nodeList = defaultOpt.nodeList
+    if (no(opt.util)) opt.util = defaultOpt.util
 
-    this.item = item
+    this.opt = opt
 
     let containerElement
     let containerNotFound = false
@@ -61,15 +70,15 @@ export default class FlowViewCanvas extends EventEmitter {
       if (typeof container === 'string') {
         containerElement = document.getElementById(container)
 
-        if (document.body.contains(containerElement)) {
+        if (document.body && document.body.contains(containerElement)) {
           this.container = containerElement
         } else {
           containerNotFound = true
         }
       // Check if container is an HTMLElement.
       } else {
-        if (document.body.contains(container)) {
-          this.container = containerElement
+        if (container && document.body && document.body.contains(container)) {
+          this.container = container
         } else {
           containerNotFound = true
         }
@@ -83,7 +92,10 @@ export default class FlowViewCanvas extends EventEmitter {
     }
   }
 
-  emitCreateInputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin): void {
+  emitCreateInputPin (
+    nodeIdAndPosition: NodeIdAndPosition,
+    pin: SerializedPin
+  ): void {
     this.emit('createInputPin', nodeIdAndPosition, pin)
   }
 
@@ -95,7 +107,10 @@ export default class FlowViewCanvas extends EventEmitter {
     this.emit('createNode', node, id)
   }
 
-  emitCreateOutputPin (nodeIdAndPosition: NodeIdAndPosition, pin: Pin): void {
+  emitCreateOutputPin (
+    nodeIdAndPosition: NodeIdAndPosition,
+    pin: SerializedPin
+  ): void {
     this.emit('createOutputPin', nodeIdAndPosition, pin)
   }
 
@@ -131,9 +146,9 @@ export default class FlowViewCanvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
 
-  render (view: FlowView, model, callback): void {
+  render (view: FlowView, model: {}, callback?: Function): void {
     const container = this.container
-    const item = this.item
+    const opt = this.opt
 
     let height
     let width
@@ -173,9 +188,9 @@ export default class FlowViewCanvas extends EventEmitter {
           emitDeleteNode={this.emitDeleteNode}
           emitDeleteOutputPin={this.emitDeleteOutputPin}
           emitUpdateNodesGeometry={this.emitUpdateNodesGeometry}
-          item={item}
+          opt={opt}
           model={model}
-          nodeList={item.nodeList}
+          nodeList={opt.nodeList}
           view={view}
         />, container)
     } else {
@@ -185,7 +200,7 @@ export default class FlowViewCanvas extends EventEmitter {
 
       var jsx = (
         <FlowViewFrame responsive
-          item={item}
+          opt={opt}
           view={view}
          />
        )

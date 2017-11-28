@@ -31,8 +31,10 @@ import type {
   Segment,
   SerializedLink,
   SerializedNode,
+  SerializedNodes,
   SerializedPin,
-  Theme
+  Theme,
+  UpdateNodesGeometry
 } from './types'
 
 type Props = {
@@ -44,6 +46,7 @@ type Props = {
   emitDeleteLink: DeleteLink,
   emitCreateNode: DeleteNode,
   emitDeleteOutputPin: DeletePin,
+  emitUpdateNodesGeometry: UpdateNodesGeometry,
   rectangularSelection: ?RectangularSelection,
   responsive: boolean,
   theme: Theme,
@@ -54,6 +57,7 @@ type State = {
   dynamicView: { height: ?number, width: ?number },
   draggedLinkId: ?Id,
   isMouseDown: boolean,
+  isMouseDraggingItems: boolean,
   offset: Point,
   pointer: ?Point,
   rectangularSelection: ?Area,
@@ -74,6 +78,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     emitDeleteLink: Function.prototype,
     emitDeleteNode: Function.prototype,
     emitDeleteOutputPin: Function.prototype,
+    emitUpdateNodesGeometry: Function.prototype,
     item: {
       node: { DefaultNode },
       nodeList: [],
@@ -122,6 +127,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
       isMouseDown: false,
+      isMouseDraggingItems: false,
       offset: { x: 0, y: 0 },
       pointer: null,
       rectangularSelection: null,
@@ -431,9 +437,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   generateId (): Id {
-    const {
-      view
-    } = this.state
+    const { view } = this.state
 
     const id = randomString(3)
 
@@ -455,17 +459,21 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   onDocumentKeydown (event: KeyboardEvent): void {
     const { code } = event
 
+    const { emitUpdateNodesGeometry } = this.props
+
     const {
       selectedItems,
       shiftPressed,
       view
     } = this.state
 
+    const isArrowCode = (code.substring(0, 5) === 'Arrow')
+
     const selectedLinks = this.selectedLinks()
     const thereAreSelectedLinks = (selectedLinks.length > 0)
 
-    const selectedNodes = this.selectedNodes()
-    const thereAreSelectedNodes = (selectedNodes.length > 0)
+    const selectedNodeIds = this.selectedNodeIds()
+    const thereAreSelectedNodes = (selectedNodeIds.length > 0)
 
     let draggingDelta = { x: 0, y: 0 }
     const unit = shiftPressed ? 1 : 10
@@ -493,7 +501,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         }
 
         if (thereAreSelectedNodes) {
-          selectedNodes.forEach(this.deleteNode)
+          selectedNodeIds.forEach(this.deleteNode)
         }
 
         break
@@ -536,18 +544,32 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         break
     }
 
-    if (thereAreSelectedNodes && (code.substring(0, 5) === 'Arrow')) {
-      this.dragItems(draggingDelta, selectedNodes)
+    if (thereAreSelectedNodes && isArrowCode) {
+      this.dragItems(draggingDelta, selectedNodeIds)
+
+      if (!shiftPressed) {
+        emitUpdateNodesGeometry(this.selectedNodes())
+      }
     }
   }
 
   onDocumentKeyup (event: KeyboardEvent) {
     const { code } = event
 
+    const { emitUpdateNodesGeometry } = this.props
+
+    const selectedNodeIds = this.selectedNodeIds()
+    const thereAreSelectedNodes = (selectedNodeIds.length > 0)
+
     switch (code) {
       case 'ShiftLeft':
       case 'ShiftRight':
+        if (thereAreSelectedNodes) {
+          emitUpdateNodesGeometry(this.selectedNodes())
+        }
+
         this.setState({ shiftPressed: false })
+
         break
 
       default:
@@ -635,6 +657,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     if (rectangularSelection) {
       this.setState({
+        pointer: nextPointer,
         rectangularSelection: Object.assign({},
           rectangularSelection,
           {
@@ -642,14 +665,19 @@ export default class FlowViewFrame extends React.Component<Props, State> {
             width: nextPointer.x - rectangularSelection.x
           })
       })
+    } else {
+      this.setState({
+        isMouseDraggingItems: true,
+        pointer: nextPointer
+      })
     }
-
-    this.setState({ pointer: nextPointer })
   }
 
   onMouseUp (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
+
+    const { emitUpdateNodesGeometry } = this.props
 
     const {
       draggedLinkId,
@@ -669,24 +697,33 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         selectedItems: [],
         view: Object.assign({}, view)
       })
+
+      return
+    }
+
+    const isInside = (rectangularSelection) => (x, y) => {
+      // Consider when rectangular selection is reflected.
+      const boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width
+      const boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height
+
+      return (
+        (x >= boundsX) && (x <= boundsX + rectangularSelection.width) &&
+        (y >= boundsY) && (y <= boundsY + rectangularSelection.height)
+      )
     }
 
     if (rectangularSelection) {
       let selectedItems = []
 
-      // Consider when rectangular selection is reflected.
-      const boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width
-      const boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height
-
       Object.keys(view.node).forEach((nodeId) => {
         const { x, y } = view.node[nodeId]
 
-        const isInside = (
-          (x >= boundsX) &&
-          (y >= boundsY)
+        // TODO Check every node vertex. Would need node height and width.
+        const nodeIsInside = (
+          isInside(rectangularSelection)(x, y)
         )
 
-        if (isInside) {
+        if (nodeIsInside) {
           selectedItems.push(nodeId)
         }
       })
@@ -698,11 +735,21 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         selectedItems,
         rectangularSelection: null
       })
+
+      return
+    }
+
+    const selectedNodeIds = this.selectedNodeIds()
+    const thereAreSelectedNodes = (selectedNodeIds.length > 0)
+
+    if (thereAreSelectedNodes) {
+      emitUpdateNodesGeometry(this.selectedNodes())
     }
 
     this.setState({
       draggedLinkId: null,
       isMouseDown: false,
+      isMouseDraggingItems: false,
       pointer: null
     })
   }
@@ -740,13 +787,27 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return selectedLinks
   }
 
-  selectedNodes (): { [Id]: SerializedNode } {
+  selectedNodeIds (): Array<Id> {
     const {
       view,
       selectedItems
     } = this.state
 
-    const selectedNodes = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+    const selectedNodeIds = Object.keys(view.node).filter((id) => selectedItems.indexOf(id) > -1)
+
+    return selectedNodeIds
+  }
+
+  selectedNodes (): SerializedNodes {
+    const { view } = this.state
+
+    let selectedNodes = {}
+
+    const selectedNodeIds = this.selectedNodeIds()
+
+    selectedNodeIds.forEach(id => {
+      selectedNodes[id] = Object.assign({}, view.node[id])
+    })
 
     return selectedNodes
   }
@@ -890,7 +951,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               deleteInputPin={this.deleteInputPin}
               deleteNode={this.deleteNode}
               deleteOutputPin={this.deleteOutputPin}
-              fontSize={fontSize}
               height={height}
               id={id}
               ins={ins}

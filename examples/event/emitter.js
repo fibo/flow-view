@@ -1,6 +1,6 @@
-var Canvas = require('flow-view').Canvas
+const Canvas = require('flow-view').Canvas
 
-var canvas = new Canvas('drawing', {})
+const canvas = new Canvas('drawing')
 
 canvas.on('createLink', (link, id) => {
   console.log('createLink', link, id)
@@ -34,20 +34,8 @@ canvas.on('deleteOutputPin', (nodeId, position) => {
   console.log('deleteOutputPin', nodeId, position)
 })
 
-canvas.on('endDragging', (selectNodes) => {
-  console.log('endDragging', selectNodes)
-})
-
-canvas.on('renameNode', (nodeId, text) => {
-  console.log('renameNode', nodeId, text)
-})
-
-canvas.on('selectLink', (id) => {
-  console.log('selectLink', id)
-})
-
-canvas.on('selectNode', (id) => {
-  console.log('selectNode', id)
+canvas.on('updateNodesGeometry', (nodes) => {
+  console.log('updateNodesGeometry', nodes)
 })
 
 canvas.render({
@@ -60,6 +48,6 @@ canvas.render({
   }
 })
 
-var consoleLogDiv = document.createElement('script')
+const consoleLogDiv = document.createElement('script')
 consoleLogDiv.src = 'https://rawgit.com/bahmutov/console-log-div/master/console-log-div.js'
 document.body.appendChild(consoleLogDiv)

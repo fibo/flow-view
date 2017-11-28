@@ -161,17 +161,17 @@ canvas.render({
 See [event/emitter.js][example_event_emitter] example.
 The following events are emitted by [canvas](#canvas):
 
-| name              | arguments               |
-|-------------------|-------------------------|
-| `createLink`      | link, linkId            |
-| `createNode`      | node, nodeId            |
-| `createInputPin`  | [nodeId, position], pin |
-| `createOutputPin` | [nodeId, position], pin |
-| `deleteLink`      | linkId                  |
-| `deleteNode`      | nodeId                  |
-| `deleteInputPin`  | [nodeId, position]      |
-| `deleteOutputPin` | [nodeId, position]      |
-| `endDragging`     | { nodeId: { x, y } }    |
+| name                  | data                           |
+|-----------------------|-------------------------------|
+| `createInputPin`      | [nodeId, position], pin       |
+| `createLink`          | link, linkId                  |
+| `createNode`          | node, nodeId                  |
+| `createOutputPin`     | [nodeId, position], pin       |
+| `deleteLink`          | linkId                        |
+| `deleteNode`          | nodeId                        |
+| `deleteInputPin`      | [nodeId, position]            |
+| `deleteOutputPin`     | [nodeId, position]            |
+| `updateNodesGeometry` | {id1: node1, id2: node2, ...} |
 
 ### Hotkeys
 

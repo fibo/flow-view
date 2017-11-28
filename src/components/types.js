@@ -55,6 +55,8 @@ export type DeleteLink = (Id) => void
 export type CreateNode = (SerializedNode, Id) => void
 export type DeleteNode = (Id) => void
 
+export type UpdateNodesGeometry = (Array<SerializedNode>) => void
+
 // Secondly derived types
 
 export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
@@ -92,6 +94,8 @@ export type NodeTheme = {
 }
 
 export type SelectorTheme = { border: BorderTheme }
+
+export type SerializedNodes = { [Id]: SerializedNode }
 
 // Thirdly derived types.
 

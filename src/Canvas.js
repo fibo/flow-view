@@ -34,7 +34,8 @@ export default class FlowViewCanvas extends EventEmitter {
       'emitDeleteOutputPin',
       'emitDeleteLink',
       'emitDeleteNode',
-      'emitDeleteOutputPin'
+      'emitDeleteOutputPin',
+      'emitUpdateNodesGeometry'
     )
 
     this.view = FlowViewFrame.defaultProps.view
@@ -114,6 +115,10 @@ export default class FlowViewCanvas extends EventEmitter {
     this.emit('deleteOutputPin', nodeIdAndPosition)
   }
 
+  emitUpdateNodesGeometry (nodes: Array<SerializedNode>): void {
+    this.emit('updateNodesGeometry', nodes)
+  }
+
   getView (): FlowView {
     return Object.assign({}, this.view)
   }
@@ -167,6 +172,7 @@ export default class FlowViewCanvas extends EventEmitter {
           emitDeleteLink={this.emitDeleteLink}
           emitDeleteNode={this.emitDeleteNode}
           emitDeleteOutputPin={this.emitDeleteOutputPin}
+          emitUpdateNodesGeometry={this.emitUpdateNodesGeometry}
           item={item}
           model={model}
           nodeList={item.nodeList}

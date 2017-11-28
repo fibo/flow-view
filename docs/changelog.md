@@ -21,6 +21,10 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Add @flow to Canvas and FlowViewFrame.
 - Pass theme as argument to Canvas constructor, create a dark (or whatever) theme example.
 
+## Added
+
+- Added *updateNodesGeometry* event, triggered when nodes are moved.
+
 ## [v2.18.0] - 2017-11-23
 
 ### Added

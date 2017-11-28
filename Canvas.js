@@ -38,8 +38,6 @@ var _Frame = require('./components/Frame');
 
 var _Frame2 = _interopRequireDefault(_Frame);
 
-var _types = require('./components/types');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48,27 +46,27 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var defaultItem = _Frame2.default.defaultProps.item;
+var defaultOpt = _Frame2.default.defaultProps.opt;
 
 var FlowViewCanvas = function (_EventEmitter) {
   _inherits(FlowViewCanvas, _EventEmitter);
 
-  function FlowViewCanvas(container, item) {
+  function FlowViewCanvas(container, opt) {
     var _this;
 
     _classCallCheck(this, FlowViewCanvas);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin', 'emitUpdateNodesGeometry');
 
     _this.view = _Frame2.default.defaultProps.view;
 
-    if ((0, _notDefined2.default)(item)) item = defaultItem;
-    if ((0, _notDefined2.default)(item.node)) item.node = defaultItem.node;
-    if ((0, _notDefined2.default)(item.node.DefaultNode)) item.node.DefaultNode = defaultItem.node.DefaultNode;
-    if ((0, _notDefined2.default)(item.nodeList)) item.nodeList = defaultItem.nodeList;
-    if ((0, _notDefined2.default)(item.util)) item.util = defaultItem.util;
+    if ((0, _notDefined2.default)(opt)) opt = defaultOpt;
+    if ((0, _notDefined2.default)(opt.node)) opt.node = defaultOpt.node;
+    if ((0, _notDefined2.default)(opt.node.DefaultNode)) opt.node.DefaultNode = defaultOpt.node.DefaultNode;
+    if ((0, _notDefined2.default)(opt.nodeList)) opt.nodeList = defaultOpt.nodeList;
+    if ((0, _notDefined2.default)(opt.util)) opt.util = defaultOpt.util;
 
-    _this.item = item;
+    _this.opt = opt;
 
     var containerElement = void 0;
     var containerNotFound = false;
@@ -77,14 +75,14 @@ var FlowViewCanvas = function (_EventEmitter) {
       if (typeof container === 'string') {
         containerElement = document.getElementById(container);
 
-        if (document.body.contains(containerElement)) {
+        if (document.body && document.body.contains(containerElement)) {
           _this.container = containerElement;
         } else {
           containerNotFound = true;
         }
       } else {
-        if (document.body.contains(container)) {
-          _this.container = containerElement;
+        if (container && document.body && document.body.contains(container)) {
+          _this.container = container;
         } else {
           containerNotFound = true;
         }
@@ -140,6 +138,11 @@ var FlowViewCanvas = function (_EventEmitter) {
       this.emit('deleteOutputPin', nodeIdAndPosition);
     }
   }, {
+    key: 'emitUpdateNodesGeometry',
+    value: function emitUpdateNodesGeometry(nodes) {
+      this.emit('updateNodesGeometry', nodes);
+    }
+  }, {
     key: 'getView',
     value: function getView() {
       return Object.assign({}, this.view);
@@ -148,7 +151,7 @@ var FlowViewCanvas = function (_EventEmitter) {
     key: 'render',
     value: function render(view, model, callback) {
       var container = this.container;
-      var item = this.item;
+      var opt = this.opt;
 
       var height = void 0;
       var width = void 0;
@@ -179,9 +182,10 @@ var FlowViewCanvas = function (_EventEmitter) {
           emitDeleteLink: this.emitDeleteLink,
           emitDeleteNode: this.emitDeleteNode,
           emitDeleteOutputPin: this.emitDeleteOutputPin,
-          item: item,
+          emitUpdateNodesGeometry: this.emitUpdateNodesGeometry,
+          opt: opt,
           model: model,
-          nodeList: item.nodeList,
+          nodeList: opt.nodeList,
           view: view
         }), container);
       } else {
@@ -189,7 +193,7 @@ var FlowViewCanvas = function (_EventEmitter) {
         var opts = { doctype: true, xmlns: true };
 
         var jsx = _react2.default.createElement(_Frame2.default, { responsive: true,
-          item: item,
+          opt: opt,
           view: view
         });
 

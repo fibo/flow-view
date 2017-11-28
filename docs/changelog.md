@@ -23,7 +23,8 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Added
 
-- Added *updateNodesGeometry* event, triggered when nodes are moved.
+- Trigger *updateNodesGeometry* event, when nodes are moved.
+- Complete flowjs coverage.
 
 ## [v2.18.0] - 2017-11-23
 

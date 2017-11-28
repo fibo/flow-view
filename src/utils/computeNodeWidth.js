@@ -1,8 +1,22 @@
+// @flow
+
+import type { SerializedPin } from '../components/types'
+
 export default function computeNodeWidth ({
   bodyHeight,
   pinSize,
   fontSize,
   node
+}: {
+  bodyHeight: number,
+  pinSize: number,
+  fontSize: number,
+  node: {
+    ins: Array<SerializedPin>,
+    outs: Array<SerializedPin>,
+    text: string,
+    width: number
+  }
 }) {
   const ins = node.ins || []
   const outs = node.outs || []

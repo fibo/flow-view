@@ -78,6 +78,7 @@ var FlowViewFrame = function (_React$Component) {
       dynamicView: { height: null, width: null },
       draggedLinkId: null,
       isMouseDown: false,
+      isMouseDraggingItems: false,
       offset: { x: 0, y: 0 },
       pointer: null,
       rectangularSelection: null,
@@ -430,17 +431,20 @@ var FlowViewFrame = function (_React$Component) {
       var _this5 = this;
 
       var code = event.code;
+      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
       var _state3 = this.state,
           selectedItems = _state3.selectedItems,
           shiftPressed = _state3.shiftPressed,
           view = _state3.view;
 
 
+      var isArrowCode = code.substring(0, 5) === 'Arrow';
+
       var selectedLinks = this.selectedLinks();
       var thereAreSelectedLinks = selectedLinks.length > 0;
 
-      var selectedNodes = this.selectedNodes();
-      var thereAreSelectedNodes = selectedNodes.length > 0;
+      var selectedNodeIds = this.selectedNodeIds();
+      var thereAreSelectedNodes = selectedNodeIds.length > 0;
 
       var draggingDelta = { x: 0, y: 0 };
       var unit = shiftPressed ? 1 : 10;
@@ -468,7 +472,7 @@ var FlowViewFrame = function (_React$Component) {
           }
 
           if (thereAreSelectedNodes) {
-            selectedNodes.forEach(this.deleteNode);
+            selectedNodeIds.forEach(this.deleteNode);
           }
 
           break;
@@ -511,20 +515,33 @@ var FlowViewFrame = function (_React$Component) {
           break;
       }
 
-      if (thereAreSelectedNodes && code.substring(0, 5) === 'Arrow') {
-        this.dragItems(draggingDelta, selectedNodes);
+      if (thereAreSelectedNodes && isArrowCode) {
+        this.dragItems(draggingDelta, selectedNodeIds);
+
+        if (!shiftPressed) {
+          emitUpdateNodesGeometry(this.selectedNodes());
+        }
       }
     }
   }, {
     key: 'onDocumentKeyup',
     value: function onDocumentKeyup(event) {
       var code = event.code;
+      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
 
+
+      var selectedNodeIds = this.selectedNodeIds();
+      var thereAreSelectedNodes = selectedNodeIds.length > 0;
 
       switch (code) {
         case 'ShiftLeft':
         case 'ShiftRight':
+          if (thereAreSelectedNodes) {
+            emitUpdateNodesGeometry(this.selectedNodes());
+          }
+
           this.setState({ shiftPressed: false });
+
           break;
 
         default:
@@ -619,14 +636,18 @@ var FlowViewFrame = function (_React$Component) {
 
       if (rectangularSelection) {
         this.setState({
+          pointer: nextPointer,
           rectangularSelection: Object.assign({}, rectangularSelection, {
             height: nextPointer.y - rectangularSelection.y,
             width: nextPointer.x - rectangularSelection.x
           })
         });
+      } else {
+        this.setState({
+          isMouseDraggingItems: true,
+          pointer: nextPointer
+        });
       }
-
-      this.setState({ pointer: nextPointer });
     }
   }, {
     key: 'onMouseUp',
@@ -634,6 +655,7 @@ var FlowViewFrame = function (_React$Component) {
       event.preventDefault();
       event.stopPropagation();
 
+      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
       var _state6 = this.state,
           draggedLinkId = _state6.draggedLinkId,
           rectangularSelection = _state6.rectangularSelection;
@@ -652,23 +674,30 @@ var FlowViewFrame = function (_React$Component) {
           selectedItems: [],
           view: Object.assign({}, view)
         });
+
+        return;
       }
+
+      var isInside = function isInside(rectangularSelection) {
+        return function (x, y) {
+          var boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width;
+          var boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height;
+
+          return x >= boundsX && x <= boundsX + rectangularSelection.width && y >= boundsY && y <= boundsY + rectangularSelection.height;
+        };
+      };
 
       if (rectangularSelection) {
         var _selectedItems = [];
-
-        var boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width;
-        var boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height;
 
         Object.keys(view.node).forEach(function (nodeId) {
           var _view$node$nodeId = view.node[nodeId],
               x = _view$node$nodeId.x,
               y = _view$node$nodeId.y;
 
+          var nodeIsInside = isInside(rectangularSelection)(x, y);
 
-          var isInside = x >= boundsX && y >= boundsY;
-
-          if (isInside) {
+          if (nodeIsInside) {
             _selectedItems.push(nodeId);
           }
         });
@@ -680,11 +709,21 @@ var FlowViewFrame = function (_React$Component) {
           selectedItems: _selectedItems,
           rectangularSelection: null
         });
+
+        return;
+      }
+
+      var selectedNodeIds = this.selectedNodeIds();
+      var thereAreSelectedNodes = selectedNodeIds.length > 0;
+
+      if (thereAreSelectedNodes) {
+        emitUpdateNodesGeometry(this.selectedNodes());
       }
 
       this.setState({
         draggedLinkId: null,
         isMouseDown: false,
+        isMouseDraggingItems: false,
         pointer: null
       });
     }
@@ -729,15 +768,31 @@ var FlowViewFrame = function (_React$Component) {
       return selectedLinks;
     }
   }, {
-    key: 'selectedNodes',
-    value: function selectedNodes() {
+    key: 'selectedNodeIds',
+    value: function selectedNodeIds() {
       var _state8 = this.state,
           view = _state8.view,
           selectedItems = _state8.selectedItems;
 
 
-      var selectedNodes = Object.keys(view.node).filter(function (id) {
+      var selectedNodeIds = Object.keys(view.node).filter(function (id) {
         return selectedItems.indexOf(id) > -1;
+      });
+
+      return selectedNodeIds;
+    }
+  }, {
+    key: 'selectedNodes',
+    value: function selectedNodes() {
+      var view = this.state.view;
+
+
+      var selectedNodes = {};
+
+      var selectedNodeIds = this.selectedNodeIds();
+
+      selectedNodeIds.forEach(function (id) {
+        selectedNodes[id] = Object.assign({}, view.node[id]);
       });
 
       return selectedNodes;
@@ -758,7 +813,7 @@ var FlowViewFrame = function (_React$Component) {
       var _this7 = this;
 
       var _props = this.props,
-          item = _props.item,
+          opt = _props.opt,
           model = _props.model,
           responsive = _props.responsive,
           theme = _props.theme;
@@ -858,8 +913,8 @@ var FlowViewFrame = function (_React$Component) {
               y = node.y;
 
 
-          var nodeType = item.util.typeOfNode(node);
-          var Node = item.node[nodeType];
+          var nodeType = opt.util.typeOfNode(node);
+          var Node = opt.node[nodeType];
 
           return _react2.default.createElement(Node, { key: i,
             connectLinkToTarget: _this7.connectLinkToTarget,
@@ -870,7 +925,6 @@ var FlowViewFrame = function (_React$Component) {
             deleteInputPin: _this7.deleteInputPin,
             deleteNode: _this7.deleteNode,
             deleteOutputPin: _this7.deleteOutputPin,
-            fontSize: fontSize,
             height: height,
             id: id,
             ins: ins,
@@ -888,7 +942,7 @@ var FlowViewFrame = function (_React$Component) {
         }),
         _react2.default.createElement(_Selector2.default, {
           createNode: this.selectorCreateNode,
-          nodeList: item.nodeList,
+          nodeList: opt.nodeList,
           pointer: showSelector ? pointer : null,
           show: showSelector,
           theme: theme
@@ -973,7 +1027,8 @@ FlowViewFrame.defaultProps = {
   emitDeleteLink: Function.prototype,
   emitDeleteNode: Function.prototype,
   emitDeleteOutputPin: Function.prototype,
-  item: {
+  emitUpdateNodesGeometry: Function.prototype,
+  opt: {
     node: { DefaultNode: _Node2.default },
     nodeList: [],
     util: {

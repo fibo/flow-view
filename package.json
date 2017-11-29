@@ -24,6 +24,7 @@
     "example_event_emitter": "NODE_PATH=src budo --serve bundle.js --dir examples/event/ --open examples/event/emitter.js -- -t babelify ",
     "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js -- -t babelify ",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > docs/svg/sample-view.svg",
+    "example_theme_dark": "NODE_PATH=src budo --serve bundle.js --dir examples/theme/ --open examples/theme/dark.js -- -t babelify ",
     "flow": "flow",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
     "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
@@ -87,6 +88,7 @@
   "dependencies": {
     "bindme": "^1.0.1",
     "events": "^1.1.1",
+    "merge-options": "^1.0.0",
     "not-defined": "^2.0.1",
     "svgx": "^1.0.0"
   },

@@ -11,7 +11,7 @@ import reactDOMServer from 'react-dom/server'
 import EventEmitter from 'events'
 
 import bindme from 'bindme'
-import no from 'not-defined'
+import mergeOptions from 'merge-options'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
@@ -27,6 +27,7 @@ import type {
 } from './components/types'
 
 const defaultOpt = FlowViewFrame.defaultProps.opt
+const defaultView = FlowViewFrame.defaultProps.view
 
 export default class FlowViewCanvas extends EventEmitter {
   container: ?Element
@@ -47,15 +48,9 @@ export default class FlowViewCanvas extends EventEmitter {
       'emitUpdateNodesGeometry'
     )
 
-    this.view = FlowViewFrame.defaultProps.view
+    // Merge options
 
-    if (no(opt)) opt = defaultOpt
-    if (no(opt.node)) opt.node = defaultOpt.node
-    if (no(opt.node.DefaultNode)) opt.node.DefaultNode = defaultOpt.node.DefaultNode
-    if (no(opt.nodeList)) opt.nodeList = defaultOpt.nodeList
-    if (no(opt.util)) opt.util = defaultOpt.util
-
-    this.opt = opt
+    this.opt = mergeOptions(defaultOpt, opt)
 
     let containerElement
     let containerNotFound = false
@@ -134,10 +129,6 @@ export default class FlowViewCanvas extends EventEmitter {
     this.emit('updateNodesGeometry', nodes)
   }
 
-  getView (): FlowView {
-    return Object.assign({}, this.view)
-  }
-
   /**
    * Render to SVG.
    *
@@ -146,7 +137,7 @@ export default class FlowViewCanvas extends EventEmitter {
    * @param {Function} [callback] run server side
    */
 
-  render (view: FlowView, model: {}, callback?: Function): void {
+  render (initialView: FlowView, model: {}, callback?: Function): void {
     const container = this.container
     const opt = this.opt
 
@@ -155,18 +146,14 @@ export default class FlowViewCanvas extends EventEmitter {
 
      // Get height and width from container, if any.
     if (container) {
-      var border = 1 // TODO could be configurable in style prop
+      var border = 1 // TODO could be configurable in opt theme
       var rect = container.getBoundingClientRect()
 
       height = rect.height - (2 * border)
       width = rect.width - (2 * border)
     }
 
-    if (no(view)) view = {}
-    if (no(view.height)) view.height = height
-    if (no(view.link)) view.link = {}
-    if (no(view.node)) view.node = {}
-    if (no(view.width)) view.width = width
+    const view = mergeOptions(defaultView, initialView, { width, height })
 
     if (container) {
       // Client side rendering.
@@ -196,7 +183,7 @@ export default class FlowViewCanvas extends EventEmitter {
     } else {
        // Server side rendering.
 
-      var opts = { doctype: true, xmlns: true }
+      const svgxOpts = { doctype: true, xmlns: true }
 
       var jsx = (
         <FlowViewFrame responsive
@@ -205,7 +192,7 @@ export default class FlowViewCanvas extends EventEmitter {
          />
        )
 
-      var outputSVG = svgx(reactDOMServer.renderToStaticMarkup)(jsx, opts)
+      var outputSVG = svgx(reactDOMServer.renderToStaticMarkup)(jsx, svgxOpts)
 
       if (typeof callback === 'function') {
         callback(null, outputSVG)

@@ -190,12 +190,12 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   coordinatesOfLink ({ from, to }: SerializedLink): Segment {
-    const { theme } = this.props
-
     const {
       pointer,
       view
     } = this.state
+
+    const { theme } = this.props.opt
 
     const fontSize = theme.frame.font.size
 
@@ -828,10 +828,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   render () {
     const {
-      opt,
       model,
-      responsive,
-      theme
+      opt,
+      responsive
     } = this.props
 
     const {
@@ -843,6 +842,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       showSelector,
       view
     } = this.state
+
+    const { theme } = this.props.opt
 
     const primaryColor = theme.frame.color.primary
 

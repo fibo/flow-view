@@ -23,8 +23,8 @@ see [online example][online_example].
 
 [![sample view][sample_view_svg]][online_example]
 
-The following animated gif represents a family tree. You can use autocompletion
-thanks to `nodeList` option parameter.
+The following animated gif represents a family tree.
+You can use autocompletion thanks to `nodeList` option parameter.
 
 ![The Simpsons][simpsons_gif]
 
@@ -78,13 +78,14 @@ Adding this to your HTML page
 
 > flow-view Canvas constructor
 
-* **@param** `{String|HTMLElement}` **container** id or element
-* **@param** `{Object}` **[item]** collection to be customized
-* **@param** `{Object}` **[item.node]** collection of custom nodes
-* **@param** `{Object}` **[item.node.DefaultNode]**
-* **@param** `{Object}` **[item.nodeList]** used for nodes autocompletion
-* **@param** `{Object}` **[item.util]**
-* **@param** `{Function}` **[item.util.typeOfNode]**
+* **@param** `{String|HTMLElement}` **container** id or DOM element
+* **@param** `{Object}` **[opt]** collection to be customized
+* **@param** `{Object}` **[opt.node]** collection of custom nodes
+* **@param** `{Object}` **[opt.node.DefaultNode]** is the base class component
+* **@param** `{Array}` **[opt.nodeList]** is a list of strings used for nodes autocompletion
+* **@param** `{Object}` **[opt.theme]** see [theme.js source file](https://github.com/fibo/flow-view/blob/master/src/components/theme.js)
+* **@param** `{Object}` **[opt.util]**
+* **@param** `{Function}` **[opt.util.typeOfNode]**
 * **@returns** `{Object}` **canvas**
 
 Suppose your *container id* is `drawing`.
@@ -235,6 +236,7 @@ Available examples are:
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
 * [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
+* [theme/dark.js][example_theme_dark]: `npm run example_theme_dark` (**WiP**)
 
 Note that examples are intended to be used for development, hence there
 is an overhead at start time.
@@ -253,6 +255,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
+[example_theme_dark]: https://github.com/fibo/flow-view/blob/master/examples/theme/dark.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg "SVG Sample"
 [simpsons_gif]: https://g14n.info/flow-view/media/TheSimspons.gif "The Simpsons Family"

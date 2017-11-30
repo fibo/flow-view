@@ -177,7 +177,6 @@ export default class FlowViewCanvas extends EventEmitter {
           emitUpdateNodesGeometry={this.emitUpdateNodesGeometry}
           opt={opt}
           model={model}
-          nodeList={opt.nodeList}
           view={view}
         />, container)
     } else {

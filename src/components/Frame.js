@@ -87,6 +87,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     opt: {
       node: { DefaultNode },
       nodeList: [],
+      theme: defaultTheme,
       util: {
         typeOfNode: function (node) {
           return 'DefaultNode'
@@ -94,7 +95,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       }
     },
     responsive: false,
-    theme: defaultTheme,
     updateLink: Function.prototype,
     view: {
       link: {},
@@ -845,6 +845,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const { theme } = this.props.opt
 
+    const backgroundColor = theme.frame.color.background
     const primaryColor = theme.frame.color.primary
 
     const border = theme.frame.border
@@ -890,6 +891,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         onMouseUp={this.onMouseUp}
         textAnchor='start'
         style={{
+          backgroundColor,
           border: `${border.width}px ${border.style} ${border.color}`
         }}
         viewBox={responsive ? `0 0 ${width} ${height}` : null}
@@ -923,6 +925,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               selectLink={this.selectItem(id)}
               sourceSelected={sourceSelected}
               targetSelected={targetSelected}
+              theme={opt.theme}
               to={to}
               x1={coord.x1}
               y1={coord.y1}
@@ -967,6 +970,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               selected={(selectedItems.indexOf(id) > -1)}
               selectNode={this.selectItem(id)}
               text={text}
+              theme={opt.theme}
               width={width}
               x={x}
               y={y}

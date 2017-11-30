@@ -24,10 +24,10 @@ var view = {
   }
 }
 
-const baseColor = 'gray'
+const baseColor = '#475B62'
 
 const border = {
-  width: 2,
+  width: 1,
   style: 'solid',
   color: baseColor
 }
@@ -37,12 +37,13 @@ var canvas = new Canvas('drawing', {
     frame: {
       border,
       color: {
-        primary: 'slategray',
-        dark: 'darkslategray'
+        background: '#0A2932',
+        primary: '#819090',
+        secondary: '#BD5512'
       },
       font: {
         family: 'Courier',
-        size: 12
+        size: 17
       }
     },
     link: {
@@ -51,12 +52,12 @@ var canvas = new Canvas('drawing', {
     },
     node: {
       body: {
-        color: 'white',
+        color: '#F3F5DC',
         height: 15
       },
       color: baseColor,
       pin: {
-        color: 'darkgrey',
+        color: '#536870',
         size: 10
       }
     },

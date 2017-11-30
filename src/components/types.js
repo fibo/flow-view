@@ -67,8 +67,9 @@ export type NodeCollection = { [Id]: SerializedNode }
 export type FrameTheme = {
   border: BorderTheme,
   color: {
-    primary: Color,
-    dark: Color
+    background: Color,
+    highlight: Color,
+    primary: Color
   },
   font: {
     family: FontFamily,

@@ -46,7 +46,7 @@ type Props = Point & SerializedNode & {
   multiSelection: boolean,
   selected: boolean,
   selectNode: (MouseEvent) => void,
-  theme: Theme,
+  theme: Theme
 }
 
 export default class Node extends React.Component<Props> {
@@ -149,7 +149,7 @@ export default class Node extends React.Component<Props> {
       y
     } = this.props
 
-    const darkColor = theme.frame.color.dark
+    const highlightColor = theme.frame.color.highlight
     const primaryColor = theme.frame.color.primary
 
     const baseColor = theme.node.color
@@ -191,7 +191,7 @@ export default class Node extends React.Component<Props> {
 
           return (
             <InputPin key={i}
-              color={selected ? darkColor : pinColor}
+              color={selected ? highlightColor : pinColor}
               draggedLinkId={draggedLinkId}
               nodeIdAndPosition={[id, i]}
               connectLinkToTarget={connectLinkToTarget}
@@ -213,7 +213,7 @@ export default class Node extends React.Component<Props> {
 
           return (
             <OutputPin key={i}
-              color={selected ? darkColor : pinColor}
+              color={selected ? highlightColor : pinColor}
               createLink={createLink}
               nodeIdAndPosition={[id, i]}
               size={pinSize}

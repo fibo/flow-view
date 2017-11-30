@@ -106,7 +106,7 @@ export default class Link extends React.Component<Props> {
       y2
     } = this.props
 
-    const darkColor = theme.frame.color.dark
+    const highlightColor = theme.frame.color.highlight
     const primaryColor = theme.frame.color.primary
 
     const baseColor = theme.link.color
@@ -139,7 +139,7 @@ export default class Link extends React.Component<Props> {
           strokeWidth={linkWidth}
         />
         <rect
-          fill={(selected || sourceSelected) ? darkColor : baseColor}
+          fill={(selected || sourceSelected) ? highlightColor : baseColor}
           height={pinSize}
           onMouseDown={this.onSourceMouseDown}
           width={pinSize}
@@ -148,7 +148,7 @@ export default class Link extends React.Component<Props> {
         />
         {to ? (
           <rect
-            fill={(selected || targetSelected) ? darkColor : baseColor}
+            fill={(selected || targetSelected) ? highlightColor : baseColor}
             height={pinSize}
             onMouseDown={this.onTargetMouseDown}
             width={pinSize}

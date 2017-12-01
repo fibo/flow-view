@@ -26,9 +26,9 @@ export default class InputPin extends React.Component<Props> {
     bindme(super(), 'onMouseUp')
   }
 
-  onMouseDown (event: MouseEvent) { event.stopPropagation() }
+  onMouseDown (event: MouseEvent): void { event.stopPropagation() }
 
-  onMouseUp (event: MouseEvent) {
+  onMouseUp (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
@@ -51,5 +51,20 @@ export default class InputPin extends React.Component<Props> {
         onMouseUp={this.onMouseUp}
       />
     )
+  }
+
+  shouldComponentUpdate (nextProps: Props): boolean {
+    const {
+      color,
+      draggedLinkId,
+      x,
+      y
+    } = this.props
+
+    const colorChanged = color !== nextProps.color
+    const draggedLinkIdChanged = draggedLinkId !== nextProps.draggedLinkId
+    const positionChanged = (x !== nextProps.x) || (y !== nextProps.y)
+
+    return colorChanged || draggedLinkIdChanged || positionChanged
   }
 }

@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 
 import bindme from 'bindme'
@@ -5,16 +6,16 @@ import bindme from 'bindme'
 import Pin from './Pin'
 
 import type {
-  NodeIdAndPosition
+  CreateLink
 } from './types'
 
 import type { Props as PinProps } from './Pin'
 
 type Props = PinProps & {
-  createLink: ({ from: NodeIdAndPosition, to: ?NodeIdAndPosition }) => void
+  createLink: CreateLink
 }
 
-export default class OutputPin extends Pin<Props> {
+export default class OutputPin extends React.Component<Props> {
   static defaultProps = {
     createLink: Function.prototype
   }
@@ -23,7 +24,7 @@ export default class OutputPin extends Pin<Props> {
     bindme(super(), 'onMouseDown')
   }
 
-  onMouseDown (event: MouseEvent) {
+  onMouseDown (event: MouseEvent): void {
     event.preventDefault()
     event.stopPropagation()
 
@@ -42,5 +43,18 @@ export default class OutputPin extends Pin<Props> {
         onMouseDown={this.onMouseDown}
       />
     )
+  }
+
+  shouldComponentUpdate (nextProps: Props): boolean {
+    const {
+      color,
+      x,
+      y
+    } = this.props
+
+    const colorChanged = color !== nextProps.color
+    const positionChanged = (x !== nextProps.x) || (y !== nextProps.y)
+
+    return colorChanged || positionChanged
   }
 }

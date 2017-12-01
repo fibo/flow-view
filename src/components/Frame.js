@@ -142,6 +142,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       shiftPressed: false,
       view: props.view
     }
+
+    this.nodeRef = {}
   }
 
   componentDidMount () {
@@ -421,6 +423,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     })
 
     delete view.node[id]
+    delete this.nodeRef[id]
 
     this.setState({ view })
 
@@ -711,6 +714,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       const boundsX = rectangularSelection.width >= 0 ? rectangularSelection.x : rectangularSelection.x + rectangularSelection.width
       const boundsY = rectangularSelection.height >= 0 ? rectangularSelection.y : rectangularSelection.y + rectangularSelection.height
 
+      // TODO fix reflected selection.
+      // console.log(x, y, boundsX, boundsY)
+
       return (
         (x >= boundsX) && (x <= boundsX + rectangularSelection.width) &&
         (y >= boundsY) && (y <= boundsY + rectangularSelection.height)
@@ -951,7 +957,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
           const Node = opt.node[nodeType]
 
           return (
-            <Node key={i}
+            <Node key={i}ref={node => { this.nodeRef[id] = node }}
               connectLinkToTarget={this.connectLinkToTarget}
               createInputPin={this.createInputPin}
               createLink={this.createLink}

@@ -20,6 +20,7 @@
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js -- -t babelify ",
     "example_custom_item": "NODE_PATH=src budo --serve bundle.js --dir examples/custom/ --open examples/custom/item.js -- -t babelify ",
+    "example_dom_element": "NODE_PATH=src budo --serve bundle.js --open examples/dom/element.js -- -t babelify ",
     "example_empty_canvas": "NODE_PATH=src budo --serve bundle.js --dir examples/custom --open examples/empty/canvas.js -- -t babelify ",
     "example_event_emitter": "NODE_PATH=src budo --serve bundle.js --dir examples/event/ --open examples/event/emitter.js -- -t babelify ",
     "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js -- -t babelify ",

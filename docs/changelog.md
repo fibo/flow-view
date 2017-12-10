@@ -18,7 +18,8 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### TODO
 
 - Check out how many time render is invoked, and optimize it as done with Selector.
-- Updated deps
+
+## [v2.19.0] - 2017-12-10
 
 ## Added
 
@@ -26,6 +27,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Complete flowjs coverage.
 - Pass theme as argument to Canvas constructor, created a dark theme example.
 - Example dom/element.js
+- Updated deps
 
 ## [v2.18.0] - 2017-11-23
 

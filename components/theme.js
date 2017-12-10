@@ -17,8 +17,9 @@ var defaultTheme = exports.defaultTheme = {
   frame: {
     border: defaultBorder,
     color: {
+      background: 'white',
       primary: '#A9DFBF',
-      dark: '#52BE80'
+      highlight: '#52BE80'
     },
     font: {
       family: 'Courier',

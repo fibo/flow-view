@@ -88,6 +88,8 @@ var FlowViewFrame = function (_React$Component) {
       shiftPressed: false,
       view: props.view
     };
+
+    _this.nodeRef = {};
     return _this;
   }
 
@@ -144,10 +146,10 @@ var FlowViewFrame = function (_React$Component) {
     value: function coordinatesOfLink(_ref) {
       var from = _ref.from,
           to = _ref.to;
-      var theme = this.props.theme;
       var _state = this.state,
           pointer = _state.pointer,
           view = _state.view;
+      var theme = this.props.opt.theme;
 
 
       var fontSize = theme.frame.font.size;
@@ -383,6 +385,7 @@ var FlowViewFrame = function (_React$Component) {
       });
 
       delete view.node[id];
+      delete this.nodeRef[id];
 
       this.setState({ view: view });
 
@@ -813,10 +816,9 @@ var FlowViewFrame = function (_React$Component) {
       var _this7 = this;
 
       var _props = this.props,
-          opt = _props.opt,
           model = _props.model,
-          responsive = _props.responsive,
-          theme = _props.theme;
+          opt = _props.opt,
+          responsive = _props.responsive;
       var _state9 = this.state,
           draggedLinkId = _state9.draggedLinkId,
           dynamicView = _state9.dynamicView,
@@ -825,8 +827,10 @@ var FlowViewFrame = function (_React$Component) {
           selectedItems = _state9.selectedItems,
           showSelector = _state9.showSelector,
           view = _state9.view;
+      var theme = this.props.opt.theme;
 
 
+      var backgroundColor = theme.frame.color.background;
       var primaryColor = theme.frame.color.primary;
 
       var border = theme.frame.border;
@@ -865,6 +869,7 @@ var FlowViewFrame = function (_React$Component) {
           onMouseUp: this.onMouseUp,
           textAnchor: 'start',
           style: {
+            backgroundColor: backgroundColor,
             border: border.width + 'px ' + border.style + ' ' + border.color
           },
           viewBox: responsive ? '0 0 ' + width + ' ' + height : null,
@@ -894,6 +899,7 @@ var FlowViewFrame = function (_React$Component) {
             selectLink: _this7.selectItem(id),
             sourceSelected: sourceSelected,
             targetSelected: targetSelected,
+            theme: opt.theme,
             to: to,
             x1: coord.x1,
             y1: coord.y1,
@@ -916,7 +922,9 @@ var FlowViewFrame = function (_React$Component) {
           var nodeType = opt.util.typeOfNode(node);
           var Node = opt.node[nodeType];
 
-          return _react2.default.createElement(Node, { key: i,
+          return _react2.default.createElement(Node, { key: i, ref: function ref(node) {
+              _this7.nodeRef[id] = node;
+            },
             connectLinkToTarget: _this7.connectLinkToTarget,
             createInputPin: _this7.createInputPin,
             createLink: _this7.createLink,
@@ -935,6 +943,7 @@ var FlowViewFrame = function (_React$Component) {
             selected: selectedItems.indexOf(id) > -1,
             selectNode: _this7.selectItem(id),
             text: text,
+            theme: opt.theme,
             width: width,
             x: x,
             y: y
@@ -1031,6 +1040,7 @@ FlowViewFrame.defaultProps = {
   opt: {
     node: { DefaultNode: _Node2.default },
     nodeList: [],
+    theme: _theme.defaultTheme,
     util: {
       typeOfNode: function typeOfNode(node) {
         return 'DefaultNode';
@@ -1038,7 +1048,6 @@ FlowViewFrame.defaultProps = {
     }
   },
   responsive: false,
-  theme: _theme.defaultTheme,
   updateLink: Function.prototype,
   view: {
     link: {},

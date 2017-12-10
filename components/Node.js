@@ -148,7 +148,7 @@ var Node = function (_React$Component) {
           y = _props3.y;
 
 
-      var darkColor = theme.frame.color.dark;
+      var highlightColor = theme.frame.color.highlight;
       var primaryColor = theme.frame.color.primary;
 
       var baseColor = theme.node.color;
@@ -190,7 +190,7 @@ var Node = function (_React$Component) {
           var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
           return _react2.default.createElement(_InputPin2.default, { key: i,
-            color: selected ? darkColor : pinColor,
+            color: selected ? highlightColor : pinColor,
             draggedLinkId: draggedLinkId,
             nodeIdAndPosition: [id, i],
             connectLinkToTarget: connectLinkToTarget,
@@ -210,7 +210,7 @@ var Node = function (_React$Component) {
           var x = (0, _xOfPin2.default)(pinSize, computedWidth, array.length, i);
 
           return _react2.default.createElement(_OutputPin2.default, { key: i,
-            color: selected ? darkColor : pinColor,
+            color: selected ? highlightColor : pinColor,
             createLink: createLink,
             nodeIdAndPosition: [id, i],
             size: pinSize,

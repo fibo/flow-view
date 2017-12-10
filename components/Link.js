@@ -102,7 +102,7 @@ var Link = function (_React$Component) {
           y2 = _props4.y2;
 
 
-      var darkColor = theme.frame.color.dark;
+      var highlightColor = theme.frame.color.highlight;
       var primaryColor = theme.frame.color.primary;
 
       var baseColor = theme.link.color;
@@ -136,7 +136,7 @@ var Link = function (_React$Component) {
           strokeWidth: linkWidth
         }),
         _react2.default.createElement('rect', {
-          fill: selected || sourceSelected ? darkColor : baseColor,
+          fill: selected || sourceSelected ? highlightColor : baseColor,
           height: pinSize,
           onMouseDown: this.onSourceMouseDown,
           width: pinSize,
@@ -144,7 +144,7 @@ var Link = function (_React$Component) {
           y: y1
         }),
         to ? _react2.default.createElement('rect', {
-          fill: selected || targetSelected ? darkColor : baseColor,
+          fill: selected || targetSelected ? highlightColor : baseColor,
           height: pinSize,
           onMouseDown: this.onTargetMouseDown,
           width: pinSize,

@@ -16,9 +16,9 @@ var _bindme = require('bindme');
 
 var _bindme2 = _interopRequireDefault(_bindme);
 
-var _Pin2 = require('./Pin');
+var _Pin = require('./Pin');
 
-var _Pin3 = _interopRequireDefault(_Pin2);
+var _Pin2 = _interopRequireDefault(_Pin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28,8 +28,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var OutputPin = function (_Pin) {
-  _inherits(OutputPin, _Pin);
+var OutputPin = function (_React$Component) {
+  _inherits(OutputPin, _React$Component);
 
   function OutputPin() {
     var _this;
@@ -56,14 +56,28 @@ var OutputPin = function (_Pin) {
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(_Pin3.default, _extends({}, this.props, {
+      return _react2.default.createElement(_Pin2.default, _extends({}, this.props, {
         onMouseDown: this.onMouseDown
       }));
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps) {
+      var _props2 = this.props,
+          color = _props2.color,
+          x = _props2.x,
+          y = _props2.y;
+
+
+      var colorChanged = color !== nextProps.color;
+      var positionChanged = x !== nextProps.x || y !== nextProps.y;
+
+      return colorChanged || positionChanged;
     }
   }]);
 
   return OutputPin;
-}(_Pin3.default);
+}(_react2.default.Component);
 
 OutputPin.defaultProps = {
   createLink: Function.prototype

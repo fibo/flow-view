@@ -237,7 +237,7 @@ Available examples are:
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
 * [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
-* [theme/dark.js][example_theme_dark]: `npm run example_theme_dark` (**WiP**)
+* [theme/dark.js][example_theme_dark]: `npm run example_theme_dark`
 
 Note that examples are intended to be used for development, hence there
 is an overhead at start time.

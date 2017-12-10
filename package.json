@@ -91,11 +91,11 @@
     "events": "^1.1.1",
     "merge-options": "^1.0.0",
     "not-defined": "^2.0.1",
-    "svgx": "^1.0.0"
+    "svgx": "^1.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.2",
+    "babel-eslint": "^8.0.3",
     "babel-jest": "^21.0.0",
     "babel-plugin-inline-json-import": "^0.2.1",
     "babel-plugin-react-transform": "^3.0.0",
@@ -109,12 +109,12 @@
     "budo": "^10.0.3",
     "dot-editorconfig": "^1.0.1",
     "eslint-plugin-flowtype": "^2.39.1",
-    "flow-bin": "^0.59.0",
+    "flow-bin": "^0.61.0",
     "jest": "^21.0.1",
     "pre-commit": "^1.2.2",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
-    "react-test-renderer": "^16.1.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-test-renderer": "^16.2.0",
     "standard": "^10.0.2",
     "tape": "^4.6.2"
   }

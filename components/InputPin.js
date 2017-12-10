@@ -69,6 +69,22 @@ var InputPin = function (_React$Component) {
         onMouseUp: this.onMouseUp
       }));
     }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps) {
+      var _props2 = this.props,
+          color = _props2.color,
+          draggedLinkId = _props2.draggedLinkId,
+          x = _props2.x,
+          y = _props2.y;
+
+
+      var colorChanged = color !== nextProps.color;
+      var draggedLinkIdChanged = draggedLinkId !== nextProps.draggedLinkId;
+      var positionChanged = x !== nextProps.x || y !== nextProps.y;
+
+      return colorChanged || draggedLinkIdChanged || positionChanged;
+    }
   }]);
 
   return InputPin;

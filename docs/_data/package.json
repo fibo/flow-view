@@ -20,10 +20,12 @@
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js -- -t babelify ",
     "example_custom_item": "NODE_PATH=src budo --serve bundle.js --dir examples/custom/ --open examples/custom/item.js -- -t babelify ",
+    "example_dom_element": "NODE_PATH=src budo --serve bundle.js --open examples/dom/element.js -- -t babelify ",
     "example_empty_canvas": "NODE_PATH=src budo --serve bundle.js --dir examples/custom --open examples/empty/canvas.js -- -t babelify ",
     "example_event_emitter": "NODE_PATH=src budo --serve bundle.js --dir examples/event/ --open examples/event/emitter.js -- -t babelify ",
     "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js -- -t babelify ",
     "example_render_serverside": "NODE_PATH=. node examples/render/serverside.js > docs/svg/sample-view.svg",
+    "example_theme_dark": "NODE_PATH=src budo --serve bundle.js --dir examples/theme/ --open examples/theme/dark.js -- -t babelify ",
     "flow": "flow",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
     "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
@@ -87,12 +89,13 @@
   "dependencies": {
     "bindme": "^1.0.1",
     "events": "^1.1.1",
+    "merge-options": "^1.0.0",
     "not-defined": "^2.0.1",
-    "svgx": "^1.0.0"
+    "svgx": "^1.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.2",
+    "babel-eslint": "^8.0.3",
     "babel-jest": "^21.0.0",
     "babel-plugin-inline-json-import": "^0.2.1",
     "babel-plugin-react-transform": "^3.0.0",
@@ -106,12 +109,12 @@
     "budo": "^10.0.3",
     "dot-editorconfig": "^1.0.1",
     "eslint-plugin-flowtype": "^2.39.1",
-    "flow-bin": "^0.59.0",
+    "flow-bin": "^0.61.0",
     "jest": "^21.0.1",
     "pre-commit": "^1.2.2",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
-    "react-test-renderer": "^16.1.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-test-renderer": "^16.2.0",
     "standard": "^10.0.2",
     "tape": "^4.6.2"
   }

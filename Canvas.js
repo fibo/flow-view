@@ -26,9 +26,9 @@ var _bindme = require('bindme');
 
 var _bindme2 = _interopRequireDefault(_bindme);
 
-var _notDefined = require('not-defined');
+var _mergeOptions = require('merge-options');
 
-var _notDefined2 = _interopRequireDefault(_notDefined);
+var _mergeOptions2 = _interopRequireDefault(_mergeOptions);
 
 var _svgx = require('svgx');
 
@@ -47,6 +47,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var defaultOpt = _Frame2.default.defaultProps.opt;
+var defaultView = _Frame2.default.defaultProps.view;
 
 var FlowViewCanvas = function (_EventEmitter) {
   _inherits(FlowViewCanvas, _EventEmitter);
@@ -58,15 +59,7 @@ var FlowViewCanvas = function (_EventEmitter) {
 
     (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin', 'emitUpdateNodesGeometry');
 
-    _this.view = _Frame2.default.defaultProps.view;
-
-    if ((0, _notDefined2.default)(opt)) opt = defaultOpt;
-    if ((0, _notDefined2.default)(opt.node)) opt.node = defaultOpt.node;
-    if ((0, _notDefined2.default)(opt.node.DefaultNode)) opt.node.DefaultNode = defaultOpt.node.DefaultNode;
-    if ((0, _notDefined2.default)(opt.nodeList)) opt.nodeList = defaultOpt.nodeList;
-    if ((0, _notDefined2.default)(opt.util)) opt.util = defaultOpt.util;
-
-    _this.opt = opt;
+    _this.opt = (0, _mergeOptions2.default)(defaultOpt, opt);
 
     var containerElement = void 0;
     var containerNotFound = false;
@@ -143,13 +136,8 @@ var FlowViewCanvas = function (_EventEmitter) {
       this.emit('updateNodesGeometry', nodes);
     }
   }, {
-    key: 'getView',
-    value: function getView() {
-      return Object.assign({}, this.view);
-    }
-  }, {
     key: 'render',
-    value: function render(view, model, callback) {
+    value: function render(initialView, model, callback) {
       var container = this.container;
       var opt = this.opt;
 
@@ -164,11 +152,7 @@ var FlowViewCanvas = function (_EventEmitter) {
         width = rect.width - 2 * border;
       }
 
-      if ((0, _notDefined2.default)(view)) view = {};
-      if ((0, _notDefined2.default)(view.height)) view.height = height;
-      if ((0, _notDefined2.default)(view.link)) view.link = {};
-      if ((0, _notDefined2.default)(view.node)) view.node = {};
-      if ((0, _notDefined2.default)(view.width)) view.width = width;
+      var view = (0, _mergeOptions2.default)(defaultView, initialView, { width: width, height: height });
 
       if (container) {
         _reactDom2.default.unmountComponentAtNode(container);
@@ -185,19 +169,18 @@ var FlowViewCanvas = function (_EventEmitter) {
           emitUpdateNodesGeometry: this.emitUpdateNodesGeometry,
           opt: opt,
           model: model,
-          nodeList: opt.nodeList,
           view: view
         }), container);
       } else {
 
-        var opts = { doctype: true, xmlns: true };
+        var svgxOpts = { doctype: true, xmlns: true };
 
         var jsx = _react2.default.createElement(_Frame2.default, { responsive: true,
           opt: opt,
           view: view
         });
 
-        var outputSVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, opts);
+        var outputSVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, svgxOpts);
 
         if (typeof callback === 'function') {
           callback(null, outputSVG);

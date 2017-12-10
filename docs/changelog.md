@@ -18,12 +18,14 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### TODO
 
 - Check out how many time render is invoked, and optimize it as done with Selector.
+- Updated deps
 
 ## Added
 
 - Trigger *updateNodesGeometry* event, when nodes are moved.
 - Complete flowjs coverage.
 - Pass theme as argument to Canvas constructor, created a dark theme example.
+- Example dom/element.js
 
 ## [v2.18.0] - 2017-11-23
 

@@ -232,6 +232,7 @@ Available examples are:
 
 * [basic/usage.js][example_basic_usage]: `npm run example_basic_usage`
 * [custom/item.js][example_custom_item]: `npm run example_custom_item`
+* [dom/element.js][example_dom_element]: `npm run example_dom_element`
 * [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
@@ -251,6 +252,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [React]: https://facebook.github.io/react/ "React"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
 [example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
+[example_dom_element]: https://github.com/fibo/flow-view/blob/master/examples/dom/element.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js

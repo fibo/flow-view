@@ -18,6 +18,13 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### TODO
 
 - Check out how many time render is invoked, and optimize it as done with Selector.
+- Consider removing resize event handler.
+- Add Canvas v3 methods like:
+  - resize()
+  - createNode()
+  - insert(view)
+Nice to have:
+  - dropping a link on a node snap into input, and create it if it not exists
 
 ## [v2.19.0] - 2017-12-10
 

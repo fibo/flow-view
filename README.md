@@ -21,7 +21,7 @@
 The image below is an SVG generated server side by [flow-view Canvas](#canvas): click it to
 see [online example][online_example].
 
-[![sample view][sample_view_svg]][online_example]
+[![sample view][sample_view_svg]{:.responsive}][online_example]
 
 The following animated gif represents a family tree.
 You can use autocompletion thanks to `nodeList` option parameter.

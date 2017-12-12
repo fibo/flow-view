@@ -13,18 +13,38 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
-## Unreleased
-
-### TODO
+## TODO
 
 - Check out how many time render is invoked, and optimize it as done with Selector.
 - Consider removing resize event handler.
-- Add Canvas v3 methods like:
-  - resize()
-  - createNode()
-  - insert(view)
 Nice to have:
   - dropping a link on a node snap into input, and create it if it not exists
+
+### Added
+
+Enrich Canvas with methods:
+  - `createInputPin()`
+  - `createLink()`
+  - `createNode()`
+  - `createOutputPin()`
+  - `delete(view)`
+  - `deleteInputPin()`
+  - `deleteLink()`
+  - `deleteNode()`
+  - `deleteOutputPin()`
+  - `getView()`
+  - `insert(view)`
+  - `resize({ width, height })`
+  - `update(view)`
+
+Added `canvas.view` read only attribute
+
+### Removed
+
+- Do not handle  window resize, it is possible to use `Canvas.resize()` method.
+- Removed `Canvas.render(view)` cause it can confuse users after the rising of React, where the method has a different meaning.
+
+## Unreleased
 
 ## [v2.19.0] - 2017-12-10
 

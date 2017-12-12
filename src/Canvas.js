@@ -19,9 +19,11 @@ import FlowViewFrame from './components/Frame'
 import type { Props as FramePropType } from './components/Frame'
 
 import type {
+  Area,
   FlowView,
-  Id,
-  NodeIdAndPosition,
+  LinkId,
+  NodeId,
+  NodeIdAndPinPosition
   SerializedLink,
   SerializedNode,
   SerializedPin
@@ -31,23 +33,10 @@ const defaultOpt = FlowViewFrame.defaultProps.opt
 const defaultView = FlowViewFrame.defaultProps.view
 
 export default class FlowViewCanvas extends EventEmitter {
-  container: ?Element
   opt: FramePropType.opt
-  view: FlowView
 
-  constructor (container: Element | string, opt: FramePropType.opt) {
-    bindme(super(),
-      'emitCreateInputPin',
-      'emitCreateLink',
-      'emitCreateNode',
-      'emitCreateOutputPin',
-      'emitDeleteInputPin',
-      'emitDeleteOutputPin',
-      'emitDeleteLink',
-      'emitDeleteNode',
-      'emitDeleteOutputPin',
-      'emitUpdateNodesGeometry'
-    )
+  constructor (opt: FramePropType.opt) {
+    bindme(super(), 'emit')
 
     // Merge options
 
@@ -88,75 +77,14 @@ export default class FlowViewCanvas extends EventEmitter {
     }
   }
 
-  createInputPin (
-    emit=false: bool,
-    nodeIdAndPosition: NodeIdAndPosition,
-    pin: SerializedPin
-  ): void {
-    if (emit) {
-      this.emit('createInputPin', nodeIdAndPosition, pin)
-    }
-  }
-
-  createLink (link: SerializedLink, emit=false: bool): Id {
-    const id = this.frame.createLink(link)
-
-    if (emit) {
-      this.emit('createLink', link, id)
-    }
-
-    return id
-  }
-
-  createNode (node: SerializedNode, emit=false: bool): Id {
-    const id = this.frame.createNode(node)
-
-    if (emit) {
-      this.emit('createNode', node, id)
-    }
-
-    return id
-  }
-
-  createOutputPin (
-    emit=false: bool,
-    nodeIdAndPosition: NodeIdAndPosition,
-    pin: SerializedPin
-  ): void {
-    if (emit) {
-      this.emit('createOutputPin', nodeIdAndPosition, pin)
-    }
-  }
-
-  emitDeleteInputPin (nodeIdAndPosition: NodeIdAndPosition): void {
-    this.emit('deleteInputPin', nodeIdAndPosition)
-  }
-
-  emitDeleteLink (id: Id): void {
-    this.emit('deleteLink', id)
-  }
-
-  emitDeleteNode (id: Id): void {
-    this.emit('deleteNode', id)
-  }
-
-  emitDeleteOutputPin (nodeIdAndPosition: NodeIdAndPosition): void {
-    this.emit('deleteOutputPin', nodeIdAndPosition)
-  }
-
-  emitUpdateNodesGeometry (nodes: Array<SerializedNode>): void {
-    this.emit('updateNodesGeometry', nodes)
-  }
-
   /**
-   * Render to SVG.
+   * Load view.
    *
    * @param {Object} view
-   * @param {Object} [model]
    * @param {Function} [callback] run server side
    */
 
-  render (initialView: FlowView, model: {}, callback?: Function): void {
+  load (initialView: FlowView, callback?: Function): void {
     const container = this.container
     const opt = this.opt
 
@@ -178,49 +106,55 @@ export default class FlowViewCanvas extends EventEmitter {
     if (container) {
       // Client side rendering.
 
-      // If no component is mounted in the container,
-      // calling this function does nothing. It removes
-      // the mounted React component from the DOM and
-      // cleans up its event handlers and state.
-      ReactDOM.unmountComponentAtNode(container)
-
-      ReactDOM.render(
-        <FlowViewFrame
-          ref={frame => { staticProps(this)({ frame }) }
-          emitCreateInputPin={this.emitCreateInputPin}
-          emitCreateLink={this.emitCreateLink}
-          emitCreateNode={this.emitCreateNode}
-          emitCreateOutputPin={this.emitCreateOutputPin}
-          emitDeleteInputPin={this.emitDeleteInputPin}
-          emitDeleteLink={this.emitDeleteLink}
-          emitDeleteNode={this.emitDeleteNode}
-          emitDeleteOutputPin={this.emitDeleteOutputPin}
-          emitUpdateNodesGeometry={this.emitUpdateNodesGeometry}
-          opt={opt}
-          model={model}
-          view={view}
-        />, container)
-    } else {
-       // Server side rendering.
-
-      const svgxOpts = { doctype: true, xmlns: true }
-
-      var jsx = (
-        <FlowViewFrame responsive
-          opt={opt}
-          view={view}
-         />
-       )
-
-      var outputSVG = svgx(reactDOMServer.renderToStaticMarkup)(jsx, svgxOpts)
-
-      if (typeof callback === 'function') {
-        callback(null, outputSVG)
-      }
     }
   }
 
-  resize ({ width: number, height: number }): void {
+  /**
+   * Mount on DOM element.
+   *
+   * @param {Object} view
+   * @param {Function} callback
+   */
 
+  mountOn (container): void {
+    // If no component is mounted in the container,
+    // calling this function does nothing. It removes
+    // the mounted React component from the DOM and
+    // cleans up its event handlers and state.
+    ReactDOM.unmountComponentAtNode(container)
+
+    ReactDOM.render(
+      <FlowViewFrame
+        ref={frame => { staticProps(this)({ frame }) }}
+        emit={this.emit}
+        opt={opt}
+        model={model}
+        view={view}
+      />, container)
+  }
+
+  resize ({ width, height }: Area): void {
+    this.frame.resize({ width, height })
+  }
+
+  /**
+   * Render to SVG. Can be used for server side rendering.
+   */
+
+  toSVG (callback: func): void {
+    const { opt, view } = this
+
+    const svgxOpts = { doctype: true, xmlns: true }
+
+    const jsx = (
+      <FlowViewFrame responsive
+        opt={opt}
+        view={view}
+       />
+     )
+
+    const SVG = svgx(reactDOMServer.renderToStaticMarkup)(jsx, svgxOpts)
+
+    callback(null, SVG)
   }
 }

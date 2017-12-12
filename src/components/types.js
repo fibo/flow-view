@@ -10,9 +10,8 @@ export type Color = string
 
 export type FontFamily = string
 
-export type Id = string
-
-export type SerializedPin = string | { name: string }
+export type NodeId = string
+export type LinkId = string
 
 export type Point = { x: number, y: number }
 
@@ -26,18 +25,21 @@ type BorderTheme = {
   color: Color
 }
 
-export type NodeIdAndPosition = [Id, number]
+export type NodeIdAndPinPosition = {
+  nodeId: Id,
+  position: number
+}
 
 export type Rectangle = Area & Point
 
 export type SemiLink = {
-  from: NodeIdAndPosition,
-  to?: NodeIdAndPosition
+  from: NodeIdAndPinPosition,
+  to: ?NodeIdAndPinPosition
 }
 
 export type SerializedLink = {
-  from: NodeIdAndPosition,
-  to: NodeIdAndPosition
+  from: NodeIdAndPinPosition,
+  to: NodeIdAndPinPosition
 }
 
 export type SerializedNode = Point & Area & {
@@ -46,20 +48,22 @@ export type SerializedNode = Point & Area & {
   text: string
 }
 
-export type CreatePin = (NodeIdAndPosition, SerializedPin) => void
-export type DeletePin = (NodeIdAndPosition) => void
+export type SerializedPin = { name: string }
 
-export type CreateLink = (SemiLink, ?Id) => void
-export type DeleteLink = (Id) => void
+export type CreatePin = (NodeIdAndPinPosition, SerializedPin) => void
+export type DeletePin = (NodeIdAndPinPosition) => void
 
-export type CreateNode = (SerializedNode, Id) => void
-export type DeleteNode = (Id) => void
+export type CreateLink = (SemiLink, ?LinkId) => void
+export type DeleteLink = (LinkId) => void
+
+export type CreateNode = (SerializedNode, NodeId) => void
+export type DeleteNode = (NodeId) => void
 
 export type UpdateNodesGeometry = (Array<SerializedNode>) => void
 
 // Secondly derived types
 
-export type ConnectLinkToTarget = (Id, NodeIdAndPosition) => void
+export type ConnectLinkToTarget = (Id, NodeIdAndPinPosition) => void
 
 export type LinkCollection = { [Id]: SerializedLink }
 export type NodeCollection = { [Id]: SerializedNode }

@@ -19,23 +19,16 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 - Consider removing resize event handler.
 Nice to have:
   - dropping a link on a node snap into input, and create it if it not exists
+- Consider using inferno or preact
+- Consider using jsonschema
 
 ### Added
 
 Enrich Canvas with methods:
-  - `createInputPin()`
-  - `createLink()`
-  - `createNode()`
-  - `createOutputPin()`
-  - `delete(view)`
-  - `deleteInputPin()`
-  - `deleteLink()`
-  - `deleteNode()`
-  - `deleteOutputPin()`
-  - `getView()`
-  - `insert(view)`
+  - `load(view)`
+  - `mountOn(container)`
   - `resize({ width, height })`
-  - `update(view)`
+  - `toSVG(callback)`
 
 Added `canvas.view` read only attribute
 

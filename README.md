@@ -74,18 +74,15 @@ Adding this to your HTML page
 
 <a name="canvas"></a>
 
-### `new Canvas(id|element)`
+### `new Canvas(opt?)`
 
 > flow-view Canvas constructor
 
-* **@param** `{String|HTMLElement}` **container** id or DOM element
-* **@param** `{Object}` **[opt]** collection to be customized
-* **@param** `{Object}` **[opt.node]** collection of custom nodes
+* **@param** `{Object}` **[opt]** is a collection of options
+* **@param** `{Object}` **[opt.node]** is a collection of custom nodes
 * **@param** `{Object}` **[opt.node.DefaultNode]** is the base class component
 * **@param** `{Array}` **[opt.nodeList]** is a list of strings used for nodes autocompletion
 * **@param** `{Object}` **[opt.theme]** see [theme.js source file](https://github.com/fibo/flow-view/blob/master/src/components/theme.js)
-* **@param** `{Object}` **[opt.util]**
-* **@param** `{Function}` **[opt.util.typeOfNode]**
 * **@returns** `{Object}` **canvas**
 
 Suppose your *container id* is `drawing`.
@@ -105,46 +102,47 @@ In your HTML, place a div where you want to mount the canvas.
 Create an empty canvas
 
 ```javascript
-var Canvas = require('flow-view').Canvas
+const Canvas = require('flow-view').Canvas
+// Or use ES6 syntax: import { Canvas } from 'flow-view'
 
-var canvas = new Canvas('drawing')
+const canvas = new Canvas()
 ```
 
-Note that nothing will happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
+Note that nothing will happen unless you call methods: `canvas.load(view)` and `canvas.mountOn(container)`
 
-### `canvas.container`
+### `canvas.load(view: FlowView): void`
 
-It is the DOM element container, if any. On server side, this attribute is `null`.
-
-### `canvas.render(view?)`
-
-Draws a view, that is a collection of nodes and links.
-On server side it generates an SVG output like the one you see on top of this README.md,
-see [render/serverside.js example][example_render_serverside].
+Loads a view, that is a collection of nodes and links.
 
 * **@param** `{Object}` **[view]** can be empty
 * **@param** `{Number}` **[view.height]** defaults to container height
 * **@param** `{Number}` **[view.width]** defaults to container width
 * **@param** `{Object}` **view.link**, see [link spec](#link-spec) below
 * **@param** `{Object}` **view.node**, see [node spec](#node-spec) below
-* **@param** `{Object}` **[model]**, can be used for custom items
 * **@param** `{Object}` **[callback]** called on serverside context
 * **@returns** `{void}`
 
 Follows a basic example.
 
 ```javascript
-canvas.render({
+canvas.load({
   node: {
     a: {
       x: 80, y: 100,
       text: 'Drag me',
-      outs: ['out1', 'out2', 'out3']
+      outs: [
+        { name: 'out1' },
+        { name: 'out2' },
+        { name: 'out3' }
+      ]
     },
     b: {
       x: 180, y: 200,
       text: 'Click me',
-      ins: ['in0', { name: 'in1', type: 'bool' }],
+      ins: [
+        { name: 'in0' },
+        { name: 'in1', type: 'bool' }
+      ],
       outs: ['return']
     }
   },
@@ -157,7 +155,13 @@ canvas.render({
 })
 ```
 
-### `canvas.resize({ width, height })`
+### `canvas.mountOn(container: HTMLElement): void`
+
+### `canvas.resize({ width: number, height: number }): void`
+
+### `canvas.toSVG(callback: func): void`
+
+Generates SVG: can be used to server side rendering, see [render/serverside.js example][example_render_serverside].
 
 ### Events
 
@@ -191,13 +195,13 @@ A node describes an element and has the following attributes:
 * **@param** `Number` **x** coordinate of top left vertex
 * **@param** `Number` **y** coordinate of top left vertex
 * **@param** `String` **text**
-* **@param** `Array | undefined` **ins** list of input pins
-* **@param** `Array | undefined` **outs** list of output pins
+* **@param** `Array | undefined` **ins** is a list of input pins
+* **@param** `Array | undefined` **outs** is a list of output pins
 * **@param** `Number` **[width]**, defaults to a value depending on text lenght and number of pins.
 
-An pin can be either a string or an object with the `name` attribute which must be a string.
-Input pins default to string `in${position}`.
-Output pins default to string `out${position}`.
+An pin is an object with the `name` attribute which must be a string.
+Input pins default to `{ name: in${position} }`.
+Output pins default to `{ name: out${position} }`.
 If *ins* is undefined, the node is a root.
 If *outs* is undefined, the node is a leaf.
 

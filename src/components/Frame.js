@@ -18,15 +18,9 @@ import { defaultTheme } from './theme'
 
 import type {
   Area,
-  CreateLink,
-  CreateNode,
-  CreatePin,
-  DeleteLink,
-  DeleteNode,
-  DeletePin,
   FlowView,
   Id,
-  NodeIdAndPosition,
+  NodeIdAndPinPosition,
   Point,
   Segment,
   SerializedLink,
@@ -38,14 +32,6 @@ import type {
 } from './types'
 
 export type Props = {
-  emitCreateInputPin: CreatePin,
-  emitCreateLink: CreateLink,
-  emitCreateNode: CreateNode,
-  emitCreateOutputPin: CreatePin,
-  emitDeleteInputPin: DeletePin,
-  emitDeleteLink: DeleteLink,
-  emitCreateNode: DeleteNode,
-  emitDeleteOutputPin: DeletePin,
   emitUpdateNodesGeometry: UpdateNodesGeometry,
   opt: {
     node: {},
@@ -74,14 +60,6 @@ type State = {
 
 export default class FlowViewFrame extends React.Component<Props, State> {
   static defaultProps = {
-    emitCreateInputPin: Function.prototype,
-    emitCreateLink: Function.prototype,
-    emitCreateNode: Function.prototype,
-    emitCreateOutputPin: Function.prototype,
-    emitDeleteInputPin: Function.prototype,
-    emitDeleteLink: Function.prototype,
-    emitDeleteNode: Function.prototype,
-    emitDeleteOutputPin: Function.prototype,
     emitUpdateNodesGeometry: Function.prototype,
     opt: {
       node: { DefaultNode },
@@ -173,7 +151,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     window.removeEventListener('scroll', this.onWindowScroll)
   }
 
-  connectLinkToTarget (linkId: Id, target: NodeIdAndPosition): void {
+  connectLinkToTarget (linkId: Id, target: NodeIdAndPinPosition): void {
     const view = Object.assign({}, this.state.view)
 
     view.link[linkId].to = target
@@ -182,8 +160,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       draggedLinkId: null,
       view
     })
-
-    this.props.emitCreateLink(view.link[linkId], linkId)
   }
 
   coordinatesOfLink ({ from, to }: SerializedLink): Segment {
@@ -252,14 +228,18 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return { x1, y1, x2, y2 }
   }
 
-  createInputPin (nodeId: Id, pin: SerializedPin): void {
+  createInputPin (
+    nodeId: NodeId,
+    pin: ?SerializedPin
+    emit: ?bool = false
+  ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins || []
 
-    const position = view.node[nodeId].ins.length
+    const position = ins.length
 
-    if (no(pin)) pin = `in${position}`
+    if (no(pin)) pin = { name: `in${position}` }
 
     ins.push(pin)
 
@@ -267,10 +247,12 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     this.setState({ view })
 
-    this.props.emitCreateInputPin([nodeId, position], pin)
+    if (emit) {
+      this.props.emit('createInputPin', nodeIdAndPosition, pin)
+    }
   }
 
-  createLink (link: { from: NodeIdAndPosition, to: ?NodeIdAndPosition }): Id {
+  createLink (link: ): Id {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -309,12 +291,13 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     this.setState({ view })
 
-    this.props.emitCreateNode(node, id)
-
     return id
   }
 
-  createOutputPin (nodeId: Id, pin: SerializedPin): void {
+  createOutputPin (
+    nodeId: Id,
+    pin: ?SerializedPin
+  ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs || []
@@ -328,11 +311,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     view.node[nodeId].outs = outs
 
     this.setState({ view })
-
-    this.props.emitCreateOutputPin([nodeId, position], pin)
   }
 
-  deleteInputPin (nodeId: Id, position?: number): void {
+  deleteInputPin (nodeId: Id, position: ?number): void {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins
@@ -357,8 +338,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     view.node[nodeId].ins.splice(position, 1)
 
     this.setState({ view })
-
-    this.props.emitDeleteInputPin([nodeId, position])
   }
 
   deleteOutputPin (nodeId: Id, position?: number): void {
@@ -386,8 +365,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     view.node[nodeId].outs.splice(position, 1)
 
     this.setState({ view })
-
-    this.props.emitDeleteOutputPin([nodeId, position])
   }
 
   deleteLink (id: Id): void {
@@ -396,8 +373,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     delete view.link[id]
 
     this.setState({ view })
-
-    this.props.emitDeleteLink(id)
   }
 
   deleteNode (id: Id): void {
@@ -421,8 +396,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     delete this.nodeRef[id]
 
     this.setState({ view })
-
-    this.props.emitDeleteNode(id)
   }
 
   dragItems (dragginDelta, draggedItems: Array<Id>): void {

@@ -157,6 +157,8 @@ canvas.render({
 })
 ```
 
+### `canvas.resize({ width, height })`
+
 ### Events
 
 See [event/emitter.js][example_event_emitter] example.

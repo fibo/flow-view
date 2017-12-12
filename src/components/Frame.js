@@ -59,7 +59,6 @@ export type Props = {
 }
 
 type State = {
-  dynamicView: { height: ?number, width: ?number },
   draggedLinkId: ?Id,
   isMouseDown: boolean,
   isMouseDraggingItems: boolean,
@@ -121,7 +120,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       'onMouseLeave',
       'onMouseMove',
       'onMouseUp',
-      'onWindowResize',
       'onWindowScroll',
       'selectorCreateNode',
       'selectItem',
@@ -129,7 +127,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
      )
 
     this.state = {
-      dynamicView: { height: null, width: null },
       draggedLinkId: null,
       isMouseDown: false,
       isMouseDraggingItems: false,
@@ -153,7 +150,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     document.addEventListener('keyup', this.onDocumentKeyup)
 
     window.addEventListener('scroll', this.onWindowScroll)
-    window.addEventListener('resize', this.onWindowResize(container))
 
     const offset = {
       x: container.offsetLeft,
@@ -175,7 +171,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     document.removeEventListener('keyup', this.onDocumentKeyup)
 
     window.removeEventListener('scroll', this.onWindowScroll)
-    window.removeEventListener('resize', this.onWindowResize(container))
   }
 
   connectLinkToTarget (linkId: Id, target: NodeIdAndPosition): void {
@@ -765,19 +760,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     })
   }
 
-  onWindowResize (container): void {
-    return () => {
-      const rect = container.getBoundingClientRect()
-
-      const dynamicView = {
-        height: rect.height,
-        width: rect.width
-      }
-
-      this.setState({ dynamicView })
-    }
-  }
-
   onWindowScroll (): void {
     const scroll = {
       x: window.scrollX,
@@ -841,7 +823,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const {
       draggedLinkId,
-      dynamicView,
       pointer,
       rectangularSelection,
       selectedItems,
@@ -859,8 +840,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     const fontSize = theme.frame.font.size
     const pinSize = theme.node.pin.size
 
-    let height = dynamicView.height || view.height
-    let width = dynamicView.width || view.width
+    let { width, height } = view
 
     // Subtract border width, otherwise also server side SVGx renders
     // with the bottom and right border missing.

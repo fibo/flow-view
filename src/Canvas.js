@@ -12,6 +12,7 @@ import EventEmitter from 'events'
 
 import bindme from 'bindme'
 import mergeOptions from 'merge-options'
+import staticProps from 'static-props'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
@@ -87,26 +88,44 @@ export default class FlowViewCanvas extends EventEmitter {
     }
   }
 
-  emitCreateInputPin (
+  createInputPin (
+    emit=false: bool,
     nodeIdAndPosition: NodeIdAndPosition,
     pin: SerializedPin
   ): void {
-    this.emit('createInputPin', nodeIdAndPosition, pin)
+    if (emit) {
+      this.emit('createInputPin', nodeIdAndPosition, pin)
+    }
   }
 
-  emitCreateLink (link: SerializedLink, id: Id): void {
-    this.emit('createLink', link, id)
+  createLink (link: SerializedLink, emit=false: bool): Id {
+    const id = this.frame.createLink(link)
+
+    if (emit) {
+      this.emit('createLink', link, id)
+    }
+
+    return id
   }
 
-  emitCreateNode (node: SerializedNode, id: Id): void {
-    this.emit('createNode', node, id)
+  createNode (node: SerializedNode, emit=false: bool): Id {
+    const id = this.frame.createNode(node)
+
+    if (emit) {
+      this.emit('createNode', node, id)
+    }
+
+    return id
   }
 
-  emitCreateOutputPin (
+  createOutputPin (
+    emit=false: bool,
     nodeIdAndPosition: NodeIdAndPosition,
     pin: SerializedPin
   ): void {
-    this.emit('createOutputPin', nodeIdAndPosition, pin)
+    if (emit) {
+      this.emit('createOutputPin', nodeIdAndPosition, pin)
+    }
   }
 
   emitDeleteInputPin (nodeIdAndPosition: NodeIdAndPosition): void {
@@ -141,16 +160,17 @@ export default class FlowViewCanvas extends EventEmitter {
     const container = this.container
     const opt = this.opt
 
+    const border = opt.theme.border
+
     let height
     let width
 
      // Get height and width from container, if any.
     if (container) {
-      var border = 1 // TODO could be configurable in opt theme
-      var rect = container.getBoundingClientRect()
+      let rect = container.getBoundingClientRect()
 
-      height = rect.height - (2 * border)
-      width = rect.width - (2 * border)
+      height = rect.height - (2 * border.height)
+      width = rect.width - (2 * border.width)
     }
 
     const view = mergeOptions(defaultView, initialView, { width, height })
@@ -166,6 +186,7 @@ export default class FlowViewCanvas extends EventEmitter {
 
       ReactDOM.render(
         <FlowViewFrame
+          ref={frame => { staticProps(this)({ frame }) }
           emitCreateInputPin={this.emitCreateInputPin}
           emitCreateLink={this.emitCreateLink}
           emitCreateNode={this.emitCreateNode}
@@ -197,5 +218,9 @@ export default class FlowViewCanvas extends EventEmitter {
         callback(null, outputSVG)
       }
     }
+  }
+
+  resize ({ width: number, height: number }): void {
+
   }
 }

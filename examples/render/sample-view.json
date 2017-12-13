@@ -4,21 +4,28 @@
   "node": {
     "a": {
       "text": "your engine",
-      "outs": ["out0", "out1"],
+      "outs": [
+        { "name": "out0" },
+        { "name": "out1" }
+      ],
       "x": 170,
       "y": 10
     },
     "b": {
       "text": "flow-view",
-      "ins": ["in"],
-      "outs": ["out"],
+      "ins": [ { "name": "in" } ],
+      "outs": [ { "name": "out" } ],
       "x": 117,
       "y": 100
     },
     "c": {
       "text": "a cool app!",
-      "ins": ["in0", "in1", "in2"],
-      "outs": ["out"],
+      "ins": [
+        { "name": "in0" },
+        { "name": "in1" },
+        { "name": "in2" }
+      ],
+      "outs": [ { "name": "out" } ],
       "x": 150,
       "y": 170
     }

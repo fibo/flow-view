@@ -85,7 +85,7 @@ Adding this to your HTML page
 * **@param** `{Object}` **[opt.theme]** see [theme.js source file](https://github.com/fibo/flow-view/blob/master/src/components/theme.js)
 * **@returns** `{Object}` **canvas**
 
-Suppose your *container id* is `drawing`.
+Suppose your *container* is a div with id `drawing`.
 In your HTML, place a div where you want to mount the canvas.
 
 ```html
@@ -99,7 +99,7 @@ In your HTML, place a div where you want to mount the canvas.
 <div id="drawing"></div>
 ```
 
-Create an empty canvas
+Create an empty canvas, with default options.
 
 ```javascript
 const Canvas = require('flow-view').Canvas
@@ -108,12 +108,14 @@ const Canvas = require('flow-view').Canvas
 const canvas = new Canvas()
 ```
 
-Note that nothing will happen unless you call methods: `canvas.load(view)` and `canvas.mountOn(container)`
+Note that nothing will happen unless you call `canvas.load(container, view)` method.
 
-### `canvas.load(view: FlowView): void`
+### `canvas.load(container: Element, view: FlowView): void`
 
-Loads a view, that is a collection of nodes and links.
+> Mount canvas on a DOM element and render its view,
+> that is a collection of nodes and links.
 
+* **@param** `{HTMLElement}` **container** DOM element
 * **@param** `{Object}` **[view]** can be empty
 * **@param** `{Number}` **[view.height]** defaults to container height
 * **@param** `{Number}` **[view.width]** defaults to container width
@@ -125,47 +127,48 @@ Loads a view, that is a collection of nodes and links.
 Follows a basic example.
 
 ```javascript
-canvas.load({
-  node: {
-    a: {
-      x: 80, y: 100,
-      text: 'Drag me',
-      outs: [
-        { name: 'out1' },
-        { name: 'out2' },
-        { name: 'out3' }
-      ]
+canvas.load(document.getElementById('drawing')
+  {
+    node: {
+      a: {
+        x: 80, y: 100,
+        text: 'Drag me',
+        outs: [
+          { name: 'out1' },
+          { name: 'out2' },
+          { name: 'out3' }
+        ]
+      },
+      b: {
+        x: 180, y: 200,
+        text: 'Click me',
+        ins: [
+          { name: 'in0' },
+          { name: 'in1', type: 'bool' }
+        ],
+        outs: ['return']
+      }
     },
-    b: {
-      x: 180, y: 200,
-      text: 'Click me',
-      ins: [
-        { name: 'in0' },
-        { name: 'in1', type: 'bool' }
-      ],
-      outs: ['return']
-    }
-  },
-  link: {
-    c: {
-      from: ['a', 0],
-      to: ['b', 1]
+    link: {
+      c: {
+        from: ['a', 0],
+        to: ['b', 1]
+      }
     }
   }
-})
+)
 ```
-
-### `canvas.mountOn(container: HTMLElement): void`
 
 ### `canvas.resize({ width: number, height: number }): void`
 
-### `canvas.toSVG(callback: func): void`
+### `canvas.toSVG(view: FlowView, callback: func): void`
 
-Generates SVG: can be used to server side rendering, see [render/serverside.js example][example_render_serverside].
+> Render to SVG. Can be used for server side rendering.
+
+See [render/serverside.js example][example_render_serverside].
 
 ### Events
 
-See [event/emitter.js][example_event_emitter] example.
 The following events are emitted by [canvas](#canvas):
 
 | name                  | data                           |
@@ -179,6 +182,8 @@ The following events are emitted by [canvas](#canvas):
 | `deleteInputPin`      | [nodeId, position]            |
 | `deleteOutputPin`     | [nodeId, position]            |
 | `updateNodesGeometry` | {id1: node1, id2: node2, ...} |
+
+See [event/emitter.js][example_event_emitter] example.
 
 ### Hotkeys
 

@@ -3,9 +3,9 @@ const path = require('path')
 
 const view = require(path.join(__dirname, 'sample-view.json'))
 
-const canvas = new Canvas('drawing')
+const canvas = new Canvas()
 
-canvas.render(view, null, function (err, outputSVG) {
+canvas.render(view, function (err, outputSVG) {
   if (err) throw err
 
   console.log(outputSVG)

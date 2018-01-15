@@ -1,5 +1,3 @@
-// @flow
-
 const baseColor = 'gainsboro'
 
 const defaultBorder = {

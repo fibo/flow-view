@@ -1,4 +1,3 @@
-// flow@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -16,29 +15,15 @@ import xOfPin from '../utils/xOfPin'
 
 import { defaultTheme } from './theme'
 
-import type {
-  Area,
-  FlowView,
-  Id,
-  NodeIdAndPinPosition,
-  Point,
-  Segment,
-  SerializedLink,
-  SerializedNode,
-  SerializedNodes,
-  SerializedPin,
-  Theme,
-  UpdateNodesGeometry
-} from './types'
+export type Options = {
+  node: {},
+  nodeList?: Array<string>,
+  theme: Theme,
+  util: { typeOfNode: () => string }
+}
 
 export type Props = {
-  emitUpdateNodesGeometry: UpdateNodesGeometry,
-  opt: {
-    node: {},
-    nodeList?: Array<string>,
-    util: { typeOfNode: () => string }
-  },
-  rectangularSelection: ?RectangularSelection,
+  opt: Options,
   responsive: boolean,
   theme: Theme,
   view: FlowView
@@ -55,16 +40,15 @@ type State = {
   showSelector: boolean,
   selectedItems: Array,
   shiftPressed: boolean,
+  theme: Theme,
   view: ?FlowView
 }
 
 export default class FlowViewFrame extends React.Component<Props, State> {
   static defaultProps = {
-    emitUpdateNodesGeometry: Function.prototype,
     opt: {
       node: { DefaultNode },
       nodeList: [],
-      theme: defaultTheme,
       util: {
         typeOfNode: function (node) {
           return 'DefaultNode'
@@ -72,6 +56,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       }
     },
     responsive: false,
+    theme: defaultTheme,
     updateLink: Function.prototype,
     view: {
       link: {},
@@ -165,10 +150,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   coordinatesOfLink ({ from, to }: SerializedLink): Segment {
     const {
       pointer,
+      theme,
       view
     } = this.state
-
-    const { theme } = this.props.opt
 
     const fontSize = theme.frame.font.size
 
@@ -230,8 +214,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   createInputPin (
     nodeId: NodeId,
-    pin: ?SerializedPin
-    emit: ?bool = false
+    pin: ?SerializedPin,
+    emit: ?boolean = false
   ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
@@ -248,11 +232,13 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
 
     if (emit) {
-      this.props.emit('createInputPin', nodeIdAndPosition, pin)
+      this.props.emit('createInputPin', nodeIdAndPinPosition, pin)
     }
+
+    return Object.assign(pin, nodeIdAndPinPosition)
   }
 
-  createLink (link: ): Id {
+  createLink (link: SemiLink): Id {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -412,6 +398,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
+  emitUpdateNodesGeometry () {
+    this.props.emit('updateNodeGeometry', this.selectedNodes())
+  }
   generateId (): Id {
     const { view } = this.state
 
@@ -434,8 +423,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   onDocumentKeydown (event: KeyboardEvent): void {
     const { code } = event
-
-    const { emitUpdateNodesGeometry } = this.props
 
     const {
       selectedItems,
@@ -523,16 +510,12 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     if (thereAreSelectedNodes && isArrowCode) {
       this.dragItems(draggingDelta, selectedNodeIds)
 
-      if (!shiftPressed) {
-        emitUpdateNodesGeometry(this.selectedNodes())
-      }
+      if (!shiftPressed) emitUpdateNodesGeometry()
     }
   }
 
   onDocumentKeyup (event: KeyboardEvent) {
     const { code } = event
-
-    const { emitUpdateNodesGeometry } = this.props
 
     const selectedNodeIds = this.selectedNodeIds()
     const thereAreSelectedNodes = (selectedNodeIds.length > 0)
@@ -540,9 +523,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     switch (code) {
       case 'ShiftLeft':
       case 'ShiftRight':
-        if (thereAreSelectedNodes) {
-          emitUpdateNodesGeometry(this.selectedNodes())
-        }
+        if (thereAreSelectedNodes) emitUpdateNodesGeometry()
 
         this.setState({ shiftPressed: false })
 
@@ -653,8 +634,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     event.preventDefault()
     event.stopPropagation()
 
-    const { emitUpdateNodesGeometry } = this.props
-
     const {
       draggedLinkId,
       rectangularSelection
@@ -721,9 +700,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     const selectedNodeIds = this.selectedNodeIds()
     const thereAreSelectedNodes = (selectedNodeIds.length > 0)
 
-    if (thereAreSelectedNodes) {
-      emitUpdateNodesGeometry(this.selectedNodes())
-    }
+    if (thereAreSelectedNodes) emitUpdateNodesGeometry()
 
     this.setState({
       draggedLinkId: null,
@@ -742,7 +719,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ scroll })
   }
 
-  selectedLinks (): { [Id]: SerializedLink } {
+  selectedLinks (): { [LinkId]: SerializedLink } {
     const {
       view,
       selectedItems
@@ -753,7 +730,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return selectedLinks
   }
 
-  selectedNodeIds (): Array<Id> {
+  selectedNodeIds (): Array<NodeId> {
     const {
       view,
       selectedItems
@@ -800,10 +777,9 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       rectangularSelection,
       selectedItems,
       showSelector,
+      theme,
       view
     } = this.state
-
-    const { theme } = this.props.opt
 
     const backgroundColor = theme.frame.color.background
     const primaryColor = theme.frame.color.primary
@@ -884,7 +860,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               selectLink={this.selectItem(id)}
               sourceSelected={sourceSelected}
               targetSelected={targetSelected}
-              theme={opt.theme}
+              theme={theme}
               to={to}
               x1={coord.x1}
               y1={coord.y1}
@@ -929,7 +905,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               selected={(selectedItems.indexOf(id) > -1)}
               selectNode={this.selectItem(id)}
               text={text}
-              theme={opt.theme}
+              theme={theme}
               width={width}
               x={x}
               y={y}

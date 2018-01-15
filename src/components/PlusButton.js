@@ -1,4 +1,3 @@
-// @flow
 import NodeButton from './NodeButton'
 
 export default class PlusButton extends NodeButton {

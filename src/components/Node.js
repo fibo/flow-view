@@ -11,37 +11,20 @@ import PlusButton from './PlusButton'
 import InputPin from './InputPin'
 import OutputPin from './OutputPin'
 
-import type {
-  ConnectLinkToTarget,
-  CreatePin,
-  DeleteLink,
-  DeleteNode,
-  DeletePin,
-  Id,
-  NodeIdAndPosition,
-  Point,
-  SerializedNode,
-  Theme
-} from './types'
-
 import computeNodeWidth from '../utils/computeNodeWidth'
 import xOfPin from '../utils/xOfPin'
 
-type Props = Point & SerializedNode & {
+export type Props = Point & SerializedNode & {
   bodyHeight: number,
-  connectLinkToTarget: ConnectLinkToTarget,
-  createInputPin: (Id) => void,
-  createLink: ({ from: NodeIdAndPosition, to: ?NodeIdAndPosition }) => Id,
-  createOutputPin: (Id) => void,
-  emitCreateOutputPin: CreatePin,
-  emitDeleteInputPin: DeletePin,
-  emitDeleteLink: DeleteLink,
-  emitCreateNode: DeleteNode,
-  deleteNode: (Id) => void,
-  deleteInputPin: (Id) => void,
-  deleteOutputPin: (Id) => void,
+  connectLinkToTarget: (NodeId, NodeIdAndPinPosition) => void,
+  createInputPin: (NodeId) => void,
+  createLink: (SemiLink) => LinkId,
+  createOutputPin: (NodeId) => void,
+  deleteNode: (NodeId) => void,
+  deleteInputPin: (NodeId) => void,
+  deleteOutputPin: (NodeId) => void,
   dragging: boolean,
-  draggedLinkId: ?Id,
+  draggedLinkId: ?LinkId,
   id: string,
   multiSelection: boolean,
   selected: boolean,
@@ -77,25 +60,15 @@ export default class Node extends React.Component<Props> {
     )
   }
 
-  createInputPin () {
-    this.props.createInputPin(this.props.id)
-  }
+  createInputPin () { this.props.createInputPin(this.props.id) }
 
-  createOutputPin () {
-    this.props.createOutputPin(this.props.id)
-  }
+  createOutputPin () { this.props.createOutputPin(this.props.id) }
 
-  deleteInputPin () {
-    this.props.deleteInputPin(this.props.id)
-  }
+  deleteInputPin () { this.props.deleteInputPin(this.props.id) }
 
-  deleteNode () {
-    this.props.deleteNode(this.props.id)
-  }
+  deleteNode () { this.props.deleteNode(this.props.id) }
 
-  deleteOutputPin () {
-    this.props.deleteOutputPin(this.props.id)
-  }
+  deleteOutputPin () { this.props.deleteOutputPin(this.props.id) }
 
   getComputedWidth () {
     const {
@@ -193,7 +166,7 @@ export default class Node extends React.Component<Props> {
             <InputPin key={i}
               color={selected ? highlightColor : pinColor}
               draggedLinkId={draggedLinkId}
-              nodeIdAndPosition={[id, i]}
+              nodeIdAndPinPosition={[id, i]}
               connectLinkToTarget={connectLinkToTarget}
               size={pinSize}
               x={x}
@@ -215,7 +188,7 @@ export default class Node extends React.Component<Props> {
             <OutputPin key={i}
               color={selected ? highlightColor : pinColor}
               createLink={createLink}
-              nodeIdAndPosition={[id, i]}
+              nodeIdAndPinPosition={[id, i]}
               size={pinSize}
               x={x}
               y={pinSize + bodyHeight}

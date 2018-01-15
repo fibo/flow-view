@@ -1,28 +1,21 @@
-// @flow
 import React from 'react'
 
 import bindme from 'bindme'
 
 import { defaultTheme } from './theme'
 
-import type {
-  Id,
-  NodeIdAndPosition,
-  Theme
-} from './types'
-
-type Props = {
-  createLink: ({ from: NodeIdAndPosition, to?: NodeIdAndPosition }) => Id,
-  deleteLink: (string) => void,
-  id: string,
-  from: NodeIdAndPosition,
-  startDraggingLinkTarget: (Id) => void,
+export type Props = {
+  createLink: (SemiLink) => LinkId,
+  deleteLink: (LinkId) => void,
+  id: LinkId,
+  from: NodeIdAndPinPosition,
+  startDraggingLinkTarget: (LinkId) => void,
   selected: boolean,
   selectLink: (MouseEvent) => void,
   sourceSelected: boolean,
   targetSelected: boolean,
   theme: Theme,
-  to: NodeIdAndPosition,
+  to: NodeIdAndPinPosition,
   x1: number,
   y1: number,
   x2: number,

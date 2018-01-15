@@ -1,9 +1,6 @@
-// @flow
 import React from 'react'
 
-import type { Color, Rectangle } from './types'
-
-type Props = Rectangle & {
+export type Props = Rectangle & {
   color: Color
 }
 

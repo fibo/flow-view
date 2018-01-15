@@ -1,7 +1,3 @@
-// @flow
-
-import type { SerializedPin } from '../components/types'
-
 export default function computeNodeWidth ({
   bodyHeight,
   pinSize,

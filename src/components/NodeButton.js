@@ -2,16 +2,21 @@ import React from 'react'
 
 import bindme from 'bindme'
 
-import type { Point } from './types'
-
-type Props = Point & {
+export type Props = Point & {
   action: () => void,
   color: string,
   disabled: boolean,
   size: number
 }
 
-export default class NodeButton extends React.Component<Props> {
+type State = {
+  focus: boolean
+}
+
+export default class NodeButton extends React.Component<Props, State> {
+  ray: () => number
+  shape: (number) => string
+
   static defaultProps = {
     action: Function.prototype,
     disabled: false

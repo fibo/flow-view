@@ -55,13 +55,26 @@
   },
   "standard": {
     "globals": [
+      "Area",
+      "ConnectLinkToTarget",
+      "FlowView",
       "Event",
+      "expect",
       "HTMLInputEvent",
-      "KeyboardEvent",
-      "MouseEvent",
-      "SyntheticKeyboardEvent",
       "it",
-      "expect"
+      "KeyboardEvent",
+      "LinkId",
+      "MouseEvent",
+      "NodeId",
+      "NodeIdAndPinPosition",
+      "Point",
+      "Segment",
+      "SerializedLink",
+      "SerializedNode",
+      "SerializedNodes",
+      "SerializedPin",
+      "SyntheticKeyboardEvent",
+      "Theme"
     ],
     "parser": "babel-eslint",
     "plugins": [

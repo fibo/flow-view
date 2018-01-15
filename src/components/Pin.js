@@ -1,15 +1,8 @@
-// @flow
 import React from 'react'
-
-import type {
-  Color,
-  NodeIdAndPosition,
-  Point
-} from './types'
 
 export type Props = Point & {
   color: Color,
-  nodeIdAndPosition: NodeIdAndPosition,
+  nodeIdAndPinPosition: NodeIdAndPinPosition,
   onMouseDown: (MouseEvent) => void,
   onMouseUp: (MouseEvent) => void,
   size: number

@@ -1,17 +1,12 @@
-// @flow
 import React from 'react'
 
 import bindme from 'bindme'
 
 import Pin from './Pin'
 
-import type {
-  ConnectLinkToTarget,
-  Id
-} from './types'
 import type { Props as PinProps } from './Pin'
 
-type Props = PinProps & {
+export type Props = PinProps & {
   connectLinkToTarget: ConnectLinkToTarget,
   draggedLinkId: ?Id
 }
@@ -35,11 +30,11 @@ export default class InputPin extends React.Component<Props> {
     const {
       connectLinkToTarget,
       draggedLinkId,
-      nodeIdAndPosition
+      nodeIdAndPinPosition
     } = this.props
 
     if (draggedLinkId) {
-      connectLinkToTarget(draggedLinkId, nodeIdAndPosition)
+      connectLinkToTarget(draggedLinkId, nodeIdAndPinPosition)
     }
   }
 

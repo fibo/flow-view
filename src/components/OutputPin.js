@@ -1,18 +1,13 @@
-// @flow
 import React from 'react'
 
 import bindme from 'bindme'
 
 import Pin from './Pin'
 
-import type {
-  CreateLink
-} from './types'
-
 import type { Props as PinProps } from './Pin'
 
-type Props = PinProps & {
-  createLink: CreateLink
+export type Props = PinProps & {
+  createLink: (SemiLink, ?LinkId) => void
 }
 
 export default class OutputPin extends React.Component<Props> {
@@ -30,10 +25,10 @@ export default class OutputPin extends React.Component<Props> {
 
     const {
       createLink,
-      nodeIdAndPosition
+      nodeIdAndPinPosition
     } = this.props
 
-    createLink({ from: nodeIdAndPosition })
+    createLink({ from: nodeIdAndPinPosition })
   }
 
   render () {

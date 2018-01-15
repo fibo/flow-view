@@ -1,7 +1,3 @@
-// @flow
-// TODO Element is required by flow, but it is not imported, it seems
-//      to be a builtin. By now I make it global, it makes linter happy.
-/* global Element */
 import React from 'react'
 
 import ReactDOM from 'react-dom'
@@ -16,26 +12,16 @@ import staticProps from 'static-props'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
-import type { Props as FramePropType } from './components/Frame'
-
-import type {
-  Area,
-  FlowView,
-  LinkId,
-  NodeId,
-  NodeIdAndPinPosition
-  SerializedLink,
-  SerializedNode,
-  SerializedPin
-} from './components/types'
+import type { Options } from './components/Frame'
 
 const defaultOpt = FlowViewFrame.defaultProps.opt
 const defaultView = FlowViewFrame.defaultProps.view
 
 export default class FlowViewCanvas extends EventEmitter {
-  opt: FramePropType.opt
+  frame: ?FlowViewFrame
+  opt: Options
 
-  constructor (opt: FramePropType.opt) {
+  constructor (opt: Options) {
     bindme(super(), 'emit')
 
     // Merge options
@@ -51,13 +37,13 @@ export default class FlowViewCanvas extends EventEmitter {
   load (container: Element, view: FlowView): void {
     const { opt } = this
 
-    const border = opt.theme.border
+    const borderWidth = opt.theme.frame.border.width
 
     // Get height and width from container.
     const rect = container.getBoundingClientRect()
 
-    const height = view.height || rect.height - (2 * border.height)
-    const width = view.width || rect.width - (2 * border.width)
+    const height = view.height || rect.height - (2 * borderWidth)
+    const width = view.width || rect.width - (2 * borderWidth)
 
     // If no component is mounted in the container,
     // calling this function does nothing. It removes
@@ -70,6 +56,7 @@ export default class FlowViewCanvas extends EventEmitter {
         ref={frame => { staticProps(this)({ frame }) }}
         emit={this.emit}
         opt={opt}
+        theme={opt.theme}
         view={view}
       />, container)
   }
@@ -90,6 +77,7 @@ export default class FlowViewCanvas extends EventEmitter {
     const jsx = (
       <FlowViewFrame responsive
         opt={opt}
+        theme={opt.theme}
         view={view}
        />
      )

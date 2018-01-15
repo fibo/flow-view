@@ -1,4 +1,3 @@
-// @flow
 import Frame from './Frame'
 import Link from './Link'
 import Node from './Node'

@@ -2,14 +2,7 @@ import React from 'react'
 
 import bindme from 'bindme'
 
-import type {
-  Area,
-  Point,
-  SerializedNode,
-  Theme
-} from './types'
-
-type Props = Area & {
+export type Props = Area & {
   createNode: (SerializedNode) => void,
   nodelist: Array<string>,
   pointer: Point,
@@ -27,8 +20,6 @@ export default class Selector extends React.Component<Props, State> {
     width: 200
   }
 
-  state = { text: '' }
-
   constructor () {
     bindme(super(),
       'onChange',
@@ -38,6 +29,8 @@ export default class Selector extends React.Component<Props, State> {
       'onMouseDown',
       'onMouseUp'
     )
+
+    this.state = { text: '' }
   }
 
   inputStyle () {
@@ -90,9 +83,9 @@ export default class Selector extends React.Component<Props, State> {
     }
   }
 
-  onMouseDown (event): void { event.stopPropagation() }
+  onMouseDown (event: MouseEvent): void { event.stopPropagation() }
 
-  onMouseUp (event): void { event.stopPropagation() }
+  onMouseUp (event: MouseEvent): void { event.stopPropagation() }
 
   render () {
     const {
@@ -140,7 +133,7 @@ export default class Selector extends React.Component<Props, State> {
     )
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate (nextProps: Props) {
     return this.props.show || nextProps.show
   }
 }

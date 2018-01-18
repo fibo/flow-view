@@ -29,6 +29,7 @@
     "flow": "flow",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
     "jekyll": "npm run homepage; npm run docs:_data; cd docs; jekyll build; cd ..",
+    "jest": "NODE_PATH=src BABEL_ENV=umd NODE_PATH=src jest",
     "lint": "for x in src examples; do npm run lint_$x; done",
     "lint_src": "cd src; standard; cd ..",
     "lint_examples": "cd examples; standard; cd ..",
@@ -38,10 +39,7 @@
     "postversion": "git push origin v${npm_package_version}; npm publish",
     "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "test": "for x in jest serverside validate; do npm run test_$x; done",
-    "test_jest": "NODE_PATH=src BABEL_ENV=umd NODE_PATH=src jest",
-    "test_serverside": "NODE_PATH=. tape test/serverside.js",
-    "test_validate": "NODE_PATH=. tape test/validate.js"
+    "test": "npm run jest"
   },
   "pre-commit": [
     "lint",

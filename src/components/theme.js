@@ -1,14 +1,7 @@
 const baseColor = 'gainsboro'
 
-const defaultBorder = {
-  width: 1,
-  style: 'solid',
-  color: baseColor
-}
-
 export const defaultTheme = {
   frame: {
-    border: defaultBorder,
     color: {
       background: 'white',
       primary: '#A9DFBF',
@@ -34,5 +27,11 @@ export const defaultTheme = {
       size: 10
     }
   },
-  selector: { border: defaultBorder }
+  selector: {
+    border: {
+      width: 1,
+      style: 'solid',
+      color: baseColor
+    }
+  }
 }

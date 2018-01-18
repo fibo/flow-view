@@ -1,6 +1,6 @@
-var Canvas = require('flow-view').Canvas
+const Canvas = require('flow-view').Canvas
 
-var view = {
+const view = {
   node: {
     a: {
       x: 80,
@@ -24,6 +24,8 @@ var view = {
   }
 }
 
-var canvas = new Canvas('drawing')
+const canvas = new Canvas()
 
-canvas.render(view)
+canvas.load(view)
+
+canvas.mountOn(document.getElementById('drawing'))

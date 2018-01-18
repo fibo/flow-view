@@ -1,6 +1,6 @@
-var Canvas = require('flow-view').Canvas
+const Canvas = require('flow-view').Canvas
 
-var view = {
+const view = {
   node: {
     a: {
       x: 80,
@@ -26,16 +26,9 @@ var view = {
 
 const baseColor = '#475B62'
 
-const border = {
-  width: 1,
-  style: 'solid',
-  color: baseColor
-}
-
-var canvas = new Canvas('drawing', {
+const canvas = new Canvas({
   theme: {
     frame: {
-      border,
       color: {
         background: '#0A2932',
         primary: '#819090',
@@ -61,8 +54,14 @@ var canvas = new Canvas('drawing', {
         size: 10
       }
     },
-    selector: { border }
+    selector: {
+      border: {
+        width: 1,
+        style: 'solid',
+        color: baseColor
+      }
+    }
   }
 })
 
-canvas.render(view)
+canvas.load(view).mountOn(document.getElementById('drawing'))

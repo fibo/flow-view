@@ -56,10 +56,12 @@
   "standard": {
     "globals": [
       "Area",
+      "Color",
       "ConnectLinkToTarget",
       "FlowView",
       "Event",
       "expect",
+      "HTMLElement",
       "HTMLInputEvent",
       "it",
       "KeyboardEvent",
@@ -68,7 +70,9 @@
       "NodeId",
       "NodeIdAndPinPosition",
       "Point",
+      "Rectangle",
       "Segment",
+      "SemiLink",
       "SerializedLink",
       "SerializedNode",
       "SerializedNodes",
@@ -104,7 +108,6 @@
     "events": "^1.1.1",
     "merge-options": "^1.0.0",
     "not-defined": "^2.0.1",
-    "static-props": "^1.1.1",
     "svgx": "^1.0.1"
   },
   "devDependencies": {

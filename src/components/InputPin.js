@@ -8,7 +8,7 @@ import type { Props as PinProps } from './Pin'
 
 export type Props = PinProps & {
   connectLinkToTarget: ConnectLinkToTarget,
-  draggedLinkId: ?Id
+  draggedLinkId: ?LinkId
 }
 
 export default class InputPin extends React.Component<Props> {

@@ -1,6 +1,6 @@
 var Canvas = require('flow-view').Canvas
 
-var canvas = new Canvas('drawing', {
+var canvas = new Canvas({
   nodeList: [
     'Homer',
     'Marge',
@@ -10,7 +10,9 @@ var canvas = new Canvas('drawing', {
   ]
 })
 
-canvas.render({
+canvas.mountOn('drawing')
+
+canvas.load({
   node: {
     dad: {
       x: 10,

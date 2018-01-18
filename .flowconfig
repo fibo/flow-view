@@ -11,15 +11,11 @@
 <PROJECT_ROOT>/test/.*
 <PROJECT_ROOT>/utils/.*
 
-<PROJECT_ROOT>/src/Canvas.js
 <PROJECT_ROOT>/src/components/CrossButton.js
 <PROJECT_ROOT>/src/components/Frame.js
-<PROJECT_ROOT>/src/components/InputPin.js
 <PROJECT_ROOT>/src/components/MinusButton.js
 <PROJECT_ROOT>/src/components/Node.js
-<PROJECT_ROOT>/src/components/OutputPin.js
 <PROJECT_ROOT>/src/components/PlusButton.js
-<PROJECT_ROOT>/src/components/Pin.js
 <PROJECT_ROOT>/src/components/Selector.js
 <PROJECT_ROOT>/src/components/index.js
 <PROJECT_ROOT>/src/flow-view.js

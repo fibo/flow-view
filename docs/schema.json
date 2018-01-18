@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://g14n.info/flow-view/schema.json",
+  "properties": {
+    "links": {
+      "type": "array",
+      "items": {
+        "title": "link",
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "from": {
+            "type": "array",
+            "items": [ { "type": "string" }, { "type": "number" } ],
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "to": {
+            "type": "array",
+            "items": [ { "type": "string" }, { "type": "number" } ],
+            "minLength": 2,
+            "maxLength": 2
+          }
+        },
+        "required": [ "id", "from", "to" ]
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "title": "node",
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "ins": {
+            "type": "array",
+            "items": {
+              "title": "in",
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" }
+              }
+            }
+          },
+          "outs": {
+            "type": "array",
+            "items": {
+              "title": "in",
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" }
+              }
+            }
+          },
+          "text": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" }
+        },
+        "required": [ "id", "text", "x", "y"]
+      }
+    }
+  }
+}

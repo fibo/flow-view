@@ -38,11 +38,13 @@ declare type SemiLink = {
 }
 
 declare type SerializedLink = {
+  id: LinkId,
   from: NodeIdAndPinPosition,
   to: NodeIdAndPinPosition
 }
 
 declare type SerializedNode = Point & Area & {
+  id: NodeId,
   ins: ?Array<SerializedPin>,
   outs: ?Array<SerializedPin>,
   text: string
@@ -51,9 +53,6 @@ declare type SerializedNode = Point & Area & {
 declare type SerializedPin = { name: string }
 
 // Secondly derived types
-
-declare type LinkCollection = { [LinkId]: SerializedLink }
-declare type NodeCollection = { [NodeId]: SerializedNode }
 
 declare type FrameTheme = {
   border: BorderTheme,
@@ -87,15 +86,11 @@ declare type NodeTheme = {
 
 declare type SelectorTheme = { border: BorderTheme }
 
-declare type SerializedNodes = { [NodeId]: SerializedNode }
-
 // Thirdly derived types.
 
 declare type FlowView = {
-  link: LinkCollection,
-  node: NodeCollection,
-  height?: number,
-  width?: number
+  links: Array<SerializedLink>,
+  nodes: Array<SerializedNode>
 }
 
 declare type Theme = {

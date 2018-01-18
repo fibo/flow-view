@@ -1,8 +1,7 @@
 {
-  "width": 720,
-  "height": 250,
-  "node": {
-    "a": {
+  "nodes": [
+    {
+      "id": "a",
       "text": "your engine",
       "outs": [
         { "name": "out0" },
@@ -11,14 +10,16 @@
       "x": 170,
       "y": 10
     },
-    "b": {
+    {
+      "id": "b",
       "text": "flow-view",
       "ins": [ { "name": "in" } ],
       "outs": [ { "name": "out" } ],
       "x": 117,
       "y": 100
     },
-    "c": {
+    {
+      "id": "c",
       "text": "a cool app!",
       "ins": [
         { "name": "in0" },
@@ -29,15 +30,17 @@
       "x": 150,
       "y": 170
     }
-  },
-  "link": {
-    "l": {
+  ],
+  "links": [
+    {
+      "id": "l",
       "from": ["a", 0],
       "to": ["b", 0]
     },
-    "i": {
+    {
+      "id": "i",
       "from": ["b", 0],
       "to": ["c", 0]
     }
-  }
+  ]
 }

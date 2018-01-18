@@ -54,11 +54,11 @@ var InputPin = function (_React$Component) {
       var _props = this.props,
           connectLinkToTarget = _props.connectLinkToTarget,
           draggedLinkId = _props.draggedLinkId,
-          nodeIdAndPosition = _props.nodeIdAndPosition;
+          nodeIdAndPinPosition = _props.nodeIdAndPinPosition;
 
 
       if (draggedLinkId) {
-        connectLinkToTarget(draggedLinkId, nodeIdAndPosition);
+        connectLinkToTarget(draggedLinkId, nodeIdAndPinPosition);
       }
     }
   }, {

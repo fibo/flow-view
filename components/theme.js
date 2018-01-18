@@ -3,19 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-
 var baseColor = 'gainsboro';
-
-var defaultBorder = {
-  width: 1,
-  style: 'solid',
-  color: baseColor
-};
 
 var defaultTheme = exports.defaultTheme = {
   frame: {
-    border: defaultBorder,
     color: {
       background: 'white',
       primary: '#A9DFBF',
@@ -41,5 +32,11 @@ var defaultTheme = exports.defaultTheme = {
       size: 10
     }
   },
-  selector: { border: defaultBorder }
+  selector: {
+    border: {
+      width: 1,
+      style: 'solid',
+      color: baseColor
+    }
+  }
 };

@@ -26,11 +26,13 @@ var Selector = function (_React$Component) {
   _inherits(Selector, _React$Component);
 
   function Selector() {
-    var _temp, _this;
+    var _this;
 
     _classCallCheck(this, Selector);
 
-    (0, _bindme2.default)((_temp = (_this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this)), _this), _this.state = { text: '' }, _temp), 'onChange', 'onClick', 'onDoubleClick', 'onKeyPress', 'onMouseDown', 'onMouseUp');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this)), _this), 'onChange', 'onClick', 'onDoubleClick', 'onKeyPress', 'onMouseDown', 'onMouseUp');
+
+    _this.state = { text: '' };
     return _this;
   }
 

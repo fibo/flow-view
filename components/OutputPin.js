@@ -48,10 +48,10 @@ var OutputPin = function (_React$Component) {
 
       var _props = this.props,
           createLink = _props.createLink,
-          nodeIdAndPosition = _props.nodeIdAndPosition;
+          nodeIdAndPinPosition = _props.nodeIdAndPinPosition;
 
 
-      createLink({ from: nodeIdAndPosition });
+      createLink({ from: nodeIdAndPinPosition });
     }
   }, {
     key: 'render',

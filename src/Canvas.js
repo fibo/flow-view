@@ -11,34 +11,45 @@ import mergeOptions from 'merge-options'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
-import type { Options } from './components/Frame'
 
-const defaultOpt = FlowViewFrame.defaultProps.opt
+import type { Pros as FlowViewFrameProps } from './components/Frame'
+
+export type Options = {
+  getTypeOfNode: FlowViewFrameProps.getTypeOfNode,
+  nodeComponent?: FlowViewFrameProps.nodeComponent,
+  nodeList?: FlowViewFrameProps.nodeList,
+  theme?: Theme
+}
+
 const defaultView = FlowViewFrame.defaultProps.view
+const defaultOpt = {
+  getTypeOfNode: FlowViewFrame.defaultProps.getTypeOfNode,
+  nodeComponent: FlowViewFrame.defaultProps.nodeComponent,
+  nodeList: FlowViewFrame.defaultProps.nodeList,
+  theme: FlowViewFrame.defaultProps.theme
+}
 
 export default class FlowViewCanvas extends EventEmitter {
   frame: ?FlowViewFrame
-  opt: Options
+  opt: ?Options
   view: ?FlowView
 
-  constructor (opt: Options) {
+  constructor (opt: ?Options) {
     bindme(super(), 'emit')
 
     // Merge options
 
-    this.opt = mergeOptions(defaultOpt, opt)
+    this.opt = mergeOptions(opt, defaultOpt)
   }
 
-  load (view : FlowView = defaultView): FlowViewCanvas {
+  load (view: FlowView = defaultView): FlowViewCanvas {
     this.view = view
 
     return this
   }
 
   mountOn (container: HTMLElement): void {
-    const view = this.view
-
-    const { opt } = this
+    const { opt, view } = this
 
     // Get height and width from container.
 
@@ -68,13 +79,8 @@ export default class FlowViewCanvas extends EventEmitter {
     this.frame.setState({ width, height })
   }
 
-  /**
-   * Render to SVG. Can be used for server side rendering.
-   */
-
   toSVG (
-    width: number,
-    height: number,
+    { width, height }: Area,
     callback: (err: ?Error, any) => void
   ): void {
     const { opt, view } = this

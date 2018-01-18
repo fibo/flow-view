@@ -8,7 +8,6 @@ import EventEmitter from 'events'
 
 import bindme from 'bindme'
 import mergeOptions from 'merge-options'
-import staticProps from 'static-props'
 import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
@@ -20,6 +19,7 @@ const defaultView = FlowViewFrame.defaultProps.view
 export default class FlowViewCanvas extends EventEmitter {
   frame: ?FlowViewFrame
   opt: Options
+  view: ?FlowView
 
   constructor (opt: Options) {
     bindme(super(), 'emit')
@@ -29,21 +29,22 @@ export default class FlowViewCanvas extends EventEmitter {
     this.opt = mergeOptions(defaultOpt, opt)
   }
 
-  /**
-   * Mount canvas on a DOM element and render its view,
-   * that is a collection of nodes and links.
-   */
+  load (view : FlowView = defaultView): FlowViewCanvas {
+    this.view = view
 
-  load (container: Element, view: FlowView): void {
+    return this
+  }
+
+  mountOn (container: HTMLElement): void {
+    const view = this.view
+
     const { opt } = this
 
-    const borderWidth = opt.theme.frame.border.width
-
     // Get height and width from container.
+
     const rect = container.getBoundingClientRect()
 
-    const height = view.height || rect.height - (2 * borderWidth)
-    const width = view.width || rect.width - (2 * borderWidth)
+    const { width, height } = rect
 
     // If no component is mounted in the container,
     // calling this function does nothing. It removes
@@ -53,11 +54,13 @@ export default class FlowViewCanvas extends EventEmitter {
 
     ReactDOM.render(
       <FlowViewFrame
-        ref={frame => { staticProps(this)({ frame }) }}
         emit={this.emit}
+        height={height}
         opt={opt}
+        ref={frame => { this.frame = frame }}
         theme={opt.theme}
         view={view}
+        width={width}
       />, container)
   }
 
@@ -69,16 +72,24 @@ export default class FlowViewCanvas extends EventEmitter {
    * Render to SVG. Can be used for server side rendering.
    */
 
-  toSVG (view: FlowView, callback: func): void {
-    const { opt } = this
+  toSVG (
+    width: number,
+    height: number,
+    callback: (err: ?Error, any) => void
+  ): void {
+    const { opt, view } = this
+
+    const { theme } = opt
 
     const svgxOpts = { doctype: true, xmlns: true }
 
     const jsx = (
-      <FlowViewFrame responsive
+      <FlowViewFrame
+        height={height}
         opt={opt}
-        theme={opt.theme}
+        theme={theme}
         view={view}
+        width={width}
        />
      )
 

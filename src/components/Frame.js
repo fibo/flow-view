@@ -24,13 +24,12 @@ export type Options = {
 
 export type Props = {
   opt: Options,
-  responsive: boolean,
   theme: Theme,
   view: FlowView
-}
+} & Area
 
 type State = {
-  draggedLinkId: ?Id,
+  draggedLinkId: ?LinkId,
   isMouseDown: boolean,
   isMouseDraggingItems: boolean,
   offset: Point,
@@ -40,7 +39,6 @@ type State = {
   showSelector: boolean,
   selectedItems: Array,
   shiftPressed: boolean,
-  theme: Theme,
   view: ?FlowView
 }
 
@@ -55,7 +53,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         }
       }
     },
-    responsive: false,
     theme: defaultTheme,
     updateLink: Function.prototype,
     view: {
@@ -128,15 +125,13 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   componentWillUnmount () {
-    const container = ReactDOM.findDOMNode(this).parentNode
-
     document.removeEventListener('keydown', this.onDocumentKeydown)
     document.removeEventListener('keyup', this.onDocumentKeyup)
 
     window.removeEventListener('scroll', this.onWindowScroll)
   }
 
-  connectLinkToTarget (linkId: Id, target: NodeIdAndPinPosition): void {
+  connectLinkToTarget (linkId: LinkId, target: NodeIdAndPinPosition): void {
     const view = Object.assign({}, this.state.view)
 
     view.link[linkId].to = target
@@ -148,9 +143,10 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   coordinatesOfLink ({ from, to }: SerializedLink): Segment {
+    const { theme } = this.props
+
     const {
       pointer,
-      theme,
       view
     } = this.state
 
@@ -223,6 +219,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const position = ins.length
 
+    const nodeIdAndPinPosition = { nodeId, position }
+
     if (no(pin)) pin = { name: `in${position}` }
 
     ins.push(pin)
@@ -238,7 +236,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return Object.assign(pin, nodeIdAndPinPosition)
   }
 
-  createLink (link: SemiLink): Id {
+  createLink (link: SemiLink): LinkId {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -281,7 +279,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   createOutputPin (
-    nodeId: Id,
+    nodeId: NodeId,
     pin: ?SerializedPin
   ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
@@ -299,7 +297,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  deleteInputPin (nodeId: Id, position: ?number): void {
+  deleteInputPin (nodeId: NodeId, position: ?number): void {
     const view = Object.assign({}, this.state.view)
 
     const ins = view.node[nodeId].ins
@@ -326,7 +324,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  deleteOutputPin (nodeId: Id, position?: number): void {
+  deleteOutputPin (nodeId: NodeId, position?: number): void {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs
@@ -353,7 +351,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  deleteLink (id: Id): void {
+  deleteLink (id: LinkId): void {
     const view = Object.assign({}, this.state.view)
 
     delete view.link[id]
@@ -361,7 +359,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  deleteNode (id: Id): void {
+  deleteNode (id: NodeId): void {
     const view = Object.assign({}, this.state.view)
 
     // Delete links connected to given node.
@@ -384,7 +382,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  dragItems (dragginDelta, draggedItems: Array<Id>): void {
+  dragItems (dragginDelta, draggedItems: Array<LinkId | NodeId>): void {
     const view = Object.assign({}, this.state.view)
 
     Object
@@ -401,7 +399,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   emitUpdateNodesGeometry () {
     this.props.emit('updateNodeGeometry', this.selectedNodes())
   }
-  generateId (): Id {
+
+  generateId (): LinkId | NodeId {
     const { view } = this.state
 
     const id = randomString(3)
@@ -510,7 +509,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     if (thereAreSelectedNodes && isArrowCode) {
       this.dragItems(draggingDelta, selectedNodeIds)
 
-      if (!shiftPressed) emitUpdateNodesGeometry()
+      if (!shiftPressed) this.emitUpdateNodesGeometry()
     }
   }
 
@@ -523,7 +522,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     switch (code) {
       case 'ShiftLeft':
       case 'ShiftRight':
-        if (thereAreSelectedNodes) emitUpdateNodesGeometry()
+        if (thereAreSelectedNodes) this.emitUpdateNodesGeometry()
 
         this.setState({ shiftPressed: false })
 
@@ -700,7 +699,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     const selectedNodeIds = this.selectedNodeIds()
     const thereAreSelectedNodes = (selectedNodeIds.length > 0)
 
-    if (thereAreSelectedNodes) emitUpdateNodesGeometry()
+    if (thereAreSelectedNodes) this.emitUpdateNodesGeometry()
 
     this.setState({
       draggedLinkId: null,
@@ -766,9 +765,11 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   render () {
     const {
+      height,
       model,
       opt,
-      responsive
+      theme,
+      width
     } = this.props
 
     const {
@@ -777,24 +778,15 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       rectangularSelection,
       selectedItems,
       showSelector,
-      theme,
       view
     } = this.state
 
     const backgroundColor = theme.frame.color.background
     const primaryColor = theme.frame.color.primary
 
-    const border = theme.frame.border
     const fontFamily = theme.frame.font.family
     const fontSize = theme.frame.font.size
     const pinSize = theme.node.pin.size
-
-    let { width, height } = view
-
-    // Subtract border width, otherwise also server side SVGx renders
-    // with the bottom and right border missing.
-    height = height - (2 * border.width)
-    width = width - (2 * border.width)
 
     /**
      * Bring up selected nodes.
@@ -816,7 +808,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       <svg
         fontFamily={fontFamily}
         fontSize={fontSize}
-        height={responsive ? null : height}
         onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
@@ -825,12 +816,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         onMouseMove={this.onMouseMove}
         onMouseUp={this.onMouseUp}
         textAnchor='start'
-        style={{
-          backgroundColor,
-          border: `${border.width}px ${border.style} ${border.color}`
-        }}
-        viewBox={responsive ? `0 0 ${width} ${height}` : null}
-        width={responsive ? null : width}
+        style={{ backgroundColor }}
+        viewBox={`0 0 ${width} ${height}`}
       >
         {rectangularSelection ? (
           <RectangularSelection
@@ -923,7 +910,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     )
   }
 
-  selectItem (id: Id): (MouseEvent) => void {
+  selectItem (id: LinkId | NodeId): (MouseEvent) => void {
     return (event: MouseEvent) => {
       event.preventDefault()
       event.stopPropagation()

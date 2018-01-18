@@ -60,7 +60,6 @@
       "Event",
       "expect",
       "HTMLElement",
-      "HTMLInputEvent",
       "it",
       "KeyboardEvent",
       "LinkId",

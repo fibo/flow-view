@@ -24,7 +24,6 @@ export type Options = {
 const defaultView = FlowViewFrame.defaultProps.view
 const defaultOpt = {
   getTypeOfNode: FlowViewFrame.defaultProps.getTypeOfNode,
-  nodeComponent: FlowViewFrame.defaultProps.nodeComponent,
   nodeList: FlowViewFrame.defaultProps.nodeList,
   theme: FlowViewFrame.defaultProps.theme
 }
@@ -66,17 +65,21 @@ export default class FlowViewCanvas extends EventEmitter {
     ReactDOM.render(
       <FlowViewFrame
         emit={this.emit}
+        getTypeOfNode={opt ? opt.getTypeOfNode : null}
         height={height}
-        opt={opt}
+        nodeComponent={opt ? opt.nodeComponent : null}
+        nodeList={opt ? opt.nodeList : null}
         ref={frame => { this.frame = frame }}
-        theme={opt.theme}
+        theme={opt ? opt.theme : null}
         view={view}
         width={width}
       />, container)
   }
 
   resize ({ width, height }: Area): void {
-    this.frame.setState({ width, height })
+    const { frame } = this
+
+    if (frame) frame.setState({ width, height })
   }
 
   toSVG (
@@ -85,15 +88,13 @@ export default class FlowViewCanvas extends EventEmitter {
   ): void {
     const { opt, view } = this
 
-    const { theme } = opt
-
     const svgxOpts = { doctype: true, xmlns: true }
 
     const jsx = (
       <FlowViewFrame
         height={height}
-        opt={opt}
-        theme={theme}
+        nodeComponent={opt ? opt.nodeComponent : null}
+        theme={opt ? opt.theme : null}
         view={view}
         width={width}
        />

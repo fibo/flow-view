@@ -7,7 +7,7 @@ import Pin from './Pin'
 import type { Props as PinProps } from './Pin'
 
 export type Props = PinProps & {
-  connectLinkToTarget: ConnectLinkToTarget,
+  connectLinkToTarget: (LinkId, NodeIdAndPinPosition) => void,
   draggedLinkId: ?LinkId
 }
 

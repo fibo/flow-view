@@ -4,7 +4,7 @@ import bindme from 'bindme'
 
 export type Props = Area & {
   createNode: (SerializedNode) => void,
-  nodelist: Array<string>,
+  nodeList: Array<string>,
   pointer: Point,
   show: boolean,
   theme: Theme
@@ -49,15 +49,15 @@ export default class Selector extends React.Component<Props, State> {
     }
   }
 
-  onChange (event): void {
+  onChange (event: KeyboardEvent): void {
     this.setState({ text: event.target.value })
   }
 
-  onClick (event): void { event.stopPropagation() }
+  onClick (event: MouseEvent): void { event.stopPropagation() }
 
-  onDoubleClick (event): void { event.stopPropagation() }
+  onDoubleClick (event: MouseEvent): void { event.stopPropagation() }
 
-  onKeyPress (event): void {
+  onKeyPress (event: KeyboardEvent): void {
     const {
       createNode,
       pointer

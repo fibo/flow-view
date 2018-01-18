@@ -7,8 +7,8 @@ const canvas = new Canvas()
 
 canvas.load(view)
 
-const width = 600
-const height = 400
+const width = 720
+const height = 250
 
 canvas.toSVG({ width, height }, (err, outputSVG) => {
   if (err) throw err

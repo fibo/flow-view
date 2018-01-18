@@ -172,7 +172,7 @@ canvas.mountOn(document.getElementById('drawing'))
 
 ### `canvas.resize({ width: number, height: number }): void`
 
-### `canvas.toSVG(view: FlowView, callback: func): void`
+### `canvas.toSVG(width: number, height: number, callback: func): void`
 
 > Render to SVG. Can be used for server side rendering.
 

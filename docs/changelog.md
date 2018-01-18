@@ -28,7 +28,7 @@ Enrich Canvas with methods:
   - `load(view)`
   - `mountOn(container)`
   - `resize({ width, height })`
-  - `toSVG(callback)`
+  - `toSVG(width, height, callback)`
 
 Added `canvas.view` read only attribute
 

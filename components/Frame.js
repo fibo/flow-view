@@ -72,11 +72,16 @@ var FlowViewFrame = function (_React$Component) {
 
     _classCallCheck(this, FlowViewFrame);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewFrame.__proto__ || Object.getPrototypeOf(FlowViewFrame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseEnter', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowResize', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewFrame.__proto__ || Object.getPrototypeOf(FlowViewFrame)).call(this, props)), _this), 'connectLinkToTarget', 'createLink', 'createNode', 'createInputPin', 'createOutputPin', 'deleteInputPin', 'deleteOutputPin', 'deleteLink', 'deleteNode', 'onDocumentKeydown', 'onDocumentKeyup', 'onDoubleClick', 'onMouseDown', 'onMouseEnter', 'onMouseLeave', 'onMouseMove', 'onMouseUp', 'onWindowScroll', 'selectorCreateNode', 'selectItem', 'startDraggingLinkTarget');
+
+    var width = props.width,
+        height = props.height,
+        view = props.view;
+
 
     _this.state = {
-      dynamicView: { height: null, width: null },
       draggedLinkId: null,
+      height: height,
       isMouseDown: false,
       isMouseDraggingItems: false,
       offset: { x: 0, y: 0 },
@@ -86,7 +91,8 @@ var FlowViewFrame = function (_React$Component) {
       showSelector: false,
       selectedItems: [],
       shiftPressed: false,
-      view: props.view
+      view: view,
+      width: width
     };
 
     _this.nodeRef = {};
@@ -102,7 +108,6 @@ var FlowViewFrame = function (_React$Component) {
       document.addEventListener('keyup', this.onDocumentKeyup);
 
       window.addEventListener('scroll', this.onWindowScroll);
-      window.addEventListener('resize', this.onWindowResize(container));
 
       var offset = {
         x: container.offsetLeft,
@@ -119,13 +124,10 @@ var FlowViewFrame = function (_React$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      var container = _reactDom2.default.findDOMNode(this).parentNode;
-
       document.removeEventListener('keydown', this.onDocumentKeydown);
       document.removeEventListener('keyup', this.onDocumentKeyup);
 
       window.removeEventListener('scroll', this.onWindowScroll);
-      window.removeEventListener('resize', this.onWindowResize(container));
     }
   }, {
     key: 'connectLinkToTarget',
@@ -138,18 +140,16 @@ var FlowViewFrame = function (_React$Component) {
         draggedLinkId: null,
         view: view
       });
-
-      this.props.emitCreateLink(view.link[linkId], linkId);
     }
   }, {
     key: 'coordinatesOfLink',
     value: function coordinatesOfLink(_ref) {
       var from = _ref.from,
           to = _ref.to;
+      var theme = this.props.theme;
       var _state = this.state,
           pointer = _state.pointer,
           view = _state.view;
-      var theme = this.props.opt.theme;
 
 
       var fontSize = theme.frame.font.size;
@@ -213,13 +213,17 @@ var FlowViewFrame = function (_React$Component) {
   }, {
     key: 'createInputPin',
     value: function createInputPin(nodeId, pin) {
+      var emit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
       var view = Object.assign({}, this.state.view);
 
       var ins = view.node[nodeId].ins || [];
 
-      var position = view.node[nodeId].ins.length;
+      var position = ins.length;
 
-      if ((0, _notDefined2.default)(pin)) pin = 'in' + position;
+      var nodeIdAndPinPosition = { nodeId: nodeId, position: position };
+
+      if ((0, _notDefined2.default)(pin)) pin = { name: 'in' + position };
 
       ins.push(pin);
 
@@ -227,7 +231,11 @@ var FlowViewFrame = function (_React$Component) {
 
       this.setState({ view: view });
 
-      this.props.emitCreateInputPin([nodeId, position], pin);
+      if (emit) {
+        this.props.emit('createInputPin', nodeIdAndPinPosition, pin);
+      }
+
+      return Object.assign(pin, nodeIdAndPinPosition);
     }
   }, {
     key: 'createLink',
@@ -270,8 +278,6 @@ var FlowViewFrame = function (_React$Component) {
 
       this.setState({ view: view });
 
-      this.props.emitCreateNode(node, id);
-
       return id;
     }
   }, {
@@ -290,8 +296,6 @@ var FlowViewFrame = function (_React$Component) {
       view.node[nodeId].outs = outs;
 
       this.setState({ view: view });
-
-      this.props.emitCreateOutputPin([nodeId, position], pin);
     }
   }, {
     key: 'deleteInputPin',
@@ -320,8 +324,6 @@ var FlowViewFrame = function (_React$Component) {
       view.node[nodeId].ins.splice(position, 1);
 
       this.setState({ view: view });
-
-      this.props.emitDeleteInputPin([nodeId, position]);
     }
   }, {
     key: 'deleteOutputPin',
@@ -350,8 +352,6 @@ var FlowViewFrame = function (_React$Component) {
       view.node[nodeId].outs.splice(position, 1);
 
       this.setState({ view: view });
-
-      this.props.emitDeleteOutputPin([nodeId, position]);
     }
   }, {
     key: 'deleteLink',
@@ -361,8 +361,6 @@ var FlowViewFrame = function (_React$Component) {
       delete view.link[id];
 
       this.setState({ view: view });
-
-      this.props.emitDeleteLink(id);
     }
   }, {
     key: 'deleteNode',
@@ -388,8 +386,6 @@ var FlowViewFrame = function (_React$Component) {
       delete this.nodeRef[id];
 
       this.setState({ view: view });
-
-      this.props.emitDeleteNode(id);
     }
   }, {
     key: 'dragItems',
@@ -404,6 +400,11 @@ var FlowViewFrame = function (_React$Component) {
       });
 
       this.setState({ view: view });
+    }
+  }, {
+    key: 'emitUpdateNodesGeometry',
+    value: function emitUpdateNodesGeometry() {
+      this.props.emit('updateNodeGeometry', this.selectedNodes());
     }
   }, {
     key: 'generateId',
@@ -434,7 +435,6 @@ var FlowViewFrame = function (_React$Component) {
       var _this5 = this;
 
       var code = event.code;
-      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
       var _state3 = this.state,
           selectedItems = _state3.selectedItems,
           shiftPressed = _state3.shiftPressed,
@@ -521,16 +521,13 @@ var FlowViewFrame = function (_React$Component) {
       if (thereAreSelectedNodes && isArrowCode) {
         this.dragItems(draggingDelta, selectedNodeIds);
 
-        if (!shiftPressed) {
-          emitUpdateNodesGeometry(this.selectedNodes());
-        }
+        if (!shiftPressed) this.emitUpdateNodesGeometry();
       }
     }
   }, {
     key: 'onDocumentKeyup',
     value: function onDocumentKeyup(event) {
       var code = event.code;
-      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
 
 
       var selectedNodeIds = this.selectedNodeIds();
@@ -539,9 +536,7 @@ var FlowViewFrame = function (_React$Component) {
       switch (code) {
         case 'ShiftLeft':
         case 'ShiftRight':
-          if (thereAreSelectedNodes) {
-            emitUpdateNodesGeometry(this.selectedNodes());
-          }
+          if (thereAreSelectedNodes) this.emitUpdateNodesGeometry();
 
           this.setState({ shiftPressed: false });
 
@@ -658,7 +653,6 @@ var FlowViewFrame = function (_React$Component) {
       event.preventDefault();
       event.stopPropagation();
 
-      var emitUpdateNodesGeometry = this.props.emitUpdateNodesGeometry;
       var _state6 = this.state,
           draggedLinkId = _state6.draggedLinkId,
           rectangularSelection = _state6.rectangularSelection;
@@ -719,9 +713,7 @@ var FlowViewFrame = function (_React$Component) {
       var selectedNodeIds = this.selectedNodeIds();
       var thereAreSelectedNodes = selectedNodeIds.length > 0;
 
-      if (thereAreSelectedNodes) {
-        emitUpdateNodesGeometry(this.selectedNodes());
-      }
+      if (thereAreSelectedNodes) this.emitUpdateNodesGeometry();
 
       this.setState({
         draggedLinkId: null,
@@ -729,22 +721,6 @@ var FlowViewFrame = function (_React$Component) {
         isMouseDraggingItems: false,
         pointer: null
       });
-    }
-  }, {
-    key: 'onWindowResize',
-    value: function onWindowResize(container) {
-      var _this6 = this;
-
-      return function () {
-        var rect = container.getBoundingClientRect();
-
-        var dynamicView = {
-          height: rect.height,
-          width: rect.width
-        };
-
-        _this6.setState({ dynamicView: dynamicView });
-      };
     }
   }, {
     key: 'onWindowScroll',
@@ -813,36 +789,30 @@ var FlowViewFrame = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this7 = this;
+      var _this6 = this;
 
       var _props = this.props,
-          model = _props.model,
-          opt = _props.opt,
-          responsive = _props.responsive;
+          getTypeOfNode = _props.getTypeOfNode,
+          nodeComponent = _props.nodeComponent,
+          nodeList = _props.nodeList,
+          theme = _props.theme;
       var _state9 = this.state,
           draggedLinkId = _state9.draggedLinkId,
-          dynamicView = _state9.dynamicView,
+          height = _state9.height,
           pointer = _state9.pointer,
           rectangularSelection = _state9.rectangularSelection,
           selectedItems = _state9.selectedItems,
           showSelector = _state9.showSelector,
-          view = _state9.view;
-      var theme = this.props.opt.theme;
+          view = _state9.view,
+          width = _state9.width;
 
 
       var backgroundColor = theme.frame.color.background;
       var primaryColor = theme.frame.color.primary;
 
-      var border = theme.frame.border;
       var fontFamily = theme.frame.font.family;
       var fontSize = theme.frame.font.size;
       var pinSize = theme.node.pin.size;
-
-      var height = dynamicView.height || view.height;
-      var width = dynamicView.width || view.width;
-
-      height = height - 2 * border.width;
-      width = width - 2 * border.width;
 
       var selectedFirst = function selectedFirst(a, b) {
         var aIsSelected = selectedItems.indexOf(a) > -1;
@@ -859,7 +829,6 @@ var FlowViewFrame = function (_React$Component) {
         {
           fontFamily: fontFamily,
           fontSize: fontSize,
-          height: responsive ? null : height,
           onClick: this.onClick,
           onDoubleClick: this.onDoubleClick,
           onMouseDown: this.onMouseDown,
@@ -868,12 +837,8 @@ var FlowViewFrame = function (_React$Component) {
           onMouseMove: this.onMouseMove,
           onMouseUp: this.onMouseUp,
           textAnchor: 'start',
-          style: {
-            backgroundColor: backgroundColor,
-            border: border.width + 'px ' + border.style + ' ' + border.color
-          },
-          viewBox: responsive ? '0 0 ' + width + ' ' + height : null,
-          width: responsive ? null : width
+          style: { backgroundColor: backgroundColor },
+          viewBox: '0 0 ' + width + ' ' + height
         },
         rectangularSelection ? _react2.default.createElement(_RectangularSelection2.default, _extends({
           color: primaryColor
@@ -884,22 +849,22 @@ var FlowViewFrame = function (_React$Component) {
               to = _view$link$id.to;
 
 
-          var coord = _this7.coordinatesOfLink(view.link[id]);
+          var coord = _this6.coordinatesOfLink(view.link[id]);
           var sourceSelected = from ? selectedItems.indexOf(from[0]) > -1 : false;
           var targetSelected = to ? selectedItems.indexOf(to[0]) > -1 : false;
 
           return _react2.default.createElement(_Link2.default, { key: i,
-            deleteLink: _this7.deleteLink,
+            deleteLink: _this6.deleteLink,
             from: from,
             id: id,
-            createLink: _this7.createLink,
-            startDraggingLinkTarget: _this7.startDraggingLinkTarget,
+            createLink: _this6.createLink,
+            startDraggingLinkTarget: _this6.startDraggingLinkTarget,
             pinSize: pinSize,
             selected: selectedItems.indexOf(id) > -1,
-            selectLink: _this7.selectItem(id),
+            selectLink: _this6.selectItem(id),
             sourceSelected: sourceSelected,
             targetSelected: targetSelected,
-            theme: opt.theme,
+            theme: theme,
             to: to,
             x1: coord.x1,
             y1: coord.y1,
@@ -919,31 +884,30 @@ var FlowViewFrame = function (_React$Component) {
               y = node.y;
 
 
-          var nodeType = opt.util.typeOfNode(node);
-          var Node = opt.node[nodeType];
+          var nodeType = getTypeOfNode(node);
+          var Node = nodeComponent[nodeType];
 
           return _react2.default.createElement(Node, { key: i, ref: function ref(node) {
-              _this7.nodeRef[id] = node;
+              _this6.nodeRef[id] = node;
             },
-            connectLinkToTarget: _this7.connectLinkToTarget,
-            createInputPin: _this7.createInputPin,
-            createLink: _this7.createLink,
-            createOutputPin: _this7.createOutputPin,
+            connectLinkToTarget: _this6.connectLinkToTarget,
+            createInputPin: _this6.createInputPin,
+            createLink: _this6.createLink,
+            createOutputPin: _this6.createOutputPin,
             draggedLinkId: draggedLinkId,
-            deleteInputPin: _this7.deleteInputPin,
-            deleteNode: _this7.deleteNode,
-            deleteOutputPin: _this7.deleteOutputPin,
+            deleteInputPin: _this6.deleteInputPin,
+            deleteNode: _this6.deleteNode,
+            deleteOutputPin: _this6.deleteOutputPin,
             height: height,
             id: id,
             ins: ins,
-            model: model,
             multiSelection: selectedItems.length > 1,
             outs: outs,
             pinSize: pinSize,
             selected: selectedItems.indexOf(id) > -1,
-            selectNode: _this7.selectItem(id),
+            selectNode: _this6.selectItem(id),
             text: text,
-            theme: opt.theme,
+            theme: theme,
             width: width,
             x: x,
             y: y
@@ -951,7 +915,7 @@ var FlowViewFrame = function (_React$Component) {
         }),
         _react2.default.createElement(_Selector2.default, {
           createNode: this.selectorCreateNode,
-          nodeList: opt.nodeList,
+          nodeList: nodeList,
           pointer: showSelector ? pointer : null,
           show: showSelector,
           theme: theme
@@ -961,26 +925,26 @@ var FlowViewFrame = function (_React$Component) {
   }, {
     key: 'selectItem',
     value: function selectItem(id) {
-      var _this8 = this;
+      var _this7 = this;
 
       return function (event) {
         event.preventDefault();
         event.stopPropagation();
 
-        var _state10 = _this8.state,
+        var _state10 = _this7.state,
             draggedLinkId = _state10.draggedLinkId,
             shiftPressed = _state10.shiftPressed;
 
 
-        var selectedItems = [].concat(_toConsumableArray(_this8.state.selectedItems));
-        var view = Object.assign({}, _this8.state.view);
+        var selectedItems = [].concat(_toConsumableArray(_this7.state.selectedItems));
+        var view = Object.assign({}, _this7.state.view);
 
-        var pointer = _this8.getCoordinates(event);
+        var pointer = _this7.getCoordinates(event);
 
         if (draggedLinkId) {
           delete view.link[draggedLinkId];
 
-          _this8.setState({
+          _this7.setState({
             draggedLinkId: null,
             view: view
           });
@@ -1004,7 +968,7 @@ var FlowViewFrame = function (_React$Component) {
           }
         }
 
-        _this8.setState({
+        _this7.setState({
           isMouseDown: true,
           pointer: pointer,
           selectedItems: selectedItems,
@@ -1028,27 +992,12 @@ var FlowViewFrame = function (_React$Component) {
 }(_react2.default.Component);
 
 FlowViewFrame.defaultProps = {
-  emitCreateInputPin: Function.prototype,
-  emitCreateLink: Function.prototype,
-  emitCreateNode: Function.prototype,
-  emitCreateOutputPin: Function.prototype,
-  emitDeleteInputPin: Function.prototype,
-  emitDeleteLink: Function.prototype,
-  emitDeleteNode: Function.prototype,
-  emitDeleteOutputPin: Function.prototype,
-  emitUpdateNodesGeometry: Function.prototype,
-  opt: {
-    node: { DefaultNode: _Node2.default },
-    nodeList: [],
-    theme: _theme.defaultTheme,
-    util: {
-      typeOfNode: function typeOfNode(node) {
-        return 'DefaultNode';
-      }
-    }
+  getTypeOfNode: function getTypeOfNode() {
+    return 'DefaultNode';
   },
-  responsive: false,
-  updateLink: Function.prototype,
+  nodeList: [],
+  nodeComponent: { DefaultNode: _Node2.default },
+  theme: _theme.defaultTheme,
   view: {
     link: {},
     node: {}

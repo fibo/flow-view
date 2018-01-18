@@ -192,7 +192,7 @@ var Node = function (_React$Component) {
           return _react2.default.createElement(_InputPin2.default, { key: i,
             color: selected ? highlightColor : pinColor,
             draggedLinkId: draggedLinkId,
-            nodeIdAndPosition: [id, i],
+            nodeIdAndPinPosition: [id, i],
             connectLinkToTarget: connectLinkToTarget,
             size: pinSize,
             x: x,
@@ -212,7 +212,7 @@ var Node = function (_React$Component) {
           return _react2.default.createElement(_OutputPin2.default, { key: i,
             color: selected ? highlightColor : pinColor,
             createLink: createLink,
-            nodeIdAndPosition: [id, i],
+            nodeIdAndPinPosition: [id, i],
             size: pinSize,
             x: x,
             y: pinSize + bodyHeight

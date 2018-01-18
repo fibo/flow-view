@@ -5,7 +5,7 @@ import bindme from 'bindme'
 import no from 'not-defined'
 
 import Link from './Link'
-import DefaultNode from './Node'
+import NodeBase from './Node'
 import RectangularSelection from './RectangularSelection'
 import Selector from './Selector'
 
@@ -15,15 +15,10 @@ import xOfPin from '../utils/xOfPin'
 
 import { defaultTheme } from './theme'
 
-export type Options = {
-  node: {},
-  nodeList?: Array<string>,
-  theme: Theme,
-  util: { typeOfNode: () => string }
-}
-
 export type Props = {
-  opt: Options,
+  getTypeOfNode?: (NodeBase) => string,
+  nodeComponent?: {},
+  nodeList?: Array<string>,
   theme: Theme,
   view: FlowView
 } & Area
@@ -44,17 +39,10 @@ type State = {
 
 export default class FlowViewFrame extends React.Component<Props, State> {
   static defaultProps = {
-    opt: {
-      node: { DefaultNode },
-      nodeList: [],
-      util: {
-        typeOfNode: function (node) {
-          return 'DefaultNode'
-        }
-      }
-    },
+    getTypeOfNode: () => 'DefaultNode',
+    nodeList: [],
+    nodeComponent: { DefaultNode: NodeBase },
     theme: defaultTheme,
-    updateLink: Function.prototype,
     view: {
       link: {},
       node: {}
@@ -86,8 +74,15 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       'startDraggingLinkTarget'
      )
 
+    const {
+      width,
+      height,
+      view
+    } = props
+
     this.state = {
       draggedLinkId: null,
+      height,
       isMouseDown: false,
       isMouseDraggingItems: false,
       offset: { x: 0, y: 0 },
@@ -97,7 +92,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       showSelector: false,
       selectedItems: [],
       shiftPressed: false,
-      view: props.view
+      view,
+      width
     }
 
     this.nodeRef = {}
@@ -765,20 +761,21 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   render () {
     const {
-      height,
-      model,
-      opt,
-      theme,
-      width
+      getTypeOfNode,
+      nodeComponent,
+      nodeList,
+      theme
     } = this.props
 
     const {
       draggedLinkId,
+      height,
       pointer,
       rectangularSelection,
       selectedItems,
       showSelector,
-      view
+      view,
+      width
     } = this.state
 
     const backgroundColor = theme.frame.color.background
@@ -869,8 +866,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
             y
           } = node
 
-          const nodeType = opt.util.typeOfNode(node)
-          const Node = opt.node[nodeType]
+          const nodeType = getTypeOfNode(node)
+          const Node = nodeComponent[nodeType]
 
           return (
             <Node key={i}ref={node => { this.nodeRef[id] = node }}
@@ -885,7 +882,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               height={height}
               id={id}
               ins={ins}
-              model={model}
               multiSelection={(selectedItems.length > 1)}
               outs={outs}
               pinSize={pinSize}
@@ -901,7 +897,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         })}
         <Selector
           createNode={this.selectorCreateNode}
-          nodeList={opt.nodeList}
+          nodeList={nodeList}
           pointer={showSelector ? pointer : null}
           show={showSelector}
           theme={theme}

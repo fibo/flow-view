@@ -46,146 +46,96 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var defaultOpt = _Frame2.default.defaultProps.opt;
 var defaultView = _Frame2.default.defaultProps.view;
+var defaultOpt = {
+  getTypeOfNode: _Frame2.default.defaultProps.getTypeOfNode,
+  nodeComponent: _Frame2.default.defaultProps.nodeComponent,
+  nodeList: _Frame2.default.defaultProps.nodeList,
+  theme: _Frame2.default.defaultProps.theme
+};
 
 var FlowViewCanvas = function (_EventEmitter) {
   _inherits(FlowViewCanvas, _EventEmitter);
 
-  function FlowViewCanvas(container, opt) {
+  function FlowViewCanvas(opt) {
     var _this;
 
     _classCallCheck(this, FlowViewCanvas);
 
-    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emitCreateInputPin', 'emitCreateLink', 'emitCreateNode', 'emitCreateOutputPin', 'emitDeleteInputPin', 'emitDeleteOutputPin', 'emitDeleteLink', 'emitDeleteNode', 'emitDeleteOutputPin', 'emitUpdateNodesGeometry');
+    (0, _bindme2.default)((_this = _possibleConstructorReturn(this, (FlowViewCanvas.__proto__ || Object.getPrototypeOf(FlowViewCanvas)).call(this)), _this), 'emit');
 
-    _this.opt = (0, _mergeOptions2.default)(defaultOpt, opt);
-
-    var containerElement = void 0;
-    var containerNotFound = false;
-
-    if (typeof document !== 'undefined') {
-      if (typeof container === 'string') {
-        containerElement = document.getElementById(container);
-
-        if (document.body && document.body.contains(containerElement)) {
-          _this.container = containerElement;
-        } else {
-          containerNotFound = true;
-        }
-      } else {
-        if (container && document.body && document.body.contains(container)) {
-          _this.container = container;
-        } else {
-          containerNotFound = true;
-        }
-      }
-
-      if (containerNotFound) {
-        throw new TypeError('container must be a String or an HTMLElement');
-      }
-    } else {
-      _this.container = null;
-    }
+    _this.opt = (0, _mergeOptions2.default)(opt, defaultOpt);
     return _this;
   }
 
   _createClass(FlowViewCanvas, [{
-    key: 'emitCreateInputPin',
-    value: function emitCreateInputPin(nodeIdAndPosition, pin) {
-      this.emit('createInputPin', nodeIdAndPosition, pin);
+    key: 'load',
+    value: function load() {
+      var view = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultView;
+
+      this.view = view;
+
+      return this;
     }
   }, {
-    key: 'emitCreateLink',
-    value: function emitCreateLink(link, id) {
-      this.emit('createLink', link, id);
+    key: 'mountOn',
+    value: function mountOn(container) {
+      var _this2 = this;
+
+      var opt = this.opt,
+          view = this.view;
+
+
+      var rect = container.getBoundingClientRect();
+
+      var width = rect.width,
+          height = rect.height;
+
+      _reactDom2.default.unmountComponentAtNode(container);
+
+      _reactDom2.default.render(_react2.default.createElement(_Frame2.default, {
+        emit: this.emit,
+        height: height,
+        opt: opt,
+        ref: function ref(frame) {
+          _this2.frame = frame;
+        },
+        theme: opt.theme,
+        view: view,
+        width: width
+      }), container);
     }
   }, {
-    key: 'emitCreateNode',
-    value: function emitCreateNode(node, id) {
-      this.emit('createNode', node, id);
+    key: 'resize',
+    value: function resize(_ref) {
+      var width = _ref.width,
+          height = _ref.height;
+
+      this.frame.setState({ width: width, height: height });
     }
   }, {
-    key: 'emitCreateOutputPin',
-    value: function emitCreateOutputPin(nodeIdAndPosition, pin) {
-      this.emit('createOutputPin', nodeIdAndPosition, pin);
-    }
-  }, {
-    key: 'emitDeleteInputPin',
-    value: function emitDeleteInputPin(nodeIdAndPosition) {
-      this.emit('deleteInputPin', nodeIdAndPosition);
-    }
-  }, {
-    key: 'emitDeleteLink',
-    value: function emitDeleteLink(id) {
-      this.emit('deleteLink', id);
-    }
-  }, {
-    key: 'emitDeleteNode',
-    value: function emitDeleteNode(id) {
-      this.emit('deleteNode', id);
-    }
-  }, {
-    key: 'emitDeleteOutputPin',
-    value: function emitDeleteOutputPin(nodeIdAndPosition) {
-      this.emit('deleteOutputPin', nodeIdAndPosition);
-    }
-  }, {
-    key: 'emitUpdateNodesGeometry',
-    value: function emitUpdateNodesGeometry(nodes) {
-      this.emit('updateNodesGeometry', nodes);
-    }
-  }, {
-    key: 'render',
-    value: function render(initialView, model, callback) {
-      var container = this.container;
-      var opt = this.opt;
+    key: 'toSVG',
+    value: function toSVG(_ref2, callback) {
+      var width = _ref2.width,
+          height = _ref2.height;
+      var opt = this.opt,
+          view = this.view;
+      var theme = opt.theme;
 
-      var height = void 0;
-      var width = void 0;
 
-      if (container) {
-        var border = 1;
-        var rect = container.getBoundingClientRect();
+      var svgxOpts = { doctype: true, xmlns: true };
 
-        height = rect.height - 2 * border;
-        width = rect.width - 2 * border;
-      }
+      var jsx = _react2.default.createElement(_Frame2.default, {
+        height: height,
+        opt: opt,
+        theme: theme,
+        view: view,
+        width: width
+      });
 
-      var view = (0, _mergeOptions2.default)(defaultView, initialView, { width: width, height: height });
+      var SVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, svgxOpts);
 
-      if (container) {
-        _reactDom2.default.unmountComponentAtNode(container);
-
-        _reactDom2.default.render(_react2.default.createElement(_Frame2.default, {
-          emitCreateInputPin: this.emitCreateInputPin,
-          emitCreateLink: this.emitCreateLink,
-          emitCreateNode: this.emitCreateNode,
-          emitCreateOutputPin: this.emitCreateOutputPin,
-          emitDeleteInputPin: this.emitDeleteInputPin,
-          emitDeleteLink: this.emitDeleteLink,
-          emitDeleteNode: this.emitDeleteNode,
-          emitDeleteOutputPin: this.emitDeleteOutputPin,
-          emitUpdateNodesGeometry: this.emitUpdateNodesGeometry,
-          opt: opt,
-          model: model,
-          view: view
-        }), container);
-      } else {
-
-        var svgxOpts = { doctype: true, xmlns: true };
-
-        var jsx = _react2.default.createElement(_Frame2.default, { responsive: true,
-          opt: opt,
-          view: view
-        });
-
-        var outputSVG = (0, _svgx2.default)(_server2.default.renderToStaticMarkup)(jsx, svgxOpts);
-
-        if (typeof callback === 'function') {
-          callback(null, outputSVG);
-        }
-      }
+      callback(null, SVG);
     }
   }]);
 

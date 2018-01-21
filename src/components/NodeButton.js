@@ -6,7 +6,10 @@ export type Props = Point & {
   action: () => void,
   color: string,
   disabled: boolean,
+  ray: (number) => number,
+  shape: (number) => string,
   size: number
+
 }
 
 type State = {
@@ -14,14 +17,6 @@ type State = {
 }
 
 export default class NodeButton extends React.Component<Props, State> {
-  ray: () => number
-  shape: (number) => string
-
-  static defaultProps = {
-    action: Function.prototype,
-    disabled: false
-  }
-
   constructor () {
     bindme(super(),
       'onMouseDown',
@@ -53,6 +48,8 @@ export default class NodeButton extends React.Component<Props, State> {
     const {
       color,
       disabled,
+      ray,
+      shape,
       size,
       x,
       y
@@ -67,7 +64,7 @@ export default class NodeButton extends React.Component<Props, State> {
         onMouseLeave={this.onMouseLeave}
       >
         <path
-          d={this.shape(size)}
+          d={shape(size)}
           fill={disabled ? 'transparent' : color}
           onMouseDown={this.onMouseDown}
           stroke={color}
@@ -78,7 +75,7 @@ export default class NodeButton extends React.Component<Props, State> {
           cy={y + (size / 2)}
           fill='transparent'
           stroke={(focus && !disabled) ? color : 'transparent'}
-          r={this.ray()}
+          r={ray(size)}
         />
       </g>
     )

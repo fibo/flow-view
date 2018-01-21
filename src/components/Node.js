@@ -25,7 +25,6 @@ export type Props = Point & SerializedNode & {
   deleteOutputPin: (NodeId) => void,
   dragging: boolean,
   draggedLinkId: ?LinkId,
-  id: string,
   multiSelection: boolean,
   selected: boolean,
   selectNode: (MouseEvent) => void,
@@ -251,7 +250,6 @@ export default class Node extends React.Component<Props> {
 
   renderInputMinus () {
     const {
-      ins,
       multiSelection,
       selected,
       theme
@@ -261,7 +259,7 @@ export default class Node extends React.Component<Props> {
 
     const pinSize = theme.node.pin.size
 
-    if (!ins || (selected === false) || multiSelection) return null
+    if ((selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
     const disabled = ins.length === 0
@@ -280,7 +278,6 @@ export default class Node extends React.Component<Props> {
 
   renderInputPlus () {
     const {
-      ins,
       multiSelection,
       selected,
       theme
@@ -290,7 +287,7 @@ export default class Node extends React.Component<Props> {
 
     const pinSize = theme.node.pin.size
 
-    if (!ins || (selected === false) || multiSelection) return null
+    if ((selected === false) || multiSelection) return null
 
     const computedWidth = this.getComputedWidth()
 
@@ -308,7 +305,6 @@ export default class Node extends React.Component<Props> {
   renderOutputMinus () {
     const {
       multiSelection,
-      outs,
       selected,
       theme
     } = this.props
@@ -317,7 +313,7 @@ export default class Node extends React.Component<Props> {
 
     const pinSize = theme.node.pin.size
 
-    if (!outs || (selected === false) || multiSelection) return null
+    if ((selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()
@@ -338,7 +334,6 @@ export default class Node extends React.Component<Props> {
   renderOutputPlus () {
     const {
       multiSelection,
-      outs,
       selected,
       theme
     } = this.props
@@ -347,7 +342,7 @@ export default class Node extends React.Component<Props> {
 
     const pinSize = theme.node.pin.size
 
-    if (!outs || (selected === false) || multiSelection) return null
+    if ((selected === false) || multiSelection) return null
 
     const bodyHeight = this.getBodyHeight()
     const computedWidth = this.getComputedWidth()

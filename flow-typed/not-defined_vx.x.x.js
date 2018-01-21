@@ -1,3 +1,3 @@
 declare module 'not-defined' {
-  declare module.exports: any
+  declare module.exports: (any) => boolean
 }

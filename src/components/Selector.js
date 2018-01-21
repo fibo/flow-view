@@ -49,7 +49,7 @@ export default class Selector extends React.Component<Props, State> {
     }
   }
 
-  onChange (event: KeyboardEvent): void {
+  onChange (event: SyntheticInputEvent<EventTarget>): void {
     this.setState({ text: event.target.value })
   }
 
@@ -57,7 +57,7 @@ export default class Selector extends React.Component<Props, State> {
 
   onDoubleClick (event: MouseEvent): void { event.stopPropagation() }
 
-  onKeyPress (event: KeyboardEvent): void {
+  onKeyPress (event: SyntheticKeyboardEvent<EventTarget>): void {
     const {
       createNode,
       pointer

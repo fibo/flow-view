@@ -16,6 +16,7 @@ import xOfPin from '../utils/xOfPin'
 import { defaultTheme } from './theme'
 
 export type Props = {
+  emit: (string) => void,
   getTypeOfNode?: (NodeBase) => string,
   nodeComponent?: {},
   nodeList?: Array<string>,
@@ -29,23 +30,31 @@ type State = {
   isMouseDraggingItems: boolean,
   offset: Point,
   pointer: ?Point,
-  rectangularSelection: ?Area,
+  rectangularSelection: ?Rectangle,
   scroll: Point,
   showSelector: boolean,
   selectedItems: Array,
   shiftPressed: boolean,
-  view: ?FlowView
+  view: {
+    link: { [LinkId]: SerializedLink },
+    node: { [NodeId]: SerializedNode }
+  }
 }
 
 export default class FlowViewFrame extends React.Component<Props, State> {
+  link: Map<LinkId, SerializedLink>
+  node: Map<NodeId, SerializedNode>
+  nodeRef: Map<NodeId, NodeBase>
+
   static defaultProps = {
+    emit: Function.prototype,
     getTypeOfNode: () => 'DefaultNode',
     nodeList: [],
     nodeComponent: { DefaultNode: NodeBase },
     theme: defaultTheme,
     view: {
-      link: {},
-      node: {}
+      links: [],
+      nodes: []
     }
   }
 
@@ -80,6 +89,18 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       view
     } = props
 
+    let linkCollection = {}
+
+    view.links.forEach(link => {
+      linkCollection[link.id] = link
+    })
+
+    let nodeCollection = {}
+
+    view.nodes.forEach(node => {
+      nodeCollection[node.id] = node
+    })
+
     this.state = {
       draggedLinkId: null,
       height,
@@ -92,32 +113,41 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       showSelector: false,
       selectedItems: [],
       shiftPressed: false,
-      view,
+      view: {
+        link: linkCollection,
+        node: nodeCollection
+      },
       width
     }
 
-    this.nodeRef = {}
+    this.nodeRef = new Map()
   }
 
   componentDidMount () {
-    const container = ReactDOM.findDOMNode(this).parentNode
+    const DOMNode = ReactDOM.findDOMNode(this)
 
-    document.addEventListener('keydown', this.onDocumentKeydown)
-    document.addEventListener('keyup', this.onDocumentKeyup)
+    if (DOMNode) {
+      const container = ReactDOM.findDOMNode(this).parentNode
 
-    window.addEventListener('scroll', this.onWindowScroll)
+      if (container) {
+        document.addEventListener('keydown', this.onDocumentKeydown)
+        document.addEventListener('keyup', this.onDocumentKeyup)
 
-    const offset = {
-      x: container.offsetLeft,
-      y: container.offsetTop
+        window.addEventListener('scroll', this.onWindowScroll)
+
+        const offset = {
+          x: container.offsetLeft,
+          y: container.offsetTop
+        }
+
+        const scroll = {
+          x: window.scrollX,
+          y: window.scrollY
+        }
+
+        this.setState({ offset, scroll })
+      }
     }
-
-    const scroll = {
-      x: window.scrollX,
-      y: window.scrollY
-    }
-
-    this.setState({ offset, scroll })
   }
 
   componentWillUnmount () {
@@ -229,7 +259,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       this.props.emit('createInputPin', nodeIdAndPinPosition, pin)
     }
 
-    return Object.assign(pin, nodeIdAndPinPosition)
+    return Object.assign({}, nodeIdAndPinPosition, pin)
   }
 
   createLink (link: SemiLink): LinkId {
@@ -249,7 +279,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         selectedItems: [],
         view
       })
-      this.props.emitCreateLink(link, id)
+      this.props.emit('createLink', link, id)
     } else {
       this.setState({
         draggedLinkId: id,
@@ -262,7 +292,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return id
   }
 
-  createNode (node: SerializedNode): void {
+  createNode (node: SerializedNode): NodeId {
     const view = Object.assign({}, this.state.view)
 
     const id = this.generateId()
@@ -276,21 +306,30 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   createOutputPin (
     nodeId: NodeId,
-    pin: ?SerializedPin
+    pin: ?SerializedPin,
+    emit: ?boolean = false
   ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
     const outs = view.node[nodeId].outs || []
 
-    const position = view.node[nodeId].outs.length
+    const position = outs.length
 
-    if (no(pin)) pin = `out${position}`
+    const nodeIdAndPinPosition = { nodeId, position }
+
+    if (no(pin)) pin = { name: `out${position}` }
 
     outs.push(pin)
 
     view.node[nodeId].outs = outs
 
     this.setState({ view })
+
+    if (emit) {
+      this.props.emit('createOutputPin', nodeIdAndPinPosition, pin)
+    }
+
+    return Object.assign({}, nodeIdAndPinPosition, pin)
   }
 
   deleteInputPin (nodeId: NodeId, position: ?number): void {
@@ -298,7 +337,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const ins = view.node[nodeId].ins
 
-    if (no(ins)) return
+    if (nao(ins)) return
     if (ins.length === 0) return
 
     if (no(position)) position = ins.length - 1
@@ -373,12 +412,12 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     })
 
     delete view.node[id]
-    delete this.nodeRef[id]
+    this.nodeRef.delete(id)
 
     this.setState({ view })
   }
 
-  dragItems (dragginDelta, draggedItems: Array<LinkId | NodeId>): void {
+  dragItems (dragginDelta: Point, draggedItems: Array<LinkId | NodeId>): void {
     const view = Object.assign({}, this.state.view)
 
     Object
@@ -762,20 +801,20 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   render () {
     const {
       getTypeOfNode,
+      height,
       nodeComponent,
       nodeList,
-      theme
+      theme,
+      width
     } = this.props
 
     const {
       draggedLinkId,
-      height,
       pointer,
       rectangularSelection,
       selectedItems,
       showSelector,
-      view,
-      width
+      view
     } = this.state
 
     const backgroundColor = theme.frame.color.background
@@ -789,16 +828,18 @@ export default class FlowViewFrame extends React.Component<Props, State> {
      * Bring up selected nodes.
      */
 
-    const selectedFirst = (a, b) => {
+    const selectedFirst = (a: NodeId, b: NodeId): number => {
       // FIXME it works, but it would be nice if the selected
       // items keep being up after deselection.
-      var aIsSelected = (selectedItems.indexOf(a) > -1)
-      var bIsSelected = (selectedItems.indexOf(b) > -1)
+      const aIsSelected = (selectedItems.indexOf(a) > -1)
+      const bIsSelected = (selectedItems.indexOf(b) > -1)
 
       if (aIsSelected && bIsSelected) return 0
 
       if (aIsSelected) return 1
       if (bIsSelected) return -1
+
+      return 0
     }
 
     return (
@@ -870,7 +911,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
           const Node = nodeComponent[nodeType]
 
           return (
-            <Node key={i}ref={node => { this.nodeRef[id] = node }}
+            <Node key={i}ref={node => { this.nodeRef.set(id, node)}}
               connectLinkToTarget={this.connectLinkToTarget}
               createInputPin={this.createInputPin}
               createLink={this.createLink}
@@ -961,7 +1002,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     }
   }
 
-  startDraggingLinkTarget (id) {
+  startDraggingLinkTarget (id: LinkId): void {
     // Remember link source.
     const { from } = this.state.view.link[id]
 
@@ -972,6 +1013,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     // conflicts, for example the user could start dragging the link
     // target and then drop it again in the same target.
     const draggedLinkId = this.createLink({ from })
+
     this.setState({ draggedLinkId })
   }
 }

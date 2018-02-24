@@ -126,9 +126,11 @@ For example:
 
 ```javascript
 const view = {
-  node: {
-    a: {
-      x: 80, y: 100,
+  nodes: [
+    {
+      id: 'a',
+      x: 80,
+      y: 100,
       text: 'Drag me',
       outs: [
         { name: 'out1' },
@@ -136,22 +138,27 @@ const view = {
         { name: 'out3' }
       ]
     },
-    b: {
-      x: 180, y: 200,
+    {
+      id: 'b',
+      x: 180,
+      y: 200,
       text: 'Click me',
       ins: [
         { name: 'in0' },
         { name: 'in1', type: 'bool' }
       ],
-      outs: ['return']
+      outs: [
+        { name: 'return' }
+      ]
     }
-  },
-  link: {
-    c: {
+  ],
+  links: [
+    {
+      id: 'c',
       from: ['a', 0],
       to: ['b', 1]
     }
-  }
+  ]
 }
 
 canvas.load(view)

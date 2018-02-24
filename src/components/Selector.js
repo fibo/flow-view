@@ -2,10 +2,16 @@ import React from 'react'
 
 import bindme from 'bindme'
 
+import { defaultTheme } from './theme'
+
 export type Props = Area & {
-  createNode: (SerializedNode) => void,
-  nodeList: Array<string>,
-  pointer: Point,
+  createNode: (Point & {
+    ins: Array<SerializedPin>,
+    outs: Array<SerializedPin>,
+    text: string
+  }) => void,
+  nodeList?: Array<string>,
+  pointer: ?Point,
   show: boolean,
   theme: Theme
 }
@@ -16,7 +22,10 @@ type State = {
 
 export default class Selector extends React.Component<Props, State> {
   static defaultProps = {
+    createNode: Function.prototype,
     height: 20,
+    show: false,
+    theme: defaultTheme,
     width: 200
   }
 
@@ -63,23 +72,25 @@ export default class Selector extends React.Component<Props, State> {
       pointer
     } = this.props
 
-    const text = event.target.value.trim()
+    if (pointer && (event.currentTarget instanceof HTMLInputElement)) {
+      const text = event.currentTarget.value.trim()
 
-    const pressedEnter = (event.key === 'Enter')
-    const textIsNotBlank = text.length > 0
+      const pressedEnter = (event.key === 'Enter')
+      const textIsNotBlank = text.length > 0
 
-    if (pressedEnter) {
-      if (textIsNotBlank) {
-        createNode({
-          ins: [],
-          outs: [],
-          text,
-          x: pointer.x,
-          y: pointer.y
-        })
+      if (pressedEnter) {
+        if (textIsNotBlank) {
+          createNode({
+            ins: [],
+            outs: [],
+            text,
+            x: pointer.x,
+            y: pointer.y
+          })
+        }
+
+        this.setState({ text: '' })
       }
-
-      this.setState({ text: '' })
     }
   }
 

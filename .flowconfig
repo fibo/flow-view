@@ -11,12 +11,6 @@
 <PROJECT_ROOT>/test/.*
 <PROJECT_ROOT>/utils/.*
 
-<PROJECT_ROOT>/src/components/Frame.js
-<PROJECT_ROOT>/src/components/Node.js
-<PROJECT_ROOT>/src/components/Selector.js
-<PROJECT_ROOT>/src/components/index.js
-<PROJECT_ROOT>/src/flow-view.js
-
 [include]
 
 [libs]

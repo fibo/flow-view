@@ -4,15 +4,20 @@ import bindme from 'bindme'
 
 import Pin from './Pin'
 
-import type { Props as PinProps } from './Pin'
-
-export type Props = PinProps & {
-  createLink: (SemiLink, ?LinkId) => void
+export type Props = {
+  color: Color,
+  createLink: (SemiLink) => void,
+  nodeIdAndPinPosition: NodeIdAndPinPosition,
+  onMouseDown?: (MouseEvent) => void,
+  onMouseUp?: (MouseEvent) => void,
+  size: number
 }
 
 export default class OutputPin extends React.Component<Props> {
   static defaultProps = {
-    createLink: Function.prototype
+    createLink: Function.prototype,
+    onMouseDown: Function.prototype,
+    onMouseUp: Function.prototype
   }
 
   constructor () {

@@ -45,10 +45,11 @@
           "outs": {
             "type": "array",
             "items": {
-              "title": "in",
+              "title": "out",
               "type": "object",
               "properties": {
-                "name": { "type": "string" }
+                "name": { "type": "string" },
+                "required": [ "name"]
               }
             }
           },

@@ -1,27 +1,39 @@
 const Canvas = require('flow-view').Canvas
 
 const view = {
-  node: {
-    a: {
+  nodes: [
+    {
+      id: 'a',
       x: 80,
       y: 100,
       text: 'Drag me',
-      outs: ['out1', 'out2', 'out3']
+      outs: [
+        { name: 'out1' },
+        { name: 'out2' },
+        { name: 'out3' }
+      ]
     },
-    b: {
+    {
+      id: 'b',
       x: 180,
       y: 200,
       text: 'Click me',
-      ins: ['in0', { name: 'in1', type: 'bool' }],
-      outs: ['return']
+      ins: [
+        { name: 'in0' },
+        { name: 'in1', type: 'bool' }
+      ],
+      outs: [
+        { name: 'return' }
+      ]
     }
-  },
-  link: {
-    c: {
+  ],
+  links: [
+    {
+      id: 'c',
       from: ['a', 0],
       to: ['b', 1]
     }
-  }
+  ]
 }
 
 const canvas = new Canvas()

@@ -17,9 +17,8 @@ indent_size = 2
 [*{.conf,.pl,.pm,.py}]
 indent_size = 4
 
-[*{.glsl,.go,.sh,.sql}]
+[*{.glsl,.go,.sh,.sql,rc}]
 indent_style = tab
 
 [Makefile]
 indent_style = tab
-

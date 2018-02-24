@@ -12,7 +12,7 @@ import svgx from 'svgx'
 
 import FlowViewFrame from './components/Frame'
 
-import type { Pros as FlowViewFrameProps } from './components/Frame'
+import type { Props as FlowViewFrameProps } from './components/Frame'
 
 export type Options = {
   getTypeOfNode: FlowViewFrameProps.getTypeOfNode,

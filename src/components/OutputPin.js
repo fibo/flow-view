@@ -4,9 +4,9 @@ import bindme from 'bindme'
 
 import Pin from './Pin'
 
-export type Props = {
+export type Props = Point & {
   color: Color,
-  createLink: (SemiLink) => void,
+  createLink: (SemiLink) => LinkId,
   nodeIdAndPinPosition: NodeIdAndPinPosition,
   onMouseDown?: (MouseEvent) => void,
   onMouseUp?: (MouseEvent) => void,
@@ -15,9 +15,9 @@ export type Props = {
 
 export default class OutputPin extends React.Component<Props> {
   static defaultProps = {
-    createLink: Function.prototype,
-    onMouseDown: Function.prototype,
-    onMouseUp: Function.prototype
+    createLink: (semiLink: SemiLink) => ('id'),
+    onMouseDown: (event: MouseEvent) => {},
+    onMouseUp: (event: MouseEvent) => {}
   }
 
   constructor () {

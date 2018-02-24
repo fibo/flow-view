@@ -76,8 +76,7 @@ export default class Node extends React.Component<Props> {
       ins,
       outs,
       text,
-      theme,
-      width
+      theme
     } = this.props
 
     const fontSize = theme.frame.font.size
@@ -90,7 +89,7 @@ export default class Node extends React.Component<Props> {
       bodyHeight,
       pinSize,
       fontSize,
-      node: { ins, outs, text, width }
+      node: { ins, outs, text }
     })
 
     return computedWidth
@@ -167,7 +166,7 @@ export default class Node extends React.Component<Props> {
             <InputPin key={i}
               color={selected ? highlightColor : pinColor}
               draggedLinkId={draggedLinkId}
-              nodeIdAndPinPosition={[id, i]}
+              nodeIdAndPinPosition={{ nodeId: id, position: i }}
               connectLinkToTarget={connectLinkToTarget}
               size={pinSize}
               x={x}
@@ -189,7 +188,7 @@ export default class Node extends React.Component<Props> {
             <OutputPin key={i}
               color={selected ? highlightColor : pinColor}
               createLink={createLink}
-              nodeIdAndPinPosition={[id, i]}
+              nodeIdAndPinPosition={{ nodeId: id, position: i }}
               size={pinSize}
               x={x}
               y={pinSize + bodyHeight}

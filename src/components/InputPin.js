@@ -4,7 +4,7 @@ import bindme from 'bindme'
 
 import Pin from './Pin'
 
-export type Props = {
+export type Props = Point & {
   color: Color,
   connectLinkToTarget: (LinkId, NodeIdAndPinPosition) => void,
   draggedLinkId: ?LinkId,
@@ -16,10 +16,10 @@ export type Props = {
 
 export default class InputPin extends React.Component<Props> {
   static defaultProps = {
-    connectLinkToTarget: Function.prototype,
+    connectLinkToTarget: (linkId: LinkId, nodeIdAndPinPosition: NodeIdAndPinPosition) => {},
     draggedLinkId: null,
-    onMouseDown: Function.prototype,
-    onMouseUp: Function.prototype
+    onMouseDown: (event: MouseEvent) => {},
+    onMouseUp: (event: MouseEvent) => {}
   }
 
   constructor () {

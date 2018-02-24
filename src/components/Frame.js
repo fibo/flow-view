@@ -17,8 +17,8 @@ import { defaultTheme } from './theme'
 
 export type Props = {
   emit: (string) => void,
-  getTypeOfNode?: (NodeBase) => string,
-  nodeComponent?: {},
+  getTypeOfNode: (NodeBase) => string,
+  nodeComponent: { DefaultNode: NodeBase },
   nodeList?: Array<string>,
   theme: Theme,
   view: FlowView
@@ -337,7 +337,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const ins = view.node[nodeId].ins
 
-    if (nao(ins)) return
+    if (no(ins)) return
     if (ins.length === 0) return
 
     if (no(position)) position = ins.length - 1
@@ -753,7 +753,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ scroll })
   }
 
-  selectedLinks (): { [LinkId]: SerializedLink } {
+  selectedLinks (): Array<LinkId> {
     const {
       view,
       selectedItems
@@ -775,7 +775,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     return selectedNodeIds
   }
 
-  selectedNodes (): SerializedNodes {
+  selectedNodes (): { [NodeId]: SerializedNode } {
     const { view } = this.state
 
     let selectedNodes = {}
@@ -846,7 +846,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
       <svg
         fontFamily={fontFamily}
         fontSize={fontSize}
-        onClick={this.onClick}
         onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
         onMouseEnter={this.onMouseEnter}
@@ -898,7 +897,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
           const node = view.node[id]
 
           var {
-            height,
             ins,
             outs,
             text,
@@ -911,7 +909,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
           const Node = nodeComponent[nodeType]
 
           return (
-            <Node key={i}ref={node => { this.nodeRef.set(id, node)}}
+            <Node key={i}ref={node => { this.nodeRef.set(id, node) }}
               connectLinkToTarget={this.connectLinkToTarget}
               createInputPin={this.createInputPin}
               createLink={this.createLink}
@@ -920,7 +918,6 @@ export default class FlowViewFrame extends React.Component<Props, State> {
               deleteInputPin={this.deleteInputPin}
               deleteNode={this.deleteNode}
               deleteOutputPin={this.deleteOutputPin}
-              height={height}
               id={id}
               ins={ins}
               multiSelection={(selectedItems.length > 1)}

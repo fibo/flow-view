@@ -3,17 +3,12 @@ import React from 'react'
 export type Props = Point & {
   color: Color,
   nodeIdAndPinPosition: NodeIdAndPinPosition,
-  onMouseDown: (MouseEvent) => void,
-  onMouseUp: (MouseEvent) => void,
+  onMouseDown?: (MouseEvent) => void,
+  onMouseUp?: (MouseEvent) => void,
   size: number
 }
 
 export default class Pin extends React.Component<Props> {
-  static defaultProps = {
-    onMouseDown: Function.prototype,
-    onMouseUp: Function.prototype
-  }
-
   render () {
     const {
       color,

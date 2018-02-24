@@ -41,7 +41,9 @@ export default class Node extends React.Component<Props> {
     deleteOutputPin: Function.prototype,
     dragging: false,
     draggedLinkId: null,
+    ins: [],
     multiSelection: false,
+    outs: [],
     selected: false,
     selectNode: Function.prototype,
     text: 'Node',
@@ -250,6 +252,7 @@ export default class Node extends React.Component<Props> {
 
   renderInputMinus () {
     const {
+      ins,
       multiSelection,
       selected,
       theme
@@ -305,6 +308,7 @@ export default class Node extends React.Component<Props> {
   renderOutputMinus () {
     const {
       multiSelection,
+      outs,
       selected,
       theme
     } = this.props

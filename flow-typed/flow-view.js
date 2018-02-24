@@ -43,11 +43,12 @@ declare type SerializedLink = {
   to: NodeIdAndPinPosition
 }
 
-declare type SerializedNode = Point & Area & {
+declare type SerializedNode = Point & {
   id: NodeId,
   ins: Array<SerializedPin>,
   outs: Array<SerializedPin>,
-  text: string
+  text: string,
+  width?: number
 }
 
 declare type SerializedPin = { name: string }

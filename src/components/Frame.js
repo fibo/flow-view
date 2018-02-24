@@ -16,8 +16,8 @@ import xOfPin from '../utils/xOfPin'
 import { defaultTheme } from './theme'
 
 export type Props = {
-  emit: (string) => void,
-  getTypeOfNode: (NodeBase) => string,
+  emit: (string, any) => void,
+  getTypeOfNode: (SerializedNode) => string,
   nodeComponent: { DefaultNode: NodeBase },
   nodeList?: Array<string>,
   theme: Theme,
@@ -33,7 +33,7 @@ type State = {
   rectangularSelection: ?Rectangle,
   scroll: Point,
   showSelector: boolean,
-  selectedItems: Array,
+  selectedItems: Array<LinkId | NodeId>,
   shiftPressed: boolean,
   view: {
     link: { [LinkId]: SerializedLink },
@@ -48,7 +48,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   static defaultProps = {
     emit: Function.prototype,
-    getTypeOfNode: () => 'DefaultNode',
+    getTypeOfNode: (node: SerializedNode) => 'DefaultNode',
     nodeList: [],
     nodeComponent: { DefaultNode: NodeBase },
     theme: defaultTheme,
@@ -124,10 +124,10 @@ export default class FlowViewFrame extends React.Component<Props, State> {
   }
 
   componentDidMount () {
-    const DOMNode = ReactDOM.findDOMNode(this)
+    const domNode = ReactDOM.findDOMNode(this)
 
-    if (DOMNode) {
-      const container = ReactDOM.findDOMNode(this).parentNode
+    if (domNode) {
+      const container = domNode.parentNode
 
       if (container) {
         document.addEventListener('keydown', this.onDocumentKeydown)
@@ -236,8 +236,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   createInputPin (
     nodeId: NodeId,
-    pin: ?SerializedPin,
-    emit: ?boolean = false
+    emit?: boolean = false
   ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
@@ -247,7 +246,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const nodeIdAndPinPosition = { nodeId, position }
 
-    if (no(pin)) pin = { name: `in${position}` }
+    const pin = { name: `in${position}` }
 
     ins.push(pin)
 
@@ -256,7 +255,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
 
     if (emit) {
-      this.props.emit('createInputPin', nodeIdAndPinPosition, pin)
+      this.props.emit('createInputPin', Object.assign({}, nodeIdAndPinPosition, { pin }))
     }
 
     return Object.assign({}, nodeIdAndPinPosition, pin)
@@ -279,7 +278,8 @@ export default class FlowViewFrame extends React.Component<Props, State> {
         selectedItems: [],
         view
       })
-      this.props.emit('createLink', link, id)
+
+      this.props.emit('createLink', Object.assign({}, link, { id }))
     } else {
       this.setState({
         draggedLinkId: id,
@@ -306,8 +306,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
   createOutputPin (
     nodeId: NodeId,
-    pin: ?SerializedPin,
-    emit: ?boolean = false
+    emit?: boolean = false
   ): SerializedPin & NodeIdAndPinPosition {
     const view = Object.assign({}, this.state.view)
 
@@ -317,7 +316,7 @@ export default class FlowViewFrame extends React.Component<Props, State> {
 
     const nodeIdAndPinPosition = { nodeId, position }
 
-    if (no(pin)) pin = { name: `out${position}` }
+    const pin = { name: `out${position}` }
 
     outs.push(pin)
 
@@ -326,21 +325,20 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
 
     if (emit) {
-      this.props.emit('createOutputPin', nodeIdAndPinPosition, pin)
+      this.props.emit('createOutputPin', Object.assign({}, nodeIdAndPinPosition, { pin }))
     }
 
     return Object.assign({}, nodeIdAndPinPosition, pin)
   }
 
-  deleteInputPin (nodeId: NodeId, position: ?number): void {
+  deleteInputPin (nodeId: NodeId): void {
     const view = Object.assign({}, this.state.view)
 
-    const ins = view.node[nodeId].ins
+    const ins = view.node[nodeId].ins || []
 
     if (no(ins)) return
-    if (ins.length === 0) return
 
-    if (no(position)) position = ins.length - 1
+    const position = ins.length - 1
 
      // Look for connected links and delete them.
 
@@ -359,15 +357,14 @@ export default class FlowViewFrame extends React.Component<Props, State> {
     this.setState({ view })
   }
 
-  deleteOutputPin (nodeId: NodeId, position?: number): void {
+  deleteOutputPin (nodeId: NodeId): void {
     const view = Object.assign({}, this.state.view)
 
-    const outs = view.node[nodeId].outs
+    const outs = view.node[nodeId].outs || []
 
     if (no(outs)) return
-    if (outs.length === 0) return
 
-    if (no(position)) position = outs.length - 1
+    const position = outs.length - 1
 
      // Look for connected links and delete them.
 

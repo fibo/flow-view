@@ -189,17 +189,17 @@ See [render/serverside.js example][example_render_serverside].
 
 The following events are emitted by [canvas](#canvas):
 
-| name                  | data                           |
+| name                  | data                          |
 |-----------------------|-------------------------------|
-| `createInputPin`      | [nodeId, position], pin       |
-| `createLink`          | link, linkId                  |
-| `createNode`          | node, nodeId                  |
-| `createOutputPin`     | [nodeId, position], pin       |
-| `deleteLink`          | linkId                        |
-| `deleteNode`          | nodeId                        |
-| `deleteInputPin`      | [nodeId, position]            |
-| `deleteOutputPin`     | [nodeId, position]            |
-| `updateNodesGeometry` | {id1: node1, id2: node2, ...} |
+| `createInputPin`      | { nodeId, position, pin }     |
+| `createLink`          | link                          |
+| `createNode`          | node                          |
+| `createOutputPin`     | { nodeId, position, pin }     |
+| `deleteLink`          | link                          |
+| `deleteNode`          | node                          |
+| `deleteInputPin`      | { nodeId, position }          |
+| `deleteOutputPin`     | { nodeId, position }          |
+| `updateNodesGeometry` | [ nodes ]                     |
 
 See [event/emitter.js][example_event_emitter] example.
 

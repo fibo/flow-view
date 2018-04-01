@@ -91,9 +91,8 @@ In your HTML, place a div where you want to mount the canvas.
 ```html
 <style>
   #drawing {
-    display: inline-block;
     width: 100%;
-    height: 100%;
+    height: 100vh;
   }
 </style>
 <div id="drawing"></div>

@@ -1,12 +1,12 @@
 const Canvas = require('flow-view').Canvas
 
-const view = {
+const graph = {
   nodes: [
     {
       id: 'a',
       x: 80,
       y: 100,
-      text: 'Drag me',
+      name: 'Drag me',
       outs: [
         { name: 'out1' },
         { name: 'out2' },
@@ -17,7 +17,7 @@ const view = {
       id: 'b',
       x: 180,
       y: 200,
-      text: 'Click me',
+      name: 'Click me',
       ins: [
         { name: 'in0' },
         { name: 'in1', type: 'bool' }
@@ -36,8 +36,6 @@ const view = {
   ]
 }
 
-const canvas = new Canvas()
+const container = document.getElementById('drawing')
 
-canvas.load(view)
-
-canvas.mountOn(document.getElementById('drawing'))
+const canvas = new Canvas(container, graph)

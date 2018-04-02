@@ -192,15 +192,22 @@ class FlowViewFrame extends SvgComponent {
   onMouseup (event) {
     pdsp(event)
 
-    const { dispatch } = this
+    const {
+      dispatch,
+      draggingLink,
+      draggingItems
+    } = this
 
     this.setCursorCoordinates(event)
     const { x, y } = this.cursorCoordinates
 
-    if (this.isInsideRectangularSelection(x, y)) {
+    if (draggingItems && this.isInsideRectangularSelection(x, y)) {
       dispatch('stopDraggingItems')
-    } else {
-      dispatch('resetSelection')
+    }
+
+    if (draggingLink) {
+      // TODO check if it is close to a pin
+      dispatch('deleteHalfLink')
     }
   }
 

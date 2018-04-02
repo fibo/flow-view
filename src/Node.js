@@ -11,7 +11,7 @@ const Out = require('./Out')
  */
 
 class FlowViewNode extends SvgComponent {
-  constructor (canvas, dispatch, container) {
+  constructor (canvas, frame, dispatch, container) {
     super(canvas, dispatch, container)
 
     this.inRef = {}
@@ -49,6 +49,7 @@ class FlowViewNode extends SvgComponent {
     staticProps(this)({
       bottombar,
       container,
+      frame,
       label,
       id: () => container.getAttribute('id'),
       numIns: () => Object.keys(this.inRef).length,
@@ -93,6 +94,7 @@ class FlowViewNode extends SvgComponent {
       canvas,
       container,
       dispatch,
+      frame,
       id,
       label,
       rect,
@@ -243,7 +245,7 @@ class FlowViewNode extends SvgComponent {
       } else {
         const element = this.createElementNS('rect')
 
-        const pin = new In(canvas, dispatch, element, id, position)
+        const pin = new In(canvas, frame, dispatch, element, id, position)
         pin.render(pinState)
 
         this.inRef[pinId] = pin
@@ -282,7 +284,7 @@ class FlowViewNode extends SvgComponent {
       } else {
         const element = this.createElementNS('rect')
 
-        const pin = new Out(canvas, dispatch, element, id, position)
+        const pin = new Out(canvas, frame, dispatch, element, id, position)
         pin.render(pinState)
 
         this.outRef[pinId] = pin

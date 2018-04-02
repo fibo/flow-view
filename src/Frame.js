@@ -189,7 +189,8 @@ class FlowViewFrame extends SvgComponent {
 
     const { dispatch } = this
 
-    const { x, y } = this.cursorCoordinates = this.getCoordinates(event)
+    this.setCursorCoordinates(event)
+    const { x, y } = this.cursorCoordinates
 
     if (this.isInsideRectangularSelection(x, y)) {
       dispatch('stopDragging')
@@ -201,6 +202,7 @@ class FlowViewFrame extends SvgComponent {
   render (state) {
     const {
       canvas,
+      cursorCoordinates,
       dispatch,
       linksGroup,
       nodesGroup,
@@ -220,6 +222,7 @@ class FlowViewFrame extends SvgComponent {
     const selectedNodes = state.selected.nodes
 
     const { fontFamily, fontSize } = canvas.theme.frame
+    const halfPinSize = canvas.theme.pin.size / 2
 
     const height = root.height
     const width = inspector.hidden ? root.width : root.width - inspector.width
@@ -291,7 +294,6 @@ class FlowViewFrame extends SvgComponent {
     // Selection rectangle.
     //= =================================================================
 
-    selection.setAttribute('stroke', canvas.theme.selection.color)
     if (thereAreSelectedNodesChanged) {
       this.thereAreSelectedNodes = thereAreSelectedNodes
 
@@ -345,7 +347,7 @@ class FlowViewFrame extends SvgComponent {
         const element = this.createElementNS('g', nodesGroup)
         element.setAttribute('id', id)
 
-        const node = new Node(canvas, dispatch, element)
+        const node = new Node(canvas, this, dispatch, element)
         node.render(nodeState)
 
         this.nodeRef[id] = node
@@ -365,20 +367,15 @@ class FlowViewFrame extends SvgComponent {
       const targetNode = to ? this.nodeRef[to[0]] : null
 
       const sourcePin = sourceNode ? sourceNode.getOutRefByPosition(from[1]) : null
-      // const targetPin = targetNode ? targetNode.getInRefByPosition(to[1]) : null
-
-      const sourceHalfPinSize = sourceNode ? (sourceNode.pinSize / 2) : 0
-      const targetHalfPinSize = targetNode ? (targetNode.pinSize / 2) : 0
+      const targetPin = targetNode ? targetNode.getInRefByPosition(to[1]) : null
 
       const linkState = {
-        endX: targetNode.x + targetHalfPinSize,
-        endY: targetNode.y + targetHalfPinSize,
+        endX: targetPin ? targetNode.x + targetPin.x + halfPinSize : cursorCoordinates.x,
+        endY: targetPin ? targetNode.y : cursorCoordinates.y + halfPinSize,
         graph: linkGraph,
         selected: sourceNode && targetNode && sourceNode.selected && targetNode.selected,
-        sourceHalfPinSize,
-        startX: sourceNode.x + sourceHalfPinSize,
-        startY: sourceNode.y + sourcePin.y + sourceHalfPinSize,
-        targetHalfPinSize
+        startX: sourcePin ? sourceNode.x + sourcePin.x + halfPinSize : cursorCoordinates.x,
+        startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : cursorCoordinates.y
       }
 
       const linkRef = this.linkRef[id]
@@ -397,6 +394,10 @@ class FlowViewFrame extends SvgComponent {
     })
 
     this.renderAllSubComponents(state)
+  }
+
+  setCursorCoordinates (event) {
+    this.cursorCoordinates = this.getCoordinates(event)
   }
 }
 module.exports = FlowViewFrame

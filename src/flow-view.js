@@ -106,7 +106,12 @@ class FlowViewCanvas extends EventEmitter {
 
   blurPin () { this.state.currentPin = null }
 
-  createLink () {}
+  createLink (link) {
+    link.id = this.generateId()
+
+    this.state.graph.links.push(link)
+  }
+
   createInputPin () {}
 
   createNode (node) {

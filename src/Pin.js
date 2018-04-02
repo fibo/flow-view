@@ -8,7 +8,7 @@ const SvgComponent = require('./SvgComponent')
  */
 
 class FlowViewPin extends SvgComponent {
-  constructor (canvas, dispatch, container, nodeId, position) {
+  constructor (canvas, frame, dispatch, container, nodeId, position) {
     super(canvas, dispatch, container)
 
     // Event bindings.
@@ -27,6 +27,7 @@ class FlowViewPin extends SvgComponent {
     // =================================================================
 
     staticProps(this)({
+      frame,
       nodeId,
       position,
       theme: () => canvas.theme.pin,

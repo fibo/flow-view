@@ -149,17 +149,17 @@ class FlowViewFrame extends SvgComponent {
     const { x, y } = this.cursorCoordinates = this.getCoordinates(event)
 
     if (this.isInsideRectangularSelection(x, y)) {
-      dispatch('startDragging')
+      dispatch('startDraggingItems')
     } else {
       dispatch('resetSelection')
     }
   }
 
   onMouseleave (event) {
-    const { dispatch, dragging } = this
+    const { dispatch, draggingItems } = this
 
-    if (dragging) {
-      dispatch('stopDragging')
+    if (draggingItems) {
+      dispatch('stopDraggingItems')
     }
   }
 
@@ -167,10 +167,11 @@ class FlowViewFrame extends SvgComponent {
     const {
       cursorCoordinates,
       dispatch,
-      dragging
+      draggingLink,
+      draggingItems
     } = this
 
-    if (dragging) {
+    if (draggingItems) {
       const nextCursorCoordinates = this.getCoordinates(event)
 
       const draggingDelta = {
@@ -181,6 +182,10 @@ class FlowViewFrame extends SvgComponent {
       this.cursorCoordinates = nextCursorCoordinates
 
       dispatch('dragItems', draggingDelta)
+    }
+
+    if (draggingLink) {
+      dispatch('dragLink', this.getCoordinates(event))
     }
   }
 
@@ -193,7 +198,7 @@ class FlowViewFrame extends SvgComponent {
     const { x, y } = this.cursorCoordinates
 
     if (this.isInsideRectangularSelection(x, y)) {
-      dispatch('stopDragging')
+      dispatch('stopDraggingItems')
     } else {
       dispatch('resetSelection')
     }
@@ -202,7 +207,6 @@ class FlowViewFrame extends SvgComponent {
   render (state) {
     const {
       canvas,
-      cursorCoordinates,
       dispatch,
       linksGroup,
       nodesGroup,
@@ -212,7 +216,8 @@ class FlowViewFrame extends SvgComponent {
 
     const {
       currentPin,
-      dragging,
+      draggingItems,
+      draggedLinkCoordinates,
       graph,
       inspector,
       root,
@@ -227,7 +232,8 @@ class FlowViewFrame extends SvgComponent {
     const height = root.height
     const width = inspector.hidden ? root.width : root.width - inspector.width
 
-    this.dragging = state.dragging
+    this.draggingItems = state.draggingItems
+    this.draggingLink = state.draggingLink
 
     const thereAreSelectedNodes = (selectedNodes.length > 0)
 
@@ -337,7 +343,7 @@ class FlowViewFrame extends SvgComponent {
 
       if (nodeRef) {
         // Selected nodes on top!
-        if (selected && !dragging) {
+        if (selected && !draggingItems) {
           nodesGroup.removeChild(nodeRef.container)
           nodesGroup.appendChild(nodeRef.container)
         }
@@ -370,12 +376,12 @@ class FlowViewFrame extends SvgComponent {
       const targetPin = targetNode ? targetNode.getInRefByPosition(to[1]) : null
 
       const linkState = {
-        endX: targetPin ? targetNode.x + targetPin.x + halfPinSize : cursorCoordinates.x,
-        endY: targetPin ? targetNode.y : cursorCoordinates.y + halfPinSize,
+        endX: targetPin ? targetNode.x + targetPin.x + halfPinSize : draggedLinkCoordinates.x,
+        endY: targetPin ? targetNode.y + halfPinSize : draggedLinkCoordinates.y,
         graph: linkGraph,
         selected: sourceNode && targetNode && sourceNode.selected && targetNode.selected,
-        startX: sourcePin ? sourceNode.x + sourcePin.x + halfPinSize : cursorCoordinates.x,
-        startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : cursorCoordinates.y
+        startX: sourcePin ? sourceNode.x + sourcePin.x + halfPinSize : draggedLinkCoordinates.x,
+        startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : draggedLinkCoordinates.y
       }
 
       const linkRef = this.linkRef[id]

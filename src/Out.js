@@ -43,7 +43,10 @@ class FlowViewOut extends Pin {
 
     frame.setCursorCoordinates(event)
 
-    dispatch('createLink', { from: [ nodeId, position ] })
+    dispatch('createHalfLink', {
+      cursorCoordinates: frame.cursorCoordinates,
+      from: [ nodeId, position ]
+    })
   }
 
   onMouseover (event) {

@@ -137,7 +137,7 @@ class FlowViewCanvas extends EventEmitter {
     this.state.draggedLinkId = null
     this.state.draggedLinkCoordinates = null
 
-    const draggedLinkIndex = this.state.graph.links.findIndex(({ id }) => id === draggedLinkId )
+    const draggedLinkIndex = this.state.graph.links.findIndex(({ id }) => id === draggedLinkId)
 
     this.state.graph.links.splice(draggedLinkIndex, 1)
   }

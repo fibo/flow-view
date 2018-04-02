@@ -85,7 +85,7 @@ class FlowViewNode extends SvgComponent {
   onMouseup (event) {
     pdsp(event)
 
-    this.dispatch('stopDragging')
+    this.dispatch('stopDraggingItems')
   }
 
   render (state) {

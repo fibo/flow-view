@@ -54,7 +54,10 @@ class FlowViewCanvas extends EventEmitter {
     this.state = {
       creator: Object.assign({}, Creator.defaultState),
       currentPin: null,
-      dragging: false,
+      draggingItems: false,
+      draggingLink: false,
+      draggedLinkId: null,
+      draggedLinkCoordinates: null,
       graph: { links: [], nodes: [] },
       inspector: Object.assign({}, Inspector.defaultState),
       multiSelection: false,
@@ -106,10 +109,25 @@ class FlowViewCanvas extends EventEmitter {
 
   blurPin () { this.state.currentPin = null }
 
+  // TODO attachHalfLink detachLink deleteHalfLink
+
   createLink (link) {
     link.id = this.generateId()
-
     this.state.graph.links.push(link)
+  }
+
+  createHalfLink (halfLink) {
+    const id = this.generateId()
+
+    this.state.draggingLink = true
+    this.state.draggedLinkId = id
+    this.state.draggedLinkCoordinates = halfLink.cursorCoordinates
+
+    this.state.graph.links.push({
+      id,
+      from: halfLink.from,
+      to: halfLink.to
+    })
   }
 
   createInputPin () {}
@@ -159,6 +177,10 @@ class FlowViewCanvas extends EventEmitter {
         node.x += x
         node.y += y
       })
+  }
+
+  dragLink (cursorCoordinates) {
+    this.state.draggedLinkCoordinates = cursorCoordinates
   }
 
   enableMultiSelection () { this.state.multiSelection = true }
@@ -216,16 +238,16 @@ class FlowViewCanvas extends EventEmitter {
   resetSelection () {
     this.state.selected = { links: [], nodes: [] }
 
-    this.stopDragging()
+    this.stopDraggingItems()
   }
 
   showCreator ({ x, y }) { this.state.creator = { hidden: false, x, y } }
 
   showInspector () { this.state.inspector.hidden = false }
 
-  startDragging () { this.state.dragging = true }
+  startDraggingItems () { this.state.draggingItems = true }
 
-  stopDragging () { this.state.dragging = false }
+  stopDraggingItems () { this.state.draggingItems = false }
 
   unpinInspector () { this.state.inspector.pinned = false }
 }

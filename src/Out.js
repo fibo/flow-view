@@ -9,8 +9,8 @@ const Pin = require('./Pin')
  */
 
 class FlowViewOut extends Pin {
-  constructor (canvas, dispatch, container, nodeId, position) {
-    super(canvas, dispatch, container, nodeId, position)
+  constructor (canvas, frame, dispatch, container, nodeId, position) {
+    super(canvas, frame, dispatch, container, nodeId, position)
 
     // Static attributes.
     // =================================================================
@@ -34,7 +34,16 @@ class FlowViewOut extends Pin {
   onMousedown (event) {
     pdsp(event)
 
-    console.log('create link')
+    const {
+      dispatch,
+      frame,
+      nodeId,
+      position
+    } = this
+
+    frame.setCursorCoordinates(event)
+
+    dispatch('createLink', { from: [ nodeId, position ] })
   }
 
   onMouseover (event) {
@@ -57,9 +66,7 @@ class FlowViewOut extends Pin {
       size
     } = this
 
-    const {
-      node
-    } = state
+    const { node } = state
 
     // Y coordinate.
     // =================================================================

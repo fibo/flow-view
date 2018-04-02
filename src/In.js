@@ -8,8 +8,8 @@ const Pin = require('./Pin')
  */
 
 class FlowViewIn extends Pin {
-  constructor (canvas, dispatch, container, nodeId, position) {
-    super(canvas, dispatch, container, nodeId, position)
+  constructor (canvas, frame, dispatch, container, nodeId, position) {
+    super(canvas, frame, dispatch, container, nodeId, position)
 
     // Event bindings.
     // =================================================================

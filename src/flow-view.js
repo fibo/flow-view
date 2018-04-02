@@ -109,7 +109,7 @@ class FlowViewCanvas extends EventEmitter {
 
   blurPin () { this.state.currentPin = null }
 
-  // TODO attachHalfLink detachLink deleteHalfLink
+  // TODO attachHalfLink detachLink
 
   createLink (link) {
     link.id = this.generateId()
@@ -128,6 +128,18 @@ class FlowViewCanvas extends EventEmitter {
       from: halfLink.from,
       to: halfLink.to
     })
+  }
+
+  deleteHalfLink () {
+    const draggedLinkId = this.state.draggedLinkId
+
+    this.state.draggingLink = null
+    this.state.draggedLinkId = null
+    this.state.draggedLinkCoordinates = null
+
+    const draggedLinkIndex = this.state.graph.links.findIndex(({ id }) => id === draggedLinkId )
+
+    this.state.graph.links.splice(draggedLinkIndex, 1)
   }
 
   createInputPin () {}

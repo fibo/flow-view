@@ -53,19 +53,14 @@ class FlowViewPin extends SvgComponent {
       selected
     } = state
 
-    const { name } = graph
+    this.graph = graph
 
-    const nameChanged = name !== this.name
+    // Changed properties.
+    // =================================================================
+
     const inspectedChanged = inspected !== this.inspected
     const selectedChanged = selected !== this.selected
     const sizeChanged = size !== this.size
-
-    // Pin name.
-    // =================================================================
-
-    if (nameChanged) {
-      this.name = name
-    }
 
     // Pin x coordinate.
     // =================================================================

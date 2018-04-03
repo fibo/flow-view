@@ -28,6 +28,7 @@ class FlowViewFrame extends SvgComponent {
     this.selectedNodesBounds = {}
     const selection = this.createElementNS('rect', svg)
     selection.setAttribute('fill', 'transparent')
+    selection.setAttribute('stroke-dasharray', '10 10')
 
     const linksGroup = this.createElementNS('g', svg)
     const nodesGroup = this.createElementNS('g', svg)

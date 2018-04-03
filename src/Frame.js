@@ -20,7 +20,7 @@ class FlowViewFrame extends SvgComponent {
     this.nodeRef = {}
 
     // DOM Elements.
-    //= =================================================================
+    // =================================================================
 
     const svg = this.createElementNS('svg')
     svg.style.cursor = 'default'
@@ -39,7 +39,7 @@ class FlowViewFrame extends SvgComponent {
     const inspectorToggle = new InspectorToggle(canvas, dispatch, inspectorToggleContainer)
 
     // Static props.
-    //= =================================================================
+    // ==================================================================
 
     staticProps(this)({
       linksGroup,
@@ -62,7 +62,7 @@ class FlowViewFrame extends SvgComponent {
     })
 
     // Event bindings.
-    //= =================================================================
+    // ==================================================================
 
     bindme(this,
       'onDocumentKeydown',
@@ -274,6 +274,9 @@ class FlowViewFrame extends SvgComponent {
       }
     })
 
+    // Changed properties.
+    // =================================================================
+
     const fontChanged = (this.fontSize !== fontSize) || (this.fontFamily !== fontFamily)
     const heightChanged = this.height !== height
     const selectedNodesBoundsChanged = (
@@ -367,11 +370,19 @@ class FlowViewFrame extends SvgComponent {
       }
     })
 
-    // Render existing links or create new ones.
-    //= =================================================================
-
     // Remove deleted links.
-    // TODO
+    // =================================================================
+
+    Object.keys(this.linkRef).forEach(id => {
+      if (!graph.links.find(link => link.id === id)) {
+        linksGroup.removeChild(this.linkRef[id].container)
+
+        delete this.linkRef[id]
+      }
+    })
+
+    // Render existing links or create new ones.
+    // =================================================================
 
     graph.links.forEach(linkGraph => {
       const { id, from, to } = linkGraph

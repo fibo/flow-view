@@ -128,6 +128,8 @@ class FlowViewCanvas extends EventEmitter {
       from: halfLink.from,
       to: halfLink.to
     })
+
+    this.resetSelection()
   }
 
   deleteHalfLink () {

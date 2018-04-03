@@ -127,6 +127,9 @@ class FlowViewNode extends SvgComponent {
 
     const { height, width } = computeDims(textSize, pinSize, graph.height, graph.width)
 
+    // Changed properties.
+    // =================================================================
+
     const backgroundColorChanged = (backgroundColor !== this.backgroundColor)
     const fontSizeChanged = (fontSize !== this.fontSize)
     const pinSizeChanged = (pinSize !== this.pinSize)

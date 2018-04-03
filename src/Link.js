@@ -61,6 +61,9 @@ class FlowViewLink extends SvgComponent {
     // TODO const {from, to} = graph
     // TODO const connected = (typeof from !== 'undefined') && (typeof to !== 'undefined')
 
+    // Changed properties.
+    // =================================================================
+
     const endXChanged = (endX !== this.endX)
     const endYChanged = (endY !== this.endY)
     const pinSizeChanged = (pinSize !== this.pinSize)

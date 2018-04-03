@@ -12,21 +12,21 @@ class FlowViewCreator extends SvgComponent {
     super(canvas, dispatch, container)
 
     // DOM Elements.
-    //= =================================================================
+    // =================================================================
 
     const input = this.createElement('input')
     input.setAttribute('type', 'text')
     input.style.outline = 'none'
 
     // Static props.
-    //= =================================================================
+    // =================================================================
 
     staticProps(this)({
       input
     })
 
     // Event bindings.
-    //= =================================================================
+    // =================================================================
 
     bindme(this,
       'onInputKeypress'
@@ -76,11 +76,14 @@ class FlowViewCreator extends SvgComponent {
 
     const { fontFamily, fontSize } = canvas.theme.frame
 
+    // Changed properties.
+    // =================================================================
+
     const fontChanged = (this.fontSize !== fontSize) || (this.fontFamily !== fontFamily)
     const visibilityChanged = this.hidden !== hidden
 
     // Font.
-    //= =================================================================
+    // =================================================================
 
     if (fontChanged) {
       input.style.fontFamily = fontFamily
@@ -88,7 +91,7 @@ class FlowViewCreator extends SvgComponent {
     }
 
     // Visibility.
-    //= =================================================================
+    // =================================================================
 
     if (visibilityChanged) {
       if (hidden) {
@@ -111,7 +114,7 @@ class FlowViewCreator extends SvgComponent {
 }
 
 // Static attributes.
-//= ====================================================================
+// =====================================================================
 
 const defaultState = {
   hidden: true,

@@ -21,7 +21,7 @@ class FlowViewInspectorToggle extends SvgComponent {
     toggle.style.padding = 2
 
     // Event bindings.
-    //= =================================================================
+    // ==================================================================
 
     bindme(this, 'onMouseEnter')
 
@@ -40,7 +40,10 @@ class FlowViewInspectorToggle extends SvgComponent {
 
     const inspectorHidden = state.inspector.hidden
 
-    const visibilityChanged = this.hidden !== !state.inspector.hidden
+    // Changed properties.
+    // =================================================================
+
+    const visibilityChanged = this.hidden !== !inspectorHidden
 
     if (visibilityChanged) {
       this.hidden = !inspectorHidden

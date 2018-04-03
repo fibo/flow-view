@@ -16,11 +16,13 @@ class FlowViewIn extends Pin {
 
     bindme(this,
       'onMousedown',
-      'onMouseover'
+      'onMouseover',
+      'onMouseup'
     )
 
     container.addEventListener('mousedown', this.onMousedown)
     container.addEventListener('mouseover', this.onMouseover)
+    container.addEventListener('mouseup', this.onMouseup)
   }
 
   onMousedown (event) {
@@ -39,6 +41,36 @@ class FlowViewIn extends Pin {
     } = this
 
     dispatch('focusPin', { type: 'In', nodeId, position })
+  }
+
+  onMouseup (event) {
+    pdsp(event)
+
+    const {
+      connected,
+      dispatch,
+      frame,
+      highlighted,
+      nodeId,
+      position
+    } = this
+
+    if (frame.draggingLink && frame.draggedLink.from) {
+      // Ins can have only a single link connected.
+      if (connected) {
+        dispatch('deleteHalfLink')
+      } else {
+        // Attach link only if data type is the same.
+        if (highlighted) {
+          dispatch('attachHalfLink', {
+            id: frame.draggedLink.id,
+            to: [ nodeId, position ]
+          })
+        } else {
+          dispatch('deleteHalfLink')
+        }
+      }
+    }
   }
 
   render (state) {

@@ -185,6 +185,8 @@ class FlowViewFrame extends SvgComponent {
     }
 
     if (draggingLink) {
+      // TODO snap to pin, if link is close to a pin that could be joined
+      // set coordinated to that pin.
       dispatch('dragLink', this.getCoordinates(event))
     }
   }
@@ -225,11 +227,20 @@ class FlowViewFrame extends SvgComponent {
       currentPin,
       draggingItems,
       draggedLinkCoordinates,
+      draggedLinkType,
+      draggedLinkId,
+      draggingLink,
       graph,
       inspector,
       root,
       textSize
     } = state
+
+    this.draggingItems = draggingItems
+    this.draggingLink = draggingLink
+
+    const draggedLink = draggedLinkId ? state.graph.links.find(link => link.id === draggedLinkId) : null
+    this.draggedLink = draggedLink
 
     const selectedNodes = state.selected.nodes
 
@@ -238,10 +249,6 @@ class FlowViewFrame extends SvgComponent {
 
     const height = root.height
     const width = inspector.hidden ? root.width : root.width - inspector.width
-
-    this.draggingItems = state.draggingItems
-    this.draggingLink = state.draggingLink
-
     const thereAreSelectedNodes = (selectedNodes.length > 0)
 
     const selectedNodesBounds = {}
@@ -289,7 +296,7 @@ class FlowViewFrame extends SvgComponent {
     const widthChanged = this.width !== width
 
     // Font.
-    //= =================================================================
+    // =================================================================
 
     if (fontChanged) {
       svg.setAttribute('font-family', fontFamily)
@@ -297,7 +304,7 @@ class FlowViewFrame extends SvgComponent {
     }
 
     // Frame dimensions.
-    //= =================================================================
+    // =================================================================
 
     if (widthChanged) {
       svg.setAttribute('width', width)
@@ -308,7 +315,7 @@ class FlowViewFrame extends SvgComponent {
     }
 
     // Selection rectangle.
-    //= =================================================================
+    // =================================================================
 
     if (thereAreSelectedNodesChanged) {
       this.thereAreSelectedNodes = thereAreSelectedNodes
@@ -334,6 +341,34 @@ class FlowViewFrame extends SvgComponent {
 
     // TODO Remove deleted nodes.
 
+    // Compute connected pins.
+    // =================================================================
+
+    const connectedIns = {}
+    const connectedOuts = {}
+
+    state.graph.links.forEach(({ from, to }) => {
+      if (from) {
+        const [ sourceNodeId, sourceNodePosition ] = from
+
+        if (typeof connectedOuts[sourceNodeId] === 'undefined') {
+          connectedOuts[sourceNodeId] = [sourceNodePosition]
+        } else {
+          connectedOuts[sourceNodeId].push(sourceNodePosition)
+        }
+      }
+
+      if (to) {
+        const [ targetNodeId, targetNodePosition ] = to
+
+        if (typeof connectedIns[targetNodeId] === 'undefined') {
+          connectedIns[targetNodeId] = [targetNodePosition]
+        } else {
+          connectedIns[targetNodeId].push(targetNodePosition)
+        }
+      }
+    })
+
     // Render existing nodes or create new ones.
     //= =================================================================
 
@@ -343,7 +378,12 @@ class FlowViewFrame extends SvgComponent {
       const selected = selectedNodes.indexOf(id) > -1
 
       const nodeState = {
+        connectedIns: (connectedIns[id] || []),
+        connectedOuts: (connectedOuts[id] || []),
         currentPin: currentPin && currentPin.nodeId === id ? currentPin : null,
+        draggedLink,
+        draggedLinkType,
+        draggingLink,
         graph: nodeGraph,
         selected,
         textSize: textSize[id]

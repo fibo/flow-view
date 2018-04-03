@@ -46,18 +46,22 @@ class FlowViewPin extends SvgComponent {
     const { size } = theme
 
     const {
+      connected,
       graph,
+      highlighted,
       inspected,
       node,
       position,
       selected
     } = state
 
+    this.connected = connected
     this.graph = graph
 
     // Changed properties.
     // =================================================================
 
+    const highlightedChanged = highlighted !== this.highlighted
     const inspectedChanged = inspected !== this.inspected
     const selectedChanged = selected !== this.selected
     const sizeChanged = size !== this.size
@@ -87,6 +91,10 @@ class FlowViewPin extends SvgComponent {
     // Pin color.
     // =================================================================
 
+    if (highlightedChanged) {
+      this.highlighted = highlighted
+    }
+
     if (inspectedChanged) {
       this.inspected = inspected
     }
@@ -95,14 +103,18 @@ class FlowViewPin extends SvgComponent {
       this.selected = selected
     }
 
-    if (inspectedChanged || selectedChanged) {
+    if (highlightedChanged || inspectedChanged || selectedChanged) {
       if (inspected) {
         container.setAttribute('fill', theme.inspectedColor)
       } else {
         if (selected) {
           container.setAttribute('fill', theme.highlightColor)
         } else {
-          container.setAttribute('fill', theme.baseColor)
+          if (highlighted && !connected) {
+            container.setAttribute('fill', theme.highlightColor)
+          } else {
+            container.setAttribute('fill', theme.baseColor)
+          }
         }
       }
     }

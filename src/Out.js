@@ -24,11 +24,13 @@ class FlowViewOut extends Pin {
 
     bindme(this,
       'onMousedown',
-      'onMouseover'
+      'onMouseover',
+      'onMouseup'
     )
 
     container.addEventListener('mousedown', this.onMousedown)
     container.addEventListener('mouseover', this.onMouseover)
+    container.addEventListener('mouseup', this.onMouseup)
   }
 
   onMousedown (event) {
@@ -46,7 +48,7 @@ class FlowViewOut extends Pin {
     dispatch('createHalfLink', {
       cursorCoordinates: frame.cursorCoordinates,
       from: [ nodeId, position ],
-      type: this.graph.type
+      type: (this.graph.type || null)
     })
   }
 
@@ -60,6 +62,30 @@ class FlowViewOut extends Pin {
     } = this
 
     dispatch('focusPin', { type: 'Out', nodeId, position })
+  }
+
+  onMouseup (event) {
+    pdsp(event)
+
+    const {
+      dispatch,
+      highlighted,
+      frame,
+      nodeId,
+      position
+    } = this
+
+    if (frame.draggingLink && frame.draggedLink.to) {
+      // Attach link only if data type is the same.
+      if (highlighted) {
+        dispatch('attachHalfLink', {
+          id: frame.draggedLinkId,
+          from: [ nodeId, position ]
+        })
+      } else {
+        dispatch('deleteHalfLink')
+      }
+    }
   }
 
   render (state) {

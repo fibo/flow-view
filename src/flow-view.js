@@ -56,8 +56,9 @@ class FlowViewCanvas extends EventEmitter {
       currentPin: null,
       draggingItems: false,
       draggingLink: false,
-      draggedLinkId: null,
       draggedLinkCoordinates: null,
+      draggedLinkId: null,
+      draggedLinkType: null,
       graph: { links: [], nodes: [] },
       inspector: Object.assign({}, Inspector.defaultState),
       multiSelection: false,
@@ -109,19 +110,30 @@ class FlowViewCanvas extends EventEmitter {
 
   blurPin () { this.state.currentPin = null }
 
-  // TODO attachHalfLink detachLink
+  attachHalfLink ({ id, from, to }) {
+    const linkIndex = this.state.graph.links.findIndex(link => link.id === id)
 
-  createLink (link) {
-    link.id = this.generateId()
-    this.state.graph.links.push(link)
+    if (linkIndex > -1) {
+      if (from) {
+        this.state.graph.links[linkIndex].from = from
+      } else if (to) {
+        this.state.graph.links[linkIndex].to = to
+      }
+
+      this.state.draggingLink = null
+      this.state.draggedLinkCoordinates = null
+      this.state.draggedLinkId = null
+      this.state.draggedLinkType = null
+    }
   }
 
   createHalfLink (halfLink) {
     const id = this.generateId()
 
     this.state.draggingLink = true
-    this.state.draggedLinkId = id
     this.state.draggedLinkCoordinates = halfLink.cursorCoordinates
+    this.state.draggedLinkId = id
+    this.state.draggedLinkType = halfLink.type
 
     this.state.graph.links.push({
       id,
@@ -132,19 +144,12 @@ class FlowViewCanvas extends EventEmitter {
     this.resetSelection()
   }
 
-  deleteHalfLink () {
-    const draggedLinkId = this.state.draggedLinkId
-
-    this.state.draggingLink = null
-    this.state.draggedLinkId = null
-    this.state.draggedLinkCoordinates = null
-
-    const draggedLinkIndex = this.state.graph.links.findIndex(({ id }) => id === draggedLinkId)
-
-    this.state.graph.links.splice(draggedLinkIndex, 1)
-  }
-
   createInputPin () {}
+
+  createLink (link) {
+    link.id = this.generateId()
+    this.state.graph.links.push(link)
+  }
 
   createNode (node) {
     node.id = this.generateId()
@@ -157,6 +162,21 @@ class FlowViewCanvas extends EventEmitter {
   createOutputPin () {
 
   }
+
+  deleteHalfLink () {
+    const draggedLinkId = this.state.draggedLinkId
+
+    this.state.draggingLink = null
+    this.state.draggedLinkCoordinates = null
+    this.state.draggedLinkId = null
+    this.state.draggedLinkType = null
+
+    const draggedLinkIndex = this.state.graph.links.findIndex(({ id }) => id === draggedLinkId)
+
+    this.state.graph.links.splice(draggedLinkIndex, 1)
+  }
+
+  // TODO detachLink
 
   deleteInputPin () {
 

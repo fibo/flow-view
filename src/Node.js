@@ -85,7 +85,21 @@ class FlowViewNode extends SvgComponent {
   onMouseup (event) {
     pdsp(event)
 
-    this.dispatch('stopDraggingItems')
+    const {
+      dispatch,
+      frame
+    } = this
+
+    if (frame.draggingItems) {
+      dispatch('stopDraggingItems')
+    }
+
+    if (frame.draggingLink) {
+      // TODO look for first compatible pin to be connected, if any
+
+      // otherwise delete half link.
+      dispatch('deleteHalfLink')
+    }
   }
 
   render (state) {
@@ -111,7 +125,12 @@ class FlowViewNode extends SvgComponent {
     const fontSize = canvas.theme.frame.fontSize
 
     const {
+      connectedIns,
+      connectedOuts,
       currentPin,
+      draggedLink,
+      draggedLinkType,
+      draggingLink,
       graph,
       selected,
       textSize
@@ -226,8 +245,12 @@ class FlowViewNode extends SvgComponent {
     ins.forEach((pin, position) => {
       const pinId = this.generateInId(position)
 
+      const pinType = pin.type || null
+
       const pinState = {
+        connected: (connectedIns.indexOf(position) > -1),
         graph: pin,
+        highlighted: draggingLink ? (typeof draggedLink.from !== 'undefined') && (draggedLinkType === pinType) : false,
         inspected: currentPin && currentPin.type === 'In' && currentPin.position === position,
         node: {
           heightChanged,
@@ -265,8 +288,12 @@ class FlowViewNode extends SvgComponent {
     outs.forEach((pin, position) => {
       const pinId = this.generateOutId(position)
 
+      const pinType = pin.type || null
+
       const pinState = {
+        connected: (connectedOuts.indexOf(position) > -1),
         graph: pin,
+        highlighted: draggingLink ? (typeof draggedLink.to !== 'undefined') && (draggedLinkType === pinType) : false,
         inspected: currentPin && currentPin.type === 'Out' && currentPin.position === position,
         node: {
           heightChanged,

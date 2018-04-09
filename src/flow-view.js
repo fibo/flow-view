@@ -12,7 +12,7 @@ const Root = require('./Root')
  */
 
 class FlowViewCanvas extends EventEmitter {
-  constructor (container, graph) {
+  constructor (container, graph = { nodes: [], links: [] }) {
     super()
 
     // Theme.

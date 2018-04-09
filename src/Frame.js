@@ -45,14 +45,6 @@ class FlowViewFrame extends SvgComponent {
     staticProps(this)({
       linksGroup,
       nodesGroup,
-      offset: () => ({
-        x: container.offsetLeft,
-        y: container.offsetTop
-      }),
-      scroll: () => ({
-        x: window.scrollX,
-        y: window.scrollY
-      }),
       selection,
       svg
     })
@@ -86,11 +78,11 @@ class FlowViewFrame extends SvgComponent {
   }
 
   getCoordinates (event) {
-    const { offset, scroll } = this
+    const { left, top } = this.container.getBoundingClientRect()
 
     return {
-      x: event.clientX - offset.x + scroll.x,
-      y: event.clientY - offset.y + scroll.y
+      x:  event.clientX - left,
+      y: event.clientY - top
     }
   }
 

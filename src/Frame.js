@@ -81,13 +81,14 @@ class FlowViewFrame extends SvgComponent {
     const { left, top } = this.container.getBoundingClientRect()
 
     return {
-      x:  event.clientX - left,
+      x: event.clientX - left,
       y: event.clientY - top
     }
   }
 
   isInsideRectangularSelection (x, y) {
     const { selectedNodesBounds } = this
+    console.log(selectedNodesBounds)
 
     if (Object.keys(selectedNodesBounds).length > 0) {
       return (
@@ -242,37 +243,22 @@ class FlowViewFrame extends SvgComponent {
 
     const height = root.height
     const width = inspector.hidden ? root.width : root.width - inspector.width
-    const thereAreSelectedNodes = (selectedNodes.length > 0)
+    const moreThanOneNodeSelected = (selectedNodes.length > 1)
+    const someNodeSelected = (selectedNodes.length > 0)
 
-    const selectedNodesBounds = {}
-
-    selectedNodes.forEach(id => {
-      const node = this.nodeRef[id]
-
-      if (selectedNodesBounds.x1) {
-        selectedNodesBounds.x1 = Math.min(selectedNodesBounds.x1, node.x)
-      } else {
-        selectedNodesBounds.x1 = node.x
-      }
-
-      if (selectedNodesBounds.y1) {
-        selectedNodesBounds.y1 = Math.min(selectedNodesBounds.y1, node.y)
-      } else {
-        selectedNodesBounds.y1 = node.y
-      }
-
-      if (selectedNodesBounds.x2) {
-        selectedNodesBounds.x2 = Math.max(selectedNodesBounds.x2, node.x + node.width)
-      } else {
-        selectedNodesBounds.x2 = node.x + node.width
-      }
-
-      if (selectedNodesBounds.y2) {
-        selectedNodesBounds.y2 = Math.max(selectedNodesBounds.y2, node.y + node.height)
-      } else {
-        selectedNodesBounds.y2 = node.y + node.height
-      }
-    })
+    const selectedNodesBounds = someNodeSelected ? selectedNodes.map(id => this.nodeRef[id]).reduce((bounds, node) => ({
+      x1: Math.min(bounds.x1, node.x),
+      y1: Math.min(bounds.y1, node.y),
+      x2: Math.max(bounds.x2, node.x + node.width),
+      y2: Math.max(bounds.y2, node.y + node.height)
+    }), {
+      // P1 = (x1, y1) is upper left corner.
+      // P2 = (x2, y2) is lower right corner.
+      // They are compared with node bounds to get min P1 and max P2.
+      // Using Infinity makes sure first node take into account will
+      // win the comparison and set its bounds as first value.
+      x1: Infinity, y1: Infinity, x2: -Infinity, y2: -Infinity
+    }) : {}
 
     // Changed properties.
     // =================================================================
@@ -285,7 +271,6 @@ class FlowViewFrame extends SvgComponent {
       (selectedNodesBounds.x2 !== this.selectedNodesBounds.x2) ||
       (selectedNodesBounds.y2 !== this.selectedNodesBounds.y2)
     )
-    const thereAreSelectedNodesChanged = this.thereAreSelectedNodes !== thereAreSelectedNodes
     const widthChanged = this.width !== width
 
     // Font.
@@ -307,29 +292,27 @@ class FlowViewFrame extends SvgComponent {
       svg.setAttribute('height', height)
     }
 
-    // Selection rectangle.
+    // Selected nodes.
     // =================================================================
-
-    if (thereAreSelectedNodesChanged) {
-      this.thereAreSelectedNodes = thereAreSelectedNodes
-
-      if (thereAreSelectedNodes) {
-        selection.setAttribute('stroke', canvas.theme.selection.color)
-      } else {
-        this.selectedNodesBounds = {}
-        selection.setAttribute('stroke', 'transparent')
-      }
-    }
 
     if (selectedNodesBoundsChanged) {
       this.selectedNodesBounds = selectedNodesBounds
+    }
 
-      if (thereAreSelectedNodes) {
+    // Selection rectangle.
+    // =================================================================
+
+    if (moreThanOneNodeSelected) {
+      selection.setAttribute('stroke', canvas.theme.selection.color)
+
+      if (selectedNodesBoundsChanged) {
         selection.setAttribute('x', selectedNodesBounds.x1)
         selection.setAttribute('y', selectedNodesBounds.y1)
         selection.setAttribute('height', selectedNodesBounds.y2 - selectedNodesBounds.y1)
         selection.setAttribute('width', selectedNodesBounds.x2 - selectedNodesBounds.x1)
       }
+    } else {
+      selection.setAttribute('stroke', 'transparent')
     }
 
     // TODO Remove deleted nodes.

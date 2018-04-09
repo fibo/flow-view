@@ -32,7 +32,7 @@
     "postversion": "git push origin v${npm_package_version}; npm publish",
     "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/jsonSchema.js"
   },
   "pre-commit": [
     "lint"
@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "budo": "^11.1.7",
+    "is-my-json-valid": "^2.17.2",
     "pre-commit": "^1.2.2",
     "standa": "^2.0.0",
     "uglify-es": "^3.3.9"

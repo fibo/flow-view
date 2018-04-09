@@ -1,6 +1,6 @@
 # flow-view
 
-> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
 [Installation](#installation) |
 [API](#api) |
@@ -233,7 +233,6 @@ npm run example_basic_usage
 Available examples are:
 
 * [basic/usage.js][example_basic_usage]: `npm run example_basic_usage`
-* [custom/item.js][example_custom_item]: `npm run example_custom_item`
 * [dom/element.js][example_dom_element]: `npm run example_dom_element`
 * [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
@@ -251,9 +250,8 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-[React]: https://facebook.github.io/react/ "React"
+[EventEmitter]: https://www.npmjs.com/package/events "EventEmitter"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
-[example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
 [example_dom_element]: https://github.com/fibo/flow-view/blob/master/examples/dom/element.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js

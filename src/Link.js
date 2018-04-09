@@ -1,3 +1,4 @@
+const bindme = require('bindme')
 const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
@@ -12,25 +13,50 @@ class FlowViewLink extends SvgComponent {
     super(canvas, dispatch, container)
 
     // DOM Elements.
-    //= =================================================================
+    // =================================================================
 
     const line = this.createElementNS('path')
     const start = this.createElementNS('circle')
     const end = this.createElementNS('circle')
 
     // Static attributes.
-    //= =================================================================
+    // =================================================================
 
     staticProps(this)({
-      line,
-      start,
       end,
+      line,
+      id: () => container.getAttribute('id'),
+      start,
       theme: () => canvas.theme.link
     })
+
+    // Event bindings.
+    // =================================================================
+
+    bindme(this,
+      'onClick',
+      'onDblclick'
+    )
+
+    container.addEventListener('click', this.onClick)
+    container.addEventListener('dblclick', this.onDblclick)
+    container.addEventListener('mousedown', this.dropEvent)
   }
 
   onClick (event) {
     pdsp(event)
+
+    const { id, dispatch } = this
+
+    dispatch('selectLink', id)
+  }
+
+  onDblclick (event) {
+    pdsp(event)
+
+    const { id, dispatch } = this
+
+    dispatch('deleteLink', id)
   }
 
   render (state) {

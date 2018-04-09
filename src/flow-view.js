@@ -176,6 +176,12 @@ class FlowViewCanvas extends EventEmitter {
     this.state.graph.links.splice(draggedLinkIndex, 1)
   }
 
+  deleteLink (linkId) {
+    const linkIndex = this.state.graph.links.findIndex(({ id }) => id === linkId)
+
+    this.state.graph.links.splice(linkIndex, 1)
+  }
+
   // TODO detachLink
 
   deleteInputPin () {
@@ -245,6 +251,29 @@ class FlowViewCanvas extends EventEmitter {
   pinInspector () { this.state.inspector.pinned = true }
 
   resize (boundingRect) { this.state.root = boundingRect }
+
+  selectLink (id) {
+    const {
+      graph,
+      multiSelection,
+      selected
+    } = Object.assign({}, this.state)
+
+    const notSelected = selected.links.indexOf(id) === -1
+
+    if (notSelected) {
+      if (multiSelection) {
+        selected.links.push(id)
+      } else {
+        selected.links = [id]
+      }
+    }
+
+    this.state.graph.links = graph.links
+    this.state.selected.links = selected.links
+
+    this.hideCreator()
+  }
 
   selectNode (id) {
     const {

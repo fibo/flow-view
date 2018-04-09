@@ -88,7 +88,6 @@ class FlowViewFrame extends SvgComponent {
 
   isInsideRectangularSelection (x, y) {
     const { selectedNodesBounds } = this
-    console.log(selectedNodesBounds)
 
     if (Object.keys(selectedNodesBounds).length > 0) {
       return (
@@ -236,6 +235,7 @@ class FlowViewFrame extends SvgComponent {
     const draggedLink = draggedLinkId ? state.graph.links.find(link => link.id === draggedLinkId) : null
     this.draggedLink = draggedLink
 
+    const selectedLinks = state.selected.links
     const selectedNodes = state.selected.nodes
 
     const { fontFamily, fontSize } = canvas.theme.frame
@@ -409,11 +409,13 @@ class FlowViewFrame extends SvgComponent {
       const sourcePin = sourceNode ? sourceNode.getOutRefByPosition(from[1]) : null
       const targetPin = targetNode ? targetNode.getInRefByPosition(to[1]) : null
 
+      const selected = selectedLinks.indexOf(id) > -1
+
       const linkState = {
         endX: targetPin ? targetNode.x + targetPin.x + halfPinSize : draggedLinkCoordinates.x,
         endY: targetPin ? targetNode.y + halfPinSize : draggedLinkCoordinates.y,
         graph: linkGraph,
-        selected: sourceNode && targetNode && sourceNode.selected && targetNode.selected,
+        selected: selected || (sourceNode && targetNode && sourceNode.selected && targetNode.selected),
         startX: sourcePin ? sourceNode.x + sourcePin.x + halfPinSize : draggedLinkCoordinates.x,
         startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : draggedLinkCoordinates.y
       }

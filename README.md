@@ -82,7 +82,6 @@ const canvas = new Canvas(container)
 * **@param** `{Number}` **[view.width]** defaults to container width
 * **@param** `{Object}` **view.link**, see [link spec](#link-spec) below
 * **@param** `{Object}` **view.node**, see [node spec](#node-spec) below
-* **@param** `{Object}` **[callback]** called on serverside context
 * **@returns** `{Object}` flowViewCanvas
 
 For example:
@@ -141,12 +140,6 @@ canvas.mountOn(document.getElementById('drawing'))
 ```
 
 ### `canvas.resize({ width: number, height: number }): void`
-
-### `canvas.toSVG(width: number, height: number, callback: func): void`
-
-> Render to SVG. Can be used for server side rendering.
-
-See [render/serverside.js example][example_render_serverside].
 
 ### Events
 
@@ -237,7 +230,6 @@ Available examples are:
 * [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
-* [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
 * [theme/dark.js][example_theme_dark]: `npm run example_theme_dark`
 
 Note that examples are intended to be used for development, hence there
@@ -256,7 +248,6 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
-[example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
 [example_theme_dark]: https://github.com/fibo/flow-view/blob/master/examples/theme/dark.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg "SVG Sample"

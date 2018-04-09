@@ -316,3 +316,4 @@ class FlowViewCanvas extends EventEmitter {
 }
 
 module.exports = { Canvas: FlowViewCanvas }
+exports.default = { FlowViewCanvas }

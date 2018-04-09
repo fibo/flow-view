@@ -2,7 +2,6 @@
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
 
-[Description](#description) |
 [Installation](#installation) |
 [API](#api) |
 [Examples](#examples) |
@@ -28,38 +27,14 @@ You can use autocompletion thanks to `nodeList` option parameter.
 
 ![The Simpsons][simpsons_gif]
 
-## Description
-
-*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project.
-I am using it for a minimal Dataflow programming engine: [dflow].
-
-The following features are implemented:
-
-* Create nodes and links using a visual interface.
-* SVG server side rendering.
-* Custom items: nodes can be customized using React.
-* Events are emitted to achieve integration with other packages.
-
-> Let's give Node.js a common visual interface. Use *flow-view*!
-
-Any feedback is welcome!
-
 ## Installation
 
 ### Using npm
 
-Note that *flow-view* requires [React] as a peer dependency. If they are
-not already installed, with [npm](https://npmjs.org/) do
+With [npm](https://npmjs.org/) do
 
 ```bash
-npm install react react-dom --save-dev
-```
-
-I guess you need it as a development dependency to build your project, so
-probably you need to launch
-
-```bash
-npm install flow-view --save-dev
+npm install flow-view
 ```
 
 ### Using a CDN
@@ -72,18 +47,12 @@ Adding this to your HTML page
 
 ## API
 
-<a name="canvas"></a>
+### Canvas
 
-### `new Canvas(opt?)`
+To import *flow-view* Canvas choose your favourite syntax among:
 
-> flow-view Canvas constructor
-
-* **@param** `{Object}` **[opt]** is a collection of options
-* **@param** `{Object}` **[opt.node]** is a collection of custom nodes
-* **@param** `{Object}` **[opt.node.DefaultNode]** is the base class component
-* **@param** `{Array}` **[opt.nodeList]** is a list of strings used for nodes autocompletion
-* **@param** `{Object}` **[opt.theme]** see [theme.js source file](https://github.com/fibo/flow-view/blob/master/src/components/theme.js)
-* **@returns** `{Object}` **canvas**
+* `const Canvas = require('flow-view').Canvas`
+* `import { FlowViewCanvas } from 'flow-view'`
 
 Suppose your *container* is a div with id `drawing`.
 In your HTML, place a div where you want to mount the canvas.
@@ -101,13 +70,8 @@ In your HTML, place a div where you want to mount the canvas.
 Create an empty canvas, with default options.
 
 ```javascript
-const Canvas = require('flow-view').Canvas
-// Or use ES6 syntax: import { Canvas } from 'flow-view'
-
-const canvas = new Canvas()
+const canvas = new Canvas(container)
 ```
-
-Note that nothing will happen unless you call `canvas.load(view)` and `canvas.mountOn(container)` methods.
 
 ### `canvas.load(view: FlowView): FlowViewCanvas`
 
@@ -185,6 +149,16 @@ canvas.mountOn(document.getElementById('drawing'))
 See [render/serverside.js example][example_render_serverside].
 
 ### Events
+
+Class `FlowViewCanvas` inherits from [EventEmitter], it is possible to listen to events like in the following snippet.
+
+```javascript
+dextop.on('move', ({ x, y }) => {
+  console.log('updated position', x, y)
+})
+```
+
+The following events are emitted:
 
 The following events are emitted by [canvas](#canvas):
 

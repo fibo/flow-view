@@ -1,3 +1,5 @@
+/* global MutationObserver */
+
 const bindme = require('bindme')
 const staticProps = require('static-props')
 
@@ -53,21 +55,21 @@ class FlowViewRoot extends Component {
     // =================================================================
 
     bindme(this,
-      'onResize'
+      'onContainerMutations'
     )
 
-    window.addEventListener('resize', this.onResize)
+    const resizeObserver = new MutationObserver(this.onContainerMutations)
+    resizeObserver.observe(container, { attributes: true })
   }
 
-  // TODO onScroll
-
-  onResize () {
-    const {
-      boundingRect,
-      dispatch
-    } = this
-
-    dispatch('resize', boundingRect)
+  onContainerMutations (mutationsList) {
+    for (let mutation of mutationsList) {
+      if (mutation.type === 'attributes') {
+        if (mutation.attributeName === 'style') {
+          this.dispatch('resize', this.boundingRect)
+        }
+      }
+    }
   }
 
   render (state) {

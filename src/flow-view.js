@@ -1,4 +1,3 @@
-const EventEmitter = require('events')
 const staticProps = require('static-props')
 
 const Creator = require('./Creator')
@@ -11,10 +10,8 @@ const Root = require('./Root')
  * A Canvas is the entry point to create a flow-view.
  */
 
-class FlowViewCanvas extends EventEmitter {
-  constructor (container, graph = { nodes: [], links: [] }) {
-    super()
-
+class FlowViewCanvas {
+  constructor (container) {
     // Theme.
     // =================================================================
 
@@ -99,8 +96,6 @@ class FlowViewCanvas extends EventEmitter {
     const root = new Root(this, dispatch(this), container)
     this.state.root = root.boundingRect
     render = root.render.bind(root)
-
-    dispatch(this)('loadGraph', graph)
 
     // Static props.
     // =================================================================

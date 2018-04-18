@@ -53,7 +53,6 @@
   "dependencies": {
     "bindme": "^1.0.2",
     "merge-options": "^1.0.0",
-    "events": "^2.0.0",
     "pdsp": "^0.1.0",
     "static-props": "^1.1.1"
   },

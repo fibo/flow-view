@@ -38,4 +38,6 @@ const graph = {
 
 const container = document.getElementById('drawing')
 
-const canvas = new Canvas(container, graph)
+const canvas = new Canvas(container)
+
+canvas.loadGraph(graph)

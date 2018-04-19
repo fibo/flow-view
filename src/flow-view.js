@@ -202,7 +202,10 @@ class FlowViewCanvas {
   disableMultiSelection () { this.state.multiSelection = false }
 
   dragItems ({ x, y }) {
-    const { selected, graph } = this.state
+    const {
+      graph,
+      selected
+    } = this.state
 
     graph.nodes
       .filter(({ id }) => (selected.nodes.indexOf(id) > -1))
@@ -307,7 +310,7 @@ class FlowViewCanvas {
 
   stopDraggingItems () { this.state.draggingItems = false }
 
-  unpinInspector () {this.state.inspector.pinned = false }
+  unpinInspector () { this.state.inspector.pinned = false }
 }
 
 module.exports = { Canvas: FlowViewCanvas }

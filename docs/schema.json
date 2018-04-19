@@ -8,21 +8,41 @@
         "title": "link",
         "type": "object",
         "properties": {
-          "id": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
           "from": {
             "type": "array",
-            "items": [ { "type": "string" }, { "type": "number" } ],
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ],
             "minLength": 2,
             "maxLength": 2
           },
           "to": {
             "type": "array",
-            "items": [ { "type": "string" }, { "type": "number" } ],
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ],
             "minLength": 2,
             "maxLength": 2
           }
         },
-        "required": [ "id", "from", "to" ]
+        "required": [
+          "id",
+          "from",
+          "to"
+        ]
       }
     },
     "nodes": {
@@ -31,15 +51,34 @@
         "title": "node",
         "type": "object",
         "properties": {
-          "id": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
           "ins": {
             "type": "array",
             "items": {
               "title": "in",
               "type": "object",
               "properties": {
-                "name": { "type": "string" }
-              }
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
             }
           },
           "outs": {
@@ -48,16 +87,25 @@
               "title": "out",
               "type": "object",
               "properties": {
-                "name": { "type": "string" },
-                "required": [ "name"]
-              }
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
             }
-          },
-          "text": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" }
+          }
         },
-        "required": [ "id", "text", "x", "y"]
+        "required": [
+          "id",
+          "text",
+          "x",
+          "y"
+        ]
       }
     }
   }

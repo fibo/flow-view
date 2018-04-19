@@ -11,13 +11,14 @@
   "main": "src/flow-view.js",
   "scripts": {
     "browserify": "NODE_ENV=production browserify -r ./${npm_package_main}.js:${npm_package_name} -o dist/${npm_package_name}.js",
-    "build": "npm run browserify && npm run minify; git status",
+    "build": "npm run generate_schema; npm run browserify && npm run minify; git status",
     "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
     "docs:_data:package.json": "cp package.json docs/_data/",
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js",
     "example_empty_canvas": "NODE_PATH=src budo --serve bundle.js --dir examples/empty --open examples/empty/canvas.js",
     "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js",
+    "generate_schema": "markdown2code --lang cson README.md | cson2json > docs/schema.json",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
     "lint": "cd src; standa --fix; cd ..",
     "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
@@ -52,7 +53,9 @@
   },
   "devDependencies": {
     "budo": "^11.1.7",
+    "cson": "^5.1.0",
     "is-my-json-valid": "^2.17.2",
+    "markdown2code": "^0.3.0",
     "pre-commit": "^1.2.2",
     "standa": "^2.0.0",
     "uglify-es": "^3.3.9"

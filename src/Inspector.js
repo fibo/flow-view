@@ -11,23 +11,21 @@ class FlowViewInspector extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
+    // Start hidden.
+    container.style.display = 'none'
+
     // DOM Elements.
     // =================================================================
 
     const pin = this.createElement('botton')
     pin.style.cursor = 'default'
 
-    const title = this.createElement('h2')
-    title.innerHTML = 'Inspector'
-
     const nodeName = this.createElement('span')
-    nodeName.style.width = '160px'
-    nodeName.innerHTML = 'xxxxxxxx'
 
     const inputList = this.createElement('ul')
 
     // Event bindings.
-    //= =================================================================
+    // =================================================================
 
     bindme(this,
       'onClickPin',
@@ -44,7 +42,6 @@ class FlowViewInspector extends Component {
       inputList,
       nodeName,
       pin,
-      title
     })
   }
 

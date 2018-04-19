@@ -238,6 +238,8 @@ class FlowViewCanvas {
 
   loadGraph (graph) {
     this.state.graph = graph
+
+    this.root.render(this.state)
   }
 
   pinInspector () { this.state.inspector.pinned = true }
@@ -304,7 +306,7 @@ class FlowViewCanvas {
 
   stopDraggingItems () { this.state.draggingItems = false }
 
-  unpinInspector () { this.state.inspector.pinned = false }
+  unpinInspector () {this.state.inspector.pinned = false }
 }
 
 module.exports = { Canvas: FlowViewCanvas }

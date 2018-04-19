@@ -122,7 +122,10 @@ class FlowViewInspector extends Component {
     // Width.
     //= =================================================================
 
-    if (widthChanged) { container.style.width = `${width}px` }
+    if (widthChanged) {
+      this.width = width
+      container.style.width = `${width}px`
+    }
 
     // Inspect node.
     //= =================================================================

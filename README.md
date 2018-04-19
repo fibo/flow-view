@@ -4,7 +4,7 @@
 
 [Installation](#installation) |
 [API](#api) |
-[Schema](#schema) |
+[Grapg schema](#graph-schema) |
 [Examples](#examples) |
 [License](#license)
 
@@ -15,8 +15,6 @@
 [![Dependency Status](https://david-dm.org/fibo/flow-view.svg)](https://david-dm.org/fibo/flow-view)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
-
-![The Simpsons][simpsons_gif]
 
 ## Installation
 
@@ -38,7 +36,7 @@ Adding this to your HTML page
 
 ## API
 
-### Canvas
+### Canvas constructor
 
 To import *flow-view* Canvas choose your favourite syntax among:
 
@@ -46,7 +44,7 @@ To import *flow-view* Canvas choose your favourite syntax among:
 * `import { FlowViewCanvas } from 'flow-view'`
 
 Suppose your *container* is a div with id `drawing`.
-In your HTML, place a div where you want to mount the canvas.
+In your HTML, place a div where you want to mount flow-view canvas.
 
 ```html
 <style>
@@ -66,7 +64,51 @@ const container = document.getElementById('drawing')
 const canvas = new Canvas(container)
 ```
 
-## Schema
+### loadGraph
+
+You can load a [graph](graph-schema) like in the following example.
+
+```javascript
+const graph = {
+  nodes: [
+    {
+      id: 'a',
+      x: 80,
+      y: 100,
+      name: 'Drag me',
+      outs: [
+        { name: 'out1' },
+        { name: 'out2' },
+        { name: 'out3' }
+      ]
+    },
+    {
+      id: 'b',
+      x: 180,
+      y: 200,
+      name: 'Click me',
+      ins: [
+        { name: 'in0' },
+        { name: 'in1', type: 'bool' }
+      ],
+      outs: [
+        { name: 'return' }
+      ]
+    }
+  ],
+  links: [
+    {
+      id: 'c',
+      from: ['a', 0],
+      to: ['b', 1]
+    }
+  ]
+}
+
+canvas.loadGraph(graph)
+```
+
+## Graph schema
 
 This section defines flow-view [JSON Schema](http://json-schema.org/) using [cson](https://github.com/bevry/cson).
 It is parsed by [markdown2code](http://g14n.info/markdown2code) to generate [flow-view schema.json file](http://g14n.info/flow-view/schema.json).

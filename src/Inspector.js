@@ -41,7 +41,7 @@ class FlowViewInspector extends Component {
     staticProps(this)({
       inputList,
       nodeName,
-      pin,
+      pin
     })
   }
 

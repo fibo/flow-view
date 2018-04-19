@@ -161,15 +161,25 @@ class FlowViewFrame extends SvgComponent {
       cursorCoordinates,
       dispatch,
       draggingLink,
-      draggingItems
+      draggingItems,
+      selectedNodesBounds
     } = this
 
     if (draggingItems) {
       const nextCursorCoordinates = this.getCoordinates(event)
 
-      const draggingDelta = {
+      let draggingDelta = {
         x: nextCursorCoordinates.x - cursorCoordinates.x,
         y: nextCursorCoordinates.y - cursorCoordinates.y
+      }
+
+      // Prevent from dragging outside of left and top canvas borders.
+      if (selectedNodesBounds.x1 + draggingDelta.x <= 0) {
+        draggingDelta.x = 0
+      }
+
+      if (selectedNodesBounds.y1 + draggingDelta.y <= 0) {
+        draggingDelta.y = 0
       }
 
       this.cursorCoordinates = nextCursorCoordinates

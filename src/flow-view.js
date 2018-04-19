@@ -295,6 +295,7 @@ class FlowViewCanvas {
   resetSelection () {
     this.state.selected = { links: [], nodes: [] }
 
+    this.hideCreator()
     this.stopDraggingItems()
   }
 

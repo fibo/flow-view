@@ -78,7 +78,7 @@ class FlowViewFrame extends SvgComponent {
   }
 
   getCoordinates (event) {
-    const { left, top } = this.container.getBoundingClientRect()
+    const { left, top } = this.svg.getBoundingClientRect()
 
     return {
       x: event.clientX - left,

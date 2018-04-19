@@ -4,8 +4,6 @@ const Creator = require('./Creator')
 const Inspector = require('./Inspector')
 const Root = require('./Root')
 
-// TODO emit events: createItems, deleteItems, updateItems
-
 /**
  * A Canvas is the entry point to create a flow-view.
  */
@@ -240,7 +238,6 @@ class FlowViewCanvas {
 
   loadGraph (graph) {
     this.state.graph = graph
-    this.emit('loadGraph', graph)
   }
 
   pinInspector () { this.state.inspector.pinned = true }

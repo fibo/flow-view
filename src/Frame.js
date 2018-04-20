@@ -207,13 +207,18 @@ class FlowViewFrame extends SvgComponent {
     const { x, y } = this.cursorCoordinates
 
     if (draggingItems && this.isInsideRectangularSelection(x, y)) {
-      dispatch('stopDraggingItems')
+      return dispatch('stopDraggingItems')
     }
 
     if (draggingLink) {
       // TODO check if it is close to a pin
-      dispatch('deleteHalfLink')
+      return dispatch('deleteHalfLink')
     }
+
+    // TODO check if it is close to link, if yes, select it
+    // distanceFromSource = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y))
+    // distanceFromTarget
+    // isCloseToLink = distanceFromSource + distanceFromTarget < distanceFromLink + epsilon
   }
 
   render (state) {

@@ -3,6 +3,8 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 
+const InspectorPinList = require('./InspectorPinList')
+
 /**
  * The Inspector let user modify Node properties.
  */
@@ -12,7 +14,7 @@ class FlowViewInspector extends Component {
     super(canvas, dispatch, container)
 
     // Start hidden.
-    container.style.display = 'none'
+    this.hide()
 
     // DOM Elements.
     // =================================================================
@@ -20,9 +22,13 @@ class FlowViewInspector extends Component {
     const pin = this.createElement('botton')
     pin.style.cursor = 'default'
 
-    const nodeName = this.createElement('span')
+    const label = this.createElement('span')
 
-    const inputList = this.createElement('ul')
+    const inputListContainer = this.createElement('ul')
+    const inputList = new InspectorPinList(canvas, dispatch, inputListContainer)
+
+    const outputListContainer = this.createElement('ul')
+    const outputList = new InspectorPinList(canvas, dispatch, outputListContainer)
 
     // Event bindings.
     // =================================================================
@@ -40,7 +46,8 @@ class FlowViewInspector extends Component {
 
     staticProps(this)({
       inputList,
-      nodeName,
+      outputList,
+      label,
       pin
     })
   }
@@ -57,7 +64,9 @@ class FlowViewInspector extends Component {
     const {
       canvas,
       container,
-      nodeName,
+      inputList,
+      label,
+      outputList,
       pin
     } = this
 
@@ -76,6 +85,7 @@ class FlowViewInspector extends Component {
     const { baseColor } = canvas.theme.inspector
 
     const selectedNodes = graph.nodes.filter(({ id }) => selected.nodes.indexOf(id) > -1)
+    const numSelectedNodes = selectedNodes.length
 
     const colorChanged = this.baseColor !== baseColor
     const pinnedChanged = this.pinned !== pinned
@@ -130,16 +140,31 @@ class FlowViewInspector extends Component {
     // Inspect node.
     //= =================================================================
 
-    if (selectedNodes.length === 0) {
-      nodeName.innerHTML = `(${graph.nodes.length} nodes)`
-    }
+    if (numSelectedNodes === 1) {
+      const node = selectedNodes[0]
+      label.innerHTML = node.name
 
-    if (selectedNodes.length === 1) {
-      nodeName.innerHTML = selectedNodes[0].name
-    }
+      inputList.show()
+      const ins = node.ins || []
+      inputList.render({ pins: ins })
 
-    if (selectedNodes.length > 1) {
-      nodeName.innerHTML = `(${selectedNodes.length} nodes)`
+      outputList.show()
+      const outs = node.outs || []
+      outputList.render({ pins: outs })
+    } else {
+      inputList.hide()
+      inputList.render({ pins: [] })
+
+      outputList.hide()
+      outputList.render({ pins: [] })
+
+      if (numSelectedNodes === 0) {
+        label.innerHTML = `(${graph.nodes.length} nodes)`
+      }
+
+      if (numSelectedNodes > 1) {
+        label.innerHTML = `(${numSelectedNodes} nodes)`
+      }
     }
   }
 }

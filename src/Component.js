@@ -35,6 +35,8 @@ class FlowViewComponent {
 
   dropEvent (event) { pdsp(event) }
 
+  hide () { this.container.style.display = 'none' }
+
   render (state) {
     this.renderAllSubComponents(state)
   }
@@ -46,6 +48,8 @@ class FlowViewComponent {
       component[key].render(state)
     })
   }
+
+  show () { this.container.style.display = '' }
 }
 
 module.exports = FlowViewComponent

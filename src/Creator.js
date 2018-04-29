@@ -12,7 +12,7 @@ class FlowViewCreator extends SvgComponent {
     super(canvas, dispatch, container)
 
     // Start hidden.
-    container.style.display = 'none'
+    this.hide()
 
     // DOM Elements.
     // =================================================================

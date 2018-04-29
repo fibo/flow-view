@@ -109,7 +109,7 @@ class FlowViewInspector extends Component {
     if (hidden) return
 
     // Pin.
-    //= =================================================================
+    // =================================================================
 
     if (pinnedChanged) {
       this.pinned = pinned
@@ -122,7 +122,7 @@ class FlowViewInspector extends Component {
     }
 
     // Colors.
-    //= =================================================================
+    // =================================================================
 
     if (colorChanged) {
       this.baseColor = baseColor
@@ -130,7 +130,7 @@ class FlowViewInspector extends Component {
     }
 
     // Width.
-    //= =================================================================
+    // =================================================================
 
     if (widthChanged) {
       this.width = width
@@ -138,7 +138,7 @@ class FlowViewInspector extends Component {
     }
 
     // Inspect node.
-    //= =================================================================
+    // =================================================================
 
     if (numSelectedNodes === 1) {
       const node = selectedNodes[0]
@@ -170,7 +170,7 @@ class FlowViewInspector extends Component {
 }
 
 // Static attributes.
-//= ====================================================================
+// ====================================================================
 
 const defaultState = {
   hidden: true,

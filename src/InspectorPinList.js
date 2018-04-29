@@ -10,41 +10,71 @@ class FlowViewInspectorPinList extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
-    this.pinRef = []
+    this.pinEditorRef = []
+
+    // DOM Elements.
+    // =================================================================
+
+    container.style.listStyleType = 'none'
 
     // Start hidden.
     this.hide()
   }
 
-  // TODO createPin deletePin
-
-  render (state) {
+  createPinEditor (pinState, position) {
     const {
       canvas,
       container,
       dispatch
     } = this
 
+    const pinEditorContainer = this.createElement('li')
+    const pinEditor = new PinEditor(canvas, dispatch, pinEditorContainer)
+
+    pinEditor.render(pinState)
+
+    this.pinEditorRef.splice(position, 0, pinEditor)
+  }
+
+  deletePinEditor (position) {
+    const {
+      container,
+      pinEditorRef
+    } = this
+
+    container.removeChild(container.childNodes[position])
+
+    pinEditorRef.splice(position, 1)
+  }
+
+  render (state) {
+    const {
+      container
+    } = this
+
     const {
       pins
     } = state
 
-    const numChildren = container.childElementCount
-    const numPins = pins.length
+    // Number of pin states to render is constant, while the number
+    // container.childElementCount will change after deleting pin editors.
+    const numPinStates = pins.length
 
-    // Create new pin editors.
-    for (let i = numChildren; i < numPins; i++) {
-      const pinEditorContainer = this.createElement('li')
-      this.pinRef[i] = new PinEditor(canvas, dispatch, pinEditorContainer)
+    // Delete old pin editors, first.
+    for (let i = numPinStates; i < container.childElementCount; i++) {
+      this.deletePinEditor(i)
     }
 
-    // Delete old pin editors.
-    for (let i = numPins; i < numChildren; i++) {
-      // TODO
-    }
+    // Render existing pin editors or create new ones.
+    for (let i = 0; i < numPinStates; i++) {
+      const pinEditor = this.pinEditorRef[i]
 
-    // Render existing pin editors.
-    this.pinRef.forEach((pin, i) => { pin.render(pins[i]) })
+      if (pinEditor) {
+        pinEditor.render(pins[i])
+      } else {
+        this.createPinEditor(pins[i], i)
+      }
+    }
   }
 }
 

@@ -24,7 +24,6 @@ class FlowViewInspectorPinList extends Component {
   createPinEditor (pinState, position) {
     const {
       canvas,
-      container,
       dispatch
     } = this
 

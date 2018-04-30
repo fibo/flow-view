@@ -103,6 +103,9 @@ class FlowViewFrame extends SvgComponent {
     const { dispatch } = this
 
     switch (event.key) {
+      case 'Backspace': dispatch('deleteSelection')
+        break
+
       case 'Escape': dispatch('resetSelection')
         break
 
@@ -330,7 +333,16 @@ class FlowViewFrame extends SvgComponent {
       selection.setAttribute('stroke', 'transparent')
     }
 
-    // TODO Remove deleted nodes.
+    // Remove deleted nodes.
+    // =================================================================
+
+    Object.keys(this.nodeRef).forEach(id => {
+      if (!graph.nodes.find(node => node.id === id)) {
+        nodesGroup.removeChild(this.nodeRef[id].container)
+
+        delete this.nodeRef[id]
+      }
+    })
 
     // Compute connected pins.
     // =================================================================
@@ -361,7 +373,7 @@ class FlowViewFrame extends SvgComponent {
     })
 
     // Render existing nodes or create new ones.
-    //= =================================================================
+    // =================================================================
 
     graph.nodes.forEach(nodeGraph => {
       const { id } = nodeGraph

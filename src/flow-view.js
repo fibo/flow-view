@@ -170,9 +170,32 @@ class FlowViewCanvas {
   }
 
   deleteLink (linkId) {
-    const linkIndex = this.state.graph.links.findIndex(({ id }) => id === linkId)
+    const { links } = this.state.graph
 
-    this.state.graph.links.splice(linkIndex, 1)
+    // Find link by id and remove it.
+    const linkIndex = links.findIndex(({ id }) => id === linkId)
+    links.splice(linkIndex, 1)
+  }
+
+  deleteNode (nodeId) {
+    const { links, nodes } = this.state.graph
+
+    // Find node by id and remove it.
+    const nodeIndex = nodes.findIndex(({ id }) => id === nodeId)
+    nodes.splice(nodeIndex, 1)
+
+    // Remove orphan links.
+    const orphanLinkIds = links.reduce((ids, link) => {
+      const { from, to } = link
+
+      if ((from && from[0] === nodeId) || (to && to[0] === nodeId)) {
+        return ids.concat(link.id)
+      } else {
+        return ids
+      }
+    }, [])
+
+    orphanLinkIds.forEach(id => this.deleteLink(id))
   }
 
   // TODO detachLink
@@ -187,6 +210,16 @@ class FlowViewCanvas {
 
   deleteView () {
 
+  }
+
+  deleteSelection () {
+    const { links, nodes } = this.state.selected
+
+    // Remove links first; deleting a node will remove orphan links.
+    links.forEach(id => this.deleteLink(id))
+    nodes.forEach(id => this.deleteNode(id))
+
+    this.resetSelection()
   }
 
   deselectNode (id) {
@@ -262,6 +295,7 @@ class FlowViewCanvas {
       if (multiSelection) {
         selected.links.push(id)
       } else {
+        this.resetSelection()
         selected.links = [id]
       }
     }
@@ -285,6 +319,7 @@ class FlowViewCanvas {
       if (multiSelection) {
         selected.nodes.push(id)
       } else {
+        this.resetSelection()
         selected.nodes = [id]
       }
     }

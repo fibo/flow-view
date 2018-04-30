@@ -7,7 +7,7 @@ const In = require('./In')
 const Out = require('./Out')
 
 /**
- * A Node is a rectangular component with inputs and outputs
+ * A Node is a rectangular component with inputs and outputs.
  */
 
 class FlowViewNode extends SvgComponent {

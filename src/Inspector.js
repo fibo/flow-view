@@ -93,7 +93,7 @@ class FlowViewInspector extends Component {
     const widthChanged = this.width !== width
 
     // Visibility (first).
-    //= =================================================================
+    // =================================================================
 
     if (visibilityChanged) {
       this.hidden = hidden

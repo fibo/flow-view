@@ -1,5 +1,7 @@
 const staticProps = require('static-props')
 
+const localStored = require('./localStored')
+
 const Creator = require('./Creator')
 const Inspector = require('./Inspector')
 const Root = require('./Root')
@@ -55,7 +57,10 @@ class FlowViewCanvas {
       draggedLinkId: null,
       draggedLinkType: null,
       graph: { links: [], nodes: [] },
-      inspector: Object.assign({}, Inspector.defaultState),
+      inspector: Object.assign({},
+        Inspector.defaultState,
+        localStored('inspector').getItem()
+      ),
       multiSelection: false,
       // Properties selected.links and selected.nodes are arrays,
       // their id unicity is handled by select* and deselect* methods.
@@ -270,7 +275,11 @@ class FlowViewCanvas {
 
   hideCreator () { this.state.creator.hidden = true }
 
-  hideInspector () { this.state.inspector.hidden = true }
+  hideInspector () {
+    this.state.inspector.hidden = true
+
+    localStored('inspector').assign({ hidden: true })
+  }
 
   loadGraph (graph) {
     this.state.graph = graph
@@ -278,7 +287,11 @@ class FlowViewCanvas {
     this.root.render(this.state)
   }
 
-  pinInspector () { this.state.inspector.pinned = true }
+  pinInspector () {
+    this.state.inspector.pinned = true
+
+    localStored('inspector').assign({ pinned: true })
+  }
 
   resize (boundingRect) { this.state.root = boundingRect }
 
@@ -339,13 +352,21 @@ class FlowViewCanvas {
 
   showCreator ({ x, y }) { this.state.creator = { hidden: false, x, y } }
 
-  showInspector () { this.state.inspector.hidden = false }
+  showInspector () {
+    this.state.inspector.hidden = false
+
+    localStored('inspector').assign({ hidden: false })
+  }
 
   startDraggingItems () { this.state.draggingItems = true }
 
   stopDraggingItems () { this.state.draggingItems = false }
 
-  unpinInspector () { this.state.inspector.pinned = false }
+  unpinInspector () {
+    this.state.inspector.pinned = false
+
+    localStored('inspector').assign({ pinned: false })
+  }
 }
 
 module.exports = { Canvas: FlowViewCanvas }

@@ -13,9 +13,6 @@ class FlowViewInspector extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
-    // Start hidden.
-    this.hide()
-
     // DOM Elements.
     // =================================================================
 

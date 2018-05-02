@@ -1,6 +1,6 @@
 var Canvas = require('flow-view').Canvas
 
-var canvas = new Canvas({
+/*var canvas = new Canvas({
   nodeList: [
     'Homer',
     'Marge',
@@ -8,53 +8,66 @@ var canvas = new Canvas({
     'Lisa',
     'Maggie'
   ]
-})
+})*/
 
-canvas.mountOn('drawing')
-
-canvas.load({
-  node: {
-    dad: {
-      x: 10,
-      y: 10,
-      text: 'Homer',
-      outs: [ 'is father of' ]
+const graph = {
+  nodes: [
+    {
+      id: 'dad',
+      x: 20,
+      y: 20,
+      name: 'Homer',
+      outs: [ { name: 'is father of' } ]
     },
-    mom: {
+    {
+      id: 'mom',
       x: 120,
       y: 20,
-      text: 'Marge',
-      outs: [ 'is mother of' ]
+      name: 'Marge',
+      outs: [ { name: 'is mother of' } ]
     },
-    son: {
+    {
+      id: 'son',
       x: 20,
       y: 190,
-      text: 'Bart',
-      ins: ['father', 'mother']
+      name: 'Bart',
+      ins: [ { name: 'father' }, { name: 'mother' } ]
     },
-    daughter: {
+    {
+      id: 'daughter',
       x: 180,
       y: 170,
-      text: 'Lisa',
-      ins: ['father', 'mother']
+      name: 'Lisa',
+      ins: [ { name: 'father' }, { name: 'mother' } ]
     }
-  },
-  link: {
-    a: {
+  ],
+  links: [
+    {
+      id: 'a',
       from: ['dad', 0],
       to: ['son', 0]
     },
-    b: {
+    {
+      id: 'b',
       from: ['mom', 0],
       to: ['son', 1]
     },
-    c: {
+    {
+      id: 'c',
       from: ['dad', 0],
       to: ['daughter', 0]
     },
-    d: {
+    {
+      id: 'd',
       from: ['mom', 0],
       to: ['daughter', 1]
     }
-  }
-})
+  ]
+}
+
+const container = document.getElementById('drawing')
+
+const canvas = new Canvas(container)
+
+canvas.loadGraph(graph)
+

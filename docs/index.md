@@ -4,11 +4,11 @@ flow: /empty.json
 ---
 # flow-view
 
-> is a visual editor for [Dataflow programming][dataflow_wikipedia], powered by [React]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
-[Description](#description) |
 [Installation](#installation) |
 [API](#api) |
+[Grapg schema](#graph-schema) |
 [Examples](#examples) |
 [License](#license)
 
@@ -20,50 +20,14 @@ flow: /empty.json
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
-<p><a href="http://codepen.io/fibo/pen/qNNmdd/"><img src="http://blog.codepen.io/wp-content/uploads/2012/06/TryItOn-CodePen.svg" style="width: 10em; height: auto;" /></a></p>
-
-The image below is an SVG generated server side by [flow-view Canvas](#canvas): click it to
-see [online example][online_example].
-
-[![sample view][sample_view_svg]{:.responsive}][online_example]
-
-The following animated gif represents a family tree.
-You can use autocompletion thanks to `nodeList` option parameter.
-
-![The Simpsons][simpsons_gif]
-
-## Description
-
-*flow-view* is a reusable visual editor you can use to provide a GUI to your dataflow project.
-I am using it for a minimal Dataflow programming engine: [dflow].
-
-The following features are implemented:
-
-* Create nodes and links using a visual interface.
-* SVG server side rendering.
-* Custom items: nodes can be customized using React.
-* Events are emitted to achieve integration with other packages.
-
-> Let's give Node.js a common visual interface. Use *flow-view*!
-
-Any feedback is welcome!
-
 ## Installation
 
 ### Using npm
 
-Note that *flow-view* requires [React] as a peer dependency. If they are
-not already installed, with [npm](https://npmjs.org/) do
+With [npm](https://npmjs.org/) do
 
 ```bash
-npm install react react-dom --save-dev
-```
-
-I guess you need it as a development dependency to build your project, so
-probably you need to launch
-
-```bash
-npm install flow-view --save-dev
+npm install flow-view
 ```
 
 ### Using a CDN
@@ -71,148 +35,235 @@ npm install flow-view --save-dev
 Adding this to your HTML page
 
 ```html
-<script src="https://unpkg.com/flow-view@2/dist/flow-view.min.js"></script>
+<script src="https://unpkg.com/flow-view/dist/flow-view.min.js"></script>
 ```
 
 ## API
 
-<a name="canvas"></a>
+### Canvas constructor
 
-### `new Canvas(id|element)`
+To import *flow-view* Canvas choose your favourite syntax among:
 
-> flow-view Canvas constructor
+* `const Canvas = require('flow-view').Canvas`
+* `import { FlowViewCanvas } from 'flow-view'`
 
-* **@param** `{String|HTMLElement}` **container** id or DOM element
-* **@param** `{Object}` **[opt]** collection to be customized
-* **@param** `{Object}` **[opt.node]** collection of custom nodes
-* **@param** `{Object}` **[opt.node.DefaultNode]** is the base class component
-* **@param** `{Array}` **[opt.nodeList]** is a list of strings used for nodes autocompletion
-* **@param** `{Object}` **[opt.theme]** see [theme.js source file](https://github.com/fibo/flow-view/blob/master/src/components/theme.js)
-* **@param** `{Object}` **[opt.util]**
-* **@param** `{Function}` **[opt.util.typeOfNode]**
-* **@returns** `{Object}` **canvas**
-
-Suppose your *container id* is `drawing`.
-In your HTML, place a div where you want to mount the canvas.
+Suppose your *container* is a div with id `drawing`.
+In your HTML, place a div where you want to mount flow-view canvas.
 
 ```html
 <style>
   #drawing {
-    display: inline-block;
     width: 100%;
-    height: 100%;
+    height: 100vh;
   }
 </style>
 <div id="drawing"></div>
 ```
 
-Create an empty canvas
+Create an empty canvas.
 
 ```javascript
-var Canvas = require('flow-view').Canvas
+const container = document.getElementById('drawing')
 
-var canvas = new Canvas('drawing')
+const canvas = new Canvas(container)
 ```
 
-Note that nothing will happen until you call the [`canvas.render(view)`](#canvasrenderview) method.
+### loadGraph
 
-### `canvas.container`
-
-It is the DOM element container, if any. On server side, this attribute is `null`.
-
-### `canvas.render(view?)`
-
-Draws a view, that is a collection of nodes and links.
-On server side it generates an SVG output like the one you see on top of this README.md,
-see [render/serverside.js example][example_render_serverside].
-
-* **@param** `{Object}` **[view]** can be empty
-* **@param** `{Number}` **[view.height]** defaults to container height
-* **@param** `{Number}` **[view.width]** defaults to container width
-* **@param** `{Object}` **view.link**, see [link spec](#link-spec) below
-* **@param** `{Object}` **view.node**, see [node spec](#node-spec) below
-* **@param** `{Object}` **[model]**, can be used for custom items
-* **@param** `{Object}` **[callback]** called on serverside context
-* **@returns** `{void}`
-
-Follows a basic example.
+You can load a [graph](graph-schema) like in the following example.
 
 ```javascript
-canvas.render({
-  node: {
-    a: {
-      x: 80, y: 100,
-      text: 'Drag me',
-      outs: ['out1', 'out2', 'out3']
+const graph = {
+  nodes: [
+    {
+      id: 'a',
+      x: 80,
+      y: 100,
+      name: 'Drag me',
+      outs: [
+        { name: 'out1' },
+        { name: 'out2' },
+        { name: 'out3' }
+      ]
     },
-    b: {
-      x: 180, y: 200,
-      text: 'Click me',
-      ins: ['in0', { name: 'in1', type: 'bool' }],
-      outs: ['return']
+    {
+      id: 'b',
+      x: 180,
+      y: 200,
+      name: 'Click me',
+      ins: [
+        { name: 'in0' },
+        { name: 'in1', type: 'bool' }
+      ],
+      outs: [
+        { name: 'return' }
+      ]
     }
-  },
-  link: {
-    c: {
+  ],
+  links: [
+    {
+      id: 'c',
       from: ['a', 0],
       to: ['b', 1]
     }
-  }
-})
+  ]
+}
+
+canvas.loadGraph(graph)
 ```
 
-### Events
+## Graph schema
 
-See [event/emitter.js][example_event_emitter] example.
-The following events are emitted by [canvas](#canvas):
+This section defines flow-view [JSON Schema](http://json-schema.org/) using [cson](https://github.com/bevry/cson).
+It is parsed by [markdown2code](http://g14n.info/markdown2code) to generate [flow-view schema.json file](http://g14n.info/flow-view/schema.json).
 
-| name                  | data                           |
-|-----------------------|-------------------------------|
-| `createInputPin`      | [nodeId, position], pin       |
-| `createLink`          | link, linkId                  |
-| `createNode`          | node, nodeId                  |
-| `createOutputPin`     | [nodeId, position], pin       |
-| `deleteLink`          | linkId                        |
-| `deleteNode`          | nodeId                        |
-| `deleteInputPin`      | [nodeId, position]            |
-| `deleteOutputPin`     | [nodeId, position]            |
-| `updateNodesGeometry` | {id1: node1, id2: node2, ...} |
+```cson
+$schema: 'http://json-schema.org/schema#'
+id: 'http://g14n.info/flow-view/schema.json'
+properties:
+```
 
-### Hotkeys
+A flow-view *graph* has [links](#links) and [nodes](#nodes).
 
-Few hotkyes are defined.
+### Links
 
-Arrows <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> <kbd>←</kbd> translate currently selected nodes, if also <kbd>SHIFT</kbd> is pressed translation is performed pixel by pixel.
-<kbd>ESC</kbd> cancel current selection.
-Keys <kbd>i</kbd> and <kbd>o</kbd> create respectively input and output pins from current selected node. If also <kbd>SHIFT</kbd> is pressed, pins are deleted.
+A *graph* can have none, one or many *links*.
 
-### Node spec
+```cson
+  links:
+    type: 'array'
+    items:
+```
 
-A node describes an element and has the following attributes:
+Every *link* must have a unique *id*.
 
-* **@param** `Number` **x** coordinate of top left vertex
-* **@param** `Number` **y** coordinate of top left vertex
-* **@param** `String` **text**
-* **@param** `Array | undefined` **ins** list of input pins
-* **@param** `Array | undefined` **outs** list of output pins
-* **@param** `Number` **[width]**, defaults to a value depending on text lenght and number of pins.
+```cson
+      title: 'link'
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+```
 
-An pin can be either a string or an object with the `name` attribute which must be a string.
-Input pins default to string `in${position}`.
-Output pins default to string `out${position}`.
-If *ins* is undefined, the node is a root.
-If *outs* is undefined, the node is a leaf.
+A *link* connects two *nodes*.
 
-### Link spec
+It starts *from* a *node output* which is identified by an array of two
+elements that are the source *node id* and the *output position*.
 
-A link describes a connection between elements and has the following attributes:
+```cson
+        from:
+          type: 'array'
+          items: [
+            { type: 'string' }
+            { type: 'number' }
+          ]
+          minLength: 2
+          maxLength: 2
+```
 
-* **@param** `Array` **from** has exactly two elements
-* **@param** `String` **from[0]** is the key of the source node
-* **@param** `Number` **from[1]** is the output pin position
-* **@param** `Array` **to** has exactly two elements
-* **@param** `String` **to[0]** is the key of the target node
-* **@param** `Number` **to[1]** is the input pin position
+It goes *to* a *node input* which is identified by an array of two elements
+that are the target *node id* and the *input position*.
+
+```cson
+        to:
+          type: 'array'
+          items: [
+            { type: 'string' }
+            { type: 'number' }
+          ]
+          minLength: 2
+          maxLength: 2
+```
+
+All properties are required.
+
+```cson
+      required: [
+        'id'
+        'from'
+        'to'
+      ]
+```
+
+### Nodes
+
+A *graph* can have none, one or many *nodes*.
+
+```cson
+  nodes:
+    type: 'array'
+    items:
+```
+
+Every *node* must have a unique *id*.
+
+```cson
+      title: 'node'
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+```
+
+A node has a *text*.
+
+```cson
+        text:
+          type: 'string'
+```
+
+A node has a position identified by *x* and *y* coordinates.
+
+```cson
+        x:
+          type: 'number'
+        y:
+          type: 'number'
+```
+
+A node at the end is a block with inputs and outputs. Both *ins* and *outs*
+must have a *name* and may have a *type*.
+
+```cson
+        ins:
+          type: 'array'
+          items:
+            title: 'in'
+            type: 'object'
+            properties:
+              name:
+                type: 'string'
+              type:
+                type: 'string'
+            required: [
+              'name'
+            ]
+        outs:
+          type: 'array'
+          items:
+            title: 'out'
+            type: 'object'
+            properties:
+              name:
+                type: 'string'
+              type:
+                type: 'string'
+            required: [
+              'name'
+            ]
+```
+
+Properties *ins* and *outs* are not required. A node with *ins* not defined
+is a *root*, a node with *outs* not defined is a *leaf*.
+
+```cson
+      required: [
+        'id'
+        'text'
+        'x'
+        'y'
+      ]
+```
 
 ## Examples
 
@@ -235,17 +286,8 @@ npm run example_basic_usage
 Available examples are:
 
 * [basic/usage.js][example_basic_usage]: `npm run example_basic_usage`
-* [custom/item.js][example_custom_item]: `npm run example_custom_item`
-* [dom/element.js][example_dom_element]: `npm run example_dom_element`
-* [event/emitter.js][example_event_emitter]: `npm run example_event_emitter`
 * [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
 * [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
-* [render/serverside.js][example_render_serverside]: `npm run example_render_serverside`
-* [theme/dark.js][example_theme_dark]: `npm run example_theme_dark`
-
-Note that examples are intended to be used for development, hence there
-is an overhead at start time.
-For instance: client side examples use hot reload, and are transpiled on the fly; also server side example will launch babel before starting.
 
 ## License
 
@@ -253,15 +295,7 @@ For instance: client side examples use hot reload, and are transpiled on the fly
 
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-[React]: https://facebook.github.io/react/ "React"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
-[example_custom_item]: https://github.com/fibo/flow-view/blob/master/examples/custom/item.js
-[example_dom_element]: https://github.com/fibo/flow-view/blob/master/examples/dom/element.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
-[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
-[example_render_serverside]: https://github.com/fibo/flow-view/blob/master/examples/render/serverside.js
-[example_theme_dark]: https://github.com/fibo/flow-view/blob/master/examples/theme/dark.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
-[sample_view_svg]: https://g14n.info/flow-view/svg/sample-view.svg "SVG Sample"
-[simpsons_gif]: https://g14n.info/flow-view/media/TheSimspons.gif "The Simpsons Family"

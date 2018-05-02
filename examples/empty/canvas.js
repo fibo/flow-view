@@ -1,5 +1,5 @@
-var Canvas = require('flow-view').Canvas
+const Canvas = require('flow-view').Canvas
 
-var canvas = new Canvas('drawing')
+const container = document.getElementById('drawing')
 
-canvas.render()
+const canvas = new Canvas(container)

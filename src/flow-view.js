@@ -293,6 +293,14 @@ class FlowViewCanvas {
     localStored('inspector').assign({ pinned: true })
   }
 
+  renameNode ({ id, name }) {
+    const { nodes } = this.state.graph
+
+    const nodeIndex = nodes.findIndex(node => node.id === id)
+
+    nodes[nodeIndex].name = name
+  }
+
   resize (boundingRect) { this.state.root = boundingRect }
 
   selectLink (id) {

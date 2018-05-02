@@ -3,6 +3,7 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 
+const EditableText = require('./EditableText')
 const InspectorPinList = require('./InspectorPinList')
 
 /**
@@ -19,7 +20,8 @@ class FlowViewInspector extends Component {
     const pin = this.createElement('botton')
     pin.style.cursor = 'default'
 
-    const label = this.createElement('span')
+    const labelContainer = this.createElement('div')
+    const label = new EditableText(canvas, dispatch, labelContainer)
 
     const inputListContainer = this.createElement('ul')
     const inputList = new InspectorPinList(canvas, dispatch, inputListContainer)
@@ -61,6 +63,7 @@ class FlowViewInspector extends Component {
     const {
       canvas,
       container,
+      dispatch,
       inputList,
       label,
       outputList,
@@ -139,7 +142,15 @@ class FlowViewInspector extends Component {
 
     if (numSelectedNodes === 1) {
       const node = selectedNodes[0]
-      label.innerHTML = node.name
+
+      label.action = (name) => {
+        dispatch('renameNode', { id: node.id, name })
+      }
+
+      label.render({
+        editable: true,
+        text: node.name
+      })
 
       inputList.show()
       const ins = node.ins || []
@@ -149,6 +160,8 @@ class FlowViewInspector extends Component {
       const outs = node.outs || []
       outputList.render({ pins: outs })
     } else {
+      delete label.action
+
       inputList.hide()
       inputList.render({ pins: [] })
 
@@ -156,11 +169,17 @@ class FlowViewInspector extends Component {
       outputList.render({ pins: [] })
 
       if (numSelectedNodes === 0) {
-        label.innerHTML = `(${graph.nodes.length} nodes)`
+        label.render({
+          editable: false,
+          text: `(${graph.nodes.length} nodes)`
+        })
       }
 
       if (numSelectedNodes > 1) {
-        label.innerHTML = `(${numSelectedNodes} nodes)`
+        label.render({
+          editable: false,
+          text: `(${numSelectedNodes} nodes)`
+        })
       }
     }
   }

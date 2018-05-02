@@ -62,17 +62,17 @@ class FlowViewFrame extends SvgComponent {
     // ==================================================================
 
     bindme(this,
-      'onDocumentKeydown',
-      'onDocumentKeyup',
       'onDblclick',
+      'onKeydownDocument',
+      'onKeyupDocument',
       'onMousedown',
       'onMouseleave',
       'onMousemove',
       'onMouseup'
     )
 
-    document.addEventListener('keydown', this.onDocumentKeydown)
-    document.addEventListener('keyup', this.onDocumentKeyup)
+    document.addEventListener('keydown', this.onKeydownDocument)
+    document.addEventListener('keyup', this.onKeyupDocument)
 
     svg.addEventListener('dblclick', this.onDblclick)
     svg.addEventListener('mousedown', this.onMousedown)
@@ -117,34 +117,6 @@ class FlowViewFrame extends SvgComponent {
     }
   }
 
-  onDocumentKeydown (event) {
-    const { dispatch } = this
-
-    switch (event.key) {
-      case 'Backspace': dispatch('deleteSelection')
-        break
-
-      case 'Escape': dispatch('resetSelection')
-        break
-
-      case 'Shift': dispatch('enableMultiSelection')
-        break
-
-      default: break
-    }
-  }
-
-  onDocumentKeyup (event) {
-    const { dispatch } = this
-
-    switch (event.key) {
-      case 'Shift': dispatch('disableMultiSelection')
-        break
-
-      default: break
-    }
-  }
-
   onDblclick (event) {
     const {
       dispatch,
@@ -174,6 +146,34 @@ class FlowViewFrame extends SvgComponent {
     // Otherwise show creator.
     if (creator.hidden) {
       return dispatch('showCreator', { x, y })
+    }
+  }
+
+  onKeydownDocument (event) {
+    const { dispatch } = this
+
+    switch (event.key) {
+      case 'Backspace': dispatch('deleteSelection')
+        break
+
+      case 'Escape': dispatch('resetSelection')
+        break
+
+      case 'Shift': dispatch('enableMultiSelection')
+        break
+
+      default: break
+    }
+  }
+
+  onKeyupDocument (event) {
+    const { dispatch } = this
+
+    switch (event.key) {
+      case 'Shift': dispatch('disableMultiSelection')
+        break
+
+      default: break
     }
   }
 

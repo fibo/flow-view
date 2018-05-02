@@ -91,14 +91,11 @@ class FlowViewNode extends SvgComponent {
     } = this
 
     if (frame.draggingItems) {
-      dispatch('stopDraggingItems')
+      return dispatch('stopDraggingItems')
     }
 
     if (frame.draggingLink) {
-      // TODO look for first compatible pin to be connected, if any
-
-      // otherwise delete half link.
-      dispatch('deleteHalfLink')
+      return dispatch('deleteHalfLink')
     }
   }
 
@@ -230,18 +227,17 @@ class FlowViewNode extends SvgComponent {
       }
     }
 
-    // Pin size.
-
     // Node ins.
+    // =================================================================
 
-    // TODO remove deleted ins
-    // const numDeletedIns = this.numIns - ins.length
+    // Remove deleted ins.
     for (let position = ins.length; position < this.numIns; position++) {
       const pinId = this.generateInId(position)
 
-      console.log(`delete ${pinId}`)
+      this.inRef[pinId].container.remove()
     }
 
+    // Render ins or create new ones.
     ins.forEach((pin, position) => {
       const pinId = this.generateInId(position)
 
@@ -278,13 +274,17 @@ class FlowViewNode extends SvgComponent {
       }
     })
 
-    // TODO remove deletes outs
+    // Node outs.
+    // =================================================================
+
+    // Remove deleted outs.
     for (let position = outs.length; position < this.numOuts; position++) {
       const pinId = this.generateOutId(position)
 
-      console.log(`delete ${pinId}`)
+      this.outRef[pinId].container.remove()
     }
 
+    // Render outs or create new ones.
     outs.forEach((pin, position) => {
       const pinId = this.generateOutId(position)
 

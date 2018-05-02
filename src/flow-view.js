@@ -237,6 +237,28 @@ class FlowViewCanvas {
     this.hideCreator()
   }
 
+  deletePin ({ type, nodeId, position }) {
+    const { links, nodes } = this.state.graph
+
+    const nodeIndex = nodes.findIndex(node => node.id === nodeId)
+
+    this.state.graph.nodes[nodeIndex][`${type}s`].splice(position, 1)
+
+    // Remove orphan links
+    const orphanLinkIds = links.reduce((ids, link) => {
+      const { from, to } = link
+
+      if ((from && from[0] === nodeId && from[1] === position) || (to && to[0] === nodeId && to[1] === position)) {
+        return ids.concat(link.id)
+      } else {
+      }
+
+      return ids
+    }, [])
+
+    orphanLinkIds.forEach(id => this.deleteLink(id))
+  }
+
   disableMultiSelection () { this.state.multiSelection = false }
 
   dragItems ({ x, y }) {

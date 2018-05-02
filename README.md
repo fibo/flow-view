@@ -47,12 +47,6 @@ Suppose your *container* is a div with id `drawing`.
 In your HTML, place a div where you want to mount flow-view canvas.
 
 ```html
-<style>
-  #drawing {
-    width: 100%;
-    height: 100vh;
-  }
-</style>
 <div id="drawing"></div>
 ```
 

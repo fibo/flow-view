@@ -177,7 +177,14 @@ class FlowViewInspector extends Component {
       if (numSelectedNodes === 0) {
         label.render({
           editable: false,
-          text: `(${graph.nodes.length} nodes)`
+          text: '(no node)'
+        })
+      }
+
+      if (numSelectedNodes === 1) {
+        label.render({
+          editable: false,
+          text: `(${numSelectedNodes} node)`
         })
       }
 

@@ -1,48 +1,46 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Canvas = require('flow-view').Canvas
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const Canvas = require('flow-view').Canvas
 
-var view = require('./sample-view.json')
-
-var canvas = new Canvas('drawing')
-
-canvas.render(view)
-
-},{"./sample-view.json":2,"flow-view":undefined}],2:[function(require,module,exports){
-module.exports={
-  "width": 720,
-  "height": 250,
-  "node": {
-    "a": {
-      "text": "your engine",
-      "outs": ["out0", "out1"],
-      "x": 170,
-      "y": 10
+const graph = {
+  nodes: [
+    {
+      id: 'a',
+      x: 80,
+      y: 100,
+      name: 'Drag me',
+      outs: [
+        { name: 'out1' },
+        { name: 'out2' },
+        { name: 'out3', type: 'boolean' }
+      ]
     },
-    "b": {
-      "text": "flow-view",
-      "ins": ["in"],
-      "outs": ["out"],
-      "x": 117,
-      "y": 100
-    },
-    "c": {
-      "text": "a cool app!",
-      "ins": ["in0", "in1", "in2"],
-      "outs": ["out"],
-      "x": 150,
-      "y": 170
+    {
+      id: 'b',
+      x: 180,
+      y: 200,
+      name: 'Click me',
+      ins: [
+        { name: 'in0' },
+        { name: 'in1', type: 'boolean' }
+      ],
+      outs: [
+        { name: 'return' }
+      ]
     }
-  },
-  "link": {
-    "l": {
-      "from": ["a", 0],
-      "to": ["b", 0]
-    },
-    "i": {
-      "from": ["b", 0],
-      "to": ["c", 0]
+  ],
+  links: [
+    {
+      id: 'c',
+      from: ['a', 0],
+      to: ['b', 0]
     }
-  }
+  ]
 }
 
-},{}]},{},[1]);
+const container = document.getElementById('drawing')
+
+const canvas = new Canvas(container)
+
+canvas.loadGraph(graph)
+
+},{"flow-view":undefined}]},{},[1]);

@@ -13,29 +13,17 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
-## TODO
-
-- Check out how many time render is invoked, and optimize it as done with Selector.
-- Consider removing resize event handler.
-Nice to have:
-  - dropping a link on a node snap into input, and create it if it not exists
-- Consider using inferno or preact
-- Consider using jsonschema
+## [v3.0.0] - 2018-05-02
 
 ### Added
 
-Enrich Canvas with methods:
-  - `load(view)`
-  - `mountOn(container)`
-  - `resize({ width, height })`
-  - `toSVG(width, height, callback)`
-
-Added `canvas.view` read only attribute
+- Vanilla JS implementation: build size reduced a lot! Almost no need for softare updates, this stuff will work for ever 🤘
+- JSON Schema.
+- Inspector at left side to edit nodes.
 
 ### Removed
 
-- Do not handle  window resize, it is possible to use `Canvas.resize()` method.
-- Removed `Canvas.render(view)` cause it can confuse users after the rising of React, where the method has a different meaning.
+- React
 
 ## Unreleased
 

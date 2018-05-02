@@ -19,9 +19,7 @@ class FlowViewInspectorPinList extends Component {
 
     const info = this.createElement('div')
 
-    const pinList = this.createElement('ol')
-    pinList.style.marginLeft = '1em'
-    pinList.style.paddingLeft = '1em'
+    const pinList = this.createElement('div')
 
     // Start hidden.
     this.hide()
@@ -43,7 +41,7 @@ class FlowViewInspectorPinList extends Component {
       pinList
     } = this
 
-    const pinEditorContainer = this.createElement('li', pinList)
+    const pinEditorContainer = this.createElement('div', pinList)
     const pinEditor = new PinEditor(canvas, dispatch, pinEditorContainer)
 
     pinEditor.render(pinState)

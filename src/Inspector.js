@@ -23,11 +23,11 @@ class FlowViewInspector extends Component {
     const labelContainer = this.createElement('div')
     const label = new EditableText(canvas, dispatch, labelContainer)
 
-    const inputListContainer = this.createElement('ul')
-    const inputList = new InspectorPinList(canvas, dispatch, inputListContainer)
+    const inputListContainer = this.createElement('div')
+    const inputList = new InspectorPinList(canvas, dispatch, inputListContainer, 'in')
 
-    const outputListContainer = this.createElement('ul')
-    const outputList = new InspectorPinList(canvas, dispatch, outputListContainer)
+    const outputListContainer = this.createElement('div')
+    const outputList = new InspectorPinList(canvas, dispatch, outputListContainer, 'out')
 
     // Event bindings.
     // =================================================================
@@ -154,11 +154,17 @@ class FlowViewInspector extends Component {
 
       inputList.show()
       const ins = node.ins || []
-      inputList.render({ pins: ins })
+      inputList.render({
+        nodeId: node.id,
+        pins: ins
+      })
 
       outputList.show()
       const outs = node.outs || []
-      outputList.render({ pins: outs })
+      outputList.render({
+        nodeId: node.id,
+        pins: outs
+      })
     } else {
       delete label.action
 

@@ -1,3 +1,5 @@
+const staticProps = require('static-props')
+
 const Component = require('./Component')
 
 const PinEditor = require('./InspectorPinEditor')
@@ -7,7 +9,7 @@ const PinEditor = require('./InspectorPinEditor')
  */
 
 class FlowViewInspectorPinList extends Component {
-  constructor (canvas, dispatch, container) {
+  constructor (canvas, dispatch, container, type) {
     super(canvas, dispatch, container)
 
     this.pinEditorRef = []
@@ -15,19 +17,33 @@ class FlowViewInspectorPinList extends Component {
     // DOM Elements.
     // =================================================================
 
-    container.style.listStyleType = 'none'
+    const info = this.createElement('div')
+
+    const pinList = this.createElement('ol')
+    pinList.style.marginLeft = '1em'
+    pinList.style.paddingLeft = '1em'
 
     // Start hidden.
     this.hide()
+
+    // Static attributes.
+    // =================================================================
+
+    staticProps(this)({
+      info,
+      pinList,
+      type
+    })
   }
 
   createPinEditor (pinState, position) {
     const {
       canvas,
-      dispatch
+      dispatch,
+      pinList
     } = this
 
-    const pinEditorContainer = this.createElement('li')
+    const pinEditorContainer = this.createElement('li', pinList)
     const pinEditor = new PinEditor(canvas, dispatch, pinEditorContainer)
 
     pinEditor.render(pinState)
@@ -37,41 +53,79 @@ class FlowViewInspectorPinList extends Component {
 
   deletePinEditor (position) {
     const {
-      container,
+      pinList,
       pinEditorRef
     } = this
 
-    container.removeChild(container.childNodes[position])
+    pinList.removeChild(pinList.childNodes[position])
 
     pinEditorRef.splice(position, 1)
   }
 
   render (state) {
     const {
-      container
+      info,
+      pinList,
+      type
     } = this
 
     const {
+      nodeId,
       pins
     } = state
 
     // Number of pin states to render is constant, while the number
-    // container.childElementCount will change after deleting pin editors.
-    const numPinStates = pins.length
+    // pinList.childElementCount will change after deleting pin editors.
+    const numPins = pins.length
+
+    const numPinChanged = numPins !== this.numPins
+
+    // Num pins.
+    // =================================================================
+
+    if (numPinChanged) {
+      this.numPins = numPins
+    }
+
+    // Info.
+    // =================================================================
+
+    if (numPinChanged) {
+      if (numPins === 0) {
+        info.innerHTML = `no ${type}put`
+      }
+
+      if (numPins === 1) {
+        info.innerHTML = `one ${type}put`
+      }
+
+      if (numPins > 1) {
+        info.innerHTML = `${numPins} ${type}puts`
+      }
+    }
+
+    // Pins.
+    // =================================================================
 
     // Delete old pin editors, first.
-    for (let i = numPinStates; i < container.childElementCount; i++) {
+    for (let i = numPins; i < pinList.childElementCount; i++) {
       this.deletePinEditor(i)
     }
 
     // Render existing pin editors or create new ones.
-    for (let i = 0; i < numPinStates; i++) {
+    for (let i = 0; i < numPins; i++) {
       const pinEditor = this.pinEditorRef[i]
+      const pinState = {
+        nodeId,
+        pin: pins[i],
+        position: i,
+        type
+      }
 
       if (pinEditor) {
-        pinEditor.render(pins[i])
+        pinEditor.render(pinState)
       } else {
-        this.createPinEditor(pins[i], i)
+        this.createPinEditor(pinState, i)
       }
     }
   }

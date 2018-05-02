@@ -2,6 +2,8 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 
+const EditableText = require('./EditableText')
+
 /**
  * The InspectorPinEditor can set inputs or outputs properties.
  */
@@ -10,7 +12,8 @@ class FlowViewInspectorPinEditor extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
-    const label = this.createElement('span')
+    const labelContainer = this.createElement('div')
+    const label = new EditableText(canvas, dispatch, labelContainer)
 
     // Static attributes.
     // =================================================================
@@ -22,22 +25,46 @@ class FlowViewInspectorPinEditor extends Component {
 
   render (state) {
     const {
+      dispatch,
       label
     } = this
 
     const {
-      name
+      nodeId,
+      pin,
+      position,
+      type
     } = state
 
+    const {
+      name
+    } = pin
+
     const nameChanged = this.name !== name
+    const nodeIdChanged = this.nodeId !== nodeId
+    const positionChanged = this.position !== position
 
     // Label.
     // =================================================================
 
     if (nameChanged) {
-      this.name = name
+      label.render({
+        editable: true,
+        text: name
+      })
 
-      label.innerHTML = name
+      this.name = name
+    }
+
+    if (nodeIdChanged || positionChanged) {
+      label.action = (name) => {
+        dispatch('renamePin', {
+          type,
+          nodeId,
+          position,
+          name
+        })
+      }
     }
   }
 }

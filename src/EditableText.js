@@ -18,6 +18,7 @@ class EditableText extends Component {
     label.style.cursor = 'default'
 
     const editor = this.createElement('input')
+    editor.style.cursor = 'none'
     editor.style.display = 'none'
 
     // Event bindings.

@@ -301,6 +301,14 @@ class FlowViewCanvas {
     nodes[nodeIndex].name = name
   }
 
+  renamePin ({ type, nodeId, position, name }) {
+    const { nodes } = this.state.graph
+
+    const nodeIndex = nodes.findIndex(node => node.id === nodeId)
+
+    this.state.graph.nodes[nodeIndex][`${type}s`][position].name = name
+  }
+
   resize (boundingRect) { this.state.root = boundingRect }
 
   selectLink (id) {

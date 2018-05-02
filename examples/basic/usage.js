@@ -10,7 +10,7 @@ const graph = {
       outs: [
         { name: 'out1' },
         { name: 'out2' },
-        { name: 'out3' }
+        { name: 'out3', type: 'boolean' }
       ]
     },
     {
@@ -20,7 +20,7 @@ const graph = {
       name: 'Click me',
       ins: [
         { name: 'in0' },
-        { name: 'in1', type: 'bool' }
+        { name: 'in1', type: 'boolean' }
       ],
       outs: [
         { name: 'return' }
@@ -31,7 +31,7 @@ const graph = {
     {
       id: 'c',
       from: ['a', 0],
-      to: ['b', 1]
+      to: ['b', 0]
     }
   ]
 }

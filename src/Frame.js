@@ -8,6 +8,10 @@ const InspectorToggle = require('./InspectorToggle')
 const Link = require('./Link')
 const Node = require('./Node')
 
+const distance = (x1, y1, x2, y2) => (
+  Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+)
+
 /**
  * A Frame contains everything inside a Canvas.
  */
@@ -86,6 +90,20 @@ class FlowViewFrame extends SvgComponent {
     }
   }
 
+  isCloseToLink (id, x, y) {
+    const { linkRef } = this
+
+    const epsilon = 0.4
+
+    const { startX, endX, startY, endY } = linkRef[id]
+
+    const distanceFromEnd = distance(x, y, endX, endY)
+    const distanceFromStart = distance(x, y, startX, startY)
+    const distanceFromStartToEnd = distance(startX, startY, endX, endY)
+
+    return distanceFromEnd + distanceFromStart < distanceFromStartToEnd + epsilon
+  }
+
   isInsideRectangularSelection (x, y) {
     const { selectedNodesBounds } = this
 
@@ -128,27 +146,69 @@ class FlowViewFrame extends SvgComponent {
   }
 
   onDblclick (event) {
-    const { dispatch } = this
+    const {
+      dispatch,
+      linkRef
+    } = this
 
     const { creator } = this.component
 
+    const { x, y } = this.cursorCoordinates = this.getCoordinates(event)
+
+    // If it is close to a link, delete it.
+    let foundLinkId
+
+    Object.keys(linkRef).forEach(id => {
+      // Select only one link.
+      if (foundLinkId) return
+
+      if (this.isCloseToLink(id, x, y)) {
+        foundLinkId = id
+      }
+    })
+
+    if (foundLinkId) {
+      return dispatch('deleteLink', foundLinkId)
+    }
+
+    // Otherwise show creator.
     if (creator.hidden) {
-      dispatch('showCreator', this.getCoordinates(event))
+      return dispatch('showCreator', { x, y })
     }
   }
 
   onMousedown (event) {
     pdsp(event)
 
-    const { dispatch } = this
+    const {
+      dispatch,
+      linkRef
+    } = this
 
     const { x, y } = this.cursorCoordinates = this.getCoordinates(event)
 
     if (this.isInsideRectangularSelection(x, y)) {
-      dispatch('startDraggingItems')
-    } else {
-      dispatch('resetSelection')
+      return dispatch('startDraggingItems')
     }
+
+    // If it is close to a link, select it.
+    let foundLinkId
+
+    Object.keys(linkRef).forEach(id => {
+      // Select only one link.
+      if (foundLinkId) return
+
+      if (this.isCloseToLink(id, x, y)) {
+        foundLinkId = id
+      }
+    })
+
+    if (foundLinkId) {
+      return dispatch('selectLink', foundLinkId)
+    }
+
+    // Otherwise reset selection.
+    dispatch('resetSelection')
   }
 
   onMouseleave (event) {
@@ -217,11 +277,6 @@ class FlowViewFrame extends SvgComponent {
       // TODO check if it is close to a pin
       return dispatch('deleteHalfLink')
     }
-
-    // TODO check if it is close to link, if yes, select it
-    // distanceFromSource = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y))
-    // distanceFromTarget
-    // isCloseToLink = distanceFromSource + distanceFromTarget < distanceFromLink + epsilon
   }
 
   render (state) {
@@ -250,7 +305,7 @@ class FlowViewFrame extends SvgComponent {
     this.draggingItems = draggingItems
     this.draggingLink = draggingLink
 
-    const draggedLink = draggedLinkId ? state.graph.links.find(link => link.id === draggedLinkId) : null
+    const draggedLink = draggedLinkId ? graph.links.find(link => link.id === draggedLinkId) : null
     this.draggedLink = draggedLink
 
     const selectedLinks = state.selected.links
@@ -350,7 +405,7 @@ class FlowViewFrame extends SvgComponent {
     const connectedIns = {}
     const connectedOuts = {}
 
-    state.graph.links.forEach(({ from, to }) => {
+    graph.links.forEach(({ from, to }) => {
       if (from) {
         const [ sourceNodeId, sourceNodePosition ] = from
 

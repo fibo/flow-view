@@ -1,4 +1,5 @@
 const bindme = require('bindme')
+const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
 const Component = require('./Component')
@@ -34,7 +35,7 @@ class FlowViewInspectorPinEditor extends Component {
       'onClickDelete'
     )
 
-    container.addEventListener('click', this.onClickDelete)
+    deleteButton.addEventListener('click', this.onClickDelete)
 
     // Static attributes.
     // =================================================================
@@ -44,7 +45,9 @@ class FlowViewInspectorPinEditor extends Component {
     })
   }
 
-  onClickDelete () {
+  onClickDelete (event) {
+    pdsp(event)
+
     const {
       dispatch,
       nodeId,

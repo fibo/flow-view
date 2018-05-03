@@ -15,7 +15,7 @@ class EditableText extends Component {
     // =================================================================
 
     const label = this.createElement('span')
-    label.style.cursor = 'default'
+    label.style.cursor = 'text'
 
     const editor = this.createElement('input')
     editor.style.cursor = 'none'
@@ -111,6 +111,9 @@ class EditableText extends Component {
     } = state
 
     this.editable = editable
+
+    // Changed properties.
+    // =================================================================
 
     const textChanged = this.text !== text
 

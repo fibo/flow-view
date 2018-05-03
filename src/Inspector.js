@@ -82,7 +82,9 @@ class FlowViewInspector extends Component {
       width
     } = inspector
 
-    const { baseColor } = canvas.theme.inspector
+    const theme = canvas.theme.inspector
+
+    const { baseColor } = theme
 
     const selectedNodes = graph.nodes.filter(({ id }) => selected.nodes.indexOf(id) > -1)
     const numSelectedNodes = selectedNodes.length
@@ -121,12 +123,12 @@ class FlowViewInspector extends Component {
       }
     }
 
-    // Colors.
+    // Color.
     // =================================================================
 
     if (colorChanged) {
       this.baseColor = baseColor
-      container.style.border = `1px solid ${baseColor}`
+      container.style.backgroundColor = baseColor
     }
 
     // Width.
@@ -156,23 +158,31 @@ class FlowViewInspector extends Component {
       const ins = node.ins || []
       inputList.render({
         nodeId: node.id,
-        pins: ins
+        pins: ins,
+        theme
       })
 
       outputList.show()
       const outs = node.outs || []
       outputList.render({
         nodeId: node.id,
-        pins: outs
+        pins: outs,
+        theme
       })
     } else {
       delete label.action
 
       inputList.hide()
-      inputList.render({ pins: [] })
+      inputList.render({
+        pins: [],
+        theme
+      })
 
       outputList.hide()
-      outputList.render({ pins: [] })
+      outputList.render({
+        pins: [],
+        theme
+      })
 
       if (numSelectedNodes === 0) {
         label.render({

@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming",
-  "version": "2.19.0",
+  "version": "3.0.0-alpha",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",

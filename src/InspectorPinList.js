@@ -1,8 +1,11 @@
+const bindme = require('bindme')
 const staticProps = require('static-props')
+const pdsp = require('pdsp')
 
 const Component = require('./Component')
 
 const PinEditor = require('./InspectorPinEditor')
+const AddButton = require('./InspectorAddPinButton')
 
 /**
  * The InspectorPinList manages inputs or outputs.
@@ -18,11 +21,22 @@ class FlowViewInspectorPinList extends Component {
     // =================================================================
 
     const info = this.createElement('div')
+    info.style.cursor = 'default'
+    info.style.display = 'inline-block'
+    info.style.lineHeight = '1.5em'
+
+    const addButton = new AddButton(canvas, dispatch, container)
 
     const pinList = this.createElement('div')
 
-    // Start hidden.
-    this.hide()
+    // Event bindings.
+    // =================================================================
+
+    bindme(this,
+      'onClickAdd'
+    )
+
+    addButton.svg.addEventListener('click', this.onClickAdd)
 
     // Static attributes.
     // =================================================================
@@ -31,6 +45,10 @@ class FlowViewInspectorPinList extends Component {
       info,
       pinList,
       type
+    })
+
+    staticProps(this.component)({
+      addButton
     })
   }
 
@@ -60,6 +78,25 @@ class FlowViewInspectorPinList extends Component {
     pinEditorRef.splice(position, 1)
   }
 
+  onClickAdd (event) {
+    pdsp(event)
+
+    const {
+      dispatch,
+      nodeId,
+      numPins,
+      type
+    } = this
+
+    const position = numPins + 1
+
+    const pin = {
+      name: `${type}${position}`
+    }
+
+    dispatch('createPin', { nodeId, type, position, pin })
+  }
+
   render (state) {
     const {
       info,
@@ -68,15 +105,38 @@ class FlowViewInspectorPinList extends Component {
     } = this
 
     const {
+      addButton
+    } = this.component
+
+    const {
       nodeId,
-      pins
+      pins,
+      theme
     } = state
 
     // Number of pin states to render is constant, while the number
     // pinList.childElementCount will change after deleting pin editors.
     const numPins = pins.length
 
+    // Changed properties.
+    // =================================================================
+
+    const nodeIdChanged = nodeId !== this.nodeId
     const numPinChanged = numPins !== this.numPins
+
+    // Add button.
+    // =================================================================
+
+    addButton.render({
+      theme: theme.button
+    })
+
+    // Node id.
+    // =================================================================
+
+    if (nodeIdChanged) {
+      this.nodeId = nodeId
+    }
 
     // Num pins.
     // =================================================================
@@ -117,7 +177,8 @@ class FlowViewInspectorPinList extends Component {
         nodeId,
         pin: pins[i],
         position: i,
-        type
+        type,
+        theme
       }
 
       if (pinEditor) {

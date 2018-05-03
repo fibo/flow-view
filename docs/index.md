@@ -20,6 +20,8 @@ flow: /empty.json
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
+![Basic usage][basic_usage_gif]
+
 ## Installation
 
 ### Using npm
@@ -51,12 +53,6 @@ Suppose your *container* is a div with id `drawing`.
 In your HTML, place a div where you want to mount flow-view canvas.
 
 ```html
-<style>
-  #drawing {
-    width: 100%;
-    height: 100vh;
-  }
-</style>
 <div id="drawing"></div>
 ```
 
@@ -299,3 +295,4 @@ Available examples are:
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
+[basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"

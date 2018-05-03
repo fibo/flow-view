@@ -291,4 +291,4 @@ Available examples are:
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
-[basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "The Simpsons Family"
+[basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"

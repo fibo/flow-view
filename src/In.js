@@ -41,7 +41,7 @@ class FlowViewIn extends Pin {
       position
     } = this
 
-    dispatch('focusPin', { type: 'In', nodeId, position })
+    dispatch('focusPin', { type: 'in', nodeId, position })
   }
 
   onMouseup (event) {

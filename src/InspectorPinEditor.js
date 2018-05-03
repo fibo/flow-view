@@ -21,6 +21,8 @@ class FlowViewInspectorPinEditor extends Component {
     const rowContainer = this.createElement('div')
 
     const delButton = new DelButton(canvas, dispatch, rowContainer)
+    delButton.svg.style.marginLeft = '1em'
+    delButton.svg.style.marginRight = '4px'
 
     const label = new EditableText(canvas, dispatch, rowContainer)
 

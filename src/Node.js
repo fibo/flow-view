@@ -247,7 +247,7 @@ class FlowViewNode extends SvgComponent {
         connected: (connectedIns.indexOf(position) > -1),
         graph: pin,
         highlighted: draggingLink ? (typeof draggedLink.from !== 'undefined') && (draggedLinkType === pinType) : false,
-        inspected: currentPin && currentPin.type === 'In' && currentPin.position === position,
+        inspected: currentPin && currentPin.type === 'in' && currentPin.position === position,
         node: {
           heightChanged,
           height,
@@ -294,7 +294,7 @@ class FlowViewNode extends SvgComponent {
         connected: (connectedOuts.indexOf(position) > -1),
         graph: pin,
         highlighted: draggingLink ? (typeof draggedLink.to !== 'undefined') && (draggedLinkType === pinType) : false,
-        inspected: currentPin && currentPin.type === 'Out' && currentPin.position === position,
+        inspected: currentPin && currentPin.type === 'out' && currentPin.position === position,
         node: {
           heightChanged,
           height,

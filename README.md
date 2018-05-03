@@ -16,6 +16,8 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Change log](https://img.shields.io/badge/change-log-blue.svg)](http://g14n.info/flow-view/changelog)
 
+![Basic usage][basic_usage_gif]
+
 ## Installation
 
 ### Using npm
@@ -289,3 +291,4 @@ Available examples are:
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
+[basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "The Simpsons Family"

@@ -61,7 +61,7 @@ class FlowViewOut extends Pin {
       position
     } = this
 
-    dispatch('focusPin', { type: 'Out', nodeId, position })
+    dispatch('focusPin', { type: 'out', nodeId, position })
   }
 
   onMouseup (event) {
@@ -98,11 +98,18 @@ class FlowViewOut extends Pin {
 
     const { node } = state
 
+    const height = node.height - size
+
+    // Changed properties.
+    // =================================================================
+
+    const heightChanged = this.height !== height
+
     // Y coordinate.
     // =================================================================
 
-    if (node.heightChanged) {
-      container.setAttribute('y', node.height - size)
+    if (heightChanged) {
+      container.setAttribute('y', height)
     }
   }
 }

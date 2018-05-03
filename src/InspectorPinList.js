@@ -20,12 +20,14 @@ class FlowViewInspectorPinList extends Component {
     // DOM Elements.
     // =================================================================
 
+    const addButton = new AddButton(canvas, dispatch, container)
+    addButton.svg.style.marginLeft = '4px'
+    addButton.svg.style.marginRight = '4px'
+
     const info = this.createElement('div')
     info.style.cursor = 'default'
     info.style.display = 'inline-block'
     info.style.lineHeight = '1.5em'
-
-    const addButton = new AddButton(canvas, dispatch, container)
 
     const pinList = this.createElement('div')
 

@@ -8,7 +8,7 @@ flow: /empty.json
 
 [Installation](#installation) |
 [API](#api) |
-[Grapg schema](#graph-schema) |
+[Graph schema](#graph-schema) |
 [Examples](#examples) |
 [License](#license)
 

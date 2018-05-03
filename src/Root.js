@@ -75,8 +75,8 @@ class FlowViewRoot extends Component {
   render (state) {
     const {
       canvas,
+      container,
       nodeName,
-      textRuler,
       textSize
     } = this
 
@@ -90,9 +90,8 @@ class FlowViewRoot extends Component {
     // =================================================================
 
     if (fontChanged) {
-      textRuler.style.fontFamily = fontFamily
-      textRuler.style.fontSize = fontSize
-      // TODO change node dimensions, could be scaled basing on fontSize change.
+      container.style.fontFamily = fontFamily
+      container.style.fontSize = `${fontSize}px`
     }
 
     // Text sizes.

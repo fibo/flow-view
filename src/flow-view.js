@@ -18,10 +18,14 @@ class FlowViewCanvas {
     // TODO use merge-props to implement custom themes
     this.theme = {
       frame: {
-        fontFamily: 'Courier',
+        fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
         fontSize: 14
       },
       inspector: {
+        button: {
+          color: 'darkgray',
+          size: 12
+        },
         baseColor: 'gainsboro'
       },
       link: {
@@ -142,8 +146,6 @@ class FlowViewCanvas {
     this.resetSelection()
   }
 
-  createInputPin () {}
-
   createLink (link) {
     link.id = this.generateId()
     this.state.graph.links.push(link)
@@ -157,8 +159,20 @@ class FlowViewCanvas {
     this.hideCreator()
   }
 
-  createOutputPin () {
+  createPin ({ nodeId, type, position, pin }) {
+    const { nodes } = this.state.graph
 
+    const pins = `${type}s`
+
+    const nodeIndex = nodes.findIndex(node => node.id === nodeId)
+
+    // Properties ins and outs could be not defined, they are not
+    // required in flow-view JSON Schema.
+    if (typeof nodes[nodeIndex][pins] === 'undefined') {
+      nodes[nodeIndex][pins] = []
+    }
+
+    nodes[nodeIndex][pins].splice(position, 0, pin)
   }
 
   deleteHalfLink () {
@@ -205,16 +219,28 @@ class FlowViewCanvas {
 
   // TODO detachLink
 
-  deleteInputPin () {
+  deletePin ({ type, nodeId, position }) {
+    const { links, nodes } = this.state.graph
 
-  }
+    const pins = `${type}s`
 
-  deleteOutputPin () {
+    const nodeIndex = nodes.findIndex(node => node.id === nodeId)
 
-  }
+    // Remove pin.
+    nodes[nodeIndex][pins].splice(position, 1)
 
-  deleteView () {
+    // Remove orphan links.
+    const orphanLinkIds = links.reduce((ids, link) => {
+      const { from, to } = link
 
+      if ((from && from[0] === nodeId && from[1] === position) || (to && to[0] === nodeId && to[1] === position)) {
+        return ids.concat(link.id)
+      } else {
+        return ids
+      }
+    }, [])
+
+    orphanLinkIds.forEach(id => this.deleteLink(id))
   }
 
   deleteSelection () {
@@ -235,28 +261,6 @@ class FlowViewCanvas {
     }
 
     this.hideCreator()
-  }
-
-  deletePin ({ type, nodeId, position }) {
-    const { links, nodes } = this.state.graph
-
-    const nodeIndex = nodes.findIndex(node => node.id === nodeId)
-
-    this.state.graph.nodes[nodeIndex][`${type}s`].splice(position, 1)
-
-    // Remove orphan links
-    const orphanLinkIds = links.reduce((ids, link) => {
-      const { from, to } = link
-
-      if ((from && from[0] === nodeId && from[1] === position) || (to && to[0] === nodeId && to[1] === position)) {
-        return ids.concat(link.id)
-      } else {
-      }
-
-      return ids
-    }, [])
-
-    orphanLinkIds.forEach(id => this.deleteLink(id))
   }
 
   disableMultiSelection () { this.state.multiSelection = false }

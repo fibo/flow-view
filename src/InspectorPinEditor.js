@@ -5,6 +5,7 @@ const staticProps = require('static-props')
 const Component = require('./Component')
 
 const EditableText = require('./EditableText')
+const DelButton = require('./InspectorDelPinButton')
 
 /**
  * The InspectorPinEditor can set inputs or outputs properties.
@@ -19,12 +20,7 @@ class FlowViewInspectorPinEditor extends Component {
 
     const rowContainer = this.createElement('div')
 
-    const deleteButton = this.createElement('button', rowContainer)
-    deleteButton.style.borderRadius = '2px'
-    deleteButton.style.marginLeft = '1px'
-    deleteButton.style.marginRight = '4px'
-    deleteButton.style.outline = 'none'
-    deleteButton.innerHTML = 'x'
+    const delButton = new DelButton(canvas, dispatch, rowContainer)
 
     const label = new EditableText(canvas, dispatch, rowContainer)
 
@@ -35,12 +31,13 @@ class FlowViewInspectorPinEditor extends Component {
       'onClickDelete'
     )
 
-    deleteButton.addEventListener('click', this.onClickDelete)
+    delButton.svg.addEventListener('click', this.onClickDelete)
 
     // Static attributes.
     // =================================================================
 
     staticProps(this)({
+      delButton,
       label
     })
   }
@@ -60,6 +57,7 @@ class FlowViewInspectorPinEditor extends Component {
 
   render (state) {
     const {
+      delButton,
       dispatch,
       label
     } = this
@@ -68,17 +66,28 @@ class FlowViewInspectorPinEditor extends Component {
       nodeId,
       pin,
       position,
-      type
+      type,
+      theme
     } = state
 
     const {
       name
     } = pin
 
+    // Changed properties.
+    // =================================================================
+
     const nameChanged = this.name !== name
     const nodeIdChanged = this.nodeId !== nodeId
     const positionChanged = this.position !== position
     const typeChanged = this.type !== type
+
+    // Add button.
+    // =================================================================
+
+    delButton.render({
+      theme: theme.button
+    })
 
     // Node id.
     // =================================================================

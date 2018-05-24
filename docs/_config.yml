@@ -15,4 +15,4 @@ defaults:
       layout: common/page
 
 nav:
-  Example: ./example
+  Example: /flow-view/example

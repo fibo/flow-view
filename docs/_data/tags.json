@@ -1,12 +1,23 @@
 [
   {
+    "name": "v3.0.1",
+    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v3.0.1",
+    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v3.0.1",
+    "commit": {
+      "sha": "c8d8641280cece7c321227a5e8f700371057d119",
+      "url": "https://api.github.com/repos/fibo/flow-view/commits/c8d8641280cece7c321227a5e8f700371057d119"
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djMuMC4x"
+  },
+  {
     "name": "v3.0.0",
     "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v3.0.0",
     "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v3.0.0",
     "commit": {
       "sha": "43bfb2e8d5e8cc5eced0a73b3a3f5d60a7fc4921",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/43bfb2e8d5e8cc5eced0a73b3a3f5d60a7fc4921"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djMuMC4w"
   },
   {
     "name": "v2.18.0",
@@ -15,7 +26,8 @@
     "commit": {
       "sha": "f42035d88eaf80efc39adfb7b6bbdee68af8a7ad",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/f42035d88eaf80efc39adfb7b6bbdee68af8a7ad"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTguMA=="
   },
   {
     "name": "v2.17.1",
@@ -24,7 +36,8 @@
     "commit": {
       "sha": "f30f8ee649c54976c4c067a4d58cad98b3b29b24",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/f30f8ee649c54976c4c067a4d58cad98b3b29b24"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTcuMQ=="
   },
   {
     "name": "v2.17.0",
@@ -33,7 +46,8 @@
     "commit": {
       "sha": "2d809bf4152155e9dcf22fadc3637b8b88c057a4",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/2d809bf4152155e9dcf22fadc3637b8b88c057a4"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTcuMA=="
   },
   {
     "name": "v2.16.0",
@@ -42,7 +56,8 @@
     "commit": {
       "sha": "6fb9367fa768df98229410286f4dcebd4efc3b5c",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/6fb9367fa768df98229410286f4dcebd4efc3b5c"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTYuMA=="
   },
   {
     "name": "v2.15.2",
@@ -51,7 +66,8 @@
     "commit": {
       "sha": "96219e19f385e2510e5f014b0ccf67f3eeb34e20",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/96219e19f385e2510e5f014b0ccf67f3eeb34e20"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTUuMg=="
   },
   {
     "name": "v2.15.1",
@@ -60,7 +76,8 @@
     "commit": {
       "sha": "1bdef2b820813eca98db632a9e1fbbaadeb2aa9c",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/1bdef2b820813eca98db632a9e1fbbaadeb2aa9c"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTUuMQ=="
   },
   {
     "name": "v2.15.0",
@@ -69,7 +86,8 @@
     "commit": {
       "sha": "29880385dfaaee0e17e271675c25ec4fb9878092",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/29880385dfaaee0e17e271675c25ec4fb9878092"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTUuMA=="
   },
   {
     "name": "v2.14.3",
@@ -78,7 +96,8 @@
     "commit": {
       "sha": "10cd1fa73a05c91ed70a37c54524c5e8231a7f62",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/10cd1fa73a05c91ed70a37c54524c5e8231a7f62"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTQuMw=="
   },
   {
     "name": "v2.14.1",
@@ -87,7 +106,8 @@
     "commit": {
       "sha": "b73208e8ccd169b7847e4ef78e0702b7c7bfde65",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/b73208e8ccd169b7847e4ef78e0702b7c7bfde65"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTQuMQ=="
   },
   {
     "name": "v2.14.0",
@@ -96,7 +116,8 @@
     "commit": {
       "sha": "0dbccf7e07de92ccd02e6e2ec871fc1bf5f3cf2a",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/0dbccf7e07de92ccd02e6e2ec871fc1bf5f3cf2a"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTQuMA=="
   },
   {
     "name": "v2.12.0",
@@ -105,7 +126,8 @@
     "commit": {
       "sha": "05fa105bd4c66a95c3fd220aadbbdcfe9ee42926",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/05fa105bd4c66a95c3fd220aadbbdcfe9ee42926"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTIuMA=="
   },
   {
     "name": "v2.11.0",
@@ -114,7 +136,8 @@
     "commit": {
       "sha": "7ea0a6eb8ac45c122074ace1181a9e1e2044d59d",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/7ea0a6eb8ac45c122074ace1181a9e1e2044d59d"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTEuMA=="
   },
   {
     "name": "v2.10.1",
@@ -123,7 +146,8 @@
     "commit": {
       "sha": "9b6be1a1bc155c292688441dfef1886c63542730",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/9b6be1a1bc155c292688441dfef1886c63542730"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTAuMQ=="
   },
   {
     "name": "v2.10.0",
@@ -132,7 +156,8 @@
     "commit": {
       "sha": "2d5587aa6e0416346d2ae606f3a8b15c00eb0c50",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/2d5587aa6e0416346d2ae606f3a8b15c00eb0c50"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMTAuMA=="
   },
   {
     "name": "v2.9.1",
@@ -141,7 +166,8 @@
     "commit": {
       "sha": "0ee07f4500268ac476848e773da8fb1085d49a9f",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/0ee07f4500268ac476848e773da8fb1085d49a9f"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuOS4x"
   },
   {
     "name": "v2.9.0",
@@ -150,7 +176,8 @@
     "commit": {
       "sha": "d90bdd5efd80151aa6bdf0e1db46a07b76b93928",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/d90bdd5efd80151aa6bdf0e1db46a07b76b93928"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuOS4w"
   },
   {
     "name": "v2.8.1",
@@ -159,7 +186,8 @@
     "commit": {
       "sha": "18d6acd3ac0e12f528d48d60f264c1cd9260f187",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/18d6acd3ac0e12f528d48d60f264c1cd9260f187"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuOC4x"
   },
   {
     "name": "v2.8.0",
@@ -168,7 +196,8 @@
     "commit": {
       "sha": "046807a0f3cb9a9766745c9c7cc61a74a59172fb",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/046807a0f3cb9a9766745c9c7cc61a74a59172fb"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuOC4w"
   },
   {
     "name": "v2.7.1",
@@ -177,7 +206,8 @@
     "commit": {
       "sha": "7b1afbad17cf987ac4c73be536558ed970f39f6e",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/7b1afbad17cf987ac4c73be536558ed970f39f6e"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNy4x"
   },
   {
     "name": "v2.7.0",
@@ -186,7 +216,8 @@
     "commit": {
       "sha": "4dc6d35e85074a65eeb3e09a54b7d448c380d445",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/4dc6d35e85074a65eeb3e09a54b7d448c380d445"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNy4w"
   },
   {
     "name": "v2.6.1",
@@ -195,7 +226,8 @@
     "commit": {
       "sha": "baeb5a63f81ce6fa4ecef7d3d8f43be99d8bf587",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/baeb5a63f81ce6fa4ecef7d3d8f43be99d8bf587"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNi4x"
   },
   {
     "name": "v2.6.0",
@@ -204,7 +236,8 @@
     "commit": {
       "sha": "e88ad885afe56622e63df4b0b44de44bb9ad6787",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/e88ad885afe56622e63df4b0b44de44bb9ad6787"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNi4w"
   },
   {
     "name": "v2.5.0",
@@ -213,7 +246,8 @@
     "commit": {
       "sha": "0edd72df6249e08a06dcefe9da3ff736790dd701",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/0edd72df6249e08a06dcefe9da3ff736790dd701"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNS4w"
   },
   {
     "name": "v2.4.0",
@@ -222,7 +256,8 @@
     "commit": {
       "sha": "d63ec263c1fdbb9247fb777d13233e7d6e4cfa95",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/d63ec263c1fdbb9247fb777d13233e7d6e4cfa95"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuNC4w"
   },
   {
     "name": "v2.3.0",
@@ -231,7 +266,8 @@
     "commit": {
       "sha": "e5cf0cb0ab808447362c4c01fea57f654ce911af",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/e5cf0cb0ab808447362c4c01fea57f654ce911af"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMy4w"
   },
   {
     "name": "v2.2.0",
@@ -240,7 +276,8 @@
     "commit": {
       "sha": "5d0fc2c817afd27c24020da76896a87c3bb8fbd2",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/5d0fc2c817afd27c24020da76896a87c3bb8fbd2"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMi4w"
   },
   {
     "name": "v2.1.0",
@@ -249,7 +286,8 @@
     "commit": {
       "sha": "5a0df78eb53f373ed6b66ceedc8fbf1260541061",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/5a0df78eb53f373ed6b66ceedc8fbf1260541061"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMS4w"
   },
   {
     "name": "v2.0.0",
@@ -258,15 +296,7 @@
     "commit": {
       "sha": "bb3a3c691382afb1f2f6e0c46c874a9ec80dc10e",
       "url": "https://api.github.com/repos/fibo/flow-view/commits/bb3a3c691382afb1f2f6e0c46c874a9ec80dc10e"
-    }
-  },
-  {
-    "name": "v1.2.1",
-    "zipball_url": "https://api.github.com/repos/fibo/flow-view/zipball/v1.2.1",
-    "tarball_url": "https://api.github.com/repos/fibo/flow-view/tarball/v1.2.1",
-    "commit": {
-      "sha": "8ce2499a9a9d21307868c0190700d313e2fb65d9",
-      "url": "https://api.github.com/repos/fibo/flow-view/commits/8ce2499a9a9d21307868c0190700d313e2fb65d9"
-    }
+    },
+    "node_id": "MDM6UmVmMjcwMDIwMzk6djIuMC4w"
   }
 ]

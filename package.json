@@ -10,7 +10,7 @@
   "license": "MIT",
   "main": "src/flow-view.js",
   "scripts": {
-    "browserify": "NODE_ENV=production browserify -r ./${npm_package_main}:${npm_package_name} -o dist/${npm_package_name}.js",
+    "browserify": "browserify -g [ envify --NODE_ENV production ] -r ./${npm_package_main}:${npm_package_name} -o dist/${npm_package_name}.js",
     "build": "npm run generate_schema; npm run cp_example; npm run browserify && npm run minify; git status",
     "cp_example": "cp examples/basic/usage.js docs/example/",
     "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
@@ -49,15 +49,16 @@
   "dependencies": {
     "bindme": "^1.0.2",
     "pdsp": "^0.1.0",
-    "static-props": "^1.1.1"
+    "static-props": "^1.1.2"
   },
   "devDependencies": {
-    "budo": "^11.1.7",
+    "budo": "^11.3.2",
     "cson": "^5.1.0",
-    "is-my-json-valid": "^2.17.2",
-    "markdown2code": "^0.3.0",
+    "envify": "^4.1.0",
+    "is-my-json-valid": "^2.19.0",
+    "markdown2code": "^1.0.2",
     "pre-commit": "^1.2.2",
-    "standa": "^2.0.2",
+    "standa": "^12.0.0",
     "uglify-es": "^3.3.9"
   }
 }

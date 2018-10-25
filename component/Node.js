@@ -341,7 +341,7 @@ function computeDims (textSize, pinSize, desiredHeight, desiredWidth) {
 }
 
 // Static attributes.
-//= ====================================================================
+// ====================================================================
 
 const defaultGraph = {
   name: 'Node',
@@ -354,4 +354,4 @@ staticProps(FlowViewNode)({
   defaultGraph
 })
 
-module.exports = FlowViewNode
+module.exports = exports.default = FlowViewNode

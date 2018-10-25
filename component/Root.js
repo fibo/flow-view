@@ -129,4 +129,4 @@ class FlowViewRoot extends Component {
   }
 }
 
-module.exports = FlowViewRoot
+module.exports = exports.default = FlowViewRoot

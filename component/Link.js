@@ -172,4 +172,4 @@ class FlowViewLink extends SvgComponent {
   }
 }
 
-module.exports = FlowViewLink
+module.exports = exports.default = FlowViewLink

@@ -114,4 +114,4 @@ class FlowViewOut extends Pin {
   }
 }
 
-module.exports = FlowViewOut
+module.exports = exports.default = FlowViewOut

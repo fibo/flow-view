@@ -137,4 +137,4 @@ class FlowViewInspectorPinEditor extends Component {
   }
 }
 
-module.exports = FlowViewInspectorPinEditor
+module.exports = exports.default = FlowViewInspectorPinEditor

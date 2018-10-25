@@ -20,4 +20,4 @@ function localStored (itemName) {
   return { assign, getItem }
 }
 
-module.exports = localStored
+module.exports = exports.default = localStored

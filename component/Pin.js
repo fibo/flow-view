@@ -121,4 +121,4 @@ class FlowViewPin extends SvgComponent {
   }
 }
 
-module.exports = FlowViewPin
+module.exports = exports.default = FlowViewPin

@@ -79,4 +79,4 @@ class FlowViewIn extends Pin {
   }
 }
 
-module.exports = FlowViewIn
+module.exports = exports.default = FlowViewIn

@@ -219,4 +219,4 @@ const defaultState = {
 
 staticProps(FlowViewInspector)({ defaultState })
 
-module.exports = FlowViewInspector
+module.exports = exports.default = FlowViewInspector

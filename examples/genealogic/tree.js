@@ -1,14 +1,4 @@
-var Canvas = require('flow-view').Canvas
-
-/*var canvas = new Canvas({
-  nodeList: [
-    'Homer',
-    'Marge',
-    'Bart',
-    'Lisa',
-    'Maggie'
-  ]
-})*/
+const Canvas = require('flow-view').Canvas
 
 const graph = {
   nodes: [
@@ -70,4 +60,3 @@ const container = document.getElementById('drawing')
 const canvas = new Canvas(container)
 
 canvas.loadGraph(graph)
-

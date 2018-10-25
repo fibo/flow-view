@@ -28,4 +28,4 @@ class FlowViewSvgComponent extends Component {
   }
 }
 
-module.exports = FlowViewSvgComponent
+module.exports = exports.default = FlowViewSvgComponent

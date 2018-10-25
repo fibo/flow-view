@@ -127,4 +127,4 @@ const defaultState = {
 
 staticProps(FlowViewCreator)({ defaultState })
 
-module.exports = FlowViewCreator
+module.exports = exports.default = FlowViewCreator

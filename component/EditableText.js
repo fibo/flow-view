@@ -142,4 +142,4 @@ class EditableText extends Component {
   }
 }
 
-module.exports = EditableText
+module.exports = exports.default = EditableText

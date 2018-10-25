@@ -13,6 +13,12 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
+## Unreleased
+
+### Added
+
+- Can import individual components.
+
 ## [v3.0.0] - 2018-05-03
 
 ### Added
@@ -25,11 +31,9 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 - React
 
-## Unreleased
-
 ## [v2.19.0] - 2017-12-10
 
-## Added
+### Added
 
 - Trigger *updateNodesGeometry* event, when nodes are moved.
 - Complete flowjs coverage.

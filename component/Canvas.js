@@ -18,7 +18,7 @@ class FlowViewCanvas {
     // TODO use merge-props to implement custom themes
     this.theme = {
       frame: {
-        fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+        fontFamily: '"Lucida Console", Monaco, monospace',
         fontSize: 14
       },
       inspector: {
@@ -411,4 +411,4 @@ class FlowViewCanvas {
   }
 }
 
-module.exports = FlowViewCanvas
+module.exports = exports.default = FlowViewCanvas

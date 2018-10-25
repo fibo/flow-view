@@ -524,4 +524,5 @@ class FlowViewFrame extends SvgComponent {
     this.cursorCoordinates = this.getCoordinates(event)
   }
 }
-module.exports = FlowViewFrame
+
+module.exports = exports.default = FlowViewFrame

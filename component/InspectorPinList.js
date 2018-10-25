@@ -192,4 +192,4 @@ class FlowViewInspectorPinList extends Component {
   }
 }
 
-module.exports = FlowViewInspectorPinList
+module.exports = exports.default = FlowViewInspectorPinList

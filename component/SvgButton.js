@@ -72,4 +72,4 @@ class SvgButton extends SvgComponent {
   }
 }
 
-module.exports = SvgButton
+module.exports = exports.default = SvgButton

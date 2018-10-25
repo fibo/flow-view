@@ -10,4 +10,4 @@ class InspectorDelPinButton extends SvgButton {
   }
 }
 
-module.exports = InspectorDelPinButton
+module.exports = exports.default = InspectorDelPinButton

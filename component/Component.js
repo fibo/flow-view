@@ -52,4 +52,4 @@ class FlowViewComponent {
   show () { this.container.style.display = '' }
 }
 
-module.exports = FlowViewComponent
+module.exports = exports.default = FlowViewComponent

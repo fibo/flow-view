@@ -57,4 +57,4 @@ class FlowViewInspectorToggle extends SvgComponent {
   }
 }
 
-module.exports = FlowViewInspectorToggle
+module.exports = exports.default = FlowViewInspectorToggle

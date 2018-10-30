@@ -1,13 +1,13 @@
 const bindme = require('bindme')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 
 /**
  * The Inspector let user modify Node properties.
  */
 
-class FlowViewInspectorToggle extends SvgComponent {
+class FlowViewInspectorToggle extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 

@@ -20,9 +20,9 @@ class FlowViewInspectorPinList extends Component {
     // DOM Elements.
     // =================================================================
 
-    const addButton = new AddButton(canvas, dispatch, container)
-    addButton.svg.style.marginLeft = '4px'
-    addButton.svg.style.marginRight = '4px'
+    const addButton = new AddButton(canvas, dispatch, this.createElementNS('svg'))
+    addButton.container.style.marginLeft = '4px'
+    addButton.container.style.marginRight = '4px'
 
     const info = this.createElement('div')
     info.style.cursor = 'default'
@@ -38,7 +38,7 @@ class FlowViewInspectorPinList extends Component {
       'onClickAdd'
     )
 
-    addButton.svg.addEventListener('click', this.onClickAdd)
+    addButton.container.addEventListener('click', this.onClickAdd)
 
     // Static attributes.
     // =================================================================

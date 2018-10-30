@@ -2,7 +2,7 @@ const bindme = require('bindme')
 const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 const In = require('./In')
 const Out = require('./Out')
 
@@ -10,7 +10,7 @@ const Out = require('./Out')
  * A Node is a rectangular component with inputs and outputs.
  */
 
-class FlowViewNode extends SvgComponent {
+class FlowViewNode extends Component {
   constructor (canvas, frame, dispatch, container) {
     super(canvas, dispatch, container)
 

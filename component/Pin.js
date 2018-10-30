@@ -1,13 +1,13 @@
 const bindme = require('bindme')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 
 /**
  * An input or output pin for a Node.
  */
 
-class FlowViewPin extends SvgComponent {
+class FlowViewPin extends Component {
   constructor (canvas, frame, dispatch, container, nodeId, position) {
     super(canvas, dispatch, container)
 

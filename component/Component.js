@@ -16,13 +16,27 @@ class FlowViewComponent {
     })
 
     // Event bindings.
-    //= =================================================================
+    // =================================================================
 
     bindme(this, 'dropEvent')
   }
 
   createElement (qualifiedName, container) {
     const element = document.createElement(qualifiedName)
+
+    if (container) {
+      container.appendChild(element)
+    } else {
+      this.container.appendChild(element)
+    }
+
+    return element
+  }
+
+  createElementNS (qualifiedName, container) {
+    const namespaceURI = 'http://www.w3.org/2000/svg'
+
+    const element = document.createElementNS(namespaceURI, qualifiedName)
 
     if (container) {
       container.appendChild(element)

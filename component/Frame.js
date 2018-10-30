@@ -2,7 +2,7 @@ const bindme = require('bindme')
 const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 const Creator = require('./Creator')
 const InspectorToggle = require('./InspectorToggle')
 const Link = require('./Link')
@@ -16,7 +16,7 @@ const distance = (x1, y1, x2, y2) => (
  * A Frame contains everything inside a Canvas.
  */
 
-class FlowViewFrame extends SvgComponent {
+class FlowViewFrame extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 

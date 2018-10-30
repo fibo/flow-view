@@ -1,32 +1,29 @@
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 
-class SvgButton extends SvgComponent {
+class SvgButton extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
     // DOM Elements.
     // =================================================================
 
-    const svg = this.createElementNS('svg')
-
-    const path = this.createElementNS('path', svg)
+    const path = this.createElementNS('path')
     path.shapeRendering = 'optimizeQuality'
 
     // Static attributes.
     // =================================================================
 
     staticProps(this)({
-      path,
-      svg
+      path
     })
   }
 
   render (state) {
     const {
-      path,
-      svg
+      container,
+      path
     } = this
 
     const {
@@ -59,9 +56,9 @@ class SvgButton extends SvgComponent {
     if (sizeChanged) {
       this.size = size
 
-      svg.setAttribute('viewBox', `0 0 ${size} ${size}`)
-      svg.style.height = size
-      svg.style.width = size
+      container.setAttribute('viewBox', `0 0 ${size} ${size}`)
+      container.style.height = size
+      container.style.width = size
 
       this.setShape(size)
     }

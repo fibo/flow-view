@@ -2,13 +2,13 @@ const bindme = require('bindme')
 const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 
 /**
  * A Link connects a node output to another node input.
  */
 
-class FlowViewLink extends SvgComponent {
+class FlowViewLink extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 

@@ -1,13 +1,13 @@
 const bindme = require('bindme')
 const staticProps = require('static-props')
 
-const SvgComponent = require('./SvgComponent')
+const Component = require('./Component')
 
 /**
  * The Creator appears on double click and can create nodes.
  */
 
-class FlowViewCreator extends SvgComponent {
+class FlowViewCreator extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 

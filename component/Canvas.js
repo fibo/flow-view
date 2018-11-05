@@ -1,5 +1,3 @@
-const staticProps = require('static-props')
-
 const localStored = require('./localStored')
 
 const Creator = require('./Creator')
@@ -103,11 +101,6 @@ class FlowViewCanvas {
     const root = new Root(this, dispatch(this), container)
     this.state.root = root.boundingRect
     render = root.render.bind(root)
-
-    // Static props.
-    // =================================================================
-
-    staticProps(this)({ root })
   }
 
   blurPin () { this.state.currentPin = null }

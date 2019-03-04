@@ -28,6 +28,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 ### Fixed
 
 - cson highlighting was not recognized, using yaml.
+- loadGraph() was calling undefined this.root attribute
 
 ## [v3.0.0] - 2018-05-03
 

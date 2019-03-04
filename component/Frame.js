@@ -290,6 +290,7 @@ class FlowViewFrame extends Component {
     } = this
 
     const {
+      boundingRect,
       currentPin,
       draggingItems,
       draggedLinkCoordinates,
@@ -298,7 +299,6 @@ class FlowViewFrame extends Component {
       draggingLink,
       graph,
       inspector,
-      root,
       textSize
     } = state
 
@@ -314,8 +314,8 @@ class FlowViewFrame extends Component {
     const { fontFamily, fontSize } = canvas.theme.frame
     const halfPinSize = canvas.theme.pin.size / 2
 
-    const height = root.height
-    const width = inspector.hidden ? root.width : root.width - inspector.width
+    const height = boundingRect.height
+    const width = inspector.hidden ? boundingRect.width : boundingRect.width - inspector.width
     const moreThanOneNodeSelected = (selectedNodes.length > 1)
     const someNodeSelected = (selectedNodes.length > 0)
 

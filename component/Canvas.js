@@ -99,8 +99,9 @@ class FlowViewCanvas {
     }
 
     const root = new Root(this, dispatch(this), container)
-    this.state.root = root.boundingRect
+    this.state.boundingRect = root.boundingRect
     render = root.render.bind(root)
+    this.root = root
   }
 
   blurPin () { this.state.currentPin = null }
@@ -328,7 +329,7 @@ class FlowViewCanvas {
     this.state.graph.nodes[nodeIndex][`${type}s`][position].name = name
   }
 
-  resize (boundingRect) { this.state.root = boundingRect }
+  resize (boundingRect) { this.state.boundingRect = boundingRect }
 
   selectLink (id) {
     const {

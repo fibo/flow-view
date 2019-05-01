@@ -10,7 +10,7 @@ const graph = {
       outs: [
         { name: 'out1' },
         { name: 'out2' },
-        { name: 'out3', type: 'boolean' }
+        { name: 'out3' }
       ]
     },
     {
@@ -20,7 +20,7 @@ const graph = {
       text: 'Click me',
       ins: [
         { name: 'in0' },
-        { name: 'in1', type: 'boolean' }
+        { name: 'in1' }
       ],
       outs: [
         { name: 'return' }

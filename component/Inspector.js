@@ -145,13 +145,13 @@ class FlowViewInspector extends Component {
     if (numSelectedNodes === 1) {
       const node = selectedNodes[0]
 
-      label.action = (name) => {
-        dispatch('renameNode', { id: node.id, name })
+      label.action = (text) => {
+        dispatch('renameNode', { id: node.id, text })
       }
 
       label.render({
         editable: true,
-        text: node.name
+        text: node.text
       })
 
       inputList.show()

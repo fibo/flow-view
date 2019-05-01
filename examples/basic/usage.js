@@ -6,7 +6,7 @@ const graph = {
       id: 'a',
       x: 80,
       y: 100,
-      name: 'Drag me',
+      text: 'Drag me',
       outs: [
         { name: 'out1' },
         { name: 'out2' },
@@ -17,7 +17,7 @@ const graph = {
       id: 'b',
       x: 180,
       y: 200,
-      name: 'Click me',
+      text: 'Click me',
       ins: [
         { name: 'in0' },
         { name: 'in1', type: 'boolean' }

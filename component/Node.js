@@ -136,7 +136,7 @@ class FlowViewNode extends Component {
     const {
       ins,
       outs,
-      name,
+      text,
       x,
       y
     } = Object.assign({}, defaultGraph, graph)
@@ -150,7 +150,7 @@ class FlowViewNode extends Component {
     const fontSizeChanged = (fontSize !== this.fontSize)
     const pinSizeChanged = (pinSize !== this.pinSize)
     const heightChanged = (height !== this.height)
-    const nameChanged = (name !== this.text)
+    const textChanged = (text !== this.text)
     const numInsChanged = (ins.length !== this.numIns)
     const numOutsChanged = (outs.length !== this.numOuts)
     const selectedChanged = (selected !== this.selected)
@@ -197,12 +197,12 @@ class FlowViewNode extends Component {
       topbar.setAttribute('width', width)
     }
 
-    // Node name.
+    // Node text.
     // =================================================================
 
-    if (nameChanged) {
-      this.name = name
-      label.textContent = name
+    if (textChanged) {
+      this.text = text
+      label.textContent = text
     }
 
     // Node color.
@@ -344,7 +344,7 @@ function computeDims (textSize, pinSize, desiredHeight, desiredWidth) {
 // ====================================================================
 
 const defaultGraph = {
-  name: 'Node',
+  text: 'Node',
   ins: [],
   outs: []
 }

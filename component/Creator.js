@@ -41,26 +41,21 @@ class FlowViewCreator extends Component {
   onInputKeypress (event) {
     const {
       dispatch,
-      input,
       x,
       y
     } = this
 
-    const name = event.target.value
+    const text = event.target.value
 
     switch (event.key) {
       case 'Enter':
         dispatch('createNode', {
-          name,
+          text,
           x,
           y
         })
 
-        input.value = ''
-
         break
-
-      default: break
     }
   }
 

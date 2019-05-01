@@ -28,6 +28,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### Fixed
 
+- using Delete instead of Backspace for Node deletion, otherwise Creator could not delete chars.
 - cson highlighting was not recognized, using yaml.
 - loadGraph() was calling undefined this.root attribute
 - Node component has attribute *text*, internally it used *name*.

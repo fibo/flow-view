@@ -101,7 +101,6 @@ class FlowViewNode extends Component {
   render (state) {
     const {
       bottombar,
-      canvas,
       container,
       dispatch,
       frame,
@@ -267,7 +266,7 @@ class FlowViewNode extends Component {
       } else {
         const element = this.createElementNS('rect')
 
-        const pin = new In(canvas, frame, dispatch, element, id, position)
+        const pin = new In(frame, dispatch, element, id, position)
         pin.render(pinState)
 
         this.inRef[pinId] = pin
@@ -315,7 +314,7 @@ class FlowViewNode extends Component {
       } else {
         const element = this.createElementNS('rect')
 
-        const pin = new Out(canvas, frame, dispatch, element, id, position)
+        const pin = new Out(frame, dispatch, element, id, position)
         pin.render(pinState)
 
         this.outRef[pinId] = pin

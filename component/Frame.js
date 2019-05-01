@@ -153,7 +153,7 @@ class FlowViewFrame extends Component {
     const { dispatch } = this
 
     switch (event.key) {
-      case 'Backspace': dispatch('deleteSelection')
+      case 'Delete': dispatch('deleteSelection')
         break
 
       case 'Escape': dispatch('resetSelection')

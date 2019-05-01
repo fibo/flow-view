@@ -11,8 +11,8 @@ const InspectorPinList = require('./InspectorPinList')
  */
 
 class FlowViewInspector extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // DOM Elements.
     // =================================================================
@@ -21,13 +21,13 @@ class FlowViewInspector extends Component {
     pin.style.cursor = 'default'
 
     const labelContainer = this.createElement('div')
-    const label = new EditableText(canvas, dispatch, labelContainer)
+    const label = new EditableText(dispatch, labelContainer)
 
     const inputListContainer = this.createElement('div')
-    const inputList = new InspectorPinList(canvas, dispatch, inputListContainer, 'in')
+    const inputList = new InspectorPinList(dispatch, inputListContainer, 'in')
 
     const outputListContainer = this.createElement('div')
-    const outputList = new InspectorPinList(canvas, dispatch, outputListContainer, 'out')
+    const outputList = new InspectorPinList(dispatch, outputListContainer, 'out')
 
     // Event bindings.
     // =================================================================
@@ -61,7 +61,6 @@ class FlowViewInspector extends Component {
 
   render (state) {
     const {
-      canvas,
       container,
       dispatch,
       inputList,
@@ -82,7 +81,7 @@ class FlowViewInspector extends Component {
       width
     } = inspector
 
-    const theme = canvas.theme.inspector
+    const theme = state.theme.inspector
 
     const { baseColor } = theme
 

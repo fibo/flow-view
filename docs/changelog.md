@@ -15,9 +15,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ## Unreleased
 
-- TODO canvas is passed to all contructors, actually wen only need theme (which is a context) or even better, pass it in the state
 - TODO show pin popup on mouse over
-- TODO state should be always { view: {} } so it is possible to extend it with { model, view, theme }
 - TODO dextop example, popout window
 - TODO custom components, or extended one, to be passed on canvas creation
 

@@ -8,8 +8,8 @@ const Component = require('./Component')
  */
 
 class EditableText extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // DOM Elements.
     // =================================================================

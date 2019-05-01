@@ -7,9 +7,8 @@ const staticProps = require('static-props')
  */
 
 class FlowViewComponent {
-  constructor (canvas, dispatch, container) {
+  constructor (dispatch, container) {
     staticProps(this)({
-      canvas,
       component: {},
       container,
       dispatch: () => dispatch

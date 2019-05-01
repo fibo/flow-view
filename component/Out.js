@@ -9,8 +9,8 @@ const Pin = require('./Pin')
  */
 
 class FlowViewOut extends Pin {
-  constructor (canvas, frame, dispatch, container, nodeId, position) {
-    super(canvas, frame, dispatch, container, nodeId, position)
+  constructor (frame, dispatch, container, nodeId, position) {
+    super(frame, dispatch, container, nodeId, position)
 
     // Static attributes.
     // =================================================================

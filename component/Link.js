@@ -9,8 +9,8 @@ const Component = require('./Component')
  */
 
 class FlowViewLink extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // DOM Elements.
     // =================================================================
@@ -26,8 +26,7 @@ class FlowViewLink extends Component {
       end,
       line,
       id: () => container.getAttribute('id'),
-      start,
-      theme: () => canvas.theme.link
+      start
     })
 
     // Event bindings.
@@ -61,31 +60,26 @@ class FlowViewLink extends Component {
 
   render (state) {
     const {
-      canvas,
+      end,
       line,
-      start,
-      end
+      start
     } = this
 
     const {
-      // TODO graph,
       endX,
       endY,
       selected,
       startX,
-      startY
+      startY,
+      theme
     } = state
-
-    const pinSize = canvas.theme.pin.size
 
     const {
       baseColor,
       highlightColor,
       width
-    } = this.theme
-
-    // TODO const {from, to} = graph
-    // TODO const connected = (typeof from !== 'undefined') && (typeof to !== 'undefined')
+    } = theme.link
+    const pinSize = theme.pin.size
 
     // Changed properties.
     // =================================================================

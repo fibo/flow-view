@@ -11,8 +11,8 @@ const Out = require('./Out')
  */
 
 class FlowViewNode extends Component {
-  constructor (canvas, frame, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (frame, dispatch, container) {
+    super(dispatch, container)
 
     this.inRef = {}
     this.outRef = {}
@@ -55,7 +55,6 @@ class FlowViewNode extends Component {
       numIns: () => Object.keys(this.inRef).length,
       numOuts: () => Object.keys(this.outRef).length,
       rect,
-      theme: () => canvas.theme.node,
       topbar
     })
   }
@@ -113,15 +112,6 @@ class FlowViewNode extends Component {
     } = this
 
     const {
-      backgroundColor,
-      baseColor,
-      highlightColor
-    } = this.theme
-
-    const pinSize = canvas.theme.pin.size
-    const fontSize = canvas.theme.frame.fontSize
-
-    const {
       connectedIns,
       connectedOuts,
       currentPin,
@@ -130,8 +120,17 @@ class FlowViewNode extends Component {
       draggingLink,
       graph,
       selected,
-      textSize
+      textSize,
+      theme
     } = state
+
+    const { fontSize } = theme.frame
+    const {
+      backgroundColor,
+      baseColor,
+      highlightColor
+    } = theme.node
+    const pinSize = theme.pin.size
 
     const {
       ins,
@@ -257,7 +256,8 @@ class FlowViewNode extends Component {
           widthChanged
         },
         position,
-        selected
+        selected,
+        theme: theme.pin
       }
 
       const pinRef = this.inRef[pinId]
@@ -304,7 +304,8 @@ class FlowViewNode extends Component {
           widthChanged
         },
         position,
-        selected
+        selected,
+        theme: theme.pin
       }
 
       const pinRef = this.outRef[pinId]

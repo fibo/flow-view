@@ -85,7 +85,7 @@ class FlowViewCanvas {
       }
     }
 
-    const root = new Root(this, dispatch(this), container)
+    const root = new Root(dispatch(this), container)
     render = root.render.bind(root)
 
     // State.
@@ -165,6 +165,7 @@ class FlowViewCanvas {
 
   createNode (node) {
     node.id = this.generateId()
+    console.log(node)
 
     this.state.graph.nodes.push(node)
 

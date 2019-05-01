@@ -8,8 +8,8 @@ const Component = require('./Component')
  */
 
 class FlowViewCreator extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // Start hidden.
     this.hide()
@@ -66,7 +66,6 @@ class FlowViewCreator extends Component {
 
   render (state) {
     const {
-      canvas,
       container,
       input
     } = this
@@ -77,7 +76,7 @@ class FlowViewCreator extends Component {
       y
     } = state.creator
 
-    const { fontFamily, fontSize } = canvas.theme.frame
+    const { fontFamily, fontSize } = state.theme.frame
 
     // Changed properties.
     // =================================================================

@@ -10,8 +10,8 @@ const Inspector = require('./Inspector')
  */
 
 class FlowViewRoot extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     this.nodeText = {}
     this.textSize = {}
@@ -32,9 +32,9 @@ class FlowViewRoot extends Component {
     textRuler.style.whiteSpace = 'nowrap'
 
     const inspectorContainer = this.createElement('div')
-    const inspector = new Inspector(canvas, dispatch, inspectorContainer)
+    const inspector = new Inspector(dispatch, inspectorContainer)
 
-    const frame = new Frame(canvas, dispatch, container)
+    const frame = new Frame(dispatch, container)
 
     // Static props
     // =================================================================
@@ -65,15 +65,14 @@ class FlowViewRoot extends Component {
 
   render (state) {
     const {
-      canvas,
       container,
       nodeText,
       textSize
     } = this
 
-    const { graph } = state
+    const { graph, theme } = state
 
-    const { fontFamily, fontSize } = canvas.theme.frame
+    const { fontFamily, fontSize } = theme.frame
 
     const fontChanged = (this.fontSize !== fontSize) || (this.fontFamily !== fontFamily)
 

@@ -23,8 +23,7 @@ class FlowViewCanvas {
     // Theme.
     // =================================================================
 
-    // TODO use merge-props to implement custom themes
-    this.theme = {
+    const theme = {
       frame: {
         fontFamily: '"Lucida Console", Monaco, monospace',
         fontSize: 14
@@ -76,7 +75,7 @@ class FlowViewCanvas {
           throw err
         }
 
-        // Invoking Root render will call all its sub components
+        // Invoking Root render() method will call all its sub components
         // render methods recursively.
         render(canvas.state)
 
@@ -109,7 +108,8 @@ class FlowViewCanvas {
       multiSelection: false,
       // Properties selected.links and selected.nodes are arrays,
       // their id unicity is handled by select* and deselect* methods.
-      selected: { links: [], nodes: [] }
+      selected: { links: [], nodes: [] },
+      theme
     }
 
     // Static props

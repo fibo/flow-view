@@ -17,8 +17,8 @@ const distance = (x1, y1, x2, y2) => (
  */
 
 class FlowViewFrame extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     this.linkRef = {}
     this.nodeRef = {}
@@ -38,10 +38,10 @@ class FlowViewFrame extends Component {
     const nodesGroup = this.createElementNS('g', svg)
 
     const creatorContainer = this.createElementNS('foreignObject', svg)
-    const creator = new Creator(canvas, dispatch, creatorContainer)
+    const creator = new Creator(dispatch, creatorContainer)
 
     const inspectorToggleContainer = this.createElementNS('foreignObject', svg)
-    const inspectorToggle = new InspectorToggle(canvas, dispatch, inspectorToggleContainer)
+    const inspectorToggle = new InspectorToggle(dispatch, inspectorToggleContainer)
 
     // Static props.
     // ==================================================================
@@ -281,7 +281,6 @@ class FlowViewFrame extends Component {
 
   render (state) {
     const {
-      canvas,
       dispatch,
       linksGroup,
       nodesGroup,
@@ -299,7 +298,8 @@ class FlowViewFrame extends Component {
       draggingLink,
       graph,
       inspector,
-      textSize
+      textSize,
+      theme
     } = state
 
     this.draggingItems = draggingItems
@@ -311,8 +311,8 @@ class FlowViewFrame extends Component {
     const selectedLinks = state.selected.links
     const selectedNodes = state.selected.nodes
 
-    const { fontFamily, fontSize } = canvas.theme.frame
-    const halfPinSize = canvas.theme.pin.size / 2
+    const { fontFamily, fontSize } = theme.frame
+    const halfPinSize = theme.pin.size / 2
 
     const height = boundingRect.height
     const width = inspector.hidden ? boundingRect.width : boundingRect.width - inspector.width
@@ -376,7 +376,7 @@ class FlowViewFrame extends Component {
     // =================================================================
 
     if (moreThanOneNodeSelected) {
-      selection.setAttribute('stroke', canvas.theme.selection.color)
+      selection.setAttribute('stroke', theme.selection.color)
 
       if (selectedNodesBoundsChanged) {
         selection.setAttribute('x', selectedNodesBounds.x1)
@@ -444,7 +444,12 @@ class FlowViewFrame extends Component {
         draggingLink,
         graph: nodeGraph,
         selected,
-        textSize: textSize[id]
+        textSize: textSize[id],
+        theme: {
+          frame: theme.frame,
+          node: theme.node,
+          pin: theme.pin
+        }
       }
 
       const nodeRef = this.nodeRef[id]
@@ -461,7 +466,7 @@ class FlowViewFrame extends Component {
         const element = this.createElementNS('g', nodesGroup)
         element.setAttribute('id', id)
 
-        const node = new Node(canvas, this, dispatch, element)
+        const node = new Node(this, dispatch, element)
         node.render(nodeState)
 
         this.nodeRef[id] = node
@@ -499,7 +504,11 @@ class FlowViewFrame extends Component {
         graph: linkGraph,
         selected: selected || (sourceNode && targetNode && sourceNode.selected && targetNode.selected),
         startX: sourcePin ? sourceNode.x + sourcePin.x + halfPinSize : draggedLinkCoordinates.x,
-        startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : draggedLinkCoordinates.y
+        startY: sourcePin ? sourceNode.y + sourcePin.y + halfPinSize : draggedLinkCoordinates.y,
+        theme: {
+          link: theme.link,
+          pin: theme.pin
+        }
       }
 
       const linkRef = this.linkRef[id]
@@ -510,7 +519,7 @@ class FlowViewFrame extends Component {
         const element = this.createElementNS('g', linksGroup)
         element.setAttribute('id', id)
 
-        const link = new Link(canvas, dispatch, element)
+        const link = new Link(dispatch, element)
         link.render(linkState)
 
         this.linkRef[id] = link

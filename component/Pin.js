@@ -8,8 +8,8 @@ const Component = require('./Component')
  */
 
 class FlowViewPin extends Component {
-  constructor (canvas, frame, dispatch, container, nodeId, position) {
-    super(canvas, dispatch, container)
+  constructor (frame, dispatch, container, nodeId, position) {
+    super(dispatch, container)
 
     // Event bindings.
     // =================================================================
@@ -30,7 +30,6 @@ class FlowViewPin extends Component {
       frame,
       nodeId,
       position,
-      theme: () => canvas.theme.pin,
       x: () => parseInt(container.getAttribute('x'))
     })
   }
@@ -38,12 +37,7 @@ class FlowViewPin extends Component {
   onMouseleave () { this.dispatch('blurPin') }
 
   render (state) {
-    const {
-      container,
-      theme
-    } = this
-
-    const { size } = theme
+    const { container } = this
 
     const {
       connected,
@@ -52,8 +46,16 @@ class FlowViewPin extends Component {
       inspected,
       node,
       position,
-      selected
+      selected,
+      theme
     } = state
+
+    const {
+      baseColor,
+      highlightColor,
+      inspectedColor,
+      size
+    } = theme
 
     this.connected = connected
     this.graph = graph
@@ -105,15 +107,15 @@ class FlowViewPin extends Component {
 
     if (highlightedChanged || inspectedChanged || selectedChanged) {
       if (inspected) {
-        container.setAttribute('fill', theme.inspectedColor)
+        container.setAttribute('fill', inspectedColor)
       } else {
         if (selected) {
-          container.setAttribute('fill', theme.highlightColor)
+          container.setAttribute('fill', highlightColor)
         } else {
           if (highlighted && !connected) {
-            container.setAttribute('fill', theme.highlightColor)
+            container.setAttribute('fill', highlightColor)
           } else {
-            container.setAttribute('fill', theme.baseColor)
+            container.setAttribute('fill', baseColor)
           }
         }
       }

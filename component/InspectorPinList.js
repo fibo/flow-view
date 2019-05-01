@@ -12,15 +12,15 @@ const AddButton = require('./InspectorAddPinButton')
  */
 
 class FlowViewInspectorPinList extends Component {
-  constructor (canvas, dispatch, container, type) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container, type) {
+    super(dispatch, container)
 
     this.pinEditorRef = []
 
     // DOM Elements.
     // =================================================================
 
-    const addButton = new AddButton(canvas, dispatch, this.createElementNS('svg'))
+    const addButton = new AddButton(dispatch, this.createElementNS('svg'))
     addButton.container.style.marginLeft = '4px'
     addButton.container.style.marginRight = '4px'
 
@@ -56,13 +56,12 @@ class FlowViewInspectorPinList extends Component {
 
   createPinEditor (pinState, position) {
     const {
-      canvas,
       dispatch,
       pinList
     } = this
 
     const pinEditorContainer = this.createElement('div', pinList)
-    const pinEditor = new PinEditor(canvas, dispatch, pinEditorContainer)
+    const pinEditor = new PinEditor(dispatch, pinEditorContainer)
 
     pinEditor.render(pinState)
 

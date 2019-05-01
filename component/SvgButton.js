@@ -3,8 +3,8 @@ const staticProps = require('static-props')
 const Component = require('./Component')
 
 class SvgButton extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // DOM Elements.
     // =================================================================
@@ -27,13 +27,9 @@ class SvgButton extends Component {
     } = this
 
     const {
-      theme
-    } = state
-
-    const {
       color,
       size
-    } = theme
+    } = state.theme
 
     // Changed properties.
     // =================================================================

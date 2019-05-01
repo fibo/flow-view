@@ -12,17 +12,17 @@ const DelButton = require('./InspectorDelPinButton')
  */
 
 class FlowViewInspectorPinEditor extends Component {
-  constructor (canvas, dispatch, container) {
-    super(canvas, dispatch, container)
+  constructor (dispatch, container) {
+    super(dispatch, container)
 
     // DOM Elements.
     // =================================================================
 
-    const delButton = new DelButton(canvas, dispatch, this.createElementNS('svg'))
+    const delButton = new DelButton(dispatch, this.createElementNS('svg'))
     delButton.svg.style.marginLeft = '1em'
     delButton.svg.style.marginRight = '4px'
 
-    const label = new EditableText(canvas, dispatch, this.createElement('div'))
+    const label = new EditableText(dispatch, this.createElement('div'))
 
     // Event bindings.
     // =================================================================

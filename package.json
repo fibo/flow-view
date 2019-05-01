@@ -18,6 +18,7 @@
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=. budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js",
     "example_empty_canvas": "NODE_PATH=. budo --serve bundle.js --dir examples/empty --open examples/empty/canvas.js",
+    "example_event_emitter": "NODE_PATH=. budo --serve bundle.js --dir examples/event --open examples/event/emitter.js",
     "example_genealogic_tree": "NODE_PATH=. budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js",
     "generate_schema": "markdown2code --lang yaml README.md | cson2json > docs/schema.json",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",

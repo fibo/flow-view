@@ -6,28 +6,28 @@ const graph = {
       id: 'dad',
       x: 20,
       y: 20,
-      name: 'Homer',
+      text: 'Homer',
       outs: [ { name: 'is father of' } ]
     },
     {
       id: 'mom',
       x: 120,
       y: 20,
-      name: 'Marge',
+      text: 'Marge',
       outs: [ { name: 'is mother of' } ]
     },
     {
       id: 'son',
       x: 20,
       y: 190,
-      name: 'Bart',
+      text: 'Bart',
       ins: [ { name: 'father' }, { name: 'mother' } ]
     },
     {
       id: 'daughter',
       x: 180,
       y: 170,
-      name: 'Lisa',
+      text: 'Lisa',
       ins: [ { name: 'father' }, { name: 'mother' } ]
     }
   ],

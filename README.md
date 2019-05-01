@@ -60,6 +60,8 @@ const container = document.getElementById('drawing')
 const canvas = new Canvas(container)
 ```
 
+If passed to constructor is not an instance of `HTMLDivElement`, a new `div` will be created and appended to `document.body`.
+
 ### loadGraph
 
 You can load a [graph](graph-schema) like in the following example.
@@ -103,6 +105,23 @@ const graph = {
 
 canvas.loadGraph(graph)
 ```
+
+### Events
+
+See [event/emitter.js][example_event_emitter] example.
+The following events are emitted by [canvas](#canvas):
+
+| name              | arguments               |
+|-------------------|-------------------------|
+| `createLink`      | link, linkId            |
+| `createNode`      | node, nodeId            |
+| `createInputPin`  | [nodeId, position], pin |
+| `createOutputPin` | [nodeId, position], pin |
+| `deleteLink`      | linkId                  |
+| `deleteNode`      | nodeId                  |
+| `deleteInputPin`  | [nodeId, position]      |
+| `deleteOutputPin` | [nodeId, position]      |
+| `endDragging`     | { nodeId: { x, y } }    |
 
 ## Graph schema
 
@@ -289,6 +308,7 @@ Available examples are:
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
+[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"

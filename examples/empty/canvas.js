@@ -1,8 +1,6 @@
 const Canvas = require('flow-view').Canvas
 
-const container = document.getElementById('drawing')
-
-const canvas = new Canvas(container)
+const canvas = new Canvas()
 
 canvas.showInspector()
 canvas.pinInspector()

@@ -1,3 +1,7 @@
+/* global CustomEvent HTMLDivElement */
+
+const staticProps = require('static-props')
+
 const localStored = require('./localStored')
 
 const Creator = require('./Creator')
@@ -10,6 +14,12 @@ const Root = require('./Root')
 
 class FlowViewCanvas {
   constructor (container) {
+    if (!(container instanceof HTMLDivElement)) {
+      container = document.createElement('div')
+
+      document.body.appendChild(container)
+    }
+
     // Theme.
     // =================================================================
 
@@ -47,28 +57,6 @@ class FlowViewCanvas {
       }
     }
 
-    // State.
-    // =================================================================
-
-    this.state = {
-      creator: Object.assign({}, Creator.defaultState),
-      currentPin: null,
-      draggingItems: false,
-      draggingLink: false,
-      draggedLinkCoordinates: null,
-      draggedLinkId: null,
-      draggedLinkType: null,
-      graph: { links: [], nodes: [] },
-      inspector: Object.assign({},
-        Inspector.defaultState,
-        localStored('inspector').getItem()
-      ),
-      multiSelection: false,
-      // Properties selected.links and selected.nodes are arrays,
-      // their id unicity is handled by select* and deselect* methods.
-      selected: { links: [], nodes: [] }
-    }
-
     let render = Function.prototype
 
     // Action dispatcher.
@@ -99,9 +87,39 @@ class FlowViewCanvas {
     }
 
     const root = new Root(this, dispatch(this), container)
-    this.state.boundingRect = root.boundingRect
     render = root.render.bind(root)
-    this.root = root
+
+    // State.
+    // =================================================================
+
+    const state = {
+      boundingRect: root.boundingRect,
+      creator: Object.assign({}, Creator.defaultState),
+      currentPin: null,
+      draggingItems: false,
+      draggingLink: false,
+      draggedLinkCoordinates: null,
+      draggedLinkId: null,
+      draggedLinkType: null,
+      graph: { links: [], nodes: [] },
+      inspector: Object.assign({},
+        Inspector.defaultState,
+        localStored('inspector').getItem()
+      ),
+      multiSelection: false,
+      // Properties selected.links and selected.nodes are arrays,
+      // their id unicity is handled by select* and deselect* methods.
+      selected: { links: [], nodes: [] }
+    }
+
+    // Static props
+    // =================================================================
+
+    staticProps(this)({
+      container,
+      root,
+      state
+    })
   }
 
   blurPin () { this.state.currentPin = null }
@@ -277,6 +295,12 @@ class FlowViewCanvas {
     this.state.draggedLinkCoordinates = cursorCoordinates
   }
 
+  emit (eventType, eventDetail) {
+    const event = new CustomEvent(eventType, { detail: eventDetail })
+
+    this.container.dispatchEvent(event)
+  }
+
   enableMultiSelection () { this.state.multiSelection = true }
 
   focusPin (currentPin) { this.state.currentPin = currentPin }
@@ -305,6 +329,10 @@ class FlowViewCanvas {
     this.state.graph = graph
 
     this.root.render(this.state)
+  }
+
+  on (eventType, eventListener) {
+    this.container.addEventListener(eventType, event => eventListener(event.detail))
   }
 
   pinInspector () {

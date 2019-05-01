@@ -13,7 +13,7 @@ class FlowViewRoot extends Component {
   constructor (canvas, dispatch, container) {
     super(canvas, dispatch, container)
 
-    this.nodeName = {}
+    this.nodeText = {}
     this.textSize = {}
 
     // DOM Elements.
@@ -67,7 +67,7 @@ class FlowViewRoot extends Component {
     const {
       canvas,
       container,
-      nodeName,
+      nodeText,
       textSize
     } = this
 
@@ -90,26 +90,26 @@ class FlowViewRoot extends Component {
 
     let existingNodeIds = []
 
-    graph.nodes.forEach(({ id, name }) => {
+    graph.nodes.forEach(({ id, text }) => {
       existingNodeIds.push(id)
 
-      if (nodeName[id]) {
-        // Name changed.
-        if (name !== nodeName[id].name) {
-          nodeName[id] = name
-          textSize[id] = this.sizeOfText(name)
+      if (nodeText[id]) {
+        // Text changed.
+        if (text !== nodeText[id].text) {
+          nodeText[id] = text
+          textSize[id] = this.sizeOfText(text)
         }
       } else {
         // New nodes.
-        nodeName[id] = name
-        textSize[id] = this.sizeOfText(name)
+        nodeText[id] = text
+        textSize[id] = this.sizeOfText(text)
       }
     })
 
-    Object.keys(nodeName).forEach(id => {
+    Object.keys(nodeText).forEach(id => {
       // Deleted nodes.
       if (existingNodeIds.indexOf(id) === -1) {
-        delete this.nodeName[id]
+        delete this.nodeText[id]
         delete this.textSize[id]
       }
     })

@@ -7,28 +7,28 @@ const graph = {
       x: 20,
       y: 20,
       text: 'Homer',
-      outs: [ { name: 'is father of' } ]
+      outs: [ { name: 'is father of', type: 'male' } ]
     },
     {
       id: 'mom',
       x: 120,
       y: 20,
       text: 'Marge',
-      outs: [ { name: 'is mother of' } ]
+      outs: [ { name: 'is mother of', type: 'female' } ]
     },
     {
       id: 'son',
       x: 20,
       y: 190,
       text: 'Bart',
-      ins: [ { name: 'father' }, { name: 'mother' } ]
+      ins: [ { name: 'father', type: 'male' }, { name: 'mother', type: 'female' } ]
     },
     {
       id: 'daughter',
       x: 180,
       y: 170,
       text: 'Lisa',
-      ins: [ { name: 'father' }, { name: 'mother' } ]
+      ins: [ { name: 'father', type: 'male' }, { name: 'mother', type: 'female' } ]
     }
   ],
   links: [

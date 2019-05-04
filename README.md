@@ -64,7 +64,7 @@ If passed to constructor is not an instance of `HTMLDivElement`, a new `div` wil
 
 ### loadGraph
 
-You can load a [graph](graph-schema) like in the following example.
+You can load a [graph](#graph-schema) like in the following example.
 
 ```javascript
 const graph = {

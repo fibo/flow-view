@@ -64,9 +64,11 @@ const container = document.getElementById('drawing')
 const canvas = new Canvas(container)
 ```
 
+If passed to constructor is not an instance of `HTMLDivElement`, a new `div` will be created and appended to `document.body`.
+
 ### loadGraph
 
-You can load a [graph](graph-schema) like in the following example.
+You can load a [graph](#graph-schema) like in the following example.
 
 ```javascript
 const graph = {
@@ -108,12 +110,29 @@ const graph = {
 canvas.loadGraph(graph)
 ```
 
+### Events
+
+See [event/emitter.js][example_event_emitter] example.
+The following events are emitted by [canvas](#canvas):
+
+| name              | arguments               |
+|-------------------|-------------------------|
+| `createLink`      | link, linkId            |
+| `createNode`      | node, nodeId            |
+| `createInputPin`  | [nodeId, position], pin |
+| `createOutputPin` | [nodeId, position], pin |
+| `deleteLink`      | linkId                  |
+| `deleteNode`      | nodeId                  |
+| `deleteInputPin`  | [nodeId, position]      |
+| `deleteOutputPin` | [nodeId, position]      |
+| `endDragging`     | { nodeId: { x, y } }    |
+
 ## Graph schema
 
 This section defines flow-view [JSON Schema](http://json-schema.org/) using [cson](https://github.com/bevry/cson).
 It is parsed by [markdown2code](http://g14n.info/markdown2code) to generate [flow-view schema.json file](http://g14n.info/flow-view/schema.json).
 
-```cson
+```yaml
 $schema: 'http://json-schema.org/schema#'
 id: 'http://g14n.info/flow-view/schema.json'
 properties:
@@ -125,7 +144,7 @@ A flow-view *graph* has [links](#links) and [nodes](#nodes).
 
 A *graph* can have none, one or many *links*.
 
-```cson
+```yaml
   links:
     type: 'array'
     items:
@@ -133,7 +152,7 @@ A *graph* can have none, one or many *links*.
 
 Every *link* must have a unique *id*.
 
-```cson
+```yaml
       title: 'link'
       type: 'object'
       properties:
@@ -146,7 +165,7 @@ A *link* connects two *nodes*.
 It starts *from* a *node output* which is identified by an array of two
 elements that are the source *node id* and the *output position*.
 
-```cson
+```yaml
         from:
           type: 'array'
           items: [
@@ -160,7 +179,7 @@ elements that are the source *node id* and the *output position*.
 It goes *to* a *node input* which is identified by an array of two elements
 that are the target *node id* and the *input position*.
 
-```cson
+```yaml
         to:
           type: 'array'
           items: [
@@ -173,7 +192,7 @@ that are the target *node id* and the *input position*.
 
 All properties are required.
 
-```cson
+```yaml
       required: [
         'id'
         'from'
@@ -185,7 +204,7 @@ All properties are required.
 
 A *graph* can have none, one or many *nodes*.
 
-```cson
+```yaml
   nodes:
     type: 'array'
     items:
@@ -193,7 +212,7 @@ A *graph* can have none, one or many *nodes*.
 
 Every *node* must have a unique *id*.
 
-```cson
+```yaml
       title: 'node'
       type: 'object'
       properties:
@@ -203,14 +222,14 @@ Every *node* must have a unique *id*.
 
 A node has a *text*.
 
-```cson
+```yaml
         text:
           type: 'string'
 ```
 
 A node has a position identified by *x* and *y* coordinates.
 
-```cson
+```yaml
         x:
           type: 'number'
         y:
@@ -220,7 +239,7 @@ A node has a position identified by *x* and *y* coordinates.
 A node at the end is a block with inputs and outputs. Both *ins* and *outs*
 must have a *name* and may have a *type*.
 
-```cson
+```yaml
         ins:
           type: 'array'
           items:
@@ -252,7 +271,7 @@ must have a *name* and may have a *type*.
 Properties *ins* and *outs* are not required. A node with *ins* not defined
 is a *root*, a node with *outs* not defined is a *leaf*.
 
-```cson
+```yaml
       required: [
         'id'
         'text'
@@ -293,6 +312,7 @@ Available examples are:
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
 [example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
+[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
 [example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
 [online_example]: http://g14n.info/flow-view/example "Online example"
 [basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"

@@ -2,6 +2,12 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 
+/**
+ * Base class for SVG buttons.
+ *
+ * Children must implement setShape() method.
+ */
+
 class SvgButton extends Component {
   constructor (dispatch, container) {
     super(dispatch, container)
@@ -58,10 +64,6 @@ class SvgButton extends Component {
 
       this.setShape(size)
     }
-  }
-
-  setShape () {
-    console.error('setShape method is abstract')
   }
 }
 

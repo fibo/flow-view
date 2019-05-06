@@ -11,6 +11,8 @@ class FlowViewPin extends Component {
   constructor (frame, dispatch, container, nodeId, position) {
     super(dispatch, container)
 
+    container.style.cursor = 'pointer'
+
     // Event bindings.
     // =================================================================
 

@@ -13,7 +13,7 @@ const distance = (x1, y1, x2, y2) => (
 )
 
 /**
- * A Frame contains everything inside a Canvas.
+ * A Frame contains nodes, links and the creator.
  */
 
 class FlowViewFrame extends Component {

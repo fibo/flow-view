@@ -30,18 +30,22 @@ class FlowViewNode extends Component {
     const label = this.createElementNS('text')
     label.setAttribute('text-anchor', 'middle')
 
+    const toggle = this.createElementNS('circle')
+    toggle.style.display = 'none'
+
     // Event bindings.
     // =================================================================
 
     bindme(this,
+      'onClickToggle',
       'onMousedown',
       'onMouseup'
     )
 
-    container.addEventListener('click', this.dropEvent)
-    container.addEventListener('dblclick', this.dropEvent)
     container.addEventListener('mousedown', this.onMousedown)
     container.addEventListener('mouseup', this.onMouseup)
+
+    toggle.addEventListener('mousedown', this.onClickToggle)
 
     // Static attributes.
     // =================================================================
@@ -55,8 +59,19 @@ class FlowViewNode extends Component {
       numIns: () => Object.keys(this.inRef).length,
       numOuts: () => Object.keys(this.outRef).length,
       rect,
+      toggle,
       topbar
     })
+  }
+
+  createInspectorContainer () {
+    const inspectorContainer = this.createElementNS('foreignObject')
+
+    this.inspectorContainer = inspectorContainer
+  }
+
+  deleteInspectorContainer () {
+    console.log(this.inspectorContainer)
   }
 
   generateInId (position) { return `${this.id}-i${position}` }
@@ -73,6 +88,10 @@ class FlowViewNode extends Component {
     const pinId = this.generateOutId(position)
 
     return this.outRef[pinId]
+  }
+
+  onClickToggle (event) {
+    this.showInspector()
   }
 
   onMousedown (event) {
@@ -107,6 +126,7 @@ class FlowViewNode extends Component {
       id,
       label,
       rect,
+      toggle,
       topbar
     } = this
 
@@ -170,17 +190,23 @@ class FlowViewNode extends Component {
 
     if (pinSizeChanged) {
       this.pinSize = pinSize
+
       bottombar.setAttribute('height', pinSize)
       topbar.setAttribute('height', pinSize)
     }
 
     if (heightChanged) {
       this.height = height
+
       rect.setAttribute('height', height)
     }
 
     if (heightChanged || pinSizeChanged) {
       bottombar.setAttribute('transform', `translate(0,${height - pinSize})`)
+
+      toggle.setAttribute('r', (height - pinSize) / 2)
+      toggle.setAttribute('cx', -height / 2)
+      toggle.setAttribute('cy', height / 2)
     }
 
     if (heightChanged || fontSizeChanged) {
@@ -189,6 +215,7 @@ class FlowViewNode extends Component {
 
     if (widthChanged) {
       this.width = width
+
       bottombar.setAttribute('width', width)
       label.setAttribute('x', Math.round(width / 2))
       rect.setAttribute('width', width)
@@ -217,10 +244,18 @@ class FlowViewNode extends Component {
       if (selected) {
         bottombar.setAttribute('fill', highlightColor)
         rect.setAttribute('stroke', highlightColor)
+
+        toggle.setAttribute('fill', highlightColor)
+        toggle.style.display = ''
+
         topbar.setAttribute('fill', highlightColor)
       } else {
         bottombar.setAttribute('fill', baseColor)
+
         rect.setAttribute('stroke', baseColor)
+
+        toggle.style.display = 'none'
+
         topbar.setAttribute('fill', baseColor)
       }
     }
@@ -320,6 +355,12 @@ class FlowViewNode extends Component {
         this.outRef[pinId] = pin
       }
     })
+  }
+
+  showInspector () {
+    this.createInspectorContainer()
+
+    this.deleteInspectorContainer()
   }
 }
 

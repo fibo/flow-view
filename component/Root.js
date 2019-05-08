@@ -3,8 +3,6 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 const Frame = require('./Frame')
-const Inspector = require('./Inspector')
-
 /**
  * The Root contains everything inside a Canvas.
  */
@@ -31,9 +29,6 @@ class FlowViewRoot extends Component {
     textRuler.style.visibility = 'hidden'
     textRuler.style.whiteSpace = 'nowrap'
 
-    const inspectorContainer = this.createElement('div')
-    const inspector = new Inspector(dispatch, inspectorContainer)
-
     const frame = new Frame(dispatch, container)
 
     // Static props
@@ -45,8 +40,7 @@ class FlowViewRoot extends Component {
     })
 
     staticProps(this.component)({
-      frame,
-      inspector
+      frame
     })
 
     // Event bindings.

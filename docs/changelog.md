@@ -21,6 +21,7 @@ Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
 ### Added
 
+- Using [dextop](http://g14n.info/dextop) window manager for inspector.
 - Can import individual components.
 - Merged SVG component into base component class.
 - Vanilla JS event emitter.

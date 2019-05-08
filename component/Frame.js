@@ -4,7 +4,6 @@ const staticProps = require('static-props')
 
 const Component = require('./Component')
 const Creator = require('./Creator')
-const InspectorToggle = require('./InspectorToggle')
 const Link = require('./Link')
 const Node = require('./Node')
 
@@ -40,9 +39,6 @@ class FlowViewFrame extends Component {
     const creatorContainer = this.createElementNS('foreignObject', svg)
     const creator = new Creator(dispatch, creatorContainer)
 
-    const inspectorToggleContainer = this.createElementNS('foreignObject', svg)
-    const inspectorToggle = new InspectorToggle(dispatch, inspectorToggleContainer)
-
     // Static props.
     // ==================================================================
 
@@ -54,8 +50,7 @@ class FlowViewFrame extends Component {
     })
 
     staticProps(this.component)({
-      creator,
-      inspectorToggle
+      creator
     })
 
     // Event bindings.
@@ -297,7 +292,6 @@ class FlowViewFrame extends Component {
       draggedLinkId,
       draggingLink,
       graph,
-      inspector,
       textSize,
       theme
     } = state
@@ -314,8 +308,7 @@ class FlowViewFrame extends Component {
     const { fontFamily, fontSize } = theme.frame
     const halfPinSize = theme.pin.size / 2
 
-    const height = boundingRect.height
-    const width = inspector.hidden ? boundingRect.width : boundingRect.width - inspector.width
+    const { height, width } = boundingRect
     const moreThanOneNodeSelected = (selectedNodes.length > 1)
     const someNodeSelected = (selectedNodes.length > 0)
 

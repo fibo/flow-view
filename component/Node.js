@@ -1,4 +1,5 @@
 const bindme = require('bindme')
+const dextop = require('dextop')
 const pdsp = require('pdsp')
 const staticProps = require('static-props')
 
@@ -64,14 +65,31 @@ class FlowViewNode extends Component {
     })
   }
 
-  createInspectorContainer () {
-    const inspectorContainer = this.createElementNS('foreignObject')
+  createInspector (container) {
+    this.inspector = new dextop.Window(container, {
+      width: 300,
+      height: 400,
+      x: this.x,
+      y: this.y
+    })
+  }
 
-    this.inspectorContainer = inspectorContainer
+  createInspectorContainer () {
+    const inspectorContainer = this.inspectorContainer = this.frame.createElement('div')
+
+    return inspectorContainer
   }
 
   deleteInspectorContainer () {
-    console.log(this.inspectorContainer)
+    const {
+      frame,
+      inspectorContainer
+    } = this
+
+    frame.container.removeChild(inspectorContainer)
+
+    delete this.inspector
+    delete this.inspectorContainer
   }
 
   generateInId (position) { return `${this.id}-i${position}` }
@@ -91,7 +109,13 @@ class FlowViewNode extends Component {
   }
 
   onClickToggle (event) {
-    this.showInspector()
+    if (this.inspectorContainer) {
+      this.deleteInspectorContainer()
+    } else {
+      const inspectorContainer = this.createInspectorContainer()
+
+      this.createInspector(inspectorContainer)
+    }
   }
 
   onMousedown (event) {
@@ -204,7 +228,7 @@ class FlowViewNode extends Component {
     if (heightChanged || pinSizeChanged) {
       bottombar.setAttribute('transform', `translate(0,${height - pinSize})`)
 
-      toggle.setAttribute('r', (height - pinSize) / 2)
+      toggle.setAttribute('r', (height - pinSize) / 3)
       toggle.setAttribute('cx', -height / 2)
       toggle.setAttribute('cy', height / 2)
     }
@@ -355,12 +379,6 @@ class FlowViewNode extends Component {
         this.outRef[pinId] = pin
       }
     })
-  }
-
-  showInspector () {
-    this.createInspectorContainer()
-
-    this.deleteInspectorContainer()
   }
 }
 

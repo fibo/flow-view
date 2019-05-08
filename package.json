@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "bindme": "^1.0.2",
+    "dextop": "^0.5.0",
     "pdsp": "^0.1.0",
     "static-props": "^1.1.2"
   },

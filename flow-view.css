@@ -30,6 +30,10 @@
   background: var(--fv-canvas-background-color);
 }
 
+.FlowViewPinBar > rect {
+  fill: var(--fv-pin-bar-background-color)
+}
+
 .FlowViewNodeContent {
   background: var(--fv-node-background-color);
 }

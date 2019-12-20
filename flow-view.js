@@ -46,11 +46,27 @@ export class FlowViewComponent {
   createSvgElement (qualifiedName) {
     return this.appendChild(document.createElementNS('http://www.w3.org/2000/svg', qualifiedName))
   }
+  /**
+   * Cleanup component.
+   *
+   * Override this method to add actions to be done on component disposing.
+   *
+   * Notice that it is not necessary event listener it they are attached to its container.
+   *
+   * In case of overriding you must call also `super.dispose()`.
+   */
+  dispose () {
+    this.container.remove()
+  }
 
-  dispose () { this.container.remove() }
-
-  generateId () { return Math.random().toString(36).substring(8, 15) }
-
+  generateId () {
+    return Math.random().toString(36).substring(8, 15)
+  }
+  /**
+   * Toggle highlight CSS class modifier.
+   *
+   * @param {Boolean} enable
+   */
   highlight (enable) {
     const { container } = this
     const className = this.constructor.name
@@ -61,16 +77,14 @@ export class FlowViewComponent {
       container.classList.remove(`${className}--highlighted`)
     }
   }
-
-  toggleHighlighting () {
-    const className = this.constructor.name
-
-    this.container.classList.toggle(`${className}--highlighted`)
-  }
 }
 
 export class FlowViewBox extends FlowViewComponent {
-  constructor ({ container, dimensions }) {
+  constructor ({
+    container,
+    dimensions,
+    position = { x: 0, y: 0 }
+  }) {
     super({ container })
 
     Object.defineProperties(this, {
@@ -83,10 +97,21 @@ export class FlowViewBox extends FlowViewComponent {
           container.setAttribute('width', width)
           container.setAttribute('height', height)
         }
+      },
+      position: {
+        get: () => ({
+          x: container.getAttribute('y'),
+          y: container.getAttribute('x')
+        }),
+        set: ({ x, y }) => {
+          container.setAttribute('x', x)
+          container.setAttribute('y', y)
+        }
       }
     })
 
     this.dimensions = dimensions
+    this.position = position
   }
 }
 
@@ -122,7 +147,16 @@ export class FlowViewOutput extends FlowViewComponent {
   }
 }
 
-export class FlowViewPinBar extends FlowViewComponent {}
+export class FlowViewPinBar extends FlowViewComponent {
+  constructor ({ container, dimensions }) {
+    super({ container })
+
+    const rect = new FlowViewBox({
+      container: this.createSvgElement('rect'),
+      dimensions
+    })
+  }
+}
 
 export class FlowViewCreator extends FlowViewComponent {}
 
@@ -134,9 +168,10 @@ export class FlowViewNodeContent extends FlowViewBox {
   constructor ({
     canvas,
     container,
-    dimensions
+    dimensions,
+    position
   }) {
-    super({ container, dimensions })
+    super({ container, dimensions, position })
 
     Object.defineProperties(this, {
       canvas: { value: canvas },
@@ -158,6 +193,8 @@ export class FlowViewNode extends FlowViewComponent {
   }) {
     super({ container })
 
+    const { gridUnit } = canvas
+
     const inputBarContainer = this.createSvgElement('g')
     const contentContainer = this.createSvgElement('foreignObject')
     const outputBarContainer = this.createElement('g')
@@ -165,16 +202,25 @@ export class FlowViewNode extends FlowViewComponent {
     // Define `canvas` first, since it is used by other code below.
     Object.defineProperty(this, 'canvas', { value: canvas })
 
+    const { width, height } = this.computeDimensions(nodeJson)
+
     const content = new NodeContentClass({
       canvas,
       container: contentContainer,
-      dimensions: this.computeDimensions(nodeJson)
+      dimensions: { width, height },
+      position: { x: 0, y: gridUnit }
     })
 
     Object.defineProperties(this, {
       content: { value: content },
-      inputBar: { value: new FlowViewPinBar({ container: inputBarContainer }) },
-      outputBar: { value: new FlowViewPinBar({ container: outputBarContainer }) }
+      inputBar: { value: new FlowViewPinBar({
+        container: inputBarContainer,
+        dimensions: { width, height: gridUnit }
+      })},
+      outputBar: { value: new FlowViewPinBar({
+        container: outputBarContainer,
+        dimensions: { width, height: gridUnit }
+      })}
     })
 
     content.render(nodeJson)
@@ -211,6 +257,7 @@ class FlowViewTextRuler extends FlowViewComponent {
 
 export class FlowViewCanvas extends FlowViewComponent {
   constructor (container, {
+    gridUnit = 10,
     LinkClass = FlowViewLink,
     NodeClass = FlowViewNode
   } = {}) {
@@ -218,6 +265,7 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     Object.defineProperties(this, {
       fontSize: { get: () => parseInt(this.style.fontSize) },
+      gridUnit: { value: gridUnit },
       links: { value: new Map() },
       nodes: { value: new Map() },
       LinkClass: { value: LinkClass },

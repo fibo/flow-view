@@ -1,0 +1,35 @@
+:root {
+  --fv-canvas-background-color: #f4f4f4;
+  --fv-font-family: Courier;
+  --fv-font-size: 16px;
+  --fv-margin: .25em;
+  --fv-padding: .25em;
+  --fv-node-background-color: #fefefe;
+  --fv-inspector-background-color: #f1f1f1;
+  --fv-pin-size: .5em;
+  --fv-pin-background-color: #c0c0c0;
+  --fv-pin-bar-background-color: #e4e4e4;
+  --fv-shadow-color: rgba(0, 0, 0, 0.17);
+}
+
+.FlowViewCanvas {
+  font-family: var(--fv-font-family);
+  font-size: var(--fv-font-size);
+}
+
+/* Styles attributes required to calculate text dimensions. */
+.FlowViewTextRuler {
+  height: auto;
+  width: auto;
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+.FlowViewCanvas > svg {
+  background: var(--fv-canvas-background-color);
+}
+
+.FlowViewNodeContent {
+  background: var(--fv-node-background-color);
+}

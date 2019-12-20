@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>Flow View</title>
+
+  <style>
+    body {
+      margin: 1rem;
+    }
+
+    #canvas1 {
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Flow View</h1>
+
+  <div id="canvas1"></div>
+
+  <script type="module">
+    import { FlowViewCanvas } from './flow-view.js'
+
+    const canvas1 = new FlowViewCanvas(document.getElementById('canvas1'))
+
+    const node1 = canvas1.createNode({ position: { top: 20, left: 50 }, text: 'Drag me' })
+//    const node2 = canvas1.createNode({ position: { top: 100, left: 100 }, text: 'I am a node' })
+//    const link1 = canvas1.createLink()
+
+    const source1 = node1.createOutput()
+//    const target1 = node2.createInput()
+
+//    canvas1.connect(source1).to(link1)
+//    canvas1.connect(target1).to(link1)
+  </script>
+
+  <link rel="stylesheet" href="./flow-view.css">
+</body>
+</html>

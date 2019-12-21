@@ -79,6 +79,25 @@ export class FlowViewComponent {
   }
 }
 
+export class FlowViewGroup extends FlowViewComponent {
+  constructor ({ container, id, position }) {
+    super({ container, id })
+
+    let { x, y } = position
+
+    Object.defineProperties(this, {
+      position: {
+        get: () => ({ x, y }),
+        set: ({ x, y }) => {
+          container.setAttribute('transform', `translate(${x},${y})`)
+        }
+      }
+    })
+
+    this.position = position
+  }
+}
+
 export class FlowViewBox extends FlowViewComponent {
   constructor ({
     container,
@@ -115,11 +134,9 @@ export class FlowViewBox extends FlowViewComponent {
   }
 }
 
-export class FlowViewPin extends FlowViewComponent {}
-
-export class FlowViewInput extends FlowViewComponent {
-  constructor ({ container, id, index }) {
-    super({ container, id, index })
+export class FlowViewInput extends FlowViewBox {
+  constructor (args) {
+    super(args)
 
     let linkId = null
 
@@ -132,9 +149,9 @@ export class FlowViewInput extends FlowViewComponent {
   }
 }
 
-export class FlowViewOutput extends FlowViewComponent {
-  constructor ({ container, id, index }) {
-    super({ container, id, index })
+export class FlowViewOutput extends FlowViewBox {
+  constructor (args) {
+    super(args)
 
     const linkIds = new Set()
 
@@ -148,12 +165,13 @@ export class FlowViewOutput extends FlowViewComponent {
 }
 
 export class FlowViewPinBar extends FlowViewComponent {
-  constructor ({ container, dimensions }) {
+  constructor ({ container, dimensions, position }) {
     super({ container })
 
     const rect = new FlowViewBox({
       container: this.createSvgElement('rect'),
-      dimensions
+      dimensions,
+      position
     })
   }
 }
@@ -165,85 +183,130 @@ export class FlowViewLink extends FlowViewComponent {}
 export class FlowViewInspector extends FlowViewComponent {}
 
 export class FlowViewNodeText extends FlowViewComponent {
-  render ({ text }) {
-    this.container.innerHTML = text
+  render (nodeJson) {
+    this.container.innerHTML = nodeJson.text
   }
 }
 
+Object.defineProperty(FlowViewNodeText, 'computeDimensions', {
+  value: ({ canvas, nodeJson }) => {
+    const dimensions = canvas.textRuler.sizeOfText(
+      // Add an extra character for padding.
+      nodeJson.text + 'x'
+    )
+
+    return canvas.ceilDimensions(dimensions)
+  }
+})
+
 export class FlowViewNodeContent extends FlowViewBox {
   constructor ({
-    canvas,
     container,
     dimensions,
-    NodeContentRootClass = FlowViewNodeText,
+    NodeContentRootClass,
     position
   }) {
     super({ container, dimensions, position })
 
     Object.defineProperties(this, {
-      canvas: { value: canvas },
-      root: { value: new NodeContentRootClass({ container: this.createElement('div') }) }
+      root: { value: new NodeContentRootClass({
+        container: this.createElement('div')
+      })}
     })
   }
 }
 
-export class FlowViewNode extends FlowViewComponent {
+export class FlowViewNode extends FlowViewGroup {
   constructor ({
     canvas,
     container,
+    id,
     nodeJson,
-    NodeContentClass = FlowViewNodeContent
+    NodeContentRootClass = FlowViewNodeText
   }) {
-    super({ container })
+    super({
+      container,
+      id,
+      position: canvas.ceilPosition(nodeJson)
+    })
 
     const { gridUnit } = canvas
 
     const inputBarContainer = this.createSvgElement('g')
     const contentContainer = this.createSvgElement('foreignObject')
-    const outputBarContainer = this.createElement('g')
+    const outputBarContainer = this.createSvgElement('g')
 
-    // Define `canvas` first, since it is used by other code below.
-    Object.defineProperty(this, 'canvas', { value: canvas })
+    const { width, height } = NodeContentRootClass.computeDimensions({ canvas, nodeJson })
 
-    const { width, height } = this.computeDimensions(nodeJson)
-
-    const content = new NodeContentClass({
+    const content = new FlowViewNodeContent({
       canvas,
       container: contentContainer,
       dimensions: { width, height },
+      NodeContentRootClass,
       position: { x: 0, y: gridUnit }
     })
 
+    const outputBarPosition = () => {
+      return { x: 0, y: gridUnit + height }
+    }
+
+    const pinBarDimensions = () => {
+      return { width, height: gridUnit }
+    }
+
     Object.defineProperties(this, {
+      canvas: { value: canvas },
       content: { value: content },
       inputBar: { value: new FlowViewPinBar({
         container: inputBarContainer,
-        dimensions: { width, height: gridUnit }
+        dimensions: pinBarDimensions()
       })},
-      outputBar: { value: new FlowViewPinBar({
+      inputs: { value: new Map() },
+      outputBar: {
+        value: new FlowViewPinBar({
         container: outputBarContainer,
-        dimensions: { width, height: gridUnit }
-      })}
+        dimensions: pinBarDimensions(),
+        position: outputBarPosition()
+      })},
+      outputBarPosition: {
+        get: outputBarPosition
+      },
+      outputs: { value: new Map() }
     })
 
     content.root.render(nodeJson)
   }
 
-  computeDimensions (nodeJson) {
-    const { width, height } = this.canvas.textRuler.sizeOfText(
-      // Add an extra character for padding.
-      nodeJson.text + 'x'
-    )
+  createInput () {
+    const { gridUnit } = this.canvas
+    const index = this.inputs.size
 
-    return {
-      width: Math.ceil(width),
-      height: Math.ceil(height)
-    }
+    const input = new FlowViewInput({
+      container: this.inputBar.createSvgElement('rect'),
+      id: this.generateId(),
+      dimensions: { width: gridUnit, height: gridUnit }
+    })
+
+    this.inputs.set(index, input)
+
+    return input
   }
 
-  createInput () {}
+  createOutput () {
+    const { gridUnit } = this.canvas
+    const index = this.outputs.size
 
-  createOutput () {}
+    const output = new FlowViewOutput({
+      container: this.outputBar.createSvgElement('rect'),
+      id: this.generateId(),
+      dimensions: { width: gridUnit, height: gridUnit },
+      position: this.outputBarPosition
+    })
+
+    this.outputs.set(index, output)
+
+    return output
+  }
 }
 
 /**
@@ -323,4 +386,29 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     return node
   }
+
+  ceilDimensions ({ width = 0, height = 0 }) {
+    const [a, b] = this.ceilVector([ width, height ])
+
+    return { width: a, height: b }
+  }
+
+  ceilPosition ({ x = 0, y = 0 }) {
+    const [a, b] = this.ceilVector([ x, y ])
+
+    return { x: a, y: b }
+  }
+
+  ceilVector ([a, b]) {
+    const { gridUnit } = this
+
+    const aInt = Math.floor(a)
+    const bInt = Math.floor(b)
+
+    return [
+      (aInt % gridUnit) === 0 ? aInt : aInt + gridUnit - (aInt % gridUnit),
+      (aInt % gridUnit) === 0 ? bInt : bInt + gridUnit - (bInt % gridUnit)
+    ]
+  }
+
 }

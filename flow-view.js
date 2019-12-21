@@ -164,23 +164,26 @@ export class FlowViewLink extends FlowViewComponent {}
 
 export class FlowViewInspector extends FlowViewComponent {}
 
+export class FlowViewNodeText extends FlowViewComponent {
+  render ({ text }) {
+    this.container.innerHTML = text
+  }
+}
+
 export class FlowViewNodeContent extends FlowViewBox {
   constructor ({
     canvas,
     container,
     dimensions,
+    NodeContentRootClass = FlowViewNodeText,
     position
   }) {
     super({ container, dimensions, position })
 
     Object.defineProperties(this, {
       canvas: { value: canvas },
-      root: { value: new FlowViewComponent({ container: this.createElement('div') }) }
+      root: { value: new NodeContentRootClass({ container: this.createElement('div') }) }
     })
-  }
-
-  render ({ text }) {
-    this.root.container.innerHTML = text
   }
 }
 
@@ -223,11 +226,14 @@ export class FlowViewNode extends FlowViewComponent {
       })}
     })
 
-    content.render(nodeJson)
+    content.root.render(nodeJson)
   }
 
   computeDimensions (nodeJson) {
-    const { width, height } = this.canvas.textRuler.sizeOfText(nodeJson.text)
+    const { width, height } = this.canvas.textRuler.sizeOfText(
+      // Add an extra character for padding.
+      nodeJson.text + 'x'
+    )
 
     return {
       width: Math.ceil(width),

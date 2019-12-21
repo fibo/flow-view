@@ -37,3 +37,8 @@
 .FlowViewNodeContent {
   background: var(--fv-node-background-color);
 }
+
+.FlowViewNodeText {
+  user-select: none;
+  text-align: center;
+}

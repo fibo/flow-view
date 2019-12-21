@@ -101,13 +101,13 @@ export class FlowViewGroup extends FlowViewComponent {
 export class FlowViewBox extends FlowViewComponent {
   constructor ({
     container,
-    dimensions,
+    dimension,
     position = { x: 0, y: 0 }
   }) {
     super({ container })
 
     Object.defineProperties(this, {
-      dimensions: {
+      dimension: {
         get: () => ({
           width: container.getAttribute('width'),
           height: container.getAttribute('height')
@@ -129,7 +129,7 @@ export class FlowViewBox extends FlowViewComponent {
       }
     })
 
-    this.dimensions = dimensions
+    this.dimension = dimension
     this.position = position
   }
 }
@@ -165,12 +165,12 @@ export class FlowViewOutput extends FlowViewBox {
 }
 
 export class FlowViewPinBar extends FlowViewComponent {
-  constructor ({ container, dimensions, position }) {
+  constructor ({ container, dimension, position }) {
     super({ container })
 
     const rect = new FlowViewBox({
       container: this.createSvgElement('rect'),
-      dimensions,
+      dimension,
       position
     })
   }
@@ -188,25 +188,25 @@ export class FlowViewNodeText extends FlowViewComponent {
   }
 }
 
-Object.defineProperty(FlowViewNodeText, 'computeDimensions', {
+Object.defineProperty(FlowViewNodeText, 'computedimension', {
   value: ({ canvas, nodeJson }) => {
-    const dimensions = canvas.textRuler.sizeOfText(
+    const dimension = canvas.textRuler.sizeOfText(
       // Add an extra character for padding.
       nodeJson.text + 'x'
     )
 
-    return canvas.ceilDimensions(dimensions)
+    return canvas.ceilDimension(dimension)
   }
 })
 
 export class FlowViewNodeContent extends FlowViewBox {
   constructor ({
     container,
-    dimensions,
+    dimension,
     NodeContentRootClass,
     position
   }) {
-    super({ container, dimensions, position })
+    super({ container, dimension, position })
 
     Object.defineProperties(this, {
       root: { value: new NodeContentRootClass({
@@ -236,12 +236,12 @@ export class FlowViewNode extends FlowViewGroup {
     const contentContainer = this.createSvgElement('foreignObject')
     const outputBarContainer = this.createSvgElement('g')
 
-    const { width, height } = NodeContentRootClass.computeDimensions({ canvas, nodeJson })
+    const { width, height } = NodeContentRootClass.computedimension({ canvas, nodeJson })
 
     const content = new FlowViewNodeContent({
       canvas,
       container: contentContainer,
-      dimensions: { width, height },
+      dimension: { width, height },
       NodeContentRootClass,
       position: { x: 0, y: gridUnit }
     })
@@ -250,7 +250,7 @@ export class FlowViewNode extends FlowViewGroup {
       return { x: 0, y: gridUnit + height }
     }
 
-    const pinBarDimensions = () => {
+    const pinBarDimension = () => {
       return { width, height: gridUnit }
     }
 
@@ -259,13 +259,13 @@ export class FlowViewNode extends FlowViewGroup {
       content: { value: content },
       inputBar: { value: new FlowViewPinBar({
         container: inputBarContainer,
-        dimensions: pinBarDimensions()
+        dimension: pinBarDimension()
       })},
       inputs: { value: new Map() },
       outputBar: {
         value: new FlowViewPinBar({
         container: outputBarContainer,
-        dimensions: pinBarDimensions(),
+        dimension: pinBarDimension(),
         position: outputBarPosition()
       })},
       outputBarPosition: {
@@ -284,7 +284,7 @@ export class FlowViewNode extends FlowViewGroup {
     const input = new FlowViewInput({
       container: this.inputBar.createSvgElement('rect'),
       id: this.generateId(),
-      dimensions: { width: gridUnit, height: gridUnit }
+      dimension: { width: gridUnit, height: gridUnit }
     })
 
     this.inputs.set(index, input)
@@ -299,7 +299,7 @@ export class FlowViewNode extends FlowViewGroup {
     const output = new FlowViewOutput({
       container: this.outputBar.createSvgElement('rect'),
       id: this.generateId(),
-      dimensions: { width: gridUnit, height: gridUnit },
+      dimension: { width: gridUnit, height: gridUnit },
       position: this.outputBarPosition
     })
 
@@ -324,6 +324,35 @@ class FlowViewTextRuler extends FlowViewComponent {
   }
 }
 
+export class FlowViewSvgLayer extends FlowViewBox {
+  constructor ({
+    container,
+    dimension = { width: 0, height: 0 },
+    position = { x: 0, y: 0 }
+  }) {
+    super({ container, dimension, position })
+
+    Object.defineProperties(this, {
+      viewBox: {
+        get: () => Object.assign({}, this.position, this.dimension),
+        set: ({
+          x = this.position.x,
+          y = this.position.y,
+          width = this.dimension.width,
+          height = this.dimension.height
+        }) => {
+          this.position = { x, y }
+          this.dimension = { width, height }
+
+          container.setAttribute('viewBox', `${x} ${y} ${width} ${height}`)
+        }
+      }
+    })
+
+    container.setAttribute('viewBox', `${x} ${y} ${width} ${height}`)
+  }
+}
+
 export class FlowViewCanvas extends FlowViewComponent {
   constructor (container, {
     gridUnit = 10,
@@ -331,6 +360,8 @@ export class FlowViewCanvas extends FlowViewComponent {
     NodeClass = FlowViewNode
   } = {}) {
     super({ container })
+
+    const svgLayerContainer = this.createSvgElement('svg')
 
     Object.defineProperties(this, {
       fontSize: { get: () => parseInt(this.style.fontSize) },
@@ -341,9 +372,8 @@ export class FlowViewCanvas extends FlowViewComponent {
       NodeClass: { value: NodeClass },
       svgLayer: {
         value: new FlowViewBox({
-          container: this.createSvgElement('svg'),
-          // Fit SVG layer initially.
-          dimensions: this.boundingClientRect
+          container: svgLayerContainer,
+          dimension: this.boundingClientRect
         })
       },
       textRuler: {
@@ -387,7 +417,7 @@ export class FlowViewCanvas extends FlowViewComponent {
     return node
   }
 
-  ceilDimensions ({ width = 0, height = 0 }) {
+  ceilDimension ({ width = 0, height = 0 }) {
     const [a, b] = this.ceilVector([ width, height ])
 
     return { width: a, height: b }
@@ -410,5 +440,4 @@ export class FlowViewCanvas extends FlowViewComponent {
       (aInt % gridUnit) === 0 ? bInt : bInt + gridUnit - (bInt % gridUnit)
     ]
   }
-
 }

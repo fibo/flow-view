@@ -30,7 +30,7 @@
   background: var(--fv-canvas-background-color);
 }
 
-.FlowViewPinBar > rect {
+.FlowViewPinBar > .FlowViewBox {
   fill: var(--fv-pin-bar-background-color)
 }
 
@@ -41,4 +41,8 @@
 .FlowViewNodeText {
   user-select: none;
   text-align: center;
+}
+
+.FlowViewInput, .FlowViewOutput {
+  fill: var(--fv-pin-background-color);
 }

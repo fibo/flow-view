@@ -1,15 +1,13 @@
 :root {
-  --fv-canvas-background-color: #f4f4f4;
+  --fv-canvas-background-color: #f8f8f8;
   --fv-font-family: Courier;
   --fv-font-size: 16px;
-  --fv-margin: .25em;
-  --fv-padding: .25em;
-  --fv-node-background-color: #fefefe;
-  --fv-inspector-background-color: #f1f1f1;
-  --fv-pin-size: .5em;
-  --fv-pin-background-color: #c0c0c0;
-  --fv-pin-bar-background-color: #e4e4e4;
-  --fv-shadow-color: rgba(0, 0, 0, 0.17);
+  --fv-node-background-color: white;
+  --fv-pin-background-color: darkgray;
+  --fv-pin-bar-background-color: gainsboro;
+  --fv-primary-color-1: #a9dfbf;
+  --fv-primary-color-2: mediumaquamarine;
+  --fv-primary-color-3: mediumseagreen;
 }
 
 .FlowViewCanvas {
@@ -34,6 +32,10 @@
   fill: var(--fv-pin-bar-background-color)
 }
 
+.FlowViewNode--highlighted > .FlowViewPinBar > .FlowViewBox {
+  fill: var(--fv-primary-color-1);
+}
+
 .FlowViewNodeContent {
   background: var(--fv-node-background-color);
 }
@@ -43,6 +45,18 @@
   text-align: center;
 }
 
-.FlowViewInput, .FlowViewOutput {
+.FlowViewInput,
+.FlowViewOutput {
   fill: var(--fv-pin-background-color);
+}
+
+.FlowViewInput--highlighted,
+.FlowViewOutput--highlighted {
+  fill: var(--fv-primary-color-3);
+}
+
+.FlowViewNode--highlighted .FlowViewInput,
+.FlowViewNode--highlighted .FlowViewOutput
+{
+  fill: var(--fv-primary-color-2);
 }

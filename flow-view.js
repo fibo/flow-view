@@ -1,6 +1,10 @@
 /**
  * Flow View Component base class.
  *
+ * @typedef {FlowViewComponentArgs}
+ * @prop {HTMLElement|SVGElement} container
+ * @prop {String=} id
+ *
  * @example
  *
  * export class MyComponent extends FlowViewComponent {
@@ -14,6 +18,8 @@
  *     ...
  *   }
  * }
+ *
+ * @param {FlowViewComponentArgs} args
  */
 export class FlowViewComponent {
   constructor ({ container, id }) {
@@ -88,7 +94,9 @@ export class FlowViewGroup extends FlowViewComponent {
     Object.defineProperties(this, {
       position: {
         get: () => ({ x, y }),
-        set: ({ x, y }) => {
+        set: ({ x: xx, y: yy }) => {
+          x = xx
+          y = yy
           container.setAttribute('transform', `translate(${x},${y})`)
         }
       }
@@ -109,8 +117,8 @@ export class FlowViewBox extends FlowViewComponent {
     Object.defineProperties(this, {
       dimension: {
         get: () => ({
-          width: container.getAttribute('width'),
-          height: container.getAttribute('height')
+          width: Number(container.getAttribute('width')),
+          height: Number(container.getAttribute('height'))
         }),
         set: ({ width, height }) => {
           container.setAttribute('width', width)
@@ -119,8 +127,8 @@ export class FlowViewBox extends FlowViewComponent {
       },
       position: {
         get: () => ({
-          x: container.getAttribute('y'),
-          y: container.getAttribute('x')
+          x: Number(container.getAttribute('x')),
+          y: Number(container.getAttribute('y'))
         }),
         set: ({ x, y }) => {
           container.setAttribute('x', x)
@@ -134,7 +142,17 @@ export class FlowViewBox extends FlowViewComponent {
   }
 }
 
-export class FlowViewInput extends FlowViewBox {
+export class FlowViewPin extends FlowViewBox {
+  constructor ({ container, dimension, position }) {
+    super({ container, dimension, position })
+
+    container.addEventListener('mouseenter', () => this.highlight(true))
+
+    container.addEventListener('mouseleave', () => this.highlight(false))
+  }
+}
+
+export class FlowViewInput extends FlowViewPin {
   constructor (args) {
     super(args)
 
@@ -149,7 +167,7 @@ export class FlowViewInput extends FlowViewBox {
   }
 }
 
-export class FlowViewOutput extends FlowViewBox {
+export class FlowViewOutput extends FlowViewPin {
   constructor (args) {
     super(args)
 
@@ -168,10 +186,14 @@ export class FlowViewPinBar extends FlowViewComponent {
   constructor ({ container, dimension, position }) {
     super({ container })
 
-    const rect = new FlowViewBox({
-      container: this.createSvgElement('rect'),
-      dimension,
-      position
+    Object.defineProperties(this, {
+      rect: {
+        value: new FlowViewBox({
+          container: this.createSvgElement('rect'),
+          dimension,
+          position
+        })
+      }
     })
   }
 }
@@ -195,7 +217,7 @@ Object.defineProperty(FlowViewNodeText, 'computedimension', {
       nodeJson.text + 'x'
     )
 
-    return canvas.ceilDimension(dimension)
+    return canvas.roundDimension(dimension)
   }
 })
 
@@ -209,9 +231,11 @@ export class FlowViewNodeContent extends FlowViewBox {
     super({ container, dimension, position })
 
     Object.defineProperties(this, {
-      root: { value: new NodeContentRootClass({
-        container: this.createElement('div')
-      })}
+      root: {
+        value: new NodeContentRootClass({
+          container: this.createElement('div')
+        })
+      }
     })
   }
 }
@@ -227,7 +251,7 @@ export class FlowViewNode extends FlowViewGroup {
     super({
       container,
       id,
-      position: canvas.ceilPosition(nodeJson)
+      position: canvas.roundPosition(nodeJson)
     })
 
     const { gridUnit } = canvas
@@ -257,17 +281,20 @@ export class FlowViewNode extends FlowViewGroup {
     Object.defineProperties(this, {
       canvas: { value: canvas },
       content: { value: content },
-      inputBar: { value: new FlowViewPinBar({
-        container: inputBarContainer,
-        dimension: pinBarDimension()
-      })},
+      inputBar: {
+        value: new FlowViewPinBar({
+          container: inputBarContainer,
+          dimension: pinBarDimension()
+        })
+      },
       inputs: { value: new Map() },
       outputBar: {
         value: new FlowViewPinBar({
-        container: outputBarContainer,
-        dimension: pinBarDimension(),
-        position: outputBarPosition()
-      })},
+          container: outputBarContainer,
+          dimension: pinBarDimension(),
+          position: outputBarPosition()
+        })
+      },
       outputBarPosition: {
         get: outputBarPosition
       },
@@ -275,6 +302,12 @@ export class FlowViewNode extends FlowViewGroup {
     })
 
     content.root.render(nodeJson)
+
+    container.addEventListener('click', event => event.stopPropagation())
+
+    container.addEventListener('mousedown', () => {
+      canvas.selectNode(true, this)
+    })
   }
 
   createInput () {
@@ -349,7 +382,13 @@ export class FlowViewSvgLayer extends FlowViewBox {
       }
     })
 
-    container.setAttribute('viewBox', `${x} ${y} ${width} ${height}`)
+    container.setAttribute('viewBox', `${position.x} ${position.y} ${dimension.width} ${dimension.height}`)
+  }
+
+  translate (vector) {
+    const { x, y } = this.viewBox
+
+    this.viewBox = { x: x - vector.x, y: y - vector.y }
   }
 }
 
@@ -361,8 +400,6 @@ export class FlowViewCanvas extends FlowViewComponent {
   } = {}) {
     super({ container })
 
-    const svgLayerContainer = this.createSvgElement('svg')
-
     Object.defineProperties(this, {
       fontSize: { get: () => parseInt(this.style.fontSize) },
       gridUnit: { value: gridUnit },
@@ -370,9 +407,10 @@ export class FlowViewCanvas extends FlowViewComponent {
       nodes: { value: new Map() },
       LinkClass: { value: LinkClass },
       NodeClass: { value: NodeClass },
+      selectedNodes: { value: new Set() },
       svgLayer: {
-        value: new FlowViewBox({
-          container: svgLayerContainer,
+        value: new FlowViewSvgLayer({
+          container: this.createSvgElement('svg'),
           dimension: this.boundingClientRect
         })
       },
@@ -380,6 +418,86 @@ export class FlowViewCanvas extends FlowViewComponent {
         value: new FlowViewTextRuler({ container: this.createElement('div') })
       }
     })
+
+    let isDragging = false
+    let dragStartedTimeoutId
+    let dragStartedMoving = false
+    const dragTimeout = 300
+    let currentX, currentY
+
+    const dragStart = ({ offsetX, offsetY }) => {
+      clearTimeout(dragStartedTimeoutId)
+
+      dragStartedMoving = false
+
+      dragStartedTimeoutId = setTimeout(() => {
+        dragStartedTimeoutId = null
+        isDragging = true
+      }, dragTimeout)
+    }
+
+    const dragEnd = () => {
+      isDragging = false
+    }
+
+    const dragMove = ({ offsetX, offsetY }) => {
+      const { selectedNodes, svgLayer } = this
+
+      if (isDragging) {
+        // Smooth drag start: if drag started moving now, update current pointer position.
+        // This happens after `dragTimeout` milliseconds.
+        if (dragStartedMoving === false) {
+          dragStartedMoving = true
+          currentX = offsetX
+          currentY = offsetY
+        }
+
+        if (selectedNodes.size > 0) {
+          // Move selected nodes.
+        } else {
+          svgLayer.translate({ x: offsetX - currentX, y: offsetY - currentY })
+        }
+
+        currentX = offsetX
+        currentY = offsetY
+      }
+    }
+
+    container.addEventListener('mouseup', () => {
+      clearTimeout(dragStartedTimeoutId)
+
+      if (isDragging) {
+        dragEnd()
+      }
+    })
+
+    container.addEventListener('click', () => {
+      if (isDragging) return
+
+      this.clearSelection()
+      console.log('click')
+    })
+
+    container.addEventListener('mousedown', event => {
+      dragStart(event)
+    })
+
+    container.addEventListener('mouseleave', () => {
+      clearTimeout(dragStartedTimeoutId)
+
+      if (isDragging) {
+        dragEnd()
+      }
+    })
+
+    container.addEventListener('mousemove', dragMove)
+  }
+
+  clearSelection () {
+    const { selectedNodes } = this
+
+    selectedNodes.forEach(node => node.highlight(false))
+    selectedNodes.clear()
   }
 
   connect () {
@@ -417,19 +535,19 @@ export class FlowViewCanvas extends FlowViewComponent {
     return node
   }
 
-  ceilDimension ({ width = 0, height = 0 }) {
-    const [a, b] = this.ceilVector([ width, height ])
+  roundDimension ({ width = 0, height = 0 }) {
+    const [a, b] = this.roundVector([ width, height ])
 
     return { width: a, height: b }
   }
 
-  ceilPosition ({ x = 0, y = 0 }) {
-    const [a, b] = this.ceilVector([ x, y ])
+  roundPosition ({ x = 0, y = 0 }) {
+    const [a, b] = this.roundVector([ x, y ])
 
     return { x: a, y: b }
   }
 
-  ceilVector ([a, b]) {
+  roundVector ([a, b]) {
     const { gridUnit } = this
 
     const aInt = Math.floor(a)
@@ -439,5 +557,17 @@ export class FlowViewCanvas extends FlowViewComponent {
       (aInt % gridUnit) === 0 ? aInt : aInt + gridUnit - (aInt % gridUnit),
       (aInt % gridUnit) === 0 ? bInt : bInt + gridUnit - (bInt % gridUnit)
     ]
+  }
+
+  selectNode (enable, node) {
+    const { selectedNodes } = this
+
+    if (enable) {
+      node.highlight(true)
+      selectedNodes.add(node)
+    } else {
+      node.highlight(false)
+      selectedNodes.delete(node)
+    }
   }
 }

@@ -1,3 +1,5 @@
+const dragTimeout = 150
+
 /**
  * Flow View Component base class.
  *
@@ -104,6 +106,12 @@ export class FlowViewGroup extends FlowViewComponent {
 
     this.position = position
   }
+
+  translate (vector) {
+    const { x, y } = this.position
+
+    this.position = { x: x + vector.x, y: y + vector.y }
+  }
 }
 
 export class FlowViewBox extends FlowViewComponent {
@@ -200,9 +208,14 @@ export class FlowViewPinBar extends FlowViewComponent {
 
 export class FlowViewCreator extends FlowViewComponent {}
 
-export class FlowViewLink extends FlowViewComponent {}
-
-export class FlowViewInspector extends FlowViewComponent {}
+export class FlowViewLink extends FlowViewComponent {
+  constructor ({ container, linkJson }) {
+    super({
+      container,
+      id: linkJson.id
+    })
+  }
+}
 
 export class FlowViewNodeText extends FlowViewComponent {
   render (nodeJson) {
@@ -244,13 +257,12 @@ export class FlowViewNode extends FlowViewGroup {
   constructor ({
     canvas,
     container,
-    id,
     nodeJson,
     NodeContentRootClass = FlowViewNodeText
   }) {
     super({
       container,
-      id,
+      id: nodeJson.id,
       position: canvas.roundPosition(nodeJson)
     })
 
@@ -303,10 +315,21 @@ export class FlowViewNode extends FlowViewGroup {
 
     content.root.render(nodeJson)
 
-    container.addEventListener('click', event => event.stopPropagation())
+    container.addEventListener('click', event => {
+      event.stopPropagation()
 
-    container.addEventListener('mousedown', () => {
-      canvas.selectNode(true, this)
+      canvas.dragEnd()
+    })
+
+    container.addEventListener('mousedown', event => {
+      event.stopPropagation()
+
+      canvas.selectNode({
+        multiSelection: event.shiftKey,
+        node: this
+      })
+
+      canvas.dragStart(event)
     })
   }
 
@@ -341,6 +364,8 @@ export class FlowViewNode extends FlowViewGroup {
     return output
   }
 }
+
+export class FlowViewInspector extends FlowViewNode {}
 
 /**
  * Text size calculator.
@@ -400,9 +425,34 @@ export class FlowViewCanvas extends FlowViewComponent {
   } = {}) {
     super({ container })
 
+    let isDragging = false
+    let dragStartedTimeoutId
+    let dragStartedMoving = false
+    let currentX, currentY
+
     Object.defineProperties(this, {
+      dragEnd: {
+        value: () => {
+          clearTimeout(dragStartedTimeoutId)
+
+          isDragging = false
+        }
+      },
+      dragStart: {
+        value: () => {
+          clearTimeout(dragStartedTimeoutId)
+
+          dragStartedMoving = false
+
+          dragStartedTimeoutId = setTimeout(() => {
+            dragStartedTimeoutId = null
+            isDragging = true
+          }, dragTimeout)
+        }
+      },
       fontSize: { get: () => parseInt(this.style.fontSize) },
       gridUnit: { value: gridUnit },
+      isDragging: { get: () => isDragging },
       links: { value: new Map() },
       nodes: { value: new Map() },
       LinkClass: { value: LinkClass },
@@ -419,28 +469,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       }
     })
 
-    let isDragging = false
-    let dragStartedTimeoutId
-    let dragStartedMoving = false
-    const dragTimeout = 300
-    let currentX, currentY
-
-    const dragStart = ({ offsetX, offsetY }) => {
-      clearTimeout(dragStartedTimeoutId)
-
-      dragStartedMoving = false
-
-      dragStartedTimeoutId = setTimeout(() => {
-        dragStartedTimeoutId = null
-        isDragging = true
-      }, dragTimeout)
-    }
-
-    const dragEnd = () => {
-      isDragging = false
-    }
-
-    const dragMove = ({ offsetX, offsetY }) => {
+    const dragMove = ({ clientX, clientY }) => {
       const { selectedNodes, svgLayer } = this
 
       if (isDragging) {
@@ -448,45 +477,41 @@ export class FlowViewCanvas extends FlowViewComponent {
         // This happens after `dragTimeout` milliseconds.
         if (dragStartedMoving === false) {
           dragStartedMoving = true
-          currentX = offsetX
-          currentY = offsetY
+
+          currentX = clientX
+          currentY = clientY
         }
 
         if (selectedNodes.size > 0) {
           // Move selected nodes.
+          selectedNodes.forEach(node => {
+            node.translate({ x: clientX - currentX, y: clientY - currentY })
+          })
         } else {
-          svgLayer.translate({ x: offsetX - currentX, y: offsetY - currentY })
+          // Move canvas.
+          svgLayer.translate({ x: clientX - currentX, y: clientY - currentY })
         }
 
-        currentX = offsetX
-        currentY = offsetY
+        currentX = clientX
+        currentY = clientY
       }
     }
 
-    container.addEventListener('mouseup', () => {
-      clearTimeout(dragStartedTimeoutId)
-
-      if (isDragging) {
-        dragEnd()
-      }
-    })
-
     container.addEventListener('click', () => {
-      if (isDragging) return
-
       this.clearSelection()
-      console.log('click')
+
+      this.dragEnd()
     })
 
     container.addEventListener('mousedown', event => {
-      dragStart(event)
+      this.clearSelection()
+
+      this.dragStart(event)
     })
 
     container.addEventListener('mouseleave', () => {
-      clearTimeout(dragStartedTimeoutId)
-
       if (isDragging) {
-        dragEnd()
+        this.dragEnd()
       }
     })
 
@@ -559,15 +584,14 @@ export class FlowViewCanvas extends FlowViewComponent {
     ]
   }
 
-  selectNode (enable, node) {
+  selectNode ({ multiSelection, node }) {
     const { selectedNodes } = this
 
-    if (enable) {
-      node.highlight(true)
-      selectedNodes.add(node)
-    } else {
-      node.highlight(false)
-      selectedNodes.delete(node)
-    }
+    if (selectedNodes.has(node)) return
+
+    if (!multiSelection) this.clearSelection()
+
+    node.highlight(true)
+    selectedNodes.add(node)
   }
 }

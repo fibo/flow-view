@@ -321,6 +321,12 @@ export class FlowViewNode extends FlowViewGroup {
       canvas.dragEnd()
     })
 
+    container.addEventListener('dblclick', event => {
+      event.stopPropagation()
+
+      console.log('dblclick')
+    })
+
     container.addEventListener('mousedown', event => {
       event.stopPropagation()
 
@@ -330,6 +336,10 @@ export class FlowViewNode extends FlowViewGroup {
       })
 
       canvas.dragStart(event)
+    })
+
+    container.addEventListener('mouseleave', () => {
+      canvas.dragEnd()
     })
   }
 
@@ -436,6 +446,11 @@ export class FlowViewCanvas extends FlowViewComponent {
           clearTimeout(dragStartedTimeoutId)
 
           isDragging = false
+
+          // Snap to grid.
+          this.selectedNodes.forEach(node => {
+            node.position = this.roundPosition(node.position)
+          })
         }
       },
       dragStart: {
@@ -575,12 +590,15 @@ export class FlowViewCanvas extends FlowViewComponent {
   roundVector ([a, b]) {
     const { gridUnit } = this
 
-    const aInt = Math.floor(a)
-    const bInt = Math.floor(b)
+    const aInt = Math.round(a)
+    const bInt = Math.round(b)
+
+    const aIntRest = aInt % gridUnit
+    const bIntRest = bInt % gridUnit
 
     return [
-      (aInt % gridUnit) === 0 ? aInt : aInt + gridUnit - (aInt % gridUnit),
-      (aInt % gridUnit) === 0 ? bInt : bInt + gridUnit - (bInt % gridUnit)
+      aIntRest <= Math.round(gridUnit / 2) ? aInt - aIntRest : aInt + gridUnit - aIntRest,
+      bIntRest <= Math.round(gridUnit / 2) ? bInt - bIntRest : bInt + gridUnit - bIntRest
     ]
   }
 

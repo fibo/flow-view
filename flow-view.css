@@ -60,3 +60,12 @@
 {
   fill: var(--fv-primary-color-2);
 }
+
+.FlowViewCreatorContent > input {
+  padding-left: 0.25rem;
+  border: 0;
+  outline: none;
+  width: 95%;
+  font-family: var(--fv-font-family);
+  font-size: var(--fv-font-size);
+}

@@ -206,8 +206,6 @@ export class FlowViewPinBar extends FlowViewComponent {
   }
 }
 
-export class FlowViewCreator extends FlowViewComponent {}
-
 export class FlowViewLink extends FlowViewComponent {
   constructor ({ container, linkJson }) {
     super({
@@ -375,6 +373,47 @@ export class FlowViewNode extends FlowViewGroup {
   }
 }
 
+export class FlowViewCreatorContent extends FlowViewComponent {
+  constructor ({ container, dimension }) {
+    super({ container })
+  }
+
+  render (nodeJson) {
+    const input = new FlowViewComponent({
+      container: this.createElement('input')
+    })
+
+    input.container.type = 'text'
+    input.container.focus()
+
+    // input.container.addEventListener()
+  }
+}
+
+Object.defineProperty(FlowViewCreatorContent, 'computedimension', {
+  value: ({ canvas, nodeJson }) => {
+    const dimension = canvas.textRuler.sizeOfText('xxxxxxxxxxxxxxx')
+
+    return canvas.roundDimension(dimension)
+  }
+})
+
+export class FlowViewCreator extends FlowViewNode {
+  constructor ({
+    canvas,
+    container,
+    nodeJson,
+    NodeContentRootClass = FlowViewCreatorContent
+  }) {
+    super({
+      canvas,
+      container,
+      NodeContentRootClass,
+      nodeJson
+    })
+  }
+}
+
 export class FlowViewInspector extends FlowViewNode {}
 
 /**
@@ -430,17 +469,35 @@ export class FlowViewSvgLayer extends FlowViewBox {
 export class FlowViewCanvas extends FlowViewComponent {
   constructor (container, {
     gridUnit = 10,
+    CreatorClass = FlowViewCreator,
     LinkClass = FlowViewLink,
     NodeClass = FlowViewNode
   } = {}) {
     super({ container })
 
+    let creator = null
     let isDragging = false
     let dragStartedTimeoutId
     let dragStartedMoving = false
     let currentX, currentY
 
     Object.defineProperties(this, {
+      closeCreator: {
+        value: () => {
+          if (this.hasCreator) {
+            creator.dispose()
+            creator = null
+          }
+        }
+      },
+      creator: {
+        get: () => creator,
+        set: (newCreator) => {
+          this.closeCreator()
+          creator = newCreator
+        }
+      },
+      CreatorClass: { value: CreatorClass },
       dragEnd: {
         value: () => {
           clearTimeout(dragStartedTimeoutId)
@@ -467,6 +524,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       },
       fontSize: { get: () => parseInt(this.style.fontSize) },
       gridUnit: { value: gridUnit },
+      hasCreator: { get: () => creator !== null },
       isDragging: { get: () => isDragging },
       links: { value: new Map() },
       nodes: { value: new Map() },
@@ -512,15 +570,27 @@ export class FlowViewCanvas extends FlowViewComponent {
       }
     }
 
-    container.addEventListener('click', () => {
-      this.clearSelection()
+    container.addEventListener('dblclick', event => {
+      event.stopPropagation()
 
+      const { x, y } = this.boundingClientRect
+      const { clientX, clientY } = event
+
+      this.spawnCreator({ x: clientX - x, y: clientY - y - gridUnit })
+    })
+
+    container.addEventListener('click', event => {
+      event.stopPropagation()
+
+      this.clearSelection()
       this.dragEnd()
+      this.closeCreator()
     })
 
     container.addEventListener('mousedown', event => {
-      this.clearSelection()
+      event.stopPropagation()
 
+      this.clearSelection()
       this.dragStart(event)
     })
 
@@ -611,5 +681,13 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     node.highlight(true)
     selectedNodes.add(node)
+  }
+
+  spawnCreator (position, CreatorClass = this.CreatorClass) {
+    this.creator = new CreatorClass({
+      canvas: this,
+      container: this.svgLayer.createSvgElement('g'),
+      nodeJson: position
+    })
   }
 }

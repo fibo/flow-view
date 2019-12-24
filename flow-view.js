@@ -66,9 +66,11 @@ export class FlowViewComponent {
   dispose () {
     this.container.remove()
   }
-
+  /**
+   * Generate a random id.
+   */
   generateId () {
-    return Math.random().toString(36).substring(8, 15)
+    return Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 4)
   }
   /**
    * Toggle highlight CSS class modifier.

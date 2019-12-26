@@ -36,11 +36,8 @@
   fill: var(--fv-primary-color-1);
 }
 
-.FlowViewNodeContent {
-  background: var(--fv-node-background-color);
-}
-
 .FlowViewNodeText {
+  background: var(--fv-node-background-color);
   user-select: none;
   text-align: center;
 }
@@ -61,7 +58,7 @@
   fill: var(--fv-primary-color-2);
 }
 
-.FlowViewCreatorContent > input {
+.FlowViewCreator input {
   padding-left: 0.25rem;
   border: 0;
   outline: none;

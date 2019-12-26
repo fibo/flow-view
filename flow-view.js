@@ -156,6 +156,10 @@ export class FlowViewPin extends FlowViewBox {
   constructor ({ container, dimension, position }) {
     super({ container, dimension, position })
 
+    container.addEventListener('mousedown', event => {
+      event.stopPropagation()
+    })
+
     container.addEventListener('mouseenter', () => this.highlight(true))
 
     container.addEventListener('mouseleave', () => this.highlight(false))
@@ -217,39 +221,13 @@ export class FlowViewLink extends FlowViewComponent {
   }
 }
 
-export class FlowViewNodeText extends FlowViewComponent {
-  render (nodeJson) {
-    this.container.innerHTML = nodeJson.text
-  }
-}
-
-Object.defineProperty(FlowViewNodeText, 'computedimension', {
-  value: ({ canvas, nodeJson }) => {
-    const dimension = canvas.textRuler.sizeOfText(
-      // Add an extra character for padding.
-      nodeJson.text + 'x'
-    )
-
-    return canvas.roundDimension(dimension)
-  }
-})
-
-export class FlowViewNodeContent extends FlowViewBox {
-  constructor ({
-    container,
-    dimension,
-    NodeContentRootClass,
-    position
-  }) {
+export class FlowViewNodeText extends FlowViewBox {
+  constructor ({ container, dimension, position, text }) {
     super({ container, dimension, position })
 
-    Object.defineProperties(this, {
-      root: {
-        value: new NodeContentRootClass({
-          container: this.createElement('div')
-        })
-      }
-    })
+    const div = new FlowViewComponent({ container: this.createElement('div') })
+
+    div.container.innerHTML = text
   }
 }
 
@@ -257,8 +235,7 @@ export class FlowViewNode extends FlowViewGroup {
   constructor ({
     canvas,
     container,
-    nodeJson,
-    NodeContentRootClass = FlowViewNodeText
+    nodeJson
   }) {
     super({
       container,
@@ -266,54 +243,61 @@ export class FlowViewNode extends FlowViewGroup {
       position: canvas.roundPosition(nodeJson)
     })
 
-    const { gridUnit } = canvas
-
     const inputBarContainer = this.createSvgElement('g')
     const contentContainer = this.createSvgElement('foreignObject')
     const outputBarContainer = this.createSvgElement('g')
 
-    const { width, height } = NodeContentRootClass.computedimension({ canvas, nodeJson })
-
-    const content = new FlowViewNodeContent({
-      canvas,
-      container: contentContainer,
-      dimension: { width, height },
-      NodeContentRootClass,
-      position: { x: 0, y: gridUnit }
+    Object.defineProperties(this, {
+      content: {
+        value: this.spwanContent({
+          canvas,
+          container: contentContainer,
+          nodeJson
+        })
+      }
     })
 
-    const outputBarPosition = () => {
-      return { x: 0, y: gridUnit + height }
-    }
+    Object.defineProperties(this, {
+      outputBarPosition: {
+        get: () => {
+          const { height } = this.content.dimension
 
-    const pinBarDimension = () => {
-      return { width, height: gridUnit }
-    }
+          return {
+            x: 0,
+            y: canvas.gridUnit + height
+          }
+        }
+      },
+      pinBarDimension: {
+        get: () => {
+          const { width } = this.content.dimension
+
+          return {
+            width,
+            height: canvas.gridUnit
+          }
+        }
+      }
+    })
 
     Object.defineProperties(this, {
       canvas: { value: canvas },
-      content: { value: content },
       inputBar: {
         value: new FlowViewPinBar({
           container: inputBarContainer,
-          dimension: pinBarDimension()
+          dimension: this.pinBarDimension
         })
       },
       inputs: { value: new Map() },
       outputBar: {
         value: new FlowViewPinBar({
           container: outputBarContainer,
-          dimension: pinBarDimension(),
-          position: outputBarPosition()
+          dimension: this.pinBarDimension,
+          position: this.outputBarPosition
         })
-      },
-      outputBarPosition: {
-        get: outputBarPosition
       },
       outputs: { value: new Map() }
     })
-
-    content.root.render(nodeJson)
 
     container.addEventListener('click', event => {
       event.stopPropagation()
@@ -336,10 +320,6 @@ export class FlowViewNode extends FlowViewGroup {
       })
 
       canvas.dragStart(event)
-    })
-
-    container.addEventListener('mouseleave', () => {
-      canvas.dragEnd()
     })
   }
 
@@ -373,50 +353,57 @@ export class FlowViewNode extends FlowViewGroup {
 
     return output
   }
+
+  spwanContent ({ canvas, container, nodeJson }) {
+    const dimension = canvas.roundDimension(canvas.textRuler.sizeOfText(
+      // Add an extra character for padding.
+      nodeJson.text + 'x'
+    ))
+
+    const content = new FlowViewNodeText({
+      container,
+      dimension,
+      position: { x: 0, y: canvas.gridUnit },
+      text: nodeJson.text
+    })
+
+    return content
+  }
 }
 
-export class FlowViewCreatorContent extends FlowViewComponent {
-  constructor ({ container, dimension }) {
-    super({ container })
-  }
+export class FlowViewCreator extends FlowViewNode {
+  spwanContent ({ canvas, container, nodeJson }) {
+    const dimension = canvas.roundDimension(canvas.textRuler.sizeOfText('xxxxxxxxxxxxxxxxx'))
 
-  render (nodeJson) {
+    const content = new FlowViewBox({
+      container,
+      dimension,
+      position: { x: 0, y: canvas.gridUnit }
+    })
+
     const input = new FlowViewComponent({
-      container: this.createElement('input')
+      container: content.createElement('input')
     })
 
     input.container.type = 'text'
     input.container.focus()
 
-    // input.container.addEventListener()
-  }
-}
+    input.container.addEventListener('keypress', ({ key, target }) => {
+      switch (key) {
+        case 'Enter':
+          const text = target.value.trim()
 
-Object.defineProperty(FlowViewCreatorContent, 'computedimension', {
-  value: ({ canvas, nodeJson }) => {
-    const dimension = canvas.textRuler.sizeOfText('xxxxxxxxxxxxxxx')
+          if (text !== '') {
+            canvas.createNode({ text, x: nodeJson.x, y: nodeJson.y })
+          }
 
-    return canvas.roundDimension(dimension)
-  }
-})
-
-export class FlowViewCreator extends FlowViewNode {
-  constructor ({
-    canvas,
-    container,
-    nodeJson,
-    NodeContentRootClass = FlowViewCreatorContent
-  }) {
-    super({
-      canvas,
-      container,
-      NodeContentRootClass,
-      nodeJson
+          break
+      }
     })
+
+    return content
   }
 }
-
-export class FlowViewInspector extends FlowViewNode {}
 
 /**
  * Text size calculator.
@@ -512,6 +499,35 @@ export class FlowViewCanvas extends FlowViewComponent {
           })
         }
       },
+      dragMove: {
+        value: ({ clientX, clientY }) => {
+          const { selectedNodes, svgLayer } = this
+
+          if (isDragging) {
+            // Smooth drag start: if drag started moving now, update current pointer position.
+            // This happens after `dragTimeout` milliseconds.
+            if (dragStartedMoving === false) {
+              dragStartedMoving = true
+
+              currentX = clientX
+              currentY = clientY
+            }
+
+            if (selectedNodes.size > 0) {
+              // Move selected nodes.
+              selectedNodes.forEach(node => {
+                node.translate({ x: clientX - currentX, y: clientY - currentY })
+              })
+            } else {
+              // Move canvas.
+              svgLayer.translate({ x: clientX - currentX, y: clientY - currentY })
+            }
+
+            currentX = clientX
+            currentY = clientY
+          }
+        }
+      },
       dragStart: {
         value: () => {
           clearTimeout(dragStartedTimeoutId)
@@ -544,34 +560,6 @@ export class FlowViewCanvas extends FlowViewComponent {
       }
     })
 
-    const dragMove = ({ clientX, clientY }) => {
-      const { selectedNodes, svgLayer } = this
-
-      if (isDragging) {
-        // Smooth drag start: if drag started moving now, update current pointer position.
-        // This happens after `dragTimeout` milliseconds.
-        if (dragStartedMoving === false) {
-          dragStartedMoving = true
-
-          currentX = clientX
-          currentY = clientY
-        }
-
-        if (selectedNodes.size > 0) {
-          // Move selected nodes.
-          selectedNodes.forEach(node => {
-            node.translate({ x: clientX - currentX, y: clientY - currentY })
-          })
-        } else {
-          // Move canvas.
-          svgLayer.translate({ x: clientX - currentX, y: clientY - currentY })
-        }
-
-        currentX = clientX
-        currentY = clientY
-      }
-    }
-
     container.addEventListener('dblclick', event => {
       event.stopPropagation()
 
@@ -602,7 +590,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       }
     })
 
-    container.addEventListener('mousemove', dragMove)
+    container.addEventListener('mousemove', this.dragMove.bind(this))
   }
 
   clearSelection () {
@@ -633,6 +621,8 @@ export class FlowViewCanvas extends FlowViewComponent {
   }
 
   createNode (nodeJson, { NodeClass = this.NodeClass } = {}) {
+    this.closeCreator()
+
     const node = new NodeClass({
       canvas: this,
       container: this.svgLayer.createSvgElement('g'),

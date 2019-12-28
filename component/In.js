@@ -65,7 +65,7 @@ class FlowViewIn extends Pin {
         if (highlighted) {
           dispatch('attachHalfLink', {
             id: frame.draggedLink.id,
-            to: [ nodeId, position ]
+            to: [nodeId, position]
           })
         } else {
           dispatch('deleteHalfLink')

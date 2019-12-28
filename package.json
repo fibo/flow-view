@@ -18,7 +18,6 @@
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
     "example_basic_usage": "NODE_PATH=. budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js",
     "example_empty_canvas": "NODE_PATH=. budo --serve bundle.js --dir examples/empty --open examples/empty/canvas.js",
-    "example_event_emitter": "NODE_PATH=. budo --serve bundle.js --dir examples/event --open examples/event/emitter.js",
     "example_genealogic_tree": "NODE_PATH=. budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js",
     "generate_schema": "markdown2code --lang yaml README.md | cson2json > docs/schema.json",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
@@ -47,20 +46,14 @@
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "dependencies": {
-    "bindme": "^1.0.2",
-    "dextop": "^0.5.0",
-    "pdsp": "^0.1.0",
-    "static-props": "^1.1.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "budo": "^11.3.2",
-    "cson": "^5.1.0",
+    "cson": "^6.9.0",
     "envify": "^4.1.0",
     "is-my-json-valid": "^2.19.0",
     "markdown2code": "^1.0.2",
     "pre-commit": "^1.2.2",
-    "standa": "^12.0.0",
-    "uglify-es": "^3.3.9"
+    "standa": "^14.0.0"
   }
 }

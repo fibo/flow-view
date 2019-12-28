@@ -47,7 +47,7 @@ class FlowViewOut extends Pin {
 
     dispatch('createHalfLink', {
       cursorCoordinates: frame.cursorCoordinates,
-      from: [ nodeId, position ],
+      from: [nodeId, position],
       type: (this.graph.type || null)
     })
   }
@@ -80,7 +80,7 @@ class FlowViewOut extends Pin {
       if (highlighted) {
         dispatch('attachHalfLink', {
           id: frame.draggedLinkId,
-          from: [ nodeId, position ]
+          from: [nodeId, position]
         })
       } else {
         dispatch('deleteHalfLink')

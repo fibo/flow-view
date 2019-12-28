@@ -226,7 +226,7 @@ class FlowViewFrame extends Component {
     if (draggingItems) {
       const nextCursorCoordinates = this.getCoordinates(event)
 
-      let draggingDelta = {
+      const draggingDelta = {
         x: nextCursorCoordinates.x - cursorCoordinates.x,
         y: nextCursorCoordinates.y - cursorCoordinates.y
       }
@@ -400,7 +400,7 @@ class FlowViewFrame extends Component {
 
     graph.links.forEach(({ from, to }) => {
       if (from) {
-        const [ sourceNodeId, sourceNodePosition ] = from
+        const [sourceNodeId, sourceNodePosition] = from
 
         if (typeof connectedOuts[sourceNodeId] === 'undefined') {
           connectedOuts[sourceNodeId] = [sourceNodePosition]
@@ -410,7 +410,7 @@ class FlowViewFrame extends Component {
       }
 
       if (to) {
-        const [ targetNodeId, targetNodePosition ] = to
+        const [targetNodeId, targetNodePosition] = to
 
         if (typeof connectedIns[targetNodeId] === 'undefined') {
           connectedIns[targetNodeId] = [targetNodePosition]

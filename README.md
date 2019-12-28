@@ -42,7 +42,7 @@ Adding this to your HTML page
 
 To import *flow-view* Canvas choose your favourite syntax among:
 
-* `const Canvas = require('flow-view').Canvas`
+* `const { FlowViewCanvas } = require('flow-view')`
 * `import { FlowViewCanvas } from 'flow-view'`
 
 Suppose your *container* is a div with id `drawing`.
@@ -57,7 +57,7 @@ Create an empty canvas.
 ```javascript
 const container = document.getElementById('drawing')
 
-const canvas = new Canvas(container)
+const canvas = new FlowViewCanvas(container)
 ```
 
 If passed to constructor is not an instance of `HTMLDivElement`, a new `div` will be created and appended to `document.body`.
@@ -66,6 +66,8 @@ If passed to constructor is not an instance of `HTMLDivElement`, a new `div` wil
 
 You can load a [graph](#graph-schema) like in the following example.
 
+<!-- sync with examples/basic/usage.js -->
+
 ```javascript
 const graph = {
   nodes: [
@@ -73,7 +75,7 @@ const graph = {
       id: 'a',
       x: 80,
       y: 100,
-      name: 'Drag me',
+      text: 'Drag me',
       outs: [
         { name: 'out1' },
         { name: 'out2' },
@@ -84,44 +86,26 @@ const graph = {
       id: 'b',
       x: 180,
       y: 200,
-      name: 'Click me',
+      text: 'Click me',
       ins: [
-        { name: 'in0' },
-        { name: 'in1', type: 'bool' }
+        { name: 'in1' },
+        { name: 'in2' }
       ],
       outs: [
-        { name: 'return' }
+        { id: 'out4' }
       ]
     }
   ],
   links: [
     {
       id: 'c',
-      from: ['a', 0],
-      to: ['b', 1]
+      from: ['out1'],
+      to: ['in1']
     }
   ]
 }
 
-canvas.loadGraph(graph)
 ```
-
-### Events
-
-See [event/emitter.js][example_event_emitter] example.
-The following events are emitted by [canvas](#canvas):
-
-| name              | arguments               |
-|-------------------|-------------------------|
-| `createLink`      | link, linkId            |
-| `createNode`      | node, nodeId            |
-| `createInputPin`  | [nodeId, position], pin |
-| `createOutputPin` | [nodeId, position], pin |
-| `deleteLink`      | linkId                  |
-| `deleteNode`      | nodeId                  |
-| `deleteInputPin`  | [nodeId, position]      |
-| `deleteOutputPin` | [nodeId, position]      |
-| `endDragging`     | { nodeId: { x, y } }    |
 
 ## Graph schema
 
@@ -135,66 +119,6 @@ properties:
 ```
 
 A flow-view *graph* has [links](#links) and [nodes](#nodes).
-
-### Links
-
-A *graph* can have none, one or many *links*.
-
-```yaml
-  links:
-    type: 'array'
-    items:
-```
-
-Every *link* must have a unique *id*.
-
-```yaml
-      title: 'link'
-      type: 'object'
-      properties:
-        id:
-          type: 'string'
-```
-
-A *link* connects two *nodes*.
-
-It starts *from* a *node output* which is identified by an array of two
-elements that are the source *node id* and the *output position*.
-
-```yaml
-        from:
-          type: 'array'
-          items: [
-            { type: 'string' }
-            { type: 'number' }
-          ]
-          minLength: 2
-          maxLength: 2
-```
-
-It goes *to* a *node input* which is identified by an array of two elements
-that are the target *node id* and the *input position*.
-
-```yaml
-        to:
-          type: 'array'
-          items: [
-            { type: 'string' }
-            { type: 'number' }
-          ]
-          minLength: 2
-          maxLength: 2
-```
-
-All properties are required.
-
-```yaml
-      required: [
-        'id'
-        'from'
-        'to'
-      ]
-```
 
 ### Nodes
 
@@ -232,8 +156,7 @@ A node has a position identified by *x* and *y* coordinates.
           type: 'number'
 ```
 
-A node at the end is a block with inputs and outputs. Both *ins* and *outs*
-must have a *name* and may have a *type*.
+A node at the end is a block with inputs and outputs. Both *ins* and *outs* must have an *id*.
 
 ```yaml
         ins:
@@ -242,12 +165,10 @@ must have a *name* and may have a *type*.
             title: 'in'
             type: 'object'
             properties:
-              name:
-                type: 'string'
-              type:
+              id:
                 type: 'string'
             required: [
-              'name'
+              'id'
             ]
         outs:
           type: 'array'
@@ -255,17 +176,14 @@ must have a *name* and may have a *type*.
             title: 'out'
             type: 'object'
             properties:
-              name:
-                type: 'string'
-              type:
+              id:
                 type: 'string'
             required: [
-              'name'
+              'id'
             ]
 ```
 
-Properties *ins* and *outs* are not required. A node with *ins* not defined
-is a *root*, a node with *outs* not defined is a *leaf*.
+Properties *ins* and *outs* are not required. A node with *ins* not defined is a *root*, a node with *outs* not defined is a *leaf*.
 
 ```yaml
       required: [
@@ -273,6 +191,52 @@ is a *root*, a node with *outs* not defined is a *leaf*.
         'text'
         'x'
         'y'
+      ]
+```
+
+### Links
+
+A *graph* can have none, one or many *links*.
+
+```yaml
+  links:
+    type: 'array'
+    items:
+```
+
+Every *link* must have a unique *id*.
+
+```yaml
+      title: 'link'
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+```
+
+A *link* connects two *nodes*, in particular connects an output of a node to an input of another node.
+
+It starts *from* a *node output*, where *from* holds the output id.
+
+```yaml
+        from:
+          type: 'string'
+```
+
+It goes *to* a *node input*, where *to* holds the input id.
+
+```yaml
+        to:
+          type: 'string'
+```
+
+All properties are required.
+
+```yaml
+      required: [
+        'id'
+        'from'
+        'to'
       ]
 ```
 

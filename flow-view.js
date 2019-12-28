@@ -54,6 +54,7 @@ export class FlowViewComponent {
   createSvgElement (qualifiedName) {
     return this.appendChild(document.createElementNS('http://www.w3.org/2000/svg', qualifiedName))
   }
+
   /**
    * Cleanup component.
    *
@@ -66,12 +67,14 @@ export class FlowViewComponent {
   dispose () {
     this.container.remove()
   }
+
   /**
    * Generate a random id.
    */
   generateId () {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 4)
   }
+
   /**
    * Toggle highlight CSS class modifier.
    *
@@ -698,13 +701,13 @@ export class FlowViewCanvas extends FlowViewComponent {
   }
 
   roundDimension ({ width = 0, height = 0 }) {
-    const [a, b] = this.roundVector([ width, height ])
+    const [a, b] = this.roundVector([width, height])
 
     return { width: a, height: b }
   }
 
   roundPosition ({ x = 0, y = 0 }) {
-    const [a, b] = this.roundVector([ x, y ])
+    const [a, b] = this.roundVector([x, y])
 
     return { x: a, y: b }
   }

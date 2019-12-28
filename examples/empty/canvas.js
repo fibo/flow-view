@@ -1,6 +1,3 @@
-const Canvas = require('flow-view').Canvas
+const { FlowViewCanvas } = require('flow-view')
 
-const canvas = new Canvas()
-
-canvas.showInspector()
-canvas.pinInspector()
+const canvas = new FlowViewCanvas()

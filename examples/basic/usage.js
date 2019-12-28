@@ -1,4 +1,4 @@
-const Canvas = require('flow-view').Canvas
+const { FlowViewCanvas } = require('flow-view')
 
 const graph = {
   nodes: [
@@ -19,19 +19,19 @@ const graph = {
       y: 200,
       text: 'Click me',
       ins: [
-        { name: 'in0' },
-        { name: 'in1' }
+        { name: 'in1' },
+        { name: 'in2' }
       ],
       outs: [
-        { name: 'return' }
+        { id: 'out4' }
       ]
     }
   ],
   links: [
     {
       id: 'c',
-      from: ['a', 0],
-      to: ['b', 0]
+      from: ['out1'],
+      to: ['in1']
     }
   ]
 }

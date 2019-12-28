@@ -81,7 +81,7 @@ class FlowViewRoot extends Component {
     // Text sizes.
     // =================================================================
 
-    let existingNodeIds = []
+    const existingNodeIds = []
 
     graph.nodes.forEach(({ id, text }) => {
       existingNodeIds.push(id)

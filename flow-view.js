@@ -218,6 +218,36 @@ export class FlowViewLink extends FlowViewComponent {
       container,
       id: linkJson.id
     })
+
+    const sourcePoint = { x: 10, y: 10 }
+    const targetPoint = { x: 100, y: 100 }
+
+    Object.defineProperties(this, {
+      line: { value: this.createSvgElement('line') },
+      sourcePoint: {
+        get: () => sourcePoint,
+        set: ({ x, y }) => {
+          sourcePoint.x = x
+          sourcePoint.y = y
+
+          this.line.setAttribute('x1', x)
+          this.line.setAttribute('y1', y)
+        }
+      },
+      targetPoint: {
+        get: () => targetPoint,
+        set: ({ x, y }) => {
+          targetPoint.x = x
+          targetPoint.y = y
+
+          this.line.setAttribute('x2', x)
+          this.line.setAttribute('y2', y)
+        }
+      }
+    })
+
+    this.sourcePoint = sourcePoint
+    this.targetPoint = targetPoint
   }
 }
 
@@ -600,13 +630,43 @@ export class FlowViewCanvas extends FlowViewComponent {
     selectedNodes.clear()
   }
 
-  connect () {
-    return {
-      to: Function.prototype
+  connect (item) {
+    switch (true) {
+      case item instanceof FlowViewLink:
+        return {
+          to: (pin) => {
+            switch (true) {
+              case pin instanceof FlowViewInput:
+                pin.connect(item.id)
+                // item.setTargetPoint(this.centerOf(item))
+                break
+              case pin instanceof FlowViewOutput:
+                pin.connect(item.id)
+                // item.setSourcePoint(this.centerOf(item))
+                break
+            }
+          }
+        }
+      case item instanceof FlowViewInput:
+        return {
+          to: (link) => {
+            item.connect(link.id)
+            // link.setTargetPoint(this.centerOf(item))
+          }
+        }
+      case item instanceof FlowViewOutput:
+        return {
+          to: (link) => {
+            item.connect(link.id)
+            // link.setSourcePoint(this.centerOf(item))
+          }
+        }
+
+      default: console.error('Cannot connect item', item)
     }
   }
 
-  createLink (linkJson, { LinkClass = this.LinkClass } = {}) {
+  createLink (linkJson = {}, { LinkClass = this.LinkClass } = {}) {
     const link = new LinkClass({
       container: this.svgLayer.createSvgElement('g'),
       linkJson: {

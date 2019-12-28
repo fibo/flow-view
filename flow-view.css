@@ -2,6 +2,8 @@
   --fv-canvas-background-color: #f8f8f8;
   --fv-font-family: Courier;
   --fv-font-size: 16px;
+  --fv-line-color: darkgray;
+  --fv-line-width: 2;
   --fv-node-background-color: white;
   --fv-pin-background-color: darkgray;
   --fv-pin-bar-background-color: gainsboro;
@@ -65,4 +67,9 @@
   width: 95%;
   font-family: var(--fv-font-family);
   font-size: var(--fv-font-size);
+}
+
+.FlowViewLink line {
+  stroke: var(--fv-line-color);
+  stroke-width: var(--fv-line-width);
 }

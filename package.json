@@ -29,6 +29,11 @@
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
     "test": "node test/jsonSchema.js"
   },
+  "standa": {
+    "ignore": [
+      "docs"
+    ]
+  },
   "pre-commit": [
     "lint"
   ],

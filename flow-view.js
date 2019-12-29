@@ -813,10 +813,10 @@ export class FlowViewCanvas extends FlowViewComponent {
 
       let scale = this.scale
 
-      const minScale = 0.125
-      const maxScale = 4
+      const minScale = 0.1
+      const maxScale = 1
 
-      scale += event.deltaY * -0.001
+      scale += event.deltaY * +0.001
       scale = Math.min(Math.max(minScale, scale), maxScale)
       this.scale = scale
     })

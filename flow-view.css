@@ -2,6 +2,8 @@
   --fv-canvas-background-color: #f8f8f8;
   --fv-font-family: Courier;
   --fv-font-size: 16px;
+  --fv-inspector-background-color: white;
+  --fv-inspector-min-width: 200px;
   --fv-line-color: darkgray;
   --fv-line-width: 2;
   --fv-node-background-color: white;
@@ -10,9 +12,12 @@
   --fv-primary-color-1: #a9dfbf;
   --fv-primary-color-2: mediumaquamarine;
   --fv-primary-color-3: mediumseagreen;
+  --fv-shadow-color: darkgray;
 }
 
 .FlowViewCanvas {
+  box-shadow: 1px 1px 7px 1px var(--fv-shadow-color);
+  display: flex;
   font-family: var(--fv-font-family);
   font-size: var(--fv-font-size);
 }
@@ -72,4 +77,9 @@
 .FlowViewLink line {
   stroke: var(--fv-line-color);
   stroke-width: var(--fv-line-width);
+}
+
+.FlowViewInspector {
+  background: var(--fv-inspector-background-color);
+  min-width: var(--fv-inspector-min-width);
 }

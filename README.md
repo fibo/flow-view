@@ -38,9 +38,9 @@ Adding this to your HTML page
 
 ## API
 
-### Canvas constructor
+### FlowViewCanvas constructor
 
-To import *flow-view* Canvas choose your favourite syntax among:
+To import `FlowViewCanvas` choose your favourite syntax among:
 
 * `const { FlowViewCanvas } = require('flow-view')`
 * `import { FlowViewCanvas } from 'flow-view'`

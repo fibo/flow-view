@@ -93,10 +93,10 @@ export class FlowViewComponent {
 }
 
 export class FlowViewGroup extends FlowViewComponent {
-  constructor ({ container, id, position }) {
+  constructor ({ container, id, position = { x: 0, y: 0 } }) {
     super({ container, id })
 
-    let { x, y } = position
+    let x, y
 
     Object.defineProperties(this, {
       position: {
@@ -123,9 +123,10 @@ export class FlowViewBox extends FlowViewComponent {
   constructor ({
     container,
     dimension,
+    id,
     position = { x: 0, y: 0 }
   }) {
-    super({ container })
+    super({ container, id })
 
     Object.defineProperties(this, {
       dimension: {
@@ -156,8 +157,13 @@ export class FlowViewBox extends FlowViewComponent {
 }
 
 export class FlowViewPin extends FlowViewBox {
-  constructor ({ container, dimension, position }) {
-    super({ container, dimension, position })
+  constructor ({ container, dimension, id, index, node, position }) {
+    super({ container, dimension, id, position })
+
+    Object.defineProperties(this, {
+      index: { value: index },
+      node: { value: node }
+    })
 
     container.addEventListener('mousedown', event => {
       event.stopPropagation()
@@ -170,8 +176,8 @@ export class FlowViewPin extends FlowViewBox {
 }
 
 export class FlowViewInput extends FlowViewPin {
-  constructor (args) {
-    super(args)
+  constructor ({ container, dimension, inputJson, index, node, position }) {
+    super({ container, dimension, id: inputJson.id, index, node, position })
 
     let linkId = null
 
@@ -185,8 +191,8 @@ export class FlowViewInput extends FlowViewPin {
 }
 
 export class FlowViewOutput extends FlowViewPin {
-  constructor (args) {
-    super(args)
+  constructor ({ container, dimension, outputJson, index, node, position }) {
+    super({ container, dimension, id: outputJson.id, index, node, position })
 
     const linkIds = new Set()
 
@@ -199,16 +205,15 @@ export class FlowViewOutput extends FlowViewPin {
   }
 }
 
-export class FlowViewPinBar extends FlowViewComponent {
-  constructor ({ container, dimension, position }) {
-    super({ container })
+export class FlowViewPinBar extends FlowViewGroup {
+  constructor ({ container, dimension, id, position }) {
+    super({ container, id, position })
 
     Object.defineProperties(this, {
       rect: {
         value: new FlowViewBox({
           container: this.createSvgElement('rect'),
-          dimension,
-          position
+          dimension
         })
       }
     })
@@ -216,36 +221,54 @@ export class FlowViewPinBar extends FlowViewComponent {
 }
 
 export class FlowViewLink extends FlowViewComponent {
-  constructor ({ container, linkJson }) {
+  constructor ({
+    container,
+    linkJson,
+    sourcePoint = { x: 0, y: 0 },
+    targetPoint = { x: 0, y: 0 }
+  }) {
     super({
       container,
       id: linkJson.id
     })
 
-    const sourcePoint = { x: 10, y: 10 }
-    const targetPoint = { x: 100, y: 100 }
+    let x1 = sourcePoint.x1
+    let y1 = sourcePoint.y1
+    let x2 = sourcePoint.x2
+    let y2 = sourcePoint.y2
+
+    let from = linkJson.from
+    let to = linkJson.to
 
     Object.defineProperties(this, {
+      from: {
+        get: () => from,
+        set: (pinId) => { from = pinId }
+      },
       line: { value: this.createSvgElement('line') },
       sourcePoint: {
         get: () => sourcePoint,
         set: ({ x, y }) => {
-          sourcePoint.x = x
-          sourcePoint.y = y
+          x1 = x
+          y1 = y
 
-          this.line.setAttribute('x1', x)
-          this.line.setAttribute('y1', y)
+          this.line.setAttribute('x1', x1)
+          this.line.setAttribute('y1', y1)
         }
       },
       targetPoint: {
         get: () => targetPoint,
         set: ({ x, y }) => {
-          targetPoint.x = x
-          targetPoint.y = y
+          x2 = x
+          y2 = y
 
-          this.line.setAttribute('x2', x)
-          this.line.setAttribute('y2', y)
+          this.line.setAttribute('x2', x2)
+          this.line.setAttribute('y2', y2)
         }
+      },
+      to: {
+        get: () => to,
+        set: (pinId) => { to = pinId }
       }
     })
 
@@ -291,6 +314,8 @@ export class FlowViewNode extends FlowViewGroup {
     })
 
     Object.defineProperties(this, {
+      canvas: { value: canvas },
+      inputs: { value: new Map() },
       outputBarPosition: {
         get: () => {
           const { height } = this.content.dimension
@@ -301,6 +326,7 @@ export class FlowViewNode extends FlowViewGroup {
           }
         }
       },
+      outputs: { value: new Map() },
       pinBarDimension: {
         get: () => {
           const { width } = this.content.dimension
@@ -313,15 +339,27 @@ export class FlowViewNode extends FlowViewGroup {
       }
     })
 
+    const pinX = ({ index, width, height, num }) => {
+      return index === 0 ? 0 : index * (width - height) / (num - 1)
+    }
+
     Object.defineProperties(this, {
-      canvas: { value: canvas },
       inputBar: {
         value: new FlowViewPinBar({
           container: inputBarContainer,
           dimension: this.pinBarDimension
         })
       },
-      inputs: { value: new Map() },
+      inputPosition: {
+        value: (index) => {
+          const { width, height } = this.pinBarDimension
+
+          return {
+            x: pinX({ index, width, height, num: this.inputs.size }),
+            y: 0
+          }
+        }
+      },
       outputBar: {
         value: new FlowViewPinBar({
           container: outputBarContainer,
@@ -329,7 +367,54 @@ export class FlowViewNode extends FlowViewGroup {
           position: this.outputBarPosition
         })
       },
-      outputs: { value: new Map() }
+      outputPosition: {
+        value: (index) => {
+          const { width, height } = this.pinBarDimension
+
+          return {
+            x: pinX({ index, width, height, num: this.outputs.size }),
+            y: 0
+          }
+        }
+      }
+    })
+
+    Object.defineProperties(this, {
+      inputCenter: {
+        value: (index) => {
+          const {
+            inputPosition,
+            pinBarDimension,
+            position
+          } = this
+
+          const half = pinBarDimension.height / 2
+          const pinPosition = inputPosition(index)
+
+          return {
+            x: position.x + pinPosition.x + half,
+            y: position.y + pinPosition.y + half
+          }
+        }
+      },
+      outputCenter: {
+        value: (index) => {
+          const {
+            outputBarPosition,
+            outputPosition,
+            pinBarDimension,
+            position
+          } = this
+
+          const half = pinBarDimension.height / 2
+          const pinPosition = outputPosition(index)
+
+          return {
+            x: position.x + pinPosition.x + half,
+            y: position.y + pinPosition.y + outputBarPosition.y + half
+          }
+        }
+      }
     })
 
     container.addEventListener('click', event => {
@@ -356,33 +441,46 @@ export class FlowViewNode extends FlowViewGroup {
     })
   }
 
-  createInput () {
-    const { gridUnit } = this.canvas
+  createInput (inputJson = {}) {
+    const { gridUnit, inputs } = this.canvas
     const index = this.inputs.size
 
     const input = new FlowViewInput({
       container: this.inputBar.createSvgElement('rect'),
-      id: this.generateId(),
-      dimension: { width: gridUnit, height: gridUnit }
+      dimension: { width: gridUnit, height: gridUnit },
+      index,
+      inputJson: {
+        id: this.generateId(),
+        ...inputJson
+      },
+      node: this,
+      position: this.inputPosition(index)
     })
 
-    this.inputs.set(index, input)
+    this.inputs.set(input.id, input)
+    inputs.set(input.id, input)
 
     return input
   }
 
-  createOutput () {
-    const { gridUnit } = this.canvas
+  createOutput (outputJson = {}) {
+    const { gridUnit, outputs } = this.canvas
     const index = this.outputs.size
 
     const output = new FlowViewOutput({
       container: this.outputBar.createSvgElement('rect'),
-      id: this.generateId(),
       dimension: { width: gridUnit, height: gridUnit },
-      position: this.outputBarPosition
+      index,
+      node: this,
+      outputJson: {
+        id: this.generateId(),
+        ...outputJson
+      },
+      position: this.outputPosition(index)
     })
 
-    this.outputs.set(index, output)
+    this.outputs.set(output.id, output)
+    outputs.set(output.id, output)
 
     return output
   }
@@ -423,7 +521,7 @@ export class FlowViewCreator extends FlowViewNode {
 
     input.container.addEventListener('keypress', ({ key, target }) => {
       switch (key) {
-        case 'Enter':
+        case 'Enter': {
           const text = target.value.trim()
 
           if (text !== '') {
@@ -431,6 +529,7 @@ export class FlowViewCreator extends FlowViewNode {
           }
 
           break
+        }
       }
     })
 
@@ -503,6 +602,26 @@ export class FlowViewCanvas extends FlowViewComponent {
     let dragStartedMoving = false
     let currentX, currentY
 
+    const moveLinksConnectedTo = (node) => {
+      node.inputs.forEach(input => {
+        if (input.isConnected) {
+          const link = this.links.get(input.linkId)
+
+          link.targetPoint = node.inputCenter(input.index)
+        }
+      })
+
+      node.outputs.forEach(output => {
+        if (output.isConnected) {
+          output.linkIds.forEach(linkId => {
+            const link = this.links.get(linkId)
+
+            link.sourcePoint = node.outputCenter(output.index)
+          })
+        }
+      })
+    }
+
     Object.defineProperties(this, {
       closeCreator: {
         value: () => {
@@ -529,6 +648,8 @@ export class FlowViewCanvas extends FlowViewComponent {
           // Snap to grid.
           this.selectedNodes.forEach(node => {
             node.position = this.roundPosition(node.position)
+
+            moveLinksConnectedTo(node)
           })
         }
       },
@@ -550,6 +671,8 @@ export class FlowViewCanvas extends FlowViewComponent {
               // Move selected nodes.
               selectedNodes.forEach(node => {
                 node.translate({ x: clientX - currentX, y: clientY - currentY })
+
+                moveLinksConnectedTo(node)
               })
             } else {
               // Move canvas.
@@ -576,10 +699,12 @@ export class FlowViewCanvas extends FlowViewComponent {
       fontSize: { get: () => parseInt(this.style.fontSize) },
       gridUnit: { value: gridUnit },
       hasCreator: { get: () => creator !== null },
+      inputs: { value: new Map() },
       isDragging: { get: () => isDragging },
+      LinkClass: { value: LinkClass },
       links: { value: new Map() },
       nodes: { value: new Map() },
-      LinkClass: { value: LinkClass },
+      outputs: { value: new Map() },
       NodeClass: { value: NodeClass },
       selectedNodes: { value: new Set() },
       svgLayer: {
@@ -641,11 +766,11 @@ export class FlowViewCanvas extends FlowViewComponent {
             switch (true) {
               case pin instanceof FlowViewInput:
                 pin.connect(item.id)
-                // item.setTargetPoint(this.centerOf(item))
+                item.targetPoint = pin.node.inputCenter(pin.index)
                 break
               case pin instanceof FlowViewOutput:
                 pin.connect(item.id)
-                // item.setSourcePoint(this.centerOf(item))
+                item.sourcePoint = pin.node.outputCenter(pin.index)
                 break
             }
           }
@@ -654,14 +779,14 @@ export class FlowViewCanvas extends FlowViewComponent {
         return {
           to: (link) => {
             item.connect(link.id)
-            // link.setTargetPoint(this.centerOf(item))
+            link.targetPoint = item.node.inputCenter(item.index)
           }
         }
       case item instanceof FlowViewOutput:
         return {
           to: (link) => {
             item.connect(link.id)
-            // link.setSourcePoint(this.centerOf(item))
+            link.sourcePoint = item.node.outputCenter(item.index)
           }
         }
 

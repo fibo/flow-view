@@ -38,6 +38,6 @@ const graph = {
 
 const container = document.getElementById('drawing')
 
-const canvas = new Canvas(container)
+const canvas = new FlowViewCanvas(container)
 
 canvas.loadGraph(graph)

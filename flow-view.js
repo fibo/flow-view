@@ -552,6 +552,12 @@ class FlowViewTextRuler extends FlowViewComponent {
   }
 }
 
+export class FlowViewInspector extends FlowViewComponent {
+  constructor ({ container }) {
+    super({ container })
+  }
+}
+
 export class FlowViewSvgLayer extends FlowViewBox {
   constructor ({
     container,
@@ -592,15 +598,23 @@ export class FlowViewCanvas extends FlowViewComponent {
     gridUnit = 10,
     CreatorClass = FlowViewCreator,
     LinkClass = FlowViewLink,
+    InspectorClass = FlowViewInspector,
     NodeClass = FlowViewNode
   } = {}) {
     super({ container })
+
+    const inspectorContainer = this.createElement('div')
+    const svgLayerContainer = this.createSvgElement('svg')
 
     let creator = null
     let isDragging = false
     let dragStartedTimeoutId
     let dragStartedMoving = false
     let currentX, currentY
+
+    const inspector = new InspectorClass({
+      container: inspectorContainer
+    })
 
     const moveLinksConnectedTo = (node) => {
       node.inputs.forEach(input => {
@@ -703,18 +717,32 @@ export class FlowViewCanvas extends FlowViewComponent {
       isDragging: { get: () => isDragging },
       LinkClass: { value: LinkClass },
       links: { value: new Map() },
+      inspector: { value: { inspector } },
       nodes: { value: new Map() },
       outputs: { value: new Map() },
       NodeClass: { value: NodeClass },
       selectedNodes: { value: new Set() },
-      svgLayer: {
-        value: new FlowViewSvgLayer({
-          container: this.createSvgElement('svg'),
-          dimension: this.boundingClientRect
-        })
+      svgLayerDimension: {
+        get: () => {
+          const { width, height } = this.boundingClientRect
+
+          return {
+            width: width - inspector.boundingClientRect.width,
+            height
+          }
+        }
       },
       textRuler: {
         value: new FlowViewTextRuler({ container: this.createElement('div') })
+      }
+    })
+
+    Object.defineProperties(this, {
+      svgLayer: {
+        value: new FlowViewSvgLayer({
+          container: svgLayerContainer,
+          dimension: this.svgLayerDimension
+        })
       }
     })
 

@@ -562,9 +562,26 @@ export class FlowViewSvgLayer extends FlowViewBox {
   constructor ({
     container,
     dimension = { width: 0, height: 0 },
-    position = { x: 0, y: 0 }
+    position = { x: 0, y: 0 },
+    scale
   }) {
     super({ container, dimension, position })
+
+    let scaleFactor = 1 / scale
+
+    Object.defineProperties(this, {
+      scale: {
+        get: () => scaleFactor,
+        set: (newScale) => {
+          scaleFactor = 1 / newScale
+
+          const { x, y } = this.position
+          const { width, height } = this.dimension
+
+          container.setAttribute('viewBox', `${x} ${y} ${width * scaleFactor} ${height * scaleFactor}`)
+        }
+      }
+    })
 
     Object.defineProperties(this, {
       viewBox: {
@@ -573,17 +590,18 @@ export class FlowViewSvgLayer extends FlowViewBox {
           x = this.position.x,
           y = this.position.y,
           width = this.dimension.width,
-          height = this.dimension.height
+          height = this.dimension.height,
+          scale = this.scale
         }) => {
           this.position = { x, y }
           this.dimension = { width, height }
 
-          container.setAttribute('viewBox', `${x} ${y} ${width} ${height}`)
+          container.setAttribute('viewBox', `${x} ${y} ${width * scale} ${height * scale}`)
         }
       }
     })
 
-    container.setAttribute('viewBox', `${position.x} ${position.y} ${dimension.width} ${dimension.height}`)
+    this.viewBox = { ...position, ...dimension }
   }
 
   translate (vector) {
@@ -607,10 +625,11 @@ export class FlowViewCanvas extends FlowViewComponent {
     const svgLayerContainer = this.createSvgElement('svg')
 
     let creator = null
+    let currentX, currentY
     let isDragging = false
     let dragStartedTimeoutId
     let dragStartedMoving = false
-    let currentX, currentY
+    let scale = 1
 
     const inspector = new InspectorClass({
       container: inspectorContainer
@@ -741,8 +760,19 @@ export class FlowViewCanvas extends FlowViewComponent {
       svgLayer: {
         value: new FlowViewSvgLayer({
           container: svgLayerContainer,
-          dimension: this.svgLayerDimension
+          dimension: this.svgLayerDimension,
+          scale
         })
+      }
+    })
+
+    Object.defineProperties(this, {
+      scale: {
+        get: () => scale,
+        set: (newScale) => {
+          scale = newScale
+          this.svgLayer.scale = newScale
+        }
       }
     })
 
@@ -777,6 +807,19 @@ export class FlowViewCanvas extends FlowViewComponent {
     })
 
     container.addEventListener('mousemove', this.dragMove.bind(this))
+
+    container.addEventListener('wheel', event => {
+      event.preventDefault()
+
+      let scale = this.scale
+
+      const minScale = 0.125
+      const maxScale = 4
+
+      scale += event.deltaY * -0.001
+      scale = Math.min(Math.max(minScale, scale), maxScale)
+      this.scale = scale
+    })
   }
 
   clearSelection () {

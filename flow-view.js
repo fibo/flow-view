@@ -243,7 +243,7 @@ export class FlowViewLink extends FlowViewComponent {
     Object.defineProperties(this, {
       from: {
         get: () => from,
-        set: (pinId) => { from = pinId }
+        set: (newValue) => { from = newValue }
       },
       line: { value: this.createSvgElement('line') },
       sourcePoint: {
@@ -268,7 +268,7 @@ export class FlowViewLink extends FlowViewComponent {
       },
       to: {
         get: () => to,
-        set: (pinId) => { to = pinId }
+        set: (newValue) => { to = newValue }
       }
     })
 
@@ -287,11 +287,20 @@ export class FlowViewNodeText extends FlowViewBox {
   }
 }
 
+export class FlowViewNodeInspector extends FlowViewComponent {
+  constructor ({ container, node }) {
+    super({ container })
+
+    container.innerHTML = node.text
+  }
+}
+
 export class FlowViewNode extends FlowViewGroup {
   constructor ({
     canvas,
     container,
-    nodeJson
+    nodeJson,
+    NodeInspectorClass = FlowViewNodeInspector
   }) {
     super({
       container,
@@ -303,19 +312,39 @@ export class FlowViewNode extends FlowViewGroup {
     const contentContainer = this.createSvgElement('foreignObject')
     const outputBarContainer = this.createSvgElement('g')
 
+    let inspector = null
+    let text = nodeJson.text
+
     Object.defineProperties(this, {
+      attachInspector: {
+        value: (canvasInspector) => {
+          const nodeInspector = new NodeInspectorClass({
+            container: canvasInspector.createElement('div'),
+            node: this
+          })
+
+          inspector = nodeInspector
+        }
+      },
+      canvas: { value: canvas },
       content: {
-        value: this.spwanContent({
+        value: this.spawnContent({
           canvas,
           container: contentContainer,
           nodeJson
         })
-      }
-    })
-
-    Object.defineProperties(this, {
-      canvas: { value: canvas },
+      },
+      detachInspector: {
+        value: () => {
+          inspector.dispose()
+          inspector = null
+        }
+      },
+      NodeInspectorClass: { value: NodeInspectorClass },
       inputs: { value: new Map() },
+      inspector: {
+        get: () => inspector
+      },
       outputBarPosition: {
         get: () => {
           const { height } = this.content.dimension
@@ -336,6 +365,10 @@ export class FlowViewNode extends FlowViewGroup {
             height: canvas.gridUnit
           }
         }
+      },
+      text: {
+        get: () => text,
+        set: (newValue) => { text = newValue }
       }
     })
 
@@ -417,6 +450,25 @@ export class FlowViewNode extends FlowViewGroup {
       }
     })
 
+    Object.defineProperty(this, 'json', {
+      get: () => {
+        const {
+          id,
+          position: { x, y },
+          text
+        } = this
+
+        return {
+          id,
+          outs: [],
+          ins: [],
+          text,
+          x,
+          y
+        }
+      }
+    })
+
     container.addEventListener('click', event => {
       event.stopPropagation()
 
@@ -485,17 +537,19 @@ export class FlowViewNode extends FlowViewGroup {
     return output
   }
 
-  spwanContent ({ canvas, container, nodeJson }) {
+  spawnContent ({ canvas, container, nodeJson }) {
+    const { text } = nodeJson
+
     const dimension = canvas.roundDimension(canvas.textRuler.sizeOfText(
       // Add an extra character for padding.
-      nodeJson.text + 'x'
+      text + 'x'
     ))
 
     const content = new FlowViewNodeText({
       container,
       dimension,
       position: { x: 0, y: canvas.gridUnit },
-      text: nodeJson.text
+      text
     })
 
     return content
@@ -503,7 +557,7 @@ export class FlowViewNode extends FlowViewGroup {
 }
 
 export class FlowViewCreator extends FlowViewNode {
-  spwanContent ({ canvas, container, nodeJson }) {
+  spawnContent ({ canvas, container, nodeJson }) {
     const dimension = canvas.roundDimension(canvas.textRuler.sizeOfText('xxxxxxxxxxxxxxxxx'))
 
     const content = new FlowViewBox({
@@ -555,6 +609,27 @@ class FlowViewTextRuler extends FlowViewComponent {
 export class FlowViewInspector extends FlowViewComponent {
   constructor ({ container }) {
     super({ container })
+
+    let inspectedItem = null
+
+    Object.defineProperties(this, {
+      hasInspectedItem: {
+        get: () => inspectedItem !== null
+      },
+      inspectedItem: {
+        get: () => inspectedItem,
+        set: (newValue) => { inspectedItem = newValue }
+      }
+    })
+  }
+
+  attach (node) {
+    if (this.hasInspectedItem) {
+      this.inspectedItem.detachInspector()
+    }
+
+    this.inspectedItem = node
+    node.attachInspector(this)
   }
 }
 
@@ -572,8 +647,8 @@ export class FlowViewSvgLayer extends FlowViewBox {
     Object.defineProperties(this, {
       scale: {
         get: () => scaleFactor,
-        set: (newScale) => {
-          scaleFactor = 1 / newScale
+        set: (newValue) => {
+          scaleFactor = 1 / newValue
 
           const { x, y } = this.position
           const { width, height } = this.dimension
@@ -666,9 +741,9 @@ export class FlowViewCanvas extends FlowViewComponent {
       },
       creator: {
         get: () => creator,
-        set: (newCreator) => {
+        set: (newValue) => {
           this.closeCreator()
-          creator = newCreator
+          creator = newValue
         }
       },
       CreatorClass: { value: CreatorClass },
@@ -736,7 +811,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       isDragging: { get: () => isDragging },
       LinkClass: { value: LinkClass },
       links: { value: new Map() },
-      inspector: { value: { inspector } },
+      inspector: { value: inspector },
       nodes: { value: new Map() },
       outputs: { value: new Map() },
       NodeClass: { value: NodeClass },
@@ -769,9 +844,9 @@ export class FlowViewCanvas extends FlowViewComponent {
     Object.defineProperties(this, {
       scale: {
         get: () => scale,
-        set: (newScale) => {
-          scale = newScale
-          this.svgLayer.scale = newScale
+        set: (newValue) => {
+          scale = newValue
+          this.svgLayer.scale = newValue
         }
       }
     })
@@ -896,6 +971,10 @@ export class FlowViewCanvas extends FlowViewComponent {
     return node
   }
 
+  inspect (node) {
+    this.inspector.attach(node)
+  }
+
   roundDimension ({ width = 0, height = 0 }) {
     const [a, b] = this.roundVector([width, height])
 
@@ -928,7 +1007,10 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     if (selectedNodes.has(node)) return
 
-    if (!multiSelection) this.clearSelection()
+    if (!multiSelection) {
+      this.clearSelection()
+      this.inspect(node)
+    }
 
     node.highlight(true)
     selectedNodes.add(node)

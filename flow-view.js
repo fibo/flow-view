@@ -226,6 +226,14 @@ export class FlowViewInput extends FlowViewPin {
       }
     })
   }
+
+  dispose () {
+    if (this.isConnected) {
+      this.link.dispose()
+    }
+
+    super.dispose()
+  }
 }
 
 export class FlowViewOutput extends FlowViewPin {
@@ -256,6 +264,14 @@ export class FlowViewOutput extends FlowViewPin {
       event.stopPropagation()
     })
   }
+
+  dispose () {
+    if (this.isConnected) {
+      this.links.forEach(link => link.dispose())
+    }
+
+    super.dispose()
+  }
 }
 
 export class FlowViewPinBar extends FlowViewGroup {
@@ -275,6 +291,7 @@ export class FlowViewPinBar extends FlowViewGroup {
 
 export class FlowViewLink extends FlowViewComponent {
   constructor ({
+    canvas,
     container,
     linkJson,
     sourcePoint = { x: 0, y: 0 },
@@ -294,6 +311,7 @@ export class FlowViewLink extends FlowViewComponent {
     let to = linkJson.to
 
     Object.defineProperties(this, {
+      canvas: { value: canvas },
       from: {
         get: () => from,
         set: (newValue) => { from = newValue }
@@ -328,6 +346,12 @@ export class FlowViewLink extends FlowViewComponent {
     this.sourcePoint = sourcePoint
     this.targetPoint = targetPoint
   }
+
+  dispose () {
+    this.canvas.links.delete(this.id)
+
+    super.dispose()
+  }
 }
 
 export class FlowViewNodeText extends FlowViewBox {
@@ -340,11 +364,116 @@ export class FlowViewNodeText extends FlowViewBox {
   }
 }
 
+export class FlowViewEditNumPin extends FlowViewComponent {
+  constructor ({ container, setValue, value: defaultValue }) {
+    super({ container })
+
+    const min = 0
+
+    container.type = 'number'
+    container.min = min
+    container.value = defaultValue
+
+    const submit = (value) => {
+      if (value.trim() === '') {
+        container.value = defaultValue
+        return
+      }
+
+      // Only integers allowed.
+      const int = Math.round(value)
+
+      if (value < min) {
+        container.value = defaultValue
+      } else {
+        defaultValue = int
+        setValue(int)
+      }
+    }
+
+    container.addEventListener('blur', event => {
+      submit(event.target.value)
+    })
+
+    container.addEventListener('keypress', ({ key, target }) => {
+      switch (key) {
+        case 'Enter':
+          container.blur()
+          break
+      }
+    })
+  }
+}
+
 export class FlowViewNodeInspector extends FlowViewComponent {
   constructor ({ container, node }) {
     super({ container })
 
-    container.innerHTML = node.text
+    const textField = new FlowViewComponent({ container: this.createElement('div') })
+
+    const textLabel = textField.createElement('label')
+    textLabel.style.display = 'block'
+    textLabel.innerHTML = 'Text'
+    textLabel.for = 'text'
+
+    const textInput = textField.createElement('input')
+    textInput.type = 'text'
+    textInput.value = node.text
+
+    const inputsField = new FlowViewComponent({ container: this.createElement('div') })
+
+    const inputsLabel = inputsField.createElement('label')
+    inputsLabel.innerHTML = 'Inputs'
+
+    const inputsEditor = new FlowViewComponent({
+      container: inputsField.createElement('div')
+    })
+
+    const inputsNumEditor = new FlowViewEditNumPin({
+      container: inputsEditor.createElement('input'),
+      setValue: (value) => {
+        const numInputs = node.inputs.size
+
+        for (let i = value; i < numInputs; i++) {
+          node.deleteInput()
+        }
+
+        for (let i = numInputs; i < value; i++) {
+          node.createInput()
+        }
+      },
+      value: node.inputs.size
+    })
+
+    const outputsField = new FlowViewComponent({ container: this.createElement('div') })
+
+    const outputsLabel = outputsField.createElement('label')
+    outputsLabel.innerHTML = 'Outputs'
+
+    const outputsEditor = new FlowViewComponent({
+      container: outputsField.createElement('div')
+    })
+
+    const outputsNumEditor = new FlowViewEditNumPin({
+      container: outputsEditor.createElement('input'),
+      setValue: (value) => {
+        const numOutputs = node.outputs.size
+
+        for (let i = value; i < numOutputs; i++) {
+          node.deleteOutput()
+        }
+
+        for (let i = numOutputs; i < value; i++) {
+          node.createOutput()
+        }
+      },
+      value: node.outputs.size
+    })
+
+    Object.defineProperties(this, {
+      inputsNumEditor: { value: inputsNumEditor },
+      outputsNumEditor: { value: outputsNumEditor }
+    })
   }
 }
 
@@ -372,7 +501,7 @@ export class FlowViewNode extends FlowViewGroup {
       attachInspector: {
         value: (canvasInspector) => {
           const nodeInspector = new NodeInspectorClass({
-            container: canvasInspector.createElement('div'),
+            container: canvasInspector.createElement('form'),
             node: this
           })
 
@@ -437,13 +566,12 @@ export class FlowViewNode extends FlowViewGroup {
         })
       },
       inputPosition: {
-        value: (index) => {
+        value: (index, num = this.inputs.size) => {
           const { width, height } = this.pinBarDimension
 
-          return {
-            x: pinX({ index, width, height, num: this.inputs.size }),
-            y: 0
-          }
+          const x = pinX({ index, width, height, num })
+
+          return { x, y: 0 }
         }
       },
       outputBar: {
@@ -454,13 +582,12 @@ export class FlowViewNode extends FlowViewGroup {
         })
       },
       outputPosition: {
-        value: (index) => {
+        value: (index, num = this.outputs.size) => {
           const { width, height } = this.pinBarDimension
 
-          return {
-            x: pinX({ index, width, height, num: this.outputs.size }),
-            y: 0
-          }
+          const x = pinX({ index, width, height, num })
+
+          return { x, y: 0 }
         }
       }
     })
@@ -547,47 +674,105 @@ export class FlowViewNode extends FlowViewGroup {
   }
 
   createInput (inputJson = {}) {
-    const { gridUnit, inputs } = this.canvas
-    const index = this.inputs.size
+    const {
+      canvas: { gridUnit },
+      generateId,
+      inputBar,
+      inputPosition,
+      inputs
+    } = this
+
+    const numInputs = inputs.size
+
+    inputs.forEach(input => {
+      input.position = inputPosition(input.index, numInputs + 1)
+    })
+
+    const index = numInputs
+    const position = inputPosition(index, numInputs + 1)
 
     const input = new FlowViewInput({
-      container: this.inputBar.createSvgElement('rect'),
+      container: inputBar.createSvgElement('rect'),
       dimension: { width: gridUnit, height: gridUnit },
       index,
       inputJson: {
-        id: this.generateId(),
+        id: generateId(),
         ...inputJson
       },
       node: this,
-      position: this.inputPosition(index)
+      position
     })
 
-    this.inputs.set(input.id, input)
     inputs.set(input.id, input)
 
     return input
   }
 
   createOutput (outputJson = {}) {
-    const { gridUnit, outputs } = this.canvas
-    const index = this.outputs.size
+    const {
+      canvas: { gridUnit },
+      generateId,
+      outputBar,
+      outputs,
+      outputPosition
+    } = this
+
+    const numOutputs = outputs.size
+
+    outputs.forEach(output => {
+      output.position = outputPosition(output.index, numOutputs + 1)
+    })
+
+    const index = numOutputs
+    const position = outputPosition(index, numOutputs + 1)
 
     const output = new FlowViewOutput({
-      container: this.outputBar.createSvgElement('rect'),
+      container: outputBar.createSvgElement('rect'),
       dimension: { width: gridUnit, height: gridUnit },
       index,
       node: this,
       outputJson: {
-        id: this.generateId(),
+        id: generateId(),
         ...outputJson
       },
-      position: this.outputPosition(index)
+      position
     })
 
-    this.outputs.set(output.id, output)
     outputs.set(output.id, output)
 
     return output
+  }
+
+  deleteInput () {
+    const { inputs } = this
+
+    const index = inputs.size - 1
+
+    inputs.forEach(input => {
+      if (input.index === index) {
+        inputs.delete(input.id)
+        input.dispose()
+      }
+    })
+  }
+
+  deleteOutput () {
+    const { outputs } = this
+
+    const index = outputs.size - 1
+
+    outputs.forEach(output => {
+      if (output.index === index) {
+        outputs.delete(output.id)
+        output.dispose()
+      }
+    })
+  }
+
+  dispose () {
+    this.canvas.nodes.delete(this.id)
+
+    super.dispose()
   }
 
   spawnContent ({ canvas, container, nodeJson }) {
@@ -674,13 +859,16 @@ export class FlowViewInspector extends FlowViewComponent {
         set: (newValue) => { inspectedItem = newValue }
       }
     })
+
+    container.addEventListener('click', event => event.stopPropagation())
+
+    container.addEventListener('mousedown', event => event.stopPropagation())
   }
 
   attach (item) {
     // Remove presious inspected item.
     if (this.hasInspectedItem && this.inspectedItem.id !== item.id) {
-      this.inspectedItem.detachInspector()
-      this.inspectedItem = null
+      this.detach()
     }
 
     switch (true) {
@@ -693,6 +881,13 @@ export class FlowViewInspector extends FlowViewComponent {
         item.attachInspector(this)
 
         break
+    }
+  }
+
+  detach () {
+    if (this.hasInspectedItem) {
+      this.inspectedItem.detachInspector()
+      this.inspectedItem = null
     }
   }
 }
@@ -953,6 +1148,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       this.clearSelection()
       this.dragEnd()
       this.closeCreator()
+      this.inspector.detach()
     })
 
     container.addEventListener('mousedown', event => {
@@ -1025,6 +1221,7 @@ export class FlowViewCanvas extends FlowViewComponent {
 
   createLink (linkJson = {}, { LinkClass = this.LinkClass } = {}) {
     const link = new LinkClass({
+      canvas: this,
       container: this.svgLayer.createSvgElement('g'),
       linkJson: {
         id: this.generateId(),
@@ -1054,8 +1251,8 @@ export class FlowViewCanvas extends FlowViewComponent {
     return node
   }
 
-  inspect (node) {
-    this.inspector.attach(node)
+  inspect (item) {
+    this.inspector.attach(item)
   }
 
   roundDimension ({ width = 0, height = 0 }) {

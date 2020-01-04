@@ -4,6 +4,7 @@
   --fv-font-size: 16px;
   --fv-inspector-background-color: white;
   --fv-inspector-min-width: 200px;
+  --fv-inspector-padding: .25rem;
   --fv-line-color: darkgray;
   --fv-line-width: 2;
   --fv-node-background-color: white;
@@ -82,4 +83,8 @@
 .FlowViewInspector {
   background: var(--fv-inspector-background-color);
   min-width: var(--fv-inspector-min-width);
+}
+
+.FlowViewInspector .FlowViewNodeInspector {
+  padding: var(--fv-inspector-padding);
 }

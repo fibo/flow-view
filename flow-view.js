@@ -165,10 +165,6 @@ export class FlowViewPin extends FlowViewBox {
       node: { value: node }
     })
 
-    container.addEventListener('mousedown', event => {
-      event.stopPropagation()
-    })
-
     container.addEventListener('mouseenter', () => this.highlight(true))
 
     container.addEventListener('mouseleave', () => this.highlight(false))
@@ -179,13 +175,55 @@ export class FlowViewInput extends FlowViewPin {
   constructor ({ container, dimension, inputJson, index, node, position }) {
     super({ container, dimension, id: inputJson.id, index, node, position })
 
-    let linkId = null
+    const { canvas } = node
+
+    let link = null
 
     Object.defineProperties(this, {
-      connect: { value: (id) => { linkId = id } },
-      disconnect: { value: () => { linkId = null } },
-      linkId: { get: () => linkId },
-      isConnected: { get: () => linkId !== null }
+      connect: {
+        value: (newValue) => {
+          link = newValue
+          link.to = this.id
+          link.targetPoint = node.inputCenter(this.index)
+        }
+      },
+      disconnect: {
+        value: () => {
+          link.to = null
+          link = null
+        }
+      },
+      link: { get: () => link },
+      isConnected: { get: () => link !== null }
+    })
+
+    container.addEventListener('mousedown', event => {
+      event.stopPropagation()
+
+      if (this.isConnected) {
+        canvas.halfConnectedLink = this.link
+        canvas.dragStart(event)
+      }
+    })
+
+    container.addEventListener('mouseenter', event => {
+      event.stopPropagation()
+
+      const { halfConnectedLink } = canvas
+
+      if (halfConnectedLink && halfConnectedLink.from) {
+        this.connect(halfConnectedLink)
+      }
+    })
+
+    container.addEventListener('mouseleave', event => {
+      event.stopPropagation()
+
+      const { halfConnectedLink } = canvas
+
+      if (halfConnectedLink) {
+        this.disconnect()
+      }
     })
   }
 }
@@ -194,13 +232,28 @@ export class FlowViewOutput extends FlowViewPin {
   constructor ({ container, dimension, outputJson, index, node, position }) {
     super({ container, dimension, id: outputJson.id, index, node, position })
 
-    const linkIds = new Set()
+    const links = new Set()
 
     Object.defineProperties(this, {
-      connect: { value: (linkId) => { linkIds.add(linkId) } },
-      disconnect: { value: (linkId) => { linkIds.remove(linkId) } },
-      linkIds: { get: () => linkIds },
-      isConnected: { get: () => this.linkIds.size > 0 }
+      connect: {
+        value: (newValue) => {
+          newValue.from = this.id
+          newValue.sourcePoint = node.outputCenter(this.index)
+          links.add(newValue)
+        }
+      },
+      disconnect: {
+        value: (oldValue) => {
+          oldValue.from = null
+          links.remove(oldValue)
+        }
+      },
+      links: { get: () => links },
+      isConnected: { get: () => links.size > 0 }
+    })
+
+    container.addEventListener('mousedown', event => {
+      event.stopPropagation()
     })
   }
 }
@@ -623,13 +676,24 @@ export class FlowViewInspector extends FlowViewComponent {
     })
   }
 
-  attach (node) {
-    if (this.hasInspectedItem) {
+  attach (item) {
+    // Remove presious inspected item.
+    if (this.hasInspectedItem && this.inspectedItem.id !== item.id) {
       this.inspectedItem.detachInspector()
+      this.inspectedItem = null
     }
 
-    this.inspectedItem = node
-    node.attachInspector(this)
+    switch (true) {
+      case item instanceof FlowViewCreator:
+        break
+
+      case item instanceof FlowViewNode:
+        this.inspectedItem = item
+
+        item.attachInspector(this)
+
+        break
+    }
   }
 }
 
@@ -701,6 +765,7 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     let creator = null
     let currentX, currentY
+    let halfConnectedLink = null
     let isDragging = false
     let dragStartedTimeoutId
     let dragStartedMoving = false
@@ -713,17 +778,13 @@ export class FlowViewCanvas extends FlowViewComponent {
     const moveLinksConnectedTo = (node) => {
       node.inputs.forEach(input => {
         if (input.isConnected) {
-          const link = this.links.get(input.linkId)
-
-          link.targetPoint = node.inputCenter(input.index)
+          input.link.targetPoint = node.inputCenter(input.index)
         }
       })
 
       node.outputs.forEach(output => {
         if (output.isConnected) {
-          output.linkIds.forEach(linkId => {
-            const link = this.links.get(linkId)
-
+          output.links.forEach(link => {
             link.sourcePoint = node.outputCenter(output.index)
           })
         }
@@ -749,21 +810,32 @@ export class FlowViewCanvas extends FlowViewComponent {
       CreatorClass: { value: CreatorClass },
       dragEnd: {
         value: () => {
+          const { halfConnectedLink, selectedNodes } = this
+
           clearTimeout(dragStartedTimeoutId)
 
           isDragging = false
 
-          // Snap to grid.
-          this.selectedNodes.forEach(node => {
-            node.position = this.roundPosition(node.position)
+          if (halfConnectedLink) {
+            // Clean up link if not connected to source or target.
+            if (halfConnectedLink.from === null || halfConnectedLink.to === null) {
+              halfConnectedLink.dispose()
+            }
 
-            moveLinksConnectedTo(node)
-          })
+            this.halfConnectedLink = null
+          } else if (selectedNodes.size > 0) {
+            // Snap to grid.
+            selectedNodes.forEach(node => {
+              node.position = this.roundPosition(node.position)
+
+              moveLinksConnectedTo(node)
+            })
+          }
         }
       },
       dragMove: {
         value: ({ clientX, clientY }) => {
-          const { selectedNodes, svgLayer } = this
+          const { halfConnectedLink, selectedNodes, svgLayer } = this
 
           if (isDragging) {
             // Smooth drag start: if drag started moving now, update current pointer position.
@@ -775,7 +847,18 @@ export class FlowViewCanvas extends FlowViewComponent {
               currentY = clientY
             }
 
-            if (selectedNodes.size > 0) {
+            if (halfConnectedLink) {
+              const { width: inspectorWidth } = this.inspector.boundingClientRect
+              const { left: canvasLeft, top: canvasTop } = this.boundingClientRect
+
+              const x = currentX - inspectorWidth - canvasLeft
+              const y = currentY - canvasTop
+              if (halfConnectedLink.from === null) {
+                halfConnectedLink.sourcePoint = { x, y }
+              } else if (halfConnectedLink.to === null) {
+                halfConnectedLink.targetPoint = { x, y }
+              }
+            } else if (selectedNodes.size > 0) {
               // Move selected nodes.
               selectedNodes.forEach(node => {
                 node.translate({ x: clientX - currentX, y: clientY - currentY })
@@ -806,6 +889,10 @@ export class FlowViewCanvas extends FlowViewComponent {
       },
       fontSize: { get: () => parseInt(this.style.fontSize) },
       gridUnit: { value: gridUnit },
+      halfConnectedLink: {
+        get: () => halfConnectedLink,
+        set: (newValue) => { halfConnectedLink = newValue }
+      },
       hasCreator: { get: () => creator !== null },
       inputs: { value: new Map() },
       isDragging: { get: () => isDragging },
@@ -854,7 +941,7 @@ export class FlowViewCanvas extends FlowViewComponent {
     container.addEventListener('dblclick', event => {
       event.stopPropagation()
 
-      const { x, y } = this.boundingClientRect
+      const { x, y } = this.svgLayer.boundingClientRect
       const { clientX, clientY } = event
 
       this.spawnCreator({ x: clientX - x, y: clientY - y - gridUnit })
@@ -911,12 +998,10 @@ export class FlowViewCanvas extends FlowViewComponent {
           to: (pin) => {
             switch (true) {
               case pin instanceof FlowViewInput:
-                pin.connect(item.id)
-                item.targetPoint = pin.node.inputCenter(pin.index)
+                pin.connect(item)
                 break
               case pin instanceof FlowViewOutput:
-                pin.connect(item.id)
-                item.sourcePoint = pin.node.outputCenter(pin.index)
+                pin.connect(item)
                 break
             }
           }
@@ -924,15 +1009,13 @@ export class FlowViewCanvas extends FlowViewComponent {
       case item instanceof FlowViewInput:
         return {
           to: (link) => {
-            item.connect(link.id)
-            link.targetPoint = item.node.inputCenter(item.index)
+            item.connect(link)
           }
         }
       case item instanceof FlowViewOutput:
         return {
           to: (link) => {
-            item.connect(link.id)
-            link.sourcePoint = item.node.outputCenter(item.index)
+            item.connect(link)
           }
         }
 

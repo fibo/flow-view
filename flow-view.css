@@ -4,7 +4,7 @@
   --fv-font-size: 16px;
   --fv-inspector-background-color: white;
   --fv-inspector-min-width: 200px;
-  --fv-inspector-padding: .25rem;
+  --fv-inspector-padding: .5rem;
   --fv-line-color: darkgray;
   --fv-line-width: 2;
   --fv-node-background-color: white;
@@ -66,13 +66,16 @@
   fill: var(--fv-primary-color-2);
 }
 
-.FlowViewCreator input {
-  padding-left: 0.25rem;
-  border: 0;
-  outline: none;
-  width: 95%;
+.FlowViewNodeTextEditor {
   font-family: var(--fv-font-family);
   font-size: var(--fv-font-size);
+  padding-left: 0.25rem;
+  width: 95%;
+}
+
+.FlowViewNodeCreator > .FlowViewNodeTextEditor {
+  border: 0;
+  outline: none;
 }
 
 .FlowViewLink line {
@@ -82,9 +85,13 @@
 
 .FlowViewInspector {
   background: var(--fv-inspector-background-color);
-  min-width: var(--fv-inspector-min-width);
+  width: var(--fv-inspector-min-width);
 }
 
-.FlowViewInspector .FlowViewNodeInspector {
+.FlowViewNodeInspector {
   padding: var(--fv-inspector-padding);
+}
+
+.FlowViewNodeInspector > .FlowViewComponent {
+  padding-bottom: var(--fv-inspector-padding);
 }

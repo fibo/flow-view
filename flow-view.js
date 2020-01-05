@@ -1,4 +1,26 @@
-const dragTimeout = 150
+/**
+ * @typedef {FlowViewSerializedPin}
+ * @param {String} id
+ */
+
+/**
+ * @typedef {FlowViewSerializedNode}
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number=} width
+ * @param {Number=} height
+ * @param {String} id
+ * @param {String} text
+ * @param {FlowViewSerializedPin[]} ins
+ * @param {FlowViewSerializedPin[]} outs
+ */
+
+/**
+ * @typedef {FlowViewSerializedPin}
+ * @param {String} id
+ */
+
+const dragTimeout = 107
 
 /**
  * Flow View Component base class.
@@ -354,13 +376,30 @@ export class FlowViewLink extends FlowViewComponent {
   }
 }
 
-export class FlowViewNodeText extends FlowViewBox {
+export class FlowViewNodeContent extends FlowViewBox {
+  /**
+   * Abstract method called when content is updated.
+   *
+   * @param {FlowViewSerializedNode} json
+   */
+  updateContent () {}
+}
+
+export class FlowViewNodeText extends FlowViewNodeContent {
   constructor ({ container, dimension, position, text }) {
     super({ container, dimension, position })
 
-    const div = new FlowViewComponent({ container: this.createElement('div') })
+    Object.defineProperties(this, {
+      div: {
+        value: new FlowViewComponent({ container: this.createElement('div') })
+      }
+    })
 
-    div.container.innerHTML = text
+    this.div.container.innerHTML = text
+  }
+
+  updateContent (node) {
+    this.div.container.innerHTML = node.text
   }
 }
 
@@ -405,6 +444,29 @@ export class FlowViewEditNumPin extends FlowViewComponent {
   }
 }
 
+export class FlowViewNodeTextEditor extends FlowViewComponent {
+  constructor ({ container, submit, value: defaultValue }) {
+    super({ container })
+
+    container.type = 'text'
+    container.value = defaultValue
+
+    container.addEventListener('blur', event => {
+      const text = event.target.value.trim()
+
+      if (text !== '') submit(text)
+    })
+
+    container.addEventListener('keypress', ({ key, target }) => {
+      switch (key) {
+        case 'Enter':
+          container.blur()
+          break
+      }
+    })
+  }
+}
+
 export class FlowViewNodeInspector extends FlowViewComponent {
   constructor ({ container, node }) {
     super({ container })
@@ -416,9 +478,13 @@ export class FlowViewNodeInspector extends FlowViewComponent {
     textLabel.innerHTML = 'Text'
     textLabel.for = 'text'
 
-    const textInput = textField.createElement('input')
-    textInput.type = 'text'
-    textInput.value = node.text
+    const textInput = new FlowViewNodeTextEditor({
+      container: textField.createElement('input'),
+      submit: (text) => {
+        node.text = text
+      },
+      value: node.text
+    })
 
     const inputsField = new FlowViewComponent({ container: this.createElement('div') })
 
@@ -470,9 +536,19 @@ export class FlowViewNodeInspector extends FlowViewComponent {
       value: node.outputs.size
     })
 
+    const deleteNodeButton = this.createElement('button')
+    deleteNodeButton.innerHTML = 'Delete'
+    deleteNodeButton.addEventListener('click', event => {
+      event.preventDefault()
+
+      node.dispose()
+      this.dispose()
+    })
+
     Object.defineProperties(this, {
       inputsNumEditor: { value: inputsNumEditor },
-      outputsNumEditor: { value: outputsNumEditor }
+      outputsNumEditor: { value: outputsNumEditor },
+      textInput: { value: textInput }
     })
   }
 }
@@ -482,6 +558,7 @@ export class FlowViewNode extends FlowViewGroup {
     canvas,
     container,
     nodeJson,
+    NodeContentClass = FlowViewNodeText,
     NodeInspectorClass = FlowViewNodeInspector
   }) {
     super({
@@ -498,10 +575,15 @@ export class FlowViewNode extends FlowViewGroup {
     let text = nodeJson.text
 
     Object.defineProperties(this, {
+      NodeContentClass: { value: NodeContentClass },
+      NodeInspectorClass: { value: NodeInspectorClass }
+    })
+
+    Object.defineProperties(this, {
       attachInspector: {
         value: (canvasInspector) => {
           const nodeInspector = new NodeInspectorClass({
-            container: canvasInspector.createElement('form'),
+            container: canvasInspector.createElement('div'),
             node: this
           })
 
@@ -522,7 +604,6 @@ export class FlowViewNode extends FlowViewGroup {
           inspector = null
         }
       },
-      NodeInspectorClass: { value: NodeInspectorClass },
       inputs: { value: new Map() },
       inspector: {
         get: () => inspector
@@ -547,10 +628,6 @@ export class FlowViewNode extends FlowViewGroup {
             height: canvas.gridUnit
           }
         }
-      },
-      text: {
-        get: () => text,
-        set: (newValue) => { text = newValue }
       }
     })
 
@@ -626,6 +703,17 @@ export class FlowViewNode extends FlowViewGroup {
             x: position.x + pinPosition.x + half,
             y: position.y + pinPosition.y + outputBarPosition.y + half
           }
+        }
+      }
+    })
+
+    Object.defineProperties(this, {
+      text: {
+        get: () => text,
+        set: (newValue) => {
+          text = newValue
+
+          this.content.updateContent(this.json)
         }
       }
     })
@@ -770,25 +858,46 @@ export class FlowViewNode extends FlowViewGroup {
   }
 
   dispose () {
+    this.inputs.forEach(input => {
+      if (input.isConnected) {
+        input.link.dispose()
+      }
+    })
+
+    this.outputs.forEach(output => {
+      if (output.isConnected) {
+        output.links.forEach(link => link.dispose())
+      }
+    })
+
     this.canvas.nodes.delete(this.id)
 
     super.dispose()
   }
 
   spawnContent ({ canvas, container, nodeJson }) {
-    const { text } = nodeJson
+    const {
+      NodeContentClass
+    } = this
 
-    const dimension = canvas.roundDimension(canvas.textRuler.sizeOfText(
+    const { text, width = 0, height = 0 } = nodeJson
+
+    const textDimension = canvas.roundDimension(canvas.textRuler.sizeOfText(
       // Add an extra character for padding.
       text + 'x'
     ))
 
-    const content = new FlowViewNodeText({
+    const content = new NodeContentClass({
       container,
-      dimension,
-      position: { x: 0, y: canvas.gridUnit },
-      text
+      dimension: {
+        width: Math.max(width, textDimension.width),
+        height: Math.max(height, textDimension.height)
+      },
+      nodeJson,
+      position: { x: 0, y: canvas.gridUnit }
     })
+
+    content.updateContent(nodeJson)
 
     return content
   }
@@ -804,26 +913,15 @@ export class FlowViewCreator extends FlowViewNode {
       position: { x: 0, y: canvas.gridUnit }
     })
 
-    const input = new FlowViewComponent({
-      container: content.createElement('input')
+    const input = new FlowViewNodeTextEditor({
+      container: content.createElement('input'),
+      submit: (text) => {
+        canvas.createNode({ text, x: nodeJson.x, y: nodeJson.y })
+      },
+      value: ''
     })
 
-    input.container.type = 'text'
     input.container.focus()
-
-    input.container.addEventListener('keypress', ({ key, target }) => {
-      switch (key) {
-        case 'Enter': {
-          const text = target.value.trim()
-
-          if (text !== '') {
-            canvas.createNode({ text, x: nodeJson.x, y: nodeJson.y })
-          }
-
-          break
-        }
-      }
-    })
 
     return content
   }

@@ -20,7 +20,7 @@
  * @param {String} id
  */
 
-const dragTimeout = 107
+const eventTimeout = 107
 
 /**
  * Flow View Component base class.
@@ -994,26 +994,11 @@ export class FlowViewSvgLayer extends FlowViewBox {
   constructor ({
     container,
     dimension = { width: 0, height: 0 },
-    position = { x: 0, y: 0 },
-    scale
+    position = { x: 0, y: 0 }
   }) {
     super({ container, dimension, position })
 
-    let scaleFactor = 1 / scale
-
-    Object.defineProperties(this, {
-      scale: {
-        get: () => scaleFactor,
-        set: (newValue) => {
-          scaleFactor = 1 / newValue
-
-          const { x, y } = this.position
-          const { width, height } = this.dimension
-
-          container.setAttribute('viewBox', `${x} ${y} ${width * scaleFactor} ${height * scaleFactor}`)
-        }
-      }
-    })
+    let scale = 1
 
     Object.defineProperties(this, {
       viewBox: {
@@ -1023,17 +1008,29 @@ export class FlowViewSvgLayer extends FlowViewBox {
           y = this.position.y,
           width = this.dimension.width,
           height = this.dimension.height,
-          scale = this.scale
+          scaleFactor = 1 / scale
         }) => {
           this.position = { x, y }
           this.dimension = { width, height }
 
-          container.setAttribute('viewBox', `${x} ${y} ${width * scale} ${height * scale}`)
+          container.setAttribute('viewBox', `${x} ${y} ${Math.floor(scaleFactor * width)} ${Math.floor(scaleFactor * height)}`)
         }
       }
     })
 
     this.viewBox = { ...position, ...dimension }
+
+    container.addEventListener('wheel', event => {
+      event.preventDefault()
+
+      const minScale = 0.1
+      const maxScale = 1
+
+      scale += event.deltaY * +0.001
+      scale = Math.min(Math.max(minScale, scale), maxScale)
+
+      this.viewBox = { scaleFactor: 1 / scale }
+    })
   }
 
   translate (vector) {
@@ -1062,7 +1059,6 @@ export class FlowViewCanvas extends FlowViewComponent {
     let isDragging = false
     let dragStartedTimeoutId
     let dragStartedMoving = false
-    let scale = 1
 
     const inspector = new InspectorClass({
       container: inspectorContainer
@@ -1132,7 +1128,7 @@ export class FlowViewCanvas extends FlowViewComponent {
 
           if (isDragging) {
             // Smooth drag start: if drag started moving now, update current pointer position.
-            // This happens after `dragTimeout` milliseconds.
+            // This happens after `eventTimeout` milliseconds.
             if (dragStartedMoving === false) {
               dragStartedMoving = true
 
@@ -1177,7 +1173,7 @@ export class FlowViewCanvas extends FlowViewComponent {
           dragStartedTimeoutId = setTimeout(() => {
             dragStartedTimeoutId = null
             isDragging = true
-          }, dragTimeout)
+          }, eventTimeout)
         }
       },
       fontSize: { get: () => parseInt(this.style.fontSize) },
@@ -1201,8 +1197,8 @@ export class FlowViewCanvas extends FlowViewComponent {
           const { width, height } = this.boundingClientRect
 
           return {
-            width: width - inspector.boundingClientRect.width,
-            height
+            width: Math.floor(width - inspector.boundingClientRect.width),
+            height: Math.floor(height)
           }
         }
       },
@@ -1215,29 +1211,31 @@ export class FlowViewCanvas extends FlowViewComponent {
       svgLayer: {
         value: new FlowViewSvgLayer({
           container: svgLayerContainer,
-          dimension: this.svgLayerDimension,
-          scale
+          dimension: this.svgLayerDimension
         })
       }
     })
 
     Object.defineProperties(this, {
-      scale: {
-        get: () => scale,
-        set: (newValue) => {
-          scale = newValue
-          this.svgLayer.scale = newValue
+      resizeHandler: {
+        value: () => {
+          const { width, height } = this.svgLayerDimension
+
+          this.svgLayer.viewBox = { width, height }
         }
       }
     })
 
+    window.addEventListener('resize', this.resizeHandler)
+
     container.addEventListener('dblclick', event => {
       event.stopPropagation()
 
+      const origin = this.svgLayer.position
       const { x, y } = this.svgLayer.boundingClientRect
       const { clientX, clientY } = event
 
-      this.spawnCreator({ x: clientX - x, y: clientY - y - gridUnit })
+      this.spawnCreator({ x: clientX - x + origin.x, y: clientY - y + origin.y - gridUnit })
     })
 
     container.addEventListener('click', event => {
@@ -1263,19 +1261,6 @@ export class FlowViewCanvas extends FlowViewComponent {
     })
 
     container.addEventListener('mousemove', this.dragMove.bind(this))
-
-    container.addEventListener('wheel', event => {
-      event.preventDefault()
-
-      let scale = this.scale
-
-      const minScale = 0.1
-      const maxScale = 1
-
-      scale += event.deltaY * +0.001
-      scale = Math.min(Math.max(minScale, scale), maxScale)
-      this.scale = scale
-    })
   }
 
   clearSelection () {
@@ -1347,6 +1332,10 @@ export class FlowViewCanvas extends FlowViewComponent {
     this.nodes.set(node.id, node)
 
     return node
+  }
+
+  dispose () {
+    document.removeEventListener('resize', this.resizeHandler)
   }
 
   inspect (item) {

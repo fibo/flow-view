@@ -83,6 +83,10 @@
   stroke-width: var(--fv-line-width);
 }
 
+.FlowViewLink--highlighted line {
+  stroke: var(--fv-primary-color-1);
+}
+
 .FlowViewInspector {
   background: var(--fv-inspector-background-color);
   width: var(--fv-inspector-min-width);

@@ -387,6 +387,19 @@ export class FlowViewLink extends FlowViewComponent {
 
     this.sourcePoint = sourcePoint
     this.targetPoint = targetPoint
+
+    container.addEventListener('click', event => event.stopPropagation())
+
+    container.addEventListener('mousedown', event => {
+      event.stopPropagation()
+
+      canvas.selectLink({
+        multiSelection: event.shiftKey,
+        link: this
+      })
+    })
+
+    container.addEventListener('mouseup', event => event.stopPropagation())
   }
 
   dispose () {
@@ -761,12 +774,6 @@ export class FlowViewNode extends FlowViewGroup {
       event.stopPropagation()
 
       canvas.dragEnd()
-    })
-
-    container.addEventListener('dblclick', event => {
-      event.stopPropagation()
-
-      console.log('dblclick')
     })
 
     container.addEventListener('mousedown', event => {
@@ -1217,6 +1224,7 @@ export class FlowViewCanvas extends FlowViewComponent {
       nodes: { value: new Map() },
       outputs: { value: new Map() },
       NodeClass: { value: NodeClass },
+      selectedLinks: { value: new Set() },
       selectedNodes: { value: new Set() },
       svgLayerDimension: {
         get: () => {
@@ -1290,7 +1298,10 @@ export class FlowViewCanvas extends FlowViewComponent {
   }
 
   clearSelection () {
-    const { selectedNodes } = this
+    const { selectedNodes, selectedLinks } = this
+
+    selectedLinks.forEach(link => link.highlight(false))
+    selectedLinks.clear()
 
     selectedNodes.forEach(node => node.highlight(false))
     selectedNodes.clear()
@@ -1397,6 +1408,19 @@ export class FlowViewCanvas extends FlowViewComponent {
     ]
   }
 
+  selectLink ({ multiSelection, link }) {
+    const { selectedLinks } = this
+
+    if (selectedLinks.has(link)) return
+
+    if (!multiSelection) {
+      this.clearSelection()
+    }
+
+    link.highlight(true)
+    selectedLinks.add(link)
+  }
+
   selectNode ({ multiSelection, node }) {
     const { selectedNodes } = this
 
@@ -1409,6 +1433,32 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     node.highlight(true)
     selectedNodes.add(node)
+
+    // Add to selection all links that interconnects current selected nodes.
+
+    // 1. Get all output ids and links connected to some input.
+    const outputIds = []
+    const links = []
+
+    selectedNodes.forEach(node => {
+      node.inputs.forEach(input => {
+        if (input.isConnected) {
+          links.push(input.link)
+        }
+      })
+
+      node.outputs.forEach(output => {
+        outputIds.push(output.id)
+      })
+    })
+
+    // 2. If a link connected to some input and its from is among the outputIds,
+    //    then it is part of the selected items.
+    links.forEach(link => {
+      if (outputIds.includes(link.from)) {
+        this.selectLink({ link, multiSelection })
+      }
+    })
   }
 
   spawnCreator (position, CreatorClass = this.CreatorClass) {

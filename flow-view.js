@@ -224,27 +224,25 @@ export class FlowViewInput extends FlowViewPin {
 
       if (this.isConnected) {
         canvas.halfConnectedLink = this.link
+        this.disconnect()
+        canvas.dragStart(event)
+      } else {
+        const center = this.node.inputCenter(this.index)
+
+        link = canvas.createLink({ to: this.id }, { sourcePoint: center, targetPoint: center })
+
+        canvas.halfConnectedLink = link
         canvas.dragStart(event)
       }
     })
 
-    container.addEventListener('mouseenter', event => {
+    container.addEventListener('mouseup', event => {
       event.stopPropagation()
 
       const { halfConnectedLink } = canvas
 
-      if (halfConnectedLink && halfConnectedLink.from) {
+      if (halfConnectedLink && !halfConnectedLink.hasTarget) {
         this.connect(halfConnectedLink)
-      }
-    })
-
-    container.addEventListener('mouseleave', event => {
-      event.stopPropagation()
-
-      const { halfConnectedLink } = canvas
-
-      if (halfConnectedLink) {
-        this.disconnect()
       }
     })
   }
@@ -261,6 +259,8 @@ export class FlowViewInput extends FlowViewPin {
 export class FlowViewOutput extends FlowViewPin {
   constructor ({ container, dimension, outputJson, index, node, position }) {
     super({ container, dimension, id: outputJson.id, index, node, position })
+
+    const { canvas } = node
 
     const links = new Set()
 
@@ -284,6 +284,24 @@ export class FlowViewOutput extends FlowViewPin {
 
     container.addEventListener('mousedown', event => {
       event.stopPropagation()
+
+      const center = this.node.outputCenter(this.index)
+
+      const link = canvas.createLink({ from: this.id }, { sourcePoint: center, targetPoint: center })
+      this.links.add(link)
+
+      canvas.halfConnectedLink = link
+      canvas.dragStart(event)
+    })
+
+    container.addEventListener('mouseup', event => {
+      event.stopPropagation()
+
+      const { halfConnectedLink } = canvas
+
+      if (halfConnectedLink && !halfConnectedLink.hasSource) {
+        this.connect(halfConnectedLink)
+      }
     })
   }
 
@@ -339,6 +357,8 @@ export class FlowViewLink extends FlowViewComponent {
         set: (newValue) => { from = newValue }
       },
       line: { value: this.createSvgElement('line') },
+      hasSource: { get: () => typeof from === 'string' },
+      hasTarget: { get: () => typeof to === 'string' },
       sourcePoint: {
         get: () => sourcePoint,
         set: ({ x, y }) => {
@@ -1001,6 +1021,8 @@ export class FlowViewSvgLayer extends FlowViewBox {
     let scale = 1
 
     Object.defineProperties(this, {
+      linksLayer: { value: new FlowViewComponent({ container: this.createSvgElement('g') }) },
+      nodesLayer: { value: new FlowViewComponent({ container: this.createSvgElement('g') }) },
       viewBox: {
         get: () => Object.assign({}, this.position, this.dimension),
         set: ({
@@ -1106,8 +1128,8 @@ export class FlowViewCanvas extends FlowViewComponent {
           isDragging = false
 
           if (halfConnectedLink) {
-            // Clean up link if not connected to source or target.
-            if (halfConnectedLink.from === null || halfConnectedLink.to === null) {
+            // Clean up link if not connected both to source and target.
+            if (halfConnectedLink.hasTarget === false || halfConnectedLink.hasSource === false) {
               halfConnectedLink.dispose()
             }
 
@@ -1139,12 +1161,16 @@ export class FlowViewCanvas extends FlowViewComponent {
             if (halfConnectedLink) {
               const { width: inspectorWidth } = this.inspector.boundingClientRect
               const { left: canvasLeft, top: canvasTop } = this.boundingClientRect
+              const origin = this.svgLayer.position
 
-              const x = currentX - inspectorWidth - canvasLeft
-              const y = currentY - canvasTop
-              if (halfConnectedLink.from === null) {
+              const x = currentX - inspectorWidth - canvasLeft + origin.x
+              const y = currentY - canvasTop + origin.y
+
+              if (halfConnectedLink.hasTarget) {
                 halfConnectedLink.sourcePoint = { x, y }
-              } else if (halfConnectedLink.to === null) {
+              }
+
+              if (halfConnectedLink.hasSource) {
                 halfConnectedLink.targetPoint = { x, y }
               }
             } else if (selectedNodes.size > 0) {
@@ -1302,14 +1328,16 @@ export class FlowViewCanvas extends FlowViewComponent {
     }
   }
 
-  createLink (linkJson = {}, { LinkClass = this.LinkClass } = {}) {
+  createLink (linkJson = {}, { LinkClass = this.LinkClass, sourcePoint, targetPoint } = {}) {
     const link = new LinkClass({
       canvas: this,
-      container: this.svgLayer.createSvgElement('g'),
+      container: this.svgLayer.linksLayer.createSvgElement('g'),
       linkJson: {
         id: this.generateId(),
         ...linkJson
-      }
+      },
+      sourcePoint,
+      targetPoint
     })
 
     this.links.set(link.id, link)
@@ -1322,7 +1350,7 @@ export class FlowViewCanvas extends FlowViewComponent {
 
     const node = new NodeClass({
       canvas: this,
-      container: this.svgLayer.createSvgElement('g'),
+      container: this.svgLayer.nodesLayer.createSvgElement('g'),
       nodeJson: {
         id: this.generateId(),
         ...nodeJson

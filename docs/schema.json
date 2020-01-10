@@ -5,7 +5,7 @@
     "nodes": {
       "type": "array",
       "items": {
-        "title": "node",
+        "title": "nodes",
         "type": "object",
         "properties": {
           "id": {
@@ -62,7 +62,7 @@
     "links": {
       "type": "array",
       "items": {
-        "title": "link",
+        "title": "links",
         "type": "object",
         "properties": {
           "id": {

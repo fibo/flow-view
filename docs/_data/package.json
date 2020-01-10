@@ -8,29 +8,27 @@
     "url": "http://g14n.info"
   },
   "license": "MIT",
-  "main": "src/flow-view.js",
+  "main": "flow-view.js",
+  "style": "flow-view.css",
   "scripts": {
-    "browserify": "browserify -g [ envify --NODE_ENV production ] -r ./${npm_package_main}:${npm_package_name} -o dist/${npm_package_name}.js",
-    "build": "npm run generate_schema; npm run cp_example; npm run browserify && npm run minify; git status",
-    "cp_example": "cp examples/basic/usage.js docs/example/",
-    "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
+    "build": "run-p browserify docs:_data generate_schema postcss",
+    "browserify": "cross-env NODE_ENV=production browserify ${npm_package_main} -t babelify -g [ envify --NODE_ENV production ] -g uglifyify | terser --compress --mangle > dist/${npm_package_name}.min.js",
+    "docs:_data": "run-p docs:_data:*",
     "docs:_data:package.json": "cp package.json docs/_data/",
     "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
-    "example_basic_usage": "NODE_PATH=src budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js",
-    "example_empty_canvas": "NODE_PATH=src budo --serve bundle.js --dir examples/empty --open examples/empty/canvas.js",
-    "example_genealogic_tree": "NODE_PATH=src budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js",
-    "generate_schema": "markdown2code --lang cson README.md | cson2json > docs/schema.json",
+    "generate_schema": "markdown2code --lang yaml README.md | cson2json > docs/schema.json",
     "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
-    "lint": "cd src; standa --fix; cd ..",
-    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
+    "lint": "standa",
     "preversion": "npm run build",
+    "postcss": "postcss ${npm_package_name}.css --output dist/${npm_package_main}.min.css",
     "postversion": "git push origin v${npm_package_version}; npm publish",
-    "start": "npm run example_basic_usage",
     "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "test": "node test/jsonSchema.js"
+    "test": "node test/jsonSchema.js",
+    "start": "http-server -o"
   },
   "pre-commit": [
-    "lint"
+    "lint",
+    "test"
   ],
   "repository": {
     "type": "git",
@@ -46,19 +44,26 @@
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "dependencies": {
-    "bindme": "^1.0.2",
-    "pdsp": "^0.1.0",
-    "static-props": "^1.1.2"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "budo": "^11.3.2",
-    "cson": "^5.1.0",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
+    "browserslist": "^4.8.3",
+    "core-js": "^3.6.2",
+    "cross-env": "^6.0.3",
+    "cson": "^6.9.0",
+    "cssnano": "^4.1.10",
     "envify": "^4.1.0",
+    "http-server": "^0.12.1",
     "is-my-json-valid": "^2.19.0",
     "markdown2code": "^1.0.2",
+    "npm-run-all": "^4.1.5",
+    "postcss-cli": "^7.1.0",
     "pre-commit": "^1.2.2",
-    "standa": "^12.0.0",
-    "uglify-es": "^3.3.9"
+    "standa": "^14.0.0",
+    "terser": "^4.6.2",
+    "uglifyify": "^5.0.2"
   }
 }

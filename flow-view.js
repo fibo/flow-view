@@ -20,8 +20,6 @@
  * @param {String} id
  */
 
-const eventTimeout = 107
-
 /**
  * Flow View Component base class.
  *
@@ -1157,7 +1155,6 @@ export class FlowViewCanvas extends FlowViewComponent {
 
           if (isDragging) {
             // Smooth drag start: if drag started moving now, update current pointer position.
-            // This happens after `eventTimeout` milliseconds.
             if (dragStartedMoving === false) {
               dragStartedMoving = true
 
@@ -1206,7 +1203,7 @@ export class FlowViewCanvas extends FlowViewComponent {
           dragStartedTimeoutId = setTimeout(() => {
             dragStartedTimeoutId = null
             isDragging = true
-          }, eventTimeout)
+          }, 100)
         }
       },
       fontSize: { get: () => parseInt(this.style.fontSize) },
@@ -1380,6 +1377,8 @@ export class FlowViewCanvas extends FlowViewComponent {
   inspect (item) {
     this.inspector.attach(item)
   }
+
+  loadGraph () {}
 
   roundDimension ({ width = 0, height = 0 }) {
     const [a, b] = this.roundVector([width, height])

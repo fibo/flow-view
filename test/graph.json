@@ -6,8 +6,8 @@
       "x": 170,
       "y": 10,
       "outs": [
-        { "name": "out0" },
-        { "name": "out1" }
+        { "id": "out0" },
+        { "id": "out1" }
       ]
     },
     {
@@ -16,7 +16,7 @@
       "x": 117,
       "y": 100,
       "ins": [
-        { "name": "in" }
+        { "id": "in" }
       ]
     },
     {
@@ -25,25 +25,25 @@
       "x": 150,
       "y": 170,
       "ins": [
-        { "name": "in0" },
-        { "name": "in1" },
-        { "name": "in2" }
+        { "id": "in0" },
+        { "id": "in1" },
+        { "id": "in2" }
       ],
       "outs": [
-        { "name": "out" }
+        { "id": "out" }
       ]
     }
   ],
   "links": [
     {
       "id": "l",
-      "from": [ "a", 0 ],
-      "to": [ "b", 0 ]
+      "from": "out0",
+      "to": "in"
     },
     {
       "id": "i",
-      "from": [ "b", 0 ],
-      "to": [ "c", 0 ]
+      "from": "out1",
+      "to": "in0"
     }
   ]
 }

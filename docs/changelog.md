@@ -13,26 +13,16 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
-## Unreleased
+## [v4.0.0] - 2020-01-10
 
-- TODO show pin popup on mouse over
-- TODO dextop example, popout window
-- TODO custom components, or extended one, to be passed on canvas creation
+New implementation written from scratch! Basically it has all previous features but it looks better.
 
 ### Added
 
-- Using [dextop](http://g14n.info/dextop) window manager for inspector.
-- Can import individual components.
-- Merged SVG component into base component class.
-- Vanilla JS event emitter.
-- Fallback to new div appended to document.body if argument passed to Canvas constructor is not an instance of HTMLDivElement.
-
-### Fixed
-
-- using Delete instead of Backspace for Node deletion, otherwise Creator could not delete chars.
-- cson highlighting was not recognized, using yaml.
-- loadGraph() was calling undefined this.root attribute
-- Node component has attribute *text*, internally it used *name*.
+* Styling via (old but gold) plain CSS file, instead of previous CSS-in-JS.
+* Ready to be imported as an ES module.
+* Can translate and even zoom canvas.
+* Connect links from both source and targets, yes current implementation is far better and clear then before.
 
 ## [v3.0.0] - 2018-05-03
 

@@ -23,17 +23,17 @@
   <script type="module">
     import { FlowViewCanvas } from './flow-view.js'
 
-    const canvas1 = new FlowViewCanvas(document.getElementById('canvas1'))
+    const canvas = new FlowViewCanvas(document.getElementById('canvas1'))
 
-    const node1 = canvas1.createNode({ x: 20, y: 50, text: 'Drag me' })
-    const node2 = canvas1.createNode({ x: 100, y: 100, text: 'I am a node' })
-    const link1 = canvas1.createLink()
+    const node1 = canvas.createNode({ x: 20, y: 50, text: 'Drag me' })
+    const node2 = canvas.createNode({ x: 100, y: 100, text: 'I am a node' })
+    const link = canvas.createLink()
 
     const source1 = node1.createOutput()
     const target1 = node2.createInput()
 
-    canvas1.connect(source1).to(link1)
-    canvas1.connect(target1).to(link1)
+    canvas.connect(source1).to(link)
+    canvas.connect(target1).to(link)
   </script>
 
   <link rel="stylesheet" href="./flow-view.css">

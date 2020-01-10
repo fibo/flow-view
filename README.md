@@ -5,10 +5,7 @@
 [Installation](#installation) |
 [API](#api) |
 [Graph schema](#graph-schema) |
-[Examples](#examples) |
 [License](#license)
-
-[![Whatchers](https://g14n.info/svg/github/watchers/flow-view.svg)](https://github.com/fibo/flow-view/watchers) [![Stargazers](https://g14n.info/svg/github/stars/flow-view.svg)](https://github.com/fibo/flow-view/stargazers) [![Forks](https://g14n.info/svg/github/forks/flow-view.svg)](https://github.com/fibo/flow-view/network/members)
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view)
 [![Build Status](https://travis-ci.org/fibo/flow-view.svg?branch=master)](https://travis-ci.org/fibo/flow-view?branch=master)
@@ -33,17 +30,13 @@ npm install flow-view
 Adding this to your HTML page
 
 ```html
+<link rel="stylesheet" src="https://unpkg.com/flow-view/dist/flow-view.min.css">
 <script src="https://unpkg.com/flow-view/dist/flow-view.min.js"></script>
 ```
 
 ## API
 
 ### FlowViewCanvas constructor
-
-To import `FlowViewCanvas` choose your favourite syntax among:
-
-* `const { FlowViewCanvas } = require('flow-view')`
-* `import { FlowViewCanvas } from 'flow-view'`
 
 Suppose your *container* is a div with id `drawing`.
 In your HTML, place a div where you want to mount flow-view canvas.
@@ -55,18 +48,34 @@ In your HTML, place a div where you want to mount flow-view canvas.
 Create an empty canvas.
 
 ```javascript
+import { FlowViewCanvas } from 'flow-view'
+
 const container = document.getElementById('drawing')
 
 const canvas = new FlowViewCanvas(container)
 ```
 
-If passed to constructor is not an instance of `HTMLDivElement`, a new `div` will be created and appended to `document.body`.
+It is supposed to use a `FlowViewCanvas` graphically; nevertheless you can create nodes, links, inputs and outputs programmatically.
+For example:
+
+```javascript
+const node1 = canvas.createNode({ x: 20, y: 50, text: 'Drag me' })
+const node2 = canvas.createNode({ x: 100, y: 100, text: 'I am a node' })
+
+const link = canvas.createLink()
+
+const source1 = node1.createOutput()
+const target1 = node2.createInput()
+
+canvas.connect(source1).to(link)
+canvas.connect(target1).to(link)
+```
 
 ### loadGraph
 
 You can load a [graph](#graph-schema) like in the following example.
 
-<!-- sync with examples/basic/usage.js -->
+<!-- sync with docs/examples/basic/graph.js -->
 
 ```javascript
 const graph = {
@@ -77,9 +86,9 @@ const graph = {
       y: 100,
       text: 'Drag me',
       outs: [
-        { name: 'out1' },
-        { name: 'out2' },
-        { name: 'out3' }
+        { id: 'out1' },
+        { id: 'out2' },
+        { id: 'out3' }
       ]
     },
     {
@@ -88,8 +97,8 @@ const graph = {
       y: 200,
       text: 'Click me',
       ins: [
-        { name: 'in1' },
-        { name: 'in2' }
+        { id: 'in1' },
+        { id: 'in2' }
       ],
       outs: [
         { id: 'out4' }
@@ -99,12 +108,13 @@ const graph = {
   links: [
     {
       id: 'c',
-      from: ['out1'],
-      to: ['in1']
+      from: 'out1',
+      to: 'in1'
     }
   ]
 }
 
+canvas.loadGraph(graph)
 ```
 
 ## Graph schema
@@ -133,7 +143,7 @@ A *graph* can have none, one or many *nodes*.
 Every *node* must have a unique *id*.
 
 ```yaml
-      title: 'node'
+      title: 'nodes'
       type: 'object'
       properties:
         id:
@@ -162,7 +172,7 @@ A node at the end is a block with inputs and outputs. Both *ins* and *outs* must
         ins:
           type: 'array'
           items:
-            title: 'in'
+            title: 'ins'
             type: 'object'
             properties:
               id:
@@ -173,7 +183,7 @@ A node at the end is a block with inputs and outputs. Both *ins* and *outs* must
         outs:
           type: 'array'
           items:
-            title: 'out'
+            title: 'outs'
             type: 'object'
             properties:
               id:
@@ -207,7 +217,7 @@ A *graph* can have none, one or many *links*.
 Every *link* must have a unique *id*.
 
 ```yaml
-      title: 'link'
+      title: 'links'
       type: 'object'
       properties:
         id:
@@ -240,39 +250,10 @@ All properties are required.
       ]
 ```
 
-## Examples
-
-Try [online example][online_example].
-
-You can also clone this repo and install dependencies to run examples locally
-
-```bash
-git clone https://github.com/fibo/flow-view
-cd flow-view
-npm install
-```
-
-Every example has its homonym npm script, for example [basic/usage.js][example_basic_usage] example is launched by command
-
-```bash
-npm run example_basic_usage
-```
-
-Available examples are:
-
-* [basic/usage.js][example_basic_usage]: `npm run example_basic_usage`
-* [empty/canvas.js][example_empty_canvas]: `npm run example_empty_canvas`
-* [genealogic/tree.js][example_genealogic_tree]: `npm run example_genealogic_tree`
-
 ## License
 
 [MIT](http://g14n.info/mit-license)
 
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
-[example_basic_usage]: https://github.com/fibo/flow-view/blob/master/examples/basic/usage.js
-[example_empty_canvas]: https://github.com/fibo/flow-view/blob/master/examples/empty/canvas.js
-[example_event_emitter]: https://github.com/fibo/flow-view/blob/master/examples/event/emitter.js
-[example_genealogic_tree]: https://github.com/fibo/flow-view/blob/master/examples/genealogic/tree.js
-[online_example]: http://g14n.info/flow-view/example "Online example"
 [basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"

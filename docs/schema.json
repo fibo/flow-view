@@ -2,49 +2,6 @@
   "$schema": "http://json-schema.org/schema#",
   "id": "http://g14n.info/flow-view/schema.json",
   "properties": {
-    "links": {
-      "type": "array",
-      "items": {
-        "title": "link",
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "from": {
-            "type": "array",
-            "items": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              }
-            ],
-            "minLength": 2,
-            "maxLength": 2
-          },
-          "to": {
-            "type": "array",
-            "items": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              }
-            ],
-            "minLength": 2,
-            "maxLength": 2
-          }
-        },
-        "required": [
-          "id",
-          "from",
-          "to"
-        ]
-      }
-    },
     "nodes": {
       "type": "array",
       "items": {
@@ -66,36 +23,30 @@
           "ins": {
             "type": "array",
             "items": {
-              "title": "in",
+              "title": "ins",
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "type": {
+                "id": {
                   "type": "string"
                 }
               },
               "required": [
-                "name"
+                "id"
               ]
             }
           },
           "outs": {
             "type": "array",
             "items": {
-              "title": "out",
+              "title": "outs",
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "type": {
+                "id": {
                   "type": "string"
                 }
               },
               "required": [
-                "name"
+                "id"
               ]
             }
           }
@@ -105,6 +56,29 @@
           "text",
           "x",
           "y"
+        ]
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "title": "link",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to"
         ]
       }
     }

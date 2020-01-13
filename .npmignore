@@ -1,3 +1,10 @@
-# Do not ignore dist folder to support unpkg.com CDN.
-docs
-src
+_data
+_includes
+_layouts
+examples
+media
+test
+_config.yml
+changelog.md
+rollup.config.js
+postcss.config.js

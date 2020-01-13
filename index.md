@@ -1,3 +1,6 @@
+---
+title: flow-view
+---
 # flow-view
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia]
@@ -77,10 +80,15 @@ canvas.connect(source1).to(link)
 canvas.connect(target1).to(link)
 ```
 
+<!-- TODO
 ### loadGraph
 
 You can load a [graph](#graph-schema) like in the following example.
+-->
 
+<!-- sync with examples/basic/graph.js -->
+
+<!-- TODO
 ```javascript
 const graph = {
   nodes: [
@@ -120,6 +128,8 @@ const graph = {
 
 canvas.loadGraph(graph)
 ```
+
+-->
 
 ## Graph schema
 

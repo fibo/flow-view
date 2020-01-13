@@ -13,6 +13,16 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
+### Added
+
+* `loadGraph()`
+* rollup es build
+
+### Removed
+
+* browserify
+* docs/ folder
+
 ## [v4.0.0] - 2020-01-10
 
 New implementation written from scratch! Basically it has all previous features but it looks better.

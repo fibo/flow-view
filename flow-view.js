@@ -1378,7 +1378,13 @@ export class FlowViewCanvas extends FlowViewComponent {
     this.inspector.attach(item)
   }
 
-  loadGraph () {}
+  loadGraph ({ links, nodes }) {
+    // Create nodes first.
+    nodes.forEach(node => this.createNode(node))
+
+    // Then create links.
+    links.forEach(link => this.createLink(link))
+  }
 
   roundDimension ({ width = 0, height = 0 }) {
     const [a, b] = this.roundVector([width, height])

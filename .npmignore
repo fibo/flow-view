@@ -2,6 +2,7 @@ _data
 _includes
 _layouts
 examples
+demo.html
 media
 test
 _config.yml

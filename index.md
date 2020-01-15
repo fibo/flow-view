@@ -88,36 +88,17 @@ You can load a [graph](#graph-schema) like in the following example.
 const graph = {
   nodes: [
     {
-      id: 'a',
-      x: 80,
-      y: 100,
-      text: 'Drag me',
-      outs: [
-        { id: 'out1' },
-        { id: 'out2' },
-        { id: 'out3' }
-      ]
+      id: 'a', x: 80, y: 100, text: 'Drag me',
+      outs: [ { id: 'out1' }, { id: 'out2' }, { id: 'out3' } ]
     },
     {
-      id: 'b',
-      x: 180,
-      y: 200,
-      text: 'Click me',
-      ins: [
-        { id: 'in1' },
-        { id: 'in2' }
-      ],
-      outs: [
-        { id: 'out4' }
-      ]
+      id: 'b', x: 180, y: 200, text: 'Click me',
+      ins: [ { id: 'in1' }, { id: 'in2' } ],
+      outs: [ { id: 'out4' } ]
     }
   ],
   links: [
-    {
-      id: 'c',
-      from: 'out1',
-      to: 'in1'
-    }
+    { id: 'c', from: 'out1', to: 'in1' }
   ]
 }
 

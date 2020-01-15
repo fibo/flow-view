@@ -1,9 +1,11 @@
 :root {
+  --fv-border-radius: 1rem;
   --fv-canvas-background-color: #f8f8f8;
   --fv-font-family: Courier;
   --fv-font-size: 16px;
+  --fv-inspector-border-color: gainsboro;
   --fv-inspector-background-color: white;
-  --fv-inspector-min-width: 200px;
+  --fv-inspector-width: 200px;
   --fv-inspector-padding: .5rem;
   --fv-line-color: darkgray;
   --fv-line-width: 2;
@@ -21,6 +23,7 @@
   display: flex;
   font-family: var(--fv-font-family);
   font-size: var(--fv-font-size);
+  border-radius: var(--fv-border-radius);
 }
 
 /* Styles attributes required to calculate text dimensions. */
@@ -70,10 +73,10 @@
   font-family: var(--fv-font-family);
   font-size: var(--fv-font-size);
   padding-left: 0.25rem;
-  width: 95%;
+  outline: none;
 }
 
-.FlowViewNodeCreator > .FlowViewNodeTextEditor {
+.FlowViewNodeCreator .FlowViewNodeTextEditor {
   border: 0;
   outline: none;
 }
@@ -89,7 +92,7 @@
 
 .FlowViewInspector {
   background: var(--fv-inspector-background-color);
-  width: var(--fv-inspector-min-width);
+  width: var(--fv-inspector-width);
 }
 
 .FlowViewNodeInspector {
@@ -98,4 +101,22 @@
 
 .FlowViewNodeInspector > .FlowViewComponent {
   padding-bottom: var(--fv-inspector-padding);
+}
+
+.FlowViewNodeInspector .FlowViewNodeTextEditor {
+  box-sizing : border-box;
+  width: 100%;
+}
+
+.FlowViewNodeInspector > input {
+  border-radius: var(--fv-border-radius);
+  border: 1px solid var(--fv-inspector-border-color);
+}
+
+.FlowViewNodeInspector > button {
+  border-radius: var(--fv-border-radius);
+  border: 1px solid var(--fv-inspector-border-color);
+  padding: var(--fv-inspector-padding);
+  font-family: inherit;
+  font-size: inherit;
 }

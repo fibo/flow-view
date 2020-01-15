@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+
+<style>
+  #drawing {
+    height: 400px;
+  }
+</style>
+
+<div id="drawing"></div>
+
+<script type="module" >
+  import { FlowViewCanvas } from './flow-view.js'
+  const canvas = new FlowViewCanvas(document.getElementById('drawing'))
+</script>
+<link rel="stylesheet" href="flow-view.css">
+</body>
+</html>

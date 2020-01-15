@@ -13,6 +13,12 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
+## [v4.1.0] - 2020-01-10
+
+### Fixed
+
+* online example
+
 ### Added
 
 * `loadGraph()`

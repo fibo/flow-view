@@ -227,7 +227,7 @@ export class FlowViewInput extends FlowViewPin {
       } else {
         const center = this.node.inputCenter(this.index)
 
-        link = canvas.createLink({ to: this.id }, { sourcePoint: center, targetPoint: center })
+        link = canvas.createLink({ to: this.id }, { sourcePoint: center })
 
         canvas.halfConnectedLink = link
         canvas.dragStart(event)
@@ -285,7 +285,7 @@ export class FlowViewOutput extends FlowViewPin {
 
       const center = this.node.outputCenter(this.index)
 
-      const link = canvas.createLink({ from: this.id }, { sourcePoint: center, targetPoint: center })
+      const link = canvas.createLink({ from: this.id }, { targetPoint: center })
       this.links.add(link)
 
       canvas.halfConnectedLink = link
@@ -1337,6 +1337,25 @@ export class FlowViewCanvas extends FlowViewComponent {
   }
 
   createLink (linkJson = {}, { LinkClass = this.LinkClass, sourcePoint, targetPoint } = {}) {
+    const { from, to } = linkJson
+
+    let input
+    let output
+
+    this.nodes.forEach(node => {
+      if (from) {
+        if (node.outputs.has(from)) {
+          output = node.outputs.get(from)
+        }
+      }
+
+      if (to) {
+        if (node.inputs.has(to)) {
+          input = node.inputs.get(to)
+        }
+      }
+    })
+
     const link = new LinkClass({
       canvas: this,
       container: this.svgLayer.linksLayer.createSvgElement('g'),
@@ -1347,6 +1366,9 @@ export class FlowViewCanvas extends FlowViewComponent {
       sourcePoint,
       targetPoint
     })
+
+    if (output) output.connect(link)
+    if (input) input.connect(link)
 
     this.links.set(link.id, link)
 
@@ -1364,6 +1386,10 @@ export class FlowViewCanvas extends FlowViewComponent {
         ...nodeJson
       }
     })
+
+    // Create pins.
+    Object.assign([], nodeJson.ins).forEach(pin => node.createInput(pin))
+    Object.assign([], nodeJson.outs).forEach(pin => node.createOutput(pin))
 
     this.nodes.set(node.id, node)
 

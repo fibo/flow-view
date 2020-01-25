@@ -44,15 +44,18 @@
  * @param {FlowViewComponentArgs} args
  */
 export class FlowViewComponent {
-  constructor ({ container, id }) {
+  constructor ({
+    container,
     // Convention: every JavaScript class has the same name as its DOM container.
-    const className = this.constructor.name
-    container.classList.add(className)
+    cssClassName = this.constructor.name,
+    id
+  }) {
+    container.classList.add(cssClassName)
 
     Object.defineProperties(this, {
       boundingClientRect: { get: () => container.getBoundingClientRect() },
       container: { value: container },
-      isHighlighted: { get: () => container.classList.contains(`${className}--highlighted`) },
+      isHighlighted: { get: () => container.classList.contains(`${cssClassName}--highlighted`) },
       style: { value: window.getComputedStyle(container) }
     })
 
@@ -101,13 +104,12 @@ export class FlowViewComponent {
    * @param {Boolean} enable
    */
   highlight (enable) {
-    const { container } = this
-    const className = this.constructor.name
+    const { container, cssClassName } = this
 
     if (enable) {
-      container.classList.add(`${className}--highlighted`)
+      container.classList.add(`${cssClassName}--highlighted`)
     } else {
-      container.classList.remove(`${className}--highlighted`)
+      container.classList.remove(`${cssClassName}--highlighted`)
     }
   }
 }
@@ -1069,13 +1071,14 @@ export class FlowViewSvgLayer extends FlowViewBox {
 
 export class FlowViewCanvas extends FlowViewComponent {
   constructor (container, {
+    cssClassName = 'FlowViewCanvas',
     gridUnit = 10,
     CreatorClass = FlowViewCreator,
     LinkClass = FlowViewLink,
     InspectorClass = FlowViewInspector,
     NodeClass = FlowViewNode
   } = {}) {
-    super({ container })
+    super({ container, cssClassName })
 
     const inspectorContainer = this.createElement('div')
     const svgLayerContainer = this.createSvgElement('svg')

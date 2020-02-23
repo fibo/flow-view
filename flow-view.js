@@ -427,8 +427,6 @@ export class FlowViewNodeText extends FlowViewNodeContent {
         value: new FlowViewComponent({ container: this.createElement('div') })
       }
     })
-
-    this.div.container.innerHTML = text
   }
 
   updateContent (node) {

@@ -1401,6 +1401,30 @@ export class FlowViewCanvas extends FlowViewComponent {
     document.removeEventListener('resize', this.resizeHandler)
   }
 
+  getGraph () {
+    return {
+      links: Array.from(this.links.values()).map(
+        ({ id, from, to }) => ({ id, from, to })
+      ),
+      nodes: Array.from(this.nodes.values()).map(
+        ({
+          id,
+          inputs,
+          outputs,
+          position: { x, y },
+          text
+        }) => ({
+          id,
+          ins: Array.from(inputs.values()).map(({ id }) => ({ id })),
+          outs: Array.from(outputs.values()).map(({ id }) => ({ id })),
+          text,
+          x,
+          y
+        })
+      )
+    }
+  }
+
   inspect (item) {
     this.inspector.attach(item)
   }

@@ -6,6 +6,26 @@
 <body>
 
 <style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", sans-serif;
+  }
+
+  .toolbar {
+    margin-top: 1rem;
+  }
+
+  .toolbar button {
+    all: unset;
+    background-color: lightseagreen;
+    color: white;
+    cursor: pointer;
+    padding: 1rem 1.618rem;
+  }
+
+  .toolbar button a {
+    all: unset;
+  }
+
   #drawing {
     height: 400px;
   }
@@ -13,10 +33,41 @@
 
 <div id="drawing"></div>
 
+<div class="toolbar">
+  <button class="download-graph">
+    <a class="download-graph" download='graph.json'>Download Graph</a>
+  </button>
+</div>
+
 <script type="module" >
   import { FlowViewCanvas } from './flow-view.js'
   const canvas = new FlowViewCanvas(document.getElementById('drawing'))
+
+  const downloadGraphButton = document.querySelector('button.download-graph')
+  const downloadGraphAnchor = document.querySelector('a.download-graph')
+
+  function updateGraphData () {
+    const graph = canvas.getGraph()
+
+    downloadGraphAnchor.setAttribute(
+      'href',
+      `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(graph))}`
+    )
+  }
+
+  // Click event.
+  downloadGraphButton.addEventListener('mouseover', updateGraphData)
+
+  // No mouse, download by focus on button and press Enter.
+  downloadGraphButton.addEventListener('focus', updateGraphData)
+  downloadGraphButton.addEventListener('keyup', (event) => {
+    if (event.keyCode === 13 ) { // Enter key
+      event.preventDefault()
+      downloadGraphAnchor.click()
+    }
+  })
 </script>
+
 <link rel="stylesheet" href="flow-view.css">
 </body>
 </html>

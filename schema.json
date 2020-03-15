@@ -23,7 +23,7 @@
           "ins": {
             "type": "array",
             "items": {
-              "title": "ins",
+              "title": "inputs",
               "type": "object",
               "properties": {
                 "id": {
@@ -38,7 +38,7 @@
           "outs": {
             "type": "array",
             "items": {
-              "title": "outs",
+              "title": "outputs",
               "type": "object",
               "properties": {
                 "id": {

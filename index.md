@@ -82,7 +82,7 @@ canvas.connect(target1).to(link)
 
 ### loadGraph
 
-You can load a [graph](#graph-schema) like in the following example.
+You can load a [graph](#graph-schema) using the `loadGraph` method, like in the following example.
 
 ```javascript
 const graph = {
@@ -103,6 +103,16 @@ const graph = {
 }
 
 canvas.loadGraph(graph)
+```
+
+### getGraph
+
+Get the canvas [graph](#graph-schema) using the `getGraph` method which returns an object, you can then serialize into JSON.
+
+```javascript
+const graph = canvas.getGraph()
+
+console.log(JSON.stringify(graph))
 ```
 
 ## Graph schema
@@ -160,7 +170,7 @@ A node at the end is a block with inputs and outputs. Both *ins* and *outs* must
         ins:
           type: 'array'
           items:
-            title: 'ins'
+            title: 'inputs'
             type: 'object'
             properties:
               id:
@@ -171,7 +181,7 @@ A node at the end is a block with inputs and outputs. Both *ins* and *outs* must
         outs:
           type: 'array'
           items:
-            title: 'outs'
+            title: 'outputs'
             type: 'object'
             properties:
               id:

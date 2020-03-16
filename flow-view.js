@@ -242,6 +242,10 @@ export class FlowViewInput extends FlowViewPin {
       const { halfConnectedLink } = canvas
 
       if (halfConnectedLink && !halfConnectedLink.hasTarget) {
+        // "self-loop" links are not allowed.
+        const isSelfLoop = this.node.outputs.has(halfConnectedLink.from)
+        if (isSelfLoop) return
+
         this.connect(halfConnectedLink)
       }
     })
@@ -300,6 +304,10 @@ export class FlowViewOutput extends FlowViewPin {
       const { halfConnectedLink } = canvas
 
       if (halfConnectedLink && !halfConnectedLink.hasSource) {
+        // "self-loop" links are not allowed.
+        const isSelfLoop = this.node.inputs.has(halfConnectedLink.to)
+        if (isSelfLoop) return
+
         this.connect(halfConnectedLink)
       }
     })

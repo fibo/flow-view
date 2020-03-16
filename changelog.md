@@ -13,9 +13,19 @@ All notable changes to [flow-view project](http://g14n.info/flow-view) will be d
 <sub>This project adheres to [Semantic Versioning](http://semver.org/).
 Changelog format adheres to [Keep a Changelog](http://keepachangelog.com/)</sub>
 
+## [v4.2.0] - 2020-03-16
+
+Thanks to [mbaljeetsingh](https://github.com/mbaljeetsingh) for feedback and good ideas.
+
 ### Added
 
 * Handle CSS class when FlowViewCanvas is extended.
+* [getGraph method](https://github.com/fibo/flow-view/issues/58)
+
+### Fixed
+
+* [avoid self-loops](https://github.com/fibo/flow-view/issues/59)
+
 
 ## [v4.1.0] - 2020-01-15
 

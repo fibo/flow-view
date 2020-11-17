@@ -22,7 +22,7 @@
     "preversion": "npm run build",
     "postcss": "postcss ${npm_package_name}.css --output ${npm_package_name}.min.css",
     "postversion": "git push origin v${npm_package_version}; npm publish",
-    "postpublish": "npm run metadata; git commit -am ':arrow_up: updated version'; git push origin master",
+    "postpublish": "npm run metadata; git commit -am ':arrow_up: updated version'; git push origin main",
     "rollup": "rollup -c",
     "test": "node test/jsonSchema.js",
     "start": "http-server -o"

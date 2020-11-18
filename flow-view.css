@@ -1,122 +1,100 @@
-:root {
-  --fv-border-radius: 1rem;
-  --fv-canvas-background-color: #f8f8f8;
-  --fv-font-family: Courier;
-  --fv-font-size: 16px;
-  --fv-inspector-border-color: gainsboro;
-  --fv-inspector-background-color: white;
-  --fv-inspector-width: 200px;
-  --fv-inspector-padding: .5rem;
-  --fv-line-color: darkgray;
-  --fv-line-width: 2;
-  --fv-node-background-color: white;
-  --fv-pin-background-color: darkgray;
-  --fv-pin-bar-background-color: gainsboro;
-  --fv-primary-color-1: #a9dfbf;
-  --fv-primary-color-2: mediumaquamarine;
-  --fv-primary-color-3: mediumseagreen;
-  --fv-shadow-color: darkgray;
-}
-
-.FlowViewCanvas {
-  box-shadow: 1px 1px 7px 1px var(--fv-shadow-color);
+.flow-view-node {
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 7px 1px rgba(17, 17, 17, 0.1);
   display: flex;
-  font-family: var(--fv-font-family);
-  font-size: var(--fv-font-size);
-  border-radius: var(--fv-border-radius);
-}
-
-/* Styles attributes required to calculate text dimensions. */
-.FlowViewTextRuler {
-  height: auto;
-  width: auto;
+  flex-direction: column;
+  font-family: sans-serif;
+  font-size: 16px;
   position: absolute;
-  visibility: hidden;
-  white-space: nowrap;
 }
-
-.FlowViewCanvas > svg {
-  background: var(--fv-canvas-background-color);
+.flow-view-node__headbar {
+  background-color: #fff;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  min-height: 10px;
 }
-
-.FlowViewPinBar > .FlowViewBox {
-  fill: var(--fv-pin-bar-background-color)
+.flow-view-node__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
-
-.FlowViewNode--highlighted > .FlowViewPinBar > .FlowViewBox {
-  fill: var(--fv-primary-color-1);
+.flow-view-node__label {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
-
-.FlowViewNodeText {
-  background: var(--fv-node-background-color);
+.flow-view-node__label--has-comment {
+  justify-content: start;
+  padding-left: 1em;
+}
+.flow-view-node__comment {
+  font-size: 0.8em;
+  padding-left: 0.5em;
+}
+.flow-view-node__comment::before {
+  content: "// ";
+}
+.flow-view-node__label span {
+  cursor: default;
   user-select: none;
-  text-align: center;
+}
+.flow-view-node__footbar {
+  background-color: #fff;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  min-height: 10px;
+}
+.flow-view-node__pin-preview {
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 7px 1px rgba(17, 17, 17, 0.1);
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  padding-bottom: 0.5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0.5em;
+  position: absolute;
+  text-align: start;
+}
+.flow-view-node__pin-preview-types {
+  font-style: italic;
+}
+.flow-view-node__pin-preview-data {
+  font-family: courier;
+  max-width: 200px;
+  text-overflow: ellipsis;
+}
+.flow-view-node--has-error {
+  box-shadow: 0 0 7px 1px rgba(222, 6, 86, 0.71);
+}
+.flow-view-node--selected {
+  border: 1px solid #8285ee;
+  box-shadow: 0 0 7px 1px rgba(130, 133, 238, 0.5);
 }
 
-.FlowViewInput,
-.FlowViewOutput {
-  fill: var(--fv-pin-background-color);
+.flow-view-pipe {
+  stroke: #dcdcdc;
 }
 
-.FlowViewInput--highlighted,
-.FlowViewOutput--highlighted {
-  fill: var(--fv-primary-color-3);
+.flow-view-pin {
+  background-color: #dcdcdc;
+  border-radius: 2px;
+  height: 10px;
+  width: 10px;
 }
-
-.FlowViewNode--highlighted .FlowViewInput,
-.FlowViewNode--highlighted .FlowViewOutput
-{
-  fill: var(--fv-primary-color-2);
+.flow-view-pin:hover {
+  background-color: #111;
 }
-
-.FlowViewNodeTextEditor {
-  font-family: var(--fv-font-family);
-  font-size: var(--fv-font-size);
-  padding-left: 0.25rem;
-  outline: none;
-}
-
-.FlowViewNodeCreator .FlowViewNodeTextEditor {
-  border: 0;
-  outline: none;
-}
-
-.FlowViewLink line {
-  stroke: var(--fv-line-color);
-  stroke-width: var(--fv-line-width);
-}
-
-.FlowViewLink--highlighted line {
-  stroke: var(--fv-primary-color-1);
-}
-
-.FlowViewInspector {
-  background: var(--fv-inspector-background-color);
-  width: var(--fv-inspector-width);
-}
-
-.FlowViewNodeInspector {
-  padding: var(--fv-inspector-padding);
-}
-
-.FlowViewNodeInspector > .FlowViewComponent {
-  padding-bottom: var(--fv-inspector-padding);
-}
-
-.FlowViewNodeInspector .FlowViewNodeTextEditor {
-  box-sizing : border-box;
-  width: 100%;
-}
-
-.FlowViewNodeInspector > input {
-  border-radius: var(--fv-border-radius);
-  border: 1px solid var(--fv-inspector-border-color);
-}
-
-.FlowViewNodeInspector > button {
-  border-radius: var(--fv-border-radius);
-  border: 1px solid var(--fv-inspector-border-color);
-  padding: var(--fv-inspector-padding);
-  font-family: inherit;
-  font-size: inherit;
+.flow-view-pin--highlighted {
+  background-color: #111;
 }

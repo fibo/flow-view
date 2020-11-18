@@ -12,7 +12,7 @@
   "main": "flow-view.js",
   "style": "flow-view.css",
   "scripts": {
-    "build": "run-p generate_schema homepage postcss rollup",
+    "build": "run-p generate_schema homepage postcss rollup sass sass:compressed",
     "generate_schema": "markdown2code --lang yaml README.md | cson2json > schema.json",
     "homepage": "echo \"---\ntitle: $npm_package_name\n---\" > index.md; cat README.md >> index.md",
     "lint": "standa",
@@ -22,6 +22,8 @@
     "postpublish": "git commit -am ':arrow_up: updated version'; git push origin main",
     "rollup": "rollup -c",
     "test": "node test/jsonSchema.js",
+    "sass": "sass flow-view.scss flow-view.css --no-source-map",
+    "sass:compressed": "sass flow-view.scss flow-view.min.css --no-source-map --style compressed",
     "start": "http-server -o"
   },
   "pre-commit": [
@@ -52,6 +54,7 @@
     "pre-commit": "^1.2.2",
     "rollup": "^1.29.0",
     "rollup-plugin-terser": "^5.2.0",
+    "sass": "^1.29.0",
     "standa": "^14.0.0",
     "terser": "^4.6.2"
   }

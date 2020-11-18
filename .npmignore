@@ -6,6 +6,5 @@ demo.html
 media
 test
 _config.yml
-changelog.md
 rollup.config.js
 postcss.config.js

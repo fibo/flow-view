@@ -35,9 +35,7 @@
   "keywords": [
     "dataflow",
     "visual",
-    "svg",
-    "editor",
-    "vanilla"
+    "editor"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"

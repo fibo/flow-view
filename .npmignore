@@ -1,10 +1,9 @@
-_data
-_includes
-_layouts
-examples
-demo.html
+.browserslistrc
+.editorconfig
+build
+public
 media
+src
 test
 _config.yml
 rollup.config.js
-postcss.config.js

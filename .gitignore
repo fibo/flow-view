@@ -3,6 +3,7 @@
 node_modules
 npm-debug.log
 Gemfile*
+build
 _site
 .DS_Store
 yarn-error.log

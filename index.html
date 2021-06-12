@@ -2,40 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:;base64,=">
 
-  <title>Flow View</title>
+  <title>flow-view</title>
 
   <style>
-    body {
-      margin: 1rem;
-    }
-
-    #canvas1 {
-      height: 400px;
+    .container {
+      display: inline-block;
+      width: 400px;
+      height: 500px;
     }
   </style>
 </head>
 <body>
-  <h1>Flow View</h1>
+  <h1>flow-view</h1>
 
-  <div id="canvas1"></div>
+  <div class="container">
+    <fv-canvas>
+      <fv-node id="node1" x="100" y="100" width="100" height="40" label="Yay">
+        <div slot="outputs">
+          <fv-pin id="output1"></fv-pin>
+        </div>
+
+        <div slot="inputs">
+          <fv-pin></fv-pin>
+
+          <fv-pin></fv-pin>
+        </div>
+      </fv-node>
+
+      <fv-node id="node2" x="250" y="400" width="100" height="40">
+        <div slot="inputs">
+          <fv-pin id="input1"></fv-pin>
+        </div>
+      </fv-node>
+
+      <fv-link from="output1" to="input1"></fv-link>
+    </fv-canvas>
+  </div>
 
   <script type="module">
-    import { FlowViewCanvas } from './flow-view.js'
-
-    const canvas1 = new FlowViewCanvas(document.getElementById('canvas1'))
-
-    const node1 = canvas1.createNode({ x: 20, y: 50, text: 'Drag me' })
-    const node2 = canvas1.createNode({ x: 100, y: 100, text: 'I am a node' })
-    const link1 = canvas1.createLink()
-
-    const source1 = node1.createOutput()
-    const target1 = node2.createInput()
-
-    canvas1.connect(source1).to(link1)
-    canvas1.connect(target1).to(link1)
+    import { flowViewInit } from './flow-view.js';
+    flowViewInit();
   </script>
-
-  <link rel="stylesheet" href="./flow-view.css">
 </body>
 </html>

@@ -2,6 +2,7 @@
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming",
   "version": "3.0.2",
+  "type": "module",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
@@ -9,34 +10,17 @@
   },
   "license": "MIT",
   "main": "flow-view.js",
+  "engines": {
+    "node": ">=14",
+    "deno": ">=1.10"
+  },
   "scripts": {
-    "browserify": "browserify -g [ envify --NODE_ENV production ] -r ./${npm_package_main}:${npm_package_name} -o dist/${npm_package_name}.js",
-    "build": "npm run generate_schema; npm run cp_example; npm run browserify && npm run minify; git status",
-    "cp_example": "cp examples/basic/usage.js docs/example/",
-    "docs:_data": "for x in package.json tags.json; do npm run docs:_data:$x; done",
-    "docs:_data:package.json": "cp package.json docs/_data/",
-    "docs:_data:tags.json": "wget https://api.github.com/repos/fibo/${npm_package_name}/tags -O docs/_data/tags.json",
-    "example_basic_usage": "NODE_PATH=. budo --serve bundle.js --dir examples/basic/ --open examples/basic/usage.js",
-    "example_empty_canvas": "NODE_PATH=. budo --serve bundle.js --dir examples/empty --open examples/empty/canvas.js",
-    "example_genealogic_tree": "NODE_PATH=. budo --serve bundle.js --dir examples/genealogic/ --open examples/genealogic/tree.js",
-    "generate_schema": "markdown2code --lang yaml README.md | cson2json > docs/schema.json",
-    "homepage": "echo \"---\ntitle: $npm_package_name\nflow: /empty.json\n---\" > docs/index.md; cat README.md >> docs/index.md",
-    "lint": "standa",
-    "minify": "cd dist; uglifyjs ${npm_package_name}.js --source-map --output ${npm_package_name}.min.js --compress --mangle -b beautify=false,preamble='\"// http://g14n.info/flow-view\"'; cd -",
-    "preversion": "npm run build",
-    "postversion": "git push origin v${npm_package_version}; npm publish",
-    "start": "npm run example_basic_usage",
-    "postpublish": "npm run docs:_data; git commit -am ':arrow_up: updated version'; git push origin master",
-    "test": "node test/jsonSchema.js"
+    "bundle": "deno bundle main.js | esbuild --minify > flow-view.js",
+    "fmt": "deno fmt --ignore=./flow-view.js",
+    "lint": "deno lint --ignore=./flow-view.js",
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "standa": {
-    "ignore": [
-      "docs"
-    ]
-  },
-  "pre-commit": [
-    "lint"
-  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/fibo/flow-view.git"
@@ -44,21 +28,11 @@
   "keywords": [
     "dataflow",
     "visual",
-    "svg",
     "editor",
     "vanilla"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "budo": "^11.3.2",
-    "cson": "^6.9.0",
-    "envify": "^4.1.0",
-    "is-my-json-valid": "^2.19.0",
-    "markdown2code": "^1.0.2",
-    "pre-commit": "^1.2.2",
-    "standa": "^14.0.0"
-  }
+  "dependencies": {}
 }

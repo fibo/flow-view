@@ -1,71 +1,15 @@
-export function isInput(pin) {
-  const { parentNode } = pin;
+import { centerOfPin } from "./pin.js";
+import { FlowViewItem } from "./item.js";
 
-  if (parentNode && parentNode.tagName === "DIV") {
-    return parentNode.slot === "inputs";
-  }
+export class FlowViewLink extends FlowViewItem {
+  static customElementName = "fv-link";
 
-  return false;
-}
-
-export function isOutput(pin) {
-  const { parentNode } = pin;
-
-  if (parentNode && parentNode.tagName === "DIV") {
-    return parentNode.slot === "outputs";
-  }
-
-  return false;
-}
-
-export function centerOfPin(pin) {
-  const node = nodeOfPin(pin);
-
-  const halfPinSize = Math.round(pinSize / 2);
-
-  if (node) {
-    const x = Number(node.getAttribute("x"));
-    const y = Number(node.getAttribute("y"));
-
-    const nodeBorderWidth = 1;
-
-    if (isInput(pin)) {
-      return {
-        x: x + halfPinSize,
-        y: y + halfPinSize,
-      };
-    }
-
-    if (isOutput(pin)) {
-      const height = Number(node.getAttribute("height"));
-
-      return {
-        y: y + height - halfPinSize - nodeBorderWidth,
-        x: x + halfPinSize + nodeBorderWidth,
-      };
-    }
-  }
-}
-
-export class FlowViewLink extends HTMLElement {
   constructor() {
     super();
 
     const template = document.createElement("template");
-    template.innerHTML = `
-      <style>
-        :host {
-          display: inline-block;
-          position: absolute;
-          border: 1px solid transparent;
-        }
-
-        :host(:hover) {
-          border-color: var(--fv-shadow-color);
-        }
-      </style>
-      <slot></slot>
-    `;
+    template.innerHTML =
+      `<style> :host { display: inline-block; position: absolute; border: 1px solid transparent; } :host(:hover) { border-color: var(--fv-shadow-color); } </style> <slot></slot>`;
 
     this.attachShadow({ mode: "open" }).appendChild(
       template.content.cloneNode(true),
@@ -117,17 +61,6 @@ export class FlowViewLink extends HTMLElement {
 
         break;
       }
-    }
-  }
-
-  connectedCallback() {
-    const { canvas } = this;
-
-    if (canvas) {
-      // Set a readonly id.
-      const id = this.id || canvas.generateId();
-      Object.defineProperty(this, "_id", { value: id, writable: false });
-      this.setAttribute("id", id);
     }
   }
 

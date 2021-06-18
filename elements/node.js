@@ -1,4 +1,6 @@
-export class FlowViewNode extends HTMLElement {
+import { FlowViewItem } from "./item.js";
+
+export class FlowViewNode extends FlowViewItem {
   static customElementName = "fv-node";
 
   constructor() {
@@ -78,11 +80,6 @@ export class FlowViewNode extends HTMLElement {
 
     if (canvas) {
       this.addEventListener("pointerdown", this.onpointerdown);
-
-      // Set a readonly id.
-      const id = this.id || canvas.generateId();
-      Object.defineProperty(this, "_id", { value: id, writable: false });
-      this.setAttribute("id", id);
     }
 
     // Make sure dimensions are defined.

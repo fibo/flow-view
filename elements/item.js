@@ -19,6 +19,13 @@ export class FlowViewItem extends HTMLElement {
     );
   }
 
+  static elementName = {
+    canvas: "fv-canvas",
+    node: "fv-node",
+    link: "fv-link",
+    pin: "fv-pin",
+  };
+
   static get observedAttributes() {
     return ["id"];
   }
@@ -55,6 +62,8 @@ export class FlowViewItem extends HTMLElement {
     Object.defineProperty(this, "_id", { value: id, writable: false });
     this.setAttribute("id", id);
   }
+
+  disconnectedCallback() {}
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;

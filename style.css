@@ -4,12 +4,22 @@
 
 body {
   box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
   color: #1c1c1c;
   background: #eee;
   font-family: Georgia, serif;
   font-size: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
   font-size: 3em;
+}
+
+main {
+  padding: 1em;
+  flex-grow: 1;
 }

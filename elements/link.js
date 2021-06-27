@@ -2,7 +2,7 @@ import { FlowViewPin } from "./pin.js";
 import { FlowViewItem } from "./item.js";
 
 export class FlowViewLink extends FlowViewItem {
-  static customElementName = "fv-link";
+  static customElementName = FlowViewItem.elementName.link;
 
   constructor() {
     super(

@@ -1,7 +1,8 @@
 import { FlowViewItem } from "./item.js";
+import { FlowViewPin } from "./pin.js";
 
 export class FlowViewNode extends FlowViewItem {
-  static customElementName = "fv-node";
+  static customElementName = FlowViewItem.elementName.node;
 
   constructor() {
     super(
@@ -16,13 +17,23 @@ export class FlowViewNode extends FlowViewItem {
           "justify-content": "space-between",
           "border": "1px solid transparent",
         },
-        '::slotted(div[slot="inputs"]), ::slotted(div[slot="outputs"])': {
+        'slot[name="inputs"], slot[name="outputs"]': {
           "display": "flex",
           "flex-direction": "row",
           "justify-content": "space-between",
+          "min-height": `${FlowViewPin.size}px`,
+        },
+        '::slotted(span(slot="label"))': {
+          "user-select": "none",
+          "padding-left": "1em",
         },
       },
-      '<slot name="inputs"></slot> <div class="label">node</div> <slot></slot> <slot name="outputs"></slot>',
+      [
+        '<slot name="inputs"></slot>',
+        '<span name="label"></span>',
+        '<div name="content"></div>',
+        '<slot name="outputs"></slot>',
+      ].join(""),
     );
   }
 
@@ -81,6 +92,8 @@ export class FlowViewNode extends FlowViewItem {
   }
 
   connectedCallback() {
+    super.connectedCallback();
+
     const { canvas, minSize } = this;
 
     if (canvas) {
@@ -105,6 +118,8 @@ export class FlowViewNode extends FlowViewItem {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
+
     const { canvas } = this;
 
     if (canvas) {
@@ -143,7 +158,10 @@ export class FlowViewNode extends FlowViewItem {
   get canvas() {
     const { parentNode } = this;
 
-    if (parentNode && parentNode.tagName === "FV-CANVAS") {
+    if (
+      parentNode &&
+      parentNode.tagName === FlowViewItem.elementName.canvas.toUpperCase()
+    ) {
       return parentNode;
     } else {
       return null;
@@ -151,20 +169,34 @@ export class FlowViewNode extends FlowViewItem {
   }
 
   get minSize() {
-    const { canvas } = this;
-
-    if (canvas) {
-      return canvas.pinSize * 4;
-    } else {
-      return sizeOfPin;
-    }
+    return FlowViewPin.size * 4;
   }
 
   set label(value) {
-    this.labelNode.textContent = value;
+    this.labelElement.textContent = value;
   }
 
-  get labelNode() {
-    return this.shadowRoot.querySelector(".label");
+  get labelElement() {
+    return this.shadowRoot.querySelector("span[name='label']");
+  }
+
+  get inputsElement() {
+    return this.shadowRoot.querySelector("slot[name='inputs']");
+  }
+
+  get outputsElement() {
+    return this.shadowRoot.querySelector("slot[name='outputs']");
+  }
+
+  addInput() {
+    const pin = document.createElement(FlowViewItem.elementName.pin);
+
+    this.inputsElement.appendChild(pin);
+  }
+
+  addOutput() {
+    const pin = document.createElement(FlowViewItem.elementName.pin);
+
+    this.outputsElement.appendChild(pin);
   }
 }

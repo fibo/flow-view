@@ -1,7 +1,7 @@
 import { FlowViewItem } from "./item.js";
 
 export class FlowViewCanvas extends FlowViewItem {
-  static customElementName = "fv-canvas";
+  static customElementName = FlowViewItem.elementName.canvas;
 
   constructor() {
     super({

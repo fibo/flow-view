@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>flow-view programmatic</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <main></main>
+
+  <script type="module">
+    import { FlowView } from '../../main.js';
+    const flowView = new FlowView({ root: document.querySelector('main') })
+
+    flowView.newNode({ label: 'node', inputs:[{}] })
+  </script>
+</body>
+</html>

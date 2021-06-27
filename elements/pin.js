@@ -3,7 +3,7 @@ import { FlowViewItem } from "./item.js";
 export const pinSize = 10;
 
 export class FlowViewPin extends FlowViewItem {
-  static customElementName = "fv-pin";
+  static customElementName = FlowViewItem.elementName.pin;
   static size = 10;
 
   constructor() {
@@ -83,7 +83,9 @@ export class FlowViewPin extends FlowViewItem {
     ) {
       const grandParentNode = parentNode.parentNode;
 
-      if (grandParentNode.tagName === "FV-NODE") {
+      if (
+        grandParentNode.tagName === FlowViewItem.elementName.node.toUpperCase()
+      ) {
         return grandParentNode;
       }
     }
@@ -106,6 +108,8 @@ export class FlowViewPin extends FlowViewItem {
   }
 
   connectedCallback() {
+    super.connectedCallback();
+
     const { node } = this;
 
     if (node) {
@@ -120,6 +124,8 @@ export class FlowViewPin extends FlowViewItem {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
+
     const { node } = this;
 
     if (node) {

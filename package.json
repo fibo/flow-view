@@ -2,81 +2,25 @@
   "name": "flow-view",
   "description": "is a visual editor for Dataflow programming",
   "version": "4.2.1",
+  "engines": {
+    "node": ">=14",
+    "deno": ">=1.10"
+  },
+  "type": "module",
+  "main": "flow-view.js",
   "license": "MIT",
   "homepage": "http://g14n.info/flow-view",
   "author": {
     "name": "Gianluca Casati",
     "url": "http://g14n.info"
   },
-  "main": "dist/flow-view.cjs",
-  "module": "dist/flow-view.js",
-  "style": "dist/flow-view.css",
   "scripts": {
-    "build": "run-p build:*",
-    "build:css": "sass src/flow-view.scss --no-source-map --style compressed | postcss -u autoprefixer --no-map -o dist/flow-view.css",
-    "build:docs": "react-scripts build",
-    "build:js": "rollup -c",
-    "build:schema": "markdown2code --lang yaml README.md | cson2json > schema.json",
-    "lint-staged": "lint-staged",
-    "preversion": "npm run build",
-    "postcss": "postcss ${npm_package_name}.css --output ${npm_package_name}.min.css",
-    "postversion": "git push origin v${npm_package_version}; npm publish",
-    "postpublish": "git commit -am ':arrow_up: updated version'; git push origin main",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "test": "node test/jsonSchema.js",
-    "start": "react-scripts start"
+    "bundle": "deno bundle main.js | esbuild --minify > flow-view.js",
+    "fmt": "deno fmt --ignore=./flow-view.js",
+    "lint": "deno lint --ignore=./flow-view.js",
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ],
-    "rules": {
-      "camelcase": [
-        "error"
-      ],
-      "import/extensions": [
-        "error",
-        "never"
-      ],
-      "import/no-default-export": [
-        "error"
-      ],
-      "import/order": [
-        "error",
-        {
-          "alphabetize": {
-            "caseInsensitive": false,
-            "order": "asc"
-          },
-          "newlines-between": "ignore"
-        }
-      ],
-      "no-multiple-empty-lines": [
-        "error",
-        {
-          "max": 1,
-          "maxEOF": 1
-        }
-      ],
-      "no-var": "error",
-      "react/jsx-key": "error"
-    }
-  },
-  "lint-staged": {
-    "sr/**/*.{js}": [
-      "prettier --write",
-      "eslint"
-    ],
-    "src/**/*.{scss}": [
-      "prettier --write"
-    ],
-    "*.{json,md}": "prettier --write"
-  },
-  "pre-commit": [
-    "lint-staged",
-    "test"
-  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/fibo/flow-view.git"
@@ -84,42 +28,11 @@
   "keywords": [
     "dataflow",
     "visual",
-    "editor"
+    "editor",
+    "vanilla"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "peerDependencies": {
-    "react": "17.x",
-    "react-dom": "17.x"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "@babel/preset-react": "^7.12.5",
-    "@rollup/plugin-babel": "^5.2.1",
-    "cson": "^6.9.0",
-    "cssnano": "^4.1.10",
-    "dot-editorconfig": "^1.1.1",
-    "gh-pages": "^3.1.0",
-    "is-my-json-valid": "^2.19.0",
-    "lint-staged": "^10.5.1",
-    "markdown2code": "^1.0.2",
-    "npm-run-all": "^4.1.5",
-    "postcss-cli": "^7.1.0",
-    "pre-commit": "^1.2.2",
-    "prettier": "^2.2.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "^4.0.0",
-    "rollup": "^2.33.3",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-terser": "^7.0.2",
-    "sass": "^1.29.0",
-    "terser": "^4.6.2"
-  },
-  "dependencies": {
-    "classnames": "^2.2.6",
-    "zustand": "^3.2.0"
-  }
+  "dependencies": {}
 }

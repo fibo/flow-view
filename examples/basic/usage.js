@@ -1,43 +1,43 @@
-import { FlowViewCanvas } from '../../flow-view.min.js'
+import { FlowViewCanvas } from "../../flow-view.min.js";
 
 const graph = {
   nodes: [
     {
-      id: 'a',
+      id: "a",
       x: 80,
       y: 100,
-      text: 'Drag me',
+      text: "Drag me",
       outs: [
-        { id: 'out1' },
-        { id: 'out2' },
-        { id: 'out3' }
-      ]
+        { id: "out1" },
+        { id: "out2" },
+        { id: "out3" },
+      ],
     },
     {
-      id: 'b',
+      id: "b",
       x: 180,
       y: 200,
-      text: 'Click me',
+      text: "Click me",
       ins: [
-        { id: 'in1' },
-        { id: 'in2' }
+        { id: "in1" },
+        { id: "in2" },
       ],
       outs: [
-        { id: 'out4' }
-      ]
-    }
+        { id: "out4" },
+      ],
+    },
   ],
   links: [
     {
-      id: 'c',
-      from: 'out1',
-      to: 'in1'
-    }
-  ]
-}
+      id: "c",
+      from: "out1",
+      to: "in1",
+    },
+  ],
+};
 
-const container = document.getElementById('drawing')
+const container = document.getElementById("drawing");
 
-const canvas = new FlowViewCanvas(container)
+const canvas = new FlowViewCanvas(container);
 
-canvas.loadGraph(graph)
+canvas.loadGraph(graph);

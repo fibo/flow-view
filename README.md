@@ -2,10 +2,8 @@
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
-[Installation](#installation) |
-[API](#api) |
-[Graph schema](#graph-schema) |
-[License](#license)
+<<<<<<< HEAD [Installation](#installation) | [API](#api) |
+[Graph schema](#graph-schema) | [License](#license)
 
 [![NPM version](https://badge.fury.io/js/flow-view.svg)](http://badge.fury.io/js/flow-view)
 [![Dependency Status](https://david-dm.org/fibo/flow-view.svg)](https://david-dm.org/fibo/flow-view)
@@ -40,8 +38,8 @@ Adding this to your HTML page
 
 ### FlowViewCanvas constructor
 
-Suppose your *container* is a div with id `drawing`.
-In your HTML, place a div where you want to mount flow-view canvas.
+Suppose your _container_ is a div with id `drawing`. In your HTML, place a div
+where you want to mount flow-view canvas.
 
 ```html
 <style>
@@ -54,66 +52,76 @@ In your HTML, place a div where you want to mount flow-view canvas.
 Create an empty canvas.
 
 ```javascript
-const container = document.getElementById('drawing')
+const container = document.getElementById("drawing");
 
-const canvas = new FlowViewCanvas(container)
+const canvas = new FlowViewCanvas(container);
 ```
 
-It is supposed to use a `FlowViewCanvas` graphically; nevertheless you can create nodes, links, inputs and outputs programmatically.
-For example:
+It is supposed to use a `FlowViewCanvas` graphically; nevertheless you can
+create nodes, links, inputs and outputs programmatically. For example:
 
 ```javascript
-const node1 = canvas.createNode({ x: 20, y: 50, text: 'Drag me' })
-const node2 = canvas.createNode({ x: 100, y: 100, text: 'I am a node' })
+const node1 = canvas.createNode({ x: 20, y: 50, text: "Drag me" });
+const node2 = canvas.createNode({ x: 100, y: 100, text: "I am a node" });
 
-const link = canvas.createLink()
+const link = canvas.createLink();
 
-const source1 = node1.createOutput()
-const target1 = node2.createInput()
+const source1 = node1.createOutput();
+const target1 = node2.createInput();
 
-canvas.connect(source1).to(link)
-canvas.connect(target1).to(link)
+canvas.connect(source1).to(link);
+canvas.connect(target1).to(link);
 ```
 
 ### loadGraph
 
-You can load a [graph](#graph-schema) using the `loadGraph` method, like in the following example.
+You can load a [graph](#graph-schema) using the `loadGraph` method, like in the
+following example.
 
 ```javascript
 const graph = {
   nodes: [
     {
-      id: 'a', x: 80, y: 100, text: 'Drag me',
-      outs: [ { id: 'out1' }, { id: 'out2' }, { id: 'out3' } ]
+      id: "a",
+      x: 80,
+      y: 100,
+      text: "Drag me",
+      outs: [{ id: "out1" }, { id: "out2" }, { id: "out3" }],
     },
     {
-      id: 'b', x: 180, y: 200, text: 'Click me',
-      ins: [ { id: 'in1' }, { id: 'in2' } ],
-      outs: [ { id: 'out4' } ]
-    }
+      id: "b",
+      x: 180,
+      y: 200,
+      text: "Click me",
+      ins: [{ id: "in1" }, { id: "in2" }],
+      outs: [{ id: "out4" }],
+    },
   ],
   links: [
-    { id: 'c', from: 'out1', to: 'in1' }
-  ]
-}
+    { id: "c", from: "out1", to: "in1" },
+  ],
+};
 
-canvas.loadGraph(graph)
+canvas.loadGraph(graph);
 ```
 
 ### getGraph
 
-Get the canvas [graph](#graph-schema) using the `getGraph` method which returns an object, you can then serialize into JSON.
+Get the canvas [graph](#graph-schema) using the `getGraph` method which returns
+an object, you can then serialize into JSON.
 
 ```javascript
-const graph = canvas.getGraph()
+const graph = canvas.getGraph();
 
-console.log(JSON.stringify(graph))
+console.log(JSON.stringify(graph));
 ```
 
 ## Graph schema
 
-This section defines flow-view [JSON Schema](http://json-schema.org/) using [cson](https://github.com/bevry/cson).
-It is parsed by [markdown2code](http://g14n.info/markdown2code) to generate [flow-view schema.json file](http://g14n.info/flow-view/schema.json).
+This section defines flow-view [JSON Schema](http://json-schema.org/) using
+[cson](https://github.com/bevry/cson). It is parsed by
+[markdown2code](http://g14n.info/markdown2code) to generate
+[flow-view schema.json file](http://g14n.info/flow-view/schema.json).
 
 ```yaml
 $schema: 'http://json-schema.org/schema#'
@@ -121,48 +129,49 @@ id: 'http://g14n.info/flow-view/schema.json'
 properties:
 ```
 
-A flow-view *graph* has [links](#links) and [nodes](#nodes).
+A flow-view _graph_ has [links](#links) and [nodes](#nodes).
 
 ### Nodes
 
-A *graph* can have none, one or many *nodes*.
+A _graph_ can have none, one or many _nodes_.
 
 ```yaml
-  nodes:
+nodes:
     type: 'array'
     items:
 ```
 
-Every *node* must have a unique *id*.
+Every _node_ must have a unique _id_.
 
 ```yaml
-      title: 'nodes'
+title: 'nodes'
       type: 'object'
       properties:
         id:
           type: 'string'
 ```
 
-A node has a *text*.
+A node has a _text_.
 
 ```yaml
-        text:
+text:
           type: 'string'
 ```
 
-A node has a position identified by *x* and *y* coordinates.
+A node has a position identified by _x_ and _y_ coordinates.
 
 ```yaml
-        x:
+x:
           type: 'number'
         y:
           type: 'number'
 ```
 
-A node at the end is a block with inputs and outputs. Both *ins* and *outs* must have an *id*.
+A node at the end is a block with inputs and outputs. Both _ins_ and _outs_ must
+have an _id_.
 
 ```yaml
-        ins:
+ins:
           type: 'array'
           items:
             title: 'inputs'
@@ -186,10 +195,11 @@ A node at the end is a block with inputs and outputs. Both *ins* and *outs* must
             ]
 ```
 
-Properties *ins* and *outs* are not required. A node with *ins* not defined is a *root*, a node with *outs* not defined is a *leaf*.
+Properties _ins_ and _outs_ are not required. A node with _ins_ not defined is a
+_root_, a node with _outs_ not defined is a _leaf_.
 
 ```yaml
-      required: [
+required: [
         'id'
         'text'
         'x'
@@ -199,44 +209,45 @@ Properties *ins* and *outs* are not required. A node with *ins* not defined is a
 
 ### Links
 
-A *graph* can have none, one or many *links*.
+A _graph_ can have none, one or many _links_.
 
 ```yaml
-  links:
+links:
     type: 'array'
     items:
 ```
 
-Every *link* must have a unique *id*.
+Every _link_ must have a unique _id_.
 
 ```yaml
-      title: 'links'
+title: 'links'
       type: 'object'
       properties:
         id:
           type: 'string'
 ```
 
-A *link* connects two *nodes*, in particular connects an output of a node to an input of another node.
+A _link_ connects two _nodes_, in particular connects an output of a node to an
+input of another node.
 
-It starts *from* a *node output*, where *from* holds the output id.
+It starts _from_ a _node output_, where _from_ holds the output id.
 
 ```yaml
-        from:
+from:
           type: 'string'
 ```
 
-It goes *to* a *node input*, where *to* holds the input id.
+It goes _to_ a _node input_, where _to_ holds the input id.
 
 ```yaml
-        to:
+to:
           type: 'string'
 ```
 
 All properties are required.
 
 ```yaml
-      required: [
+required: [
         'id'
         'from'
         'to'
@@ -250,3 +261,13 @@ All properties are required.
 [dflow]: http://g14n.info/dflow "dflow"
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
 [basic_usage_gif]: https://g14n.info/flow-view/media/basic-usage.gif "Basic usage example"
+
+=======
+
+## License
+
+[MIT](http://g14n.info/mit-license)
+
+[dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
+
+> > > > > > > next

@@ -1,9 +1,13 @@
+.DS_Store
 *~
 .*.swp
 node_modules
 npm-debug.log
+<<<<<<< HEAD
 Gemfile*
 build
 _site
 .DS_Store
 yarn-error.log
+=======
+>>>>>>> next

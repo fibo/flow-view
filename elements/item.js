@@ -4,8 +4,15 @@ export class FlowViewItem extends HTMLElement {
 
     const template = document.createElement("template");
 
-    template.innerHTML =
-      `<style>${style} :host([hidden]) { display: none; }</style> ${markup}`;
+    const defaultCss = {
+      ":host([hidden])": {
+        "display": "none",
+      },
+    };
+
+    template.innerHTML = `<style>${
+      FlowViewItem.generateStylesheet({ ...defaultCss, ...style })
+    }</style>${markup}`;
 
     this.attachShadow({ mode: "open" }).appendChild(
       template.content.cloneNode(true),
@@ -14,6 +21,19 @@ export class FlowViewItem extends HTMLElement {
 
   static get observedAttributes() {
     return ["id"];
+  }
+
+  static generateStylesheet(style) {
+    return Object.entries(style).reduce((stylesheet, [selector, rules]) => (
+      [
+        stylesheet,
+        `${selector} {`,
+        Object.entries(rules).map(
+          ([key, value]) => `  ${key}: ${value};`,
+        ).join("\n"),
+        "}",
+      ].join("\n")
+    ), "");
   }
 
   static generateId(prefix = "fv") {

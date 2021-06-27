@@ -4,11 +4,17 @@ export const pinSize = 10;
 
 export class FlowViewPin extends FlowViewItem {
   static customElementName = "fv-pin";
+  static size = 10;
 
   constructor() {
-    super(
-      `:host { background-color: var(--fv-pin-background-color, #dbdbdb); display: block; width: ${pinSize}px; height: ${pinSize}px; }`,
-    );
+    super({
+      ":host": {
+        "background-color": "var(--fv-pin-background-color, #dbdbdb)",
+        "display": "block",
+        "width": `${FlowViewPin.size}px`,
+        "height": `${FlowViewPin.size}px`,
+      },
+    });
   }
 
   static get observedAttributes() {
@@ -18,7 +24,7 @@ export class FlowViewPin extends FlowViewItem {
   static centerOfPin(pin) {
     const node = FlowViewPin.nodeOfPin(pin);
 
-    const halfPinSize = Math.round(pinSize / 2);
+    const halfPinSize = Math.round(FlowViewPin.size / 2);
 
     if (node) {
       const x = Number(node.getAttribute("x"));

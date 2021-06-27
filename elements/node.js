@@ -5,8 +5,24 @@ export class FlowViewNode extends FlowViewItem {
 
   constructor() {
     super(
-      `:host { box-sizing: border-box; background-color: var(--fv-node-background-color, #fefefe); position: absolute; box-shadow: 1px 1px 7px 1px var(--fv-shadow-color); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; } ::slotted(div[slot="inputs"]), ::slotted(div[slot="outputs"]) { display: flex; flex-direction: row; justify-content: space-between; }`,
-      `<slot name="inputs"></slot> <div class="label">node</div> <slot></slot> <slot name="outputs"></slot>`,
+      {
+        ":host": {
+          "box-sizing": "border-box",
+          "background-color": "var(--fv-node-background-color, #fefefe)",
+          "position": "absolute",
+          "box-shadow": "1px 1px 7px 1px var(--fv-shadow-color)",
+          "display": "flex",
+          "flex-direction": "column",
+          "justify-content": "space-between",
+          "border": "1px solid transparent",
+        },
+        '::slotted(div[slot="inputs"]), ::slotted(div[slot="outputs"])': {
+          "display": "flex",
+          "flex-direction": "row",
+          "justify-content": "space-between",
+        },
+      },
+      '<slot name="inputs"></slot> <div class="label">node</div> <slot></slot> <slot name="outputs"></slot>',
     );
   }
 

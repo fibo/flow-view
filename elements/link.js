@@ -6,8 +6,16 @@ export class FlowViewLink extends FlowViewItem {
 
   constructor() {
     super(
-      `:host { display: inline-block; position: absolute; border: 1px solid transparent; } :host(:hover) { border-color: var(--fv-shadow-color); } line { stroke: black; stroke-width: 1; }`,
-      `<slot><svg><line  x1="0" y1="0" x2="200" y2="200"></line></svg></slot>`,
+      {
+        ":host": {
+          "display": "inline-block",
+          "position": "absolute",
+          "border": "1px solid transparent",
+        },
+        ":host(:hover)": { "border-color": "var(--fv-shadow-color)" },
+        line: { "stroke": "black", "stroke-width": 1 },
+      },
+      '<slot><svg><line  x1="0" y1="0" x2="200" y2="200"></line></svg></slot>',
     );
   }
 

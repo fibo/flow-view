@@ -12,12 +12,12 @@ export class FlowViewLink extends FlowViewItem {
           "position": "absolute",
           "border": "1px solid transparent",
         },
-        ":host(:hover)": {
-          "border-color": "var(--fv-shadow-color)",
-        },
         line: {
-          "stroke": "var(--fv-link-color, #1c1c1c)",
-          "stroke-width": 1,
+          "stroke": "var(--fv-connection-color)",
+          "stroke-width": 2,
+        },
+        "line:hover": {
+          "stroke": "var(--fv-highlighted-connection-color)",
         },
       },
       "<slot><svg><line></line></svg></slot>",

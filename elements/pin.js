@@ -9,10 +9,13 @@ export class FlowViewPin extends FlowViewItem {
   constructor() {
     super({
       ":host": {
-        "background-color": "var(--fv-pin-background-color, #dbdbdb)",
+        "background-color": "var(--fv-connection-color)",
         "display": "block",
         "width": `${FlowViewPin.size}px`,
         "height": `${FlowViewPin.size}px`,
+      },
+      ":host(:hover)": {
+        "background-color": "var(--fv-highlighted-connection-color)",
       },
     });
   }

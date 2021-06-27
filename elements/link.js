@@ -12,10 +12,15 @@ export class FlowViewLink extends FlowViewItem {
           "position": "absolute",
           "border": "1px solid transparent",
         },
-        ":host(:hover)": { "border-color": "var(--fv-shadow-color)" },
-        line: { "stroke": "black", "stroke-width": 1 },
+        ":host(:hover)": {
+          "border-color": "var(--fv-shadow-color)",
+        },
+        line: {
+          "stroke": "var(--fv-link-color, #1c1c1c)",
+          "stroke-width": 1,
+        },
       },
-      '<slot><svg><line  x1="0" y1="0" x2="200" y2="200"></line></svg></slot>',
+      "<slot><svg><line></line></svg></slot>",
     );
   }
 
@@ -70,6 +75,10 @@ export class FlowViewLink extends FlowViewItem {
     svg.setAttribute("height", height);
   }
 
+  get line() {
+    return this.shadowRoot.querySelector("line");
+  }
+
   set position([x, y]) {
     this.style.top = `${y}px`;
     this.style.left = `${x}px`;
@@ -80,7 +89,7 @@ export class FlowViewLink extends FlowViewItem {
   }
 
   updateGeometry() {
-    const { sourcePin, targetPin } = this;
+    const { line, sourcePin, targetPin } = this;
 
     if (!(sourcePin && targetPin)) {
       this.position = [0, 0];
@@ -101,5 +110,14 @@ export class FlowViewLink extends FlowViewItem {
     const width = Math.abs(targetPosition.x - sourcePosition.x);
     const height = Math.abs(targetPosition.y - sourcePosition.y);
     this.dimension = [width, height];
+
+    const x1 = invertedX ? width : 0;
+    const y1 = invertedY ? height : 0;
+    const x2 = invertedX ? 0 : width;
+    const y2 = invertedY ? 0 : height;
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
   }
 }

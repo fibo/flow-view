@@ -4,26 +4,22 @@ export class FlowViewNode extends FlowViewItem {
   static customElementName = "fv-node";
 
   constructor() {
-    super();
-
-    const template = document.createElement("template");
-    template.innerHTML =
-      `<style> :host { box-sizing: border-box; background-color: var(--fv-node-background-color, #fefefe); position: absolute; box-shadow: 1px 1px 7px 1px var(--fv-shadow-color); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; } ::slotted(div[slot="inputs"]), ::slotted(div[slot="outputs"]) { display: flex; flex-direction: row; justify-content: space-between; } </style> <slot name="inputs"></slot> <div>${this.label}</div> <slot></slot> <slot name="outputs"></slot>`;
-
-    this.attachShadow({ mode: "open" }).appendChild(
-      template.content.cloneNode(true),
+    super(
+      `:host { box-sizing: border-box; background-color: var(--fv-node-background-color, #fefefe); position: absolute; box-shadow: 1px 1px 7px 1px var(--fv-shadow-color); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; } ::slotted(div[slot="inputs"]), ::slotted(div[slot="outputs"]) { display: flex; flex-direction: row; justify-content: space-between; }`,
+      `<slot name="inputs"></slot> <div class="label">node</div> <slot></slot> <slot name="outputs"></slot>`,
     );
   }
 
   static get observedAttributes() {
-    return [
-      /* position */ "x",
-      "y",
-      /* dimensions */ "width",
-      "height",
+    return FlowViewItem.observedAttributes.concat([
       "label",
-      "id",
-    ];
+      // position
+      "x",
+      "y",
+      // dimension
+      "width",
+      "height",
+    ]);
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -34,15 +30,6 @@ export class FlowViewNode extends FlowViewItem {
     switch (name) {
       case "label": {
         this.label = newValue;
-        break;
-      }
-
-      // The `id` attribute cannot be changed.
-
-      case "id": {
-        if (oldValue !== null && newValue !== this._id) {
-          this.setAttribute("id", this._id);
-        }
         break;
       }
 
@@ -157,11 +144,11 @@ export class FlowViewNode extends FlowViewItem {
     }
   }
 
-  get label() {
-    return this.getAttribute("label") || "";
+  set label(value) {
+    this.labelNode.textContent = value;
   }
 
-  set label(value) {
-    this.setAttribute("label", value);
+  get labelNode() {
+    return this.shadowRoot.querySelector(".label");
   }
 }

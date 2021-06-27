@@ -1,4 +1,21 @@
 export class FlowViewItem extends HTMLElement {
+  constructor(style = "", markup = "<slot></slot>") {
+    super();
+
+    const template = document.createElement("template");
+
+    template.innerHTML =
+      `<style>${style} :host([hidden]) { display: none; }</style> ${markup}`;
+
+    this.attachShadow({ mode: "open" }).appendChild(
+      template.content.cloneNode(true),
+    );
+  }
+
+  static get observedAttributes() {
+    return ["id"];
+  }
+
   static generateId(prefix = "fv") {
     const randomString = Math.random().toString(36).replace(/[^a-z]+/g, "")
       .substr(0, 5);

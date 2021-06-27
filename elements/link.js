@@ -1,27 +1,23 @@
-import { centerOfPin } from "./pin.js";
+import { FlowViewPin } from "./pin.js";
 import { FlowViewItem } from "./item.js";
 
 export class FlowViewLink extends FlowViewItem {
   static customElementName = "fv-link";
 
   constructor() {
-    super();
-
-    const template = document.createElement("template");
-    template.innerHTML =
-      `<style> :host { display: inline-block; position: absolute; border: 1px solid transparent; } :host(:hover) { border-color: var(--fv-shadow-color); } </style> <slot></slot>`;
-
-    this.attachShadow({ mode: "open" }).appendChild(
-      template.content.cloneNode(true),
+    super(
+      `:host { display: inline-block; position: absolute; border: 1px solid transparent; } :host(:hover) { border-color: var(--fv-shadow-color); } line { stroke: black; stroke-width: 1; }`,
+      `<slot><svg><line  x1="0" y1="0" x2="200" y2="200"></line></svg></slot>`,
     );
   }
 
   static get observedAttributes() {
-    return [
-      "id",
-      "from",
-      "to",
-    ];
+    return FlowViewItem.observedAttributes.concat(
+      [
+        "from",
+        "to",
+      ],
+    );
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -57,13 +53,22 @@ export class FlowViewLink extends FlowViewItem {
   }
 
   set dimension([width, height]) {
-    this.style.width = `${width}px`;
-    this.style.height = `${height}px`;
+    const { style, svg } = this;
+
+    style.width = `${width}px`;
+    style.height = `${height}px`;
+
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
   }
 
   set position([x, y]) {
     this.style.top = `${y}px`;
     this.style.left = `${x}px`;
+  }
+
+  get svg() {
+    return this.shadowRoot.querySelector("svg");
   }
 
   updateGeometry() {
@@ -75,8 +80,8 @@ export class FlowViewLink extends FlowViewItem {
       return;
     }
 
-    const sourcePosition = centerOfPin(sourcePin);
-    const targetPosition = centerOfPin(targetPin);
+    const sourcePosition = FlowViewPin.centerOfPin(sourcePin);
+    const targetPosition = FlowViewPin.centerOfPin(targetPin);
 
     const invertedX = targetPosition.x < sourcePosition.x;
     const invertedY = targetPosition.y < sourcePosition.y;

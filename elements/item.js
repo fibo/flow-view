@@ -18,4 +18,18 @@ export class FlowViewItem extends HTMLElement {
     Object.defineProperty(this, "_id", { value: id, writable: false });
     this.setAttribute("id", id);
   }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
+    switch (name) {
+      // The `id` attribute cannot be changed.
+      case "id": {
+        if (oldValue !== null && newValue !== this._id) {
+          this.setAttribute("id", this._id);
+        }
+        break;
+      }
+    }
+  }
 }

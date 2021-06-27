@@ -27,40 +27,22 @@ export class FlowViewLink extends FlowViewItem {
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
 
+    super.attributeChangedCallback(name, oldValue, newValue);
+
     switch (name) {
-      // The `id` attribute cannot be changed.
-      case "id": {
-        if (oldValue !== null && newValue !== this._id) {
-          this.setAttribute("id", this._id);
-        }
+      case "from": {
+        this.sourcePin = document.getElementById(newValue);
         break;
       }
 
-      case "from":
       case "to": {
-        const sourcePin = document.getElementById(
-          name === "from" ? newValue : this.getAttribute("from"),
-        );
-        const targetPin = document.getElementById(
-          name === "to" ? newValue : this.getAttribute("to"),
-        );
-
-        const dimension = this.computeDimensions({ sourcePin, targetPin });
-
-        if (dimension) {
-          this.style.width = `${dimension.width}px`;
-          this.style.height = `${dimension.height}px`;
-        }
-
-        const position = this.computePosition({ sourcePin });
-
-        if (position) {
-          this.style.top = `${position.y}px`;
-          this.style.left = `${position.x}px`;
-        }
-
+        this.targetPin = document.getElementById(newValue);
         break;
       }
+    }
+
+    if (["from", "to"].includes(name)) {
+      this.updateGeometry();
     }
   }
 
@@ -74,19 +56,37 @@ export class FlowViewLink extends FlowViewItem {
     }
   }
 
-  computeDimensions({ sourcePin, targetPin }) {
+  set dimension([width, height]) {
+    this.style.width = `${width}px`;
+    this.style.height = `${height}px`;
+  }
+
+  set position([x, y]) {
+    this.style.top = `${y}px`;
+    this.style.left = `${x}px`;
+  }
+
+  updateGeometry() {
+    const { sourcePin, targetPin } = this;
+
+    if (!(sourcePin && targetPin)) {
+      this.position = [0, 0];
+      this.dimension = [0, 0];
+      return;
+    }
+
     const sourcePosition = centerOfPin(sourcePin);
     const targetPosition = centerOfPin(targetPin);
 
-    if (sourcePosition && targetPosition) {
-      return {
-        width: targetPosition.x - sourcePosition.x,
-        height: targetPosition.y - sourcePosition.y,
-      };
-    }
-  }
+    const invertedX = targetPosition.x < sourcePosition.x;
+    const invertedY = targetPosition.y < sourcePosition.y;
 
-  computePosition({ sourcePin }) {
-    return centerOfPin(sourcePin);
+    const x = invertedX ? targetPosition.x : sourcePosition.x;
+    const y = invertedY ? targetPosition.y : sourcePosition.y;
+    this.position = [x, y];
+
+    const width = Math.abs(targetPosition.x - sourcePosition.x);
+    const height = Math.abs(targetPosition.y - sourcePosition.y);
+    this.dimension = [width, height];
   }
 }

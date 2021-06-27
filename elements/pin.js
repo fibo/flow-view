@@ -1,4 +1,4 @@
-import { FlowViewItem } from './item.js'
+import { FlowViewItem } from "./item.js";
 
 export const pinSize = 10;
 
@@ -67,7 +67,7 @@ export function nodeOfPin(pin) {
   }
 }
 
-export class FlowViewPin extends HTMLElement {
+export class FlowViewPin extends FlowViewItem {
   static customElementName = "fv-pin";
 
   constructor() {
@@ -89,6 +89,8 @@ export class FlowViewPin extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+
     if (oldValue === newValue) return;
 
     switch (name) {

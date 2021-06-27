@@ -29,6 +29,8 @@ export class FlowViewNode extends FlowViewItem {
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
 
+    super.attributeChangedCallback(name, oldValue, newValue);
+
     switch (name) {
       case "label": {
         this.label = newValue;

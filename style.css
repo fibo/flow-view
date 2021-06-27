@@ -1,0 +1,15 @@
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  box-sizing: border-box;
+  color: #1c1c1c;
+  background: #eee;
+  font-family: Georgia, serif;
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 3em;
+}

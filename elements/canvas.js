@@ -25,4 +25,12 @@ export class FlowViewCanvas extends FlowViewItem {
   static get observedAttributes() {
     return FlowViewItem.observedAttributes;
   }
+
+  getItemById(id) {
+    for (const item of this.children) {
+      if (item.id === id) {
+        return item;
+      }
+    }
+  }
 }

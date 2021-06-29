@@ -3,6 +3,7 @@ import { FlowViewPin } from "./pin.js";
 
 export class FlowViewNode extends FlowViewItem {
   static customElementName = FlowViewItem.elementName.node;
+  static minSize = FlowViewPin.size * 4;
 
   constructor() {
     super(
@@ -17,22 +18,23 @@ export class FlowViewNode extends FlowViewItem {
           "justify-content": "space-between",
           "border": "1px solid transparent",
         },
-        'slot[name="inputs"], slot[name="outputs"]': {
+        ".pin-list": {
           "display": "flex",
           "flex-direction": "row",
           "justify-content": "space-between",
           "min-height": `${FlowViewPin.size}px`,
         },
-        '::slotted(span(slot="label"))': {
+        ".label": {
+          "cursor": "default",
           "user-select": "none",
-          "padding-left": "1em",
+          "padding-left": ".5em",
         },
       },
       [
-        '<slot name="inputs"></slot>',
-        '<span name="label"></span>',
-        '<div name="content"></div>',
-        '<slot name="outputs"></slot>',
+        '<slot name="inputs"><div class="inputs pin-list"></div></slot>',
+        '<slot name="label"><span class="label"></span></slot>',
+        "<slot></slot>",
+        '<slot name="outputs"><div class="outputs pin-list"></div></slot>',
       ].join(""),
     );
   }
@@ -75,17 +77,12 @@ export class FlowViewNode extends FlowViewItem {
       case "width":
       case "height": {
         const num = Math.round(newValue);
-        const { minSize } = this;
-
-        if (typeof num === "number" && num >= 0) {
-          // Use `minSize` if any.
-          if (typeof minSize === "number" && minSize > num) {
-            this.setAttribute(name, minSize);
-          } else {
-            this.style[name] = `${num}px`;
-          }
+        const { minSize } = FlowViewNode;
+        if (minSize > num) {
+          this.setAttribute(name, minSize);
+        } else {
+          this.style[name] = `${num}px`;
         }
-
         break;
       }
     }
@@ -94,7 +91,8 @@ export class FlowViewNode extends FlowViewItem {
   connectedCallback() {
     super.connectedCallback();
 
-    const { canvas, minSize } = this;
+    const { canvas } = this;
+    const { minSize } = FlowViewNode.minSize;
 
     if (canvas) {
       this.addEventListener("pointerdown", this.onpointerdown);
@@ -155,37 +153,20 @@ export class FlowViewNode extends FlowViewItem {
     canvas.addEventListener("pointerup", removeListeners);
   }
 
-  get canvas() {
-    const { parentNode } = this;
-
-    if (
-      parentNode &&
-      parentNode.tagName === FlowViewItem.elementName.canvas.toUpperCase()
-    ) {
-      return parentNode;
-    } else {
-      return null;
-    }
-  }
-
-  get minSize() {
-    return FlowViewPin.size * 4;
-  }
-
   set label(value) {
     this.labelElement.textContent = value;
   }
 
   get labelElement() {
-    return this.shadowRoot.querySelector("span[name='label']");
+    return this.shadowRoot.querySelector("span.label");
   }
 
   get inputsElement() {
-    return this.shadowRoot.querySelector("slot[name='inputs']");
+    return this.shadowRoot.querySelector(".inputs");
   }
 
   get outputsElement() {
-    return this.shadowRoot.querySelector("slot[name='outputs']");
+    return this.shadowRoot.querySelector(".outputs");
   }
 
   addInput() {
@@ -198,5 +179,29 @@ export class FlowViewNode extends FlowViewItem {
     const pin = document.createElement(FlowViewItem.elementName.pin);
 
     this.outputsElement.appendChild(pin);
+  }
+
+  input(position = 0) {
+    return this.inputsElement.children[position];
+  }
+
+  output(position = 0) {
+    return this.outputsElement.children[position];
+  }
+
+  getInputById(id) {
+    for (const pin of this.inputsElement.children) {
+      if (pin.id === id) {
+        return pin;
+      }
+    }
+  }
+
+  getOutputById(id) {
+    for (const pin of this.outputsElement.children) {
+      if (pin.id === id) {
+        return pin;
+      }
+    }
   }
 }

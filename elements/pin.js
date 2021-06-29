@@ -21,28 +21,25 @@ export class FlowViewPin extends FlowViewItem {
   }
 
   static get observedAttributes() {
-    return FlowViewItem.observedAttributes;
+    return FlowViewItem.observedAttributes.concat(["name"]);
   }
 
-  static centerOfPin(pin) {
-    const node = FlowViewPin.nodeOfPin(pin);
-
+  static centerOfPin(node, pinType) {
+    const nodeBorderWidth = 1;
     const halfPinSize = Math.round(FlowViewPin.size / 2);
 
     if (node) {
       const x = Number(node.getAttribute("x"));
       const y = Number(node.getAttribute("y"));
 
-      const nodeBorderWidth = 1;
-
-      if (FlowViewPin.isInput(pin)) {
+      if (pinType === "input") {
         return {
           x: x + halfPinSize,
           y: y + halfPinSize,
         };
       }
 
-      if (FlowViewPin.isOutput(pin)) {
+      if (pinType === "output") {
         const height = Number(node.getAttribute("height"));
 
         return {
@@ -53,73 +50,16 @@ export class FlowViewPin extends FlowViewItem {
     }
   }
 
-  static isInput(pin) {
-    const { parentNode } = pin;
-
-    if (parentNode && parentNode.tagName === "DIV") {
-      return parentNode.slot === "inputs";
-    }
-
-    return false;
-  }
-
-  static isOutput(pin) {
-    const { parentNode } = pin;
-
-    if (parentNode && parentNode.tagName === "DIV") {
-      return parentNode.slot === "outputs";
-    }
-
-    return false;
-  }
-
-  static nodeOfPin(pin) {
-    const { parentNode } = pin;
-
-    if (
-      parentNode && parentNode.tagName === "DIV" && (
-        ["inputs", "outputs"].includes(parentNode.slot)
-      )
-    ) {
-      const grandParentNode = parentNode.parentNode;
-
-      if (
-        grandParentNode.tagName === FlowViewItem.elementName.node.toUpperCase()
-      ) {
-        return grandParentNode;
-      }
-    }
-  }
-
   attributeChangedCallback(name, oldValue, newValue) {
-    super.attributeChangedCallback(name, oldValue, newValue);
-
     if (oldValue === newValue) return;
 
+    super.attributeChangedCallback(name, oldValue, newValue);
+
     switch (name) {
-      // The `id` attribute cannot be changed.
-      case "id": {
-        if (oldValue !== null && newValue !== this._id) {
-          this.setAttribute("id", this._id);
-        }
+      case "name": {
+        this.name = newValue;
         break;
       }
-    }
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-
-    const { node } = this;
-
-    if (node) {
-      this.addEventListener("pointerdown", this.onpointerdown);
-
-      // Set a readonly id, prefixed by node id.
-      const idPrefix = node.id;
-      const id = this.id || FlowViewItem.generateId(idPrefix);
-      Object.defineProperty(this, "_id", { value: id, writable: false });
-      this.setAttribute("id", id);
     }
   }
 

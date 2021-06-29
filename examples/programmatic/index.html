@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:;base64,=">
+
   <title>flow-view programmatic</title>
   <link rel="stylesheet" href="../../style.css">
 </head>
@@ -11,9 +13,16 @@
 
   <script type="module">
     import { FlowView } from '../../main.js';
-    const flowView = new FlowView({ root: document.querySelector('main') })
+    const flowView = new FlowView({ root: document.querySelector('main') });
 
-    flowView.newNode({ label: 'node', inputs:[{}] })
+    const node1 = flowView.newNode({
+      label: 'Yay', inputs:[{}, {}], outputs: [{}], x: 100, y: 100, width: 80
+    });
+    const node2 = flowView.newNode({
+      label: 'node2', inputs:[{}], width: 100, x: 250, y: 400
+    });
+
+    flowView.connect(node1).to(node2);
   </script>
 </body>
 </html>

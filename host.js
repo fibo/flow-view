@@ -1,4 +1,5 @@
 import { FlowViewCanvas } from "./elements/canvas.js";
+import { FlowViewLink } from "./elements/link.js";
 import { FlowViewNode } from "./elements/node.js";
 import { flowViewInit } from "./init.js";
 import { flowViewElements } from "./elements-list.js";
@@ -35,31 +36,53 @@ export class FlowView {
     this.container.style.height = `${value}px`;
   }
 
-  newNode(
-    {
-      position = [100, 100],
-      dimension = [100, 40],
-      label = "",
-      inputs = [],
-      outputs = [],
-    } = {},
-  ) {
-    const node = document.createElement(FlowViewNode.customElementName);
-    node.setAttribute("x", position[0]);
-    node.setAttribute("y", position[1]);
-    node.setAttribute("width", dimension[0]);
-    node.setAttribute("height", dimension[1]);
-    node.setAttribute("label", label);
+  connect(sourceNode, sourcePosition = 0) {
+    return {
+      to: (targetNode, targetPosition) => {
+        const sourcePin = sourceNode.output(sourcePosition);
+        const targetPin = targetNode.input(targetPosition);
 
+        return this.newLink({
+          from: [sourceNode.id, sourcePin.id].join(),
+          to: [targetNode.id, targetPin.id].join(),
+        });
+      },
+    };
+  }
+
+  newLink({ from, to }) {
+    const link = document.createElement(FlowViewLink.customElementName);
+    this.canvas.appendChild(link);
+    link.setAttribute("from", from);
+    link.setAttribute("to", to);
+    return link;
+  }
+
+  newNode({
+    x = 0,
+    y = 0,
+    width = FlowViewNode.minSize,
+    height = FlowViewNode.minSize,
+    label = "node",
+    inputs = [],
+    outputs = [],
+  } = {}) {
+    const node = document.createElement(FlowViewNode.customElementName);
     this.canvas.appendChild(node);
+    node.setAttribute("x", x);
+    node.setAttribute("y", y);
+    node.setAttribute("width", width);
+    node.setAttribute("height", height);
+    node.setAttribute("label", label);
 
     for (const pin of inputs) {
       node.addInput(pin);
     }
-
     for (const pin of outputs) {
       node.addOutput(pin);
     }
+
+    return node;
   }
 
   onRootResize(entries) {

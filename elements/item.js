@@ -43,14 +43,11 @@ export class FlowViewItem extends HTMLElement {
     ), "");
   }
 
-  static generateId(prefix = "fv") {
-    const randomString = Math.random().toString(36).replace(/[^a-z]+/g, "")
-      .substr(0, 5);
-
-    const id = `${prefix}:${randomString}`;
+  static generateId() {
+    const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
 
     if (document.getElementById(id)) {
-      return FlowViewItem.generateId(prefix);
+      return FlowViewItem.generateId();
     } else {
       return id;
     }
@@ -76,6 +73,19 @@ export class FlowViewItem extends HTMLElement {
         }
         break;
       }
+    }
+  }
+
+  get canvas() {
+    const { parentNode } = this;
+
+    if (
+      parentNode &&
+      parentNode.tagName === FlowViewItem.elementName.canvas.toUpperCase()
+    ) {
+      return parentNode;
+    } else {
+      return null;
     }
   }
 }

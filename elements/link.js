@@ -3,6 +3,7 @@ import { FlowViewItem } from "./item.js";
 
 export class FlowViewLink extends FlowViewItem {
   static customElementName = FlowViewItem.elementName.link;
+  static width = 2;
 
   constructor() {
     super(
@@ -14,7 +15,7 @@ export class FlowViewLink extends FlowViewItem {
         },
         line: {
           "stroke": "var(--fv-connection-color)",
-          "stroke-width": 2,
+          "stroke-width": FlowViewLink.width,
         },
         "line:hover": {
           "stroke": "var(--fv-highlighted-connection-color)",
@@ -34,34 +35,32 @@ export class FlowViewLink extends FlowViewItem {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
+    const { canvas } = this;
+
     if (oldValue === newValue) return;
 
     super.attributeChangedCallback(name, oldValue, newValue);
 
     switch (name) {
       case "from": {
-        this.sourcePin = document.getElementById(newValue);
+        const [nodeId, pinId] = newValue.split(",");
+        const node = canvas.getItemById(nodeId);
+        this.sourceNode = node;
+        this.sourcePin = node.getOutputById(pinId);
         break;
       }
 
       case "to": {
-        this.targetPin = document.getElementById(newValue);
+        const [nodeId, pinId] = newValue.split(",");
+        const node = canvas.getItemById(nodeId);
+        this.targetNode = node;
+        this.targetPin = node.getInputById(pinId);
         break;
       }
     }
 
     if (["from", "to"].includes(name)) {
       this.updateGeometry();
-    }
-  }
-
-  get canvas() {
-    const { parentNode } = this;
-
-    if (parentNode && parentNode.tagName === "FV-CANVAS") {
-      return parentNode;
-    } else {
-      return null;
     }
   }
 
@@ -89,16 +88,18 @@ export class FlowViewLink extends FlowViewItem {
   }
 
   updateGeometry() {
-    const { line, sourcePin, targetPin } = this;
+    const { line, sourceNode, sourcePin, targetNode, targetPin } = this;
 
-    if (!(sourcePin && targetPin)) {
+    if (
+      [sourceNode, sourcePin, targetNode, targetPin].some((element) => !element)
+    ) {
       this.position = [0, 0];
       this.dimension = [0, 0];
       return;
     }
 
-    const sourcePosition = FlowViewPin.centerOfPin(sourcePin);
-    const targetPosition = FlowViewPin.centerOfPin(targetPin);
+    const sourcePosition = FlowViewPin.centerOfPin(sourceNode, "output");
+    const targetPosition = FlowViewPin.centerOfPin(targetNode, "input");
 
     const invertedX = targetPosition.x < sourcePosition.x;
     const invertedY = targetPosition.y < sourcePosition.y;

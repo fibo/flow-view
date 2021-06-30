@@ -1,48 +1,102 @@
-import { FlowViewCanvas } from "./elements/canvas.js";
-import { FlowViewLink } from "./elements/link.js";
-import { FlowViewNode } from "./elements/node.js";
-import { flowViewInit } from "./init.js";
+import { FlowViewEdge } from "./items/edge.js";
+import { FlowViewNode } from "./items/node.js";
 import { flowViewElements } from "./elements-list.js";
 
-export class FlowView {
-  constructor(
-    { root = document.body, customElements = flowViewElements } = {},
-  ) {
-    const container = this.container = document.createElement("div");
+export class FlowViewElement extends HTMLElement {
+  static customElementName = 'flow-view';
 
-    container.style.boxSizing = "border-block";
-    container.style.display = "inline-block";
-    container.style.border = 0;
-    container.style.margin = 0;
+  static style = {
+      ":host([hidden])": {
+        "display": "none",
+      },
+      ":host": {
+        "--fv-box-shadow": "0px 0px 7px 1px rgba(0, 0, 0, 0.1)",
+        "display": "block",
+        'border': 0,
+        "margin": 0,
+        "background-color": "var(--fv-canvas-background-color, #fefefe)",
+        "box-shadow": "var(--fv-box-shadow)",
+        "font-family": "var(--fv-font-family, sans-serif)",
+        "font-size": "var(--fv-font-size, 17px)",
+      },
+    ...FlowViewNode.style
+  }
 
-    const canvas = this.canvas = document.createElement(
-      FlowViewCanvas.customElementName,
+  static generateStylesheet(style) {
+    return Object.entries(style).reduce((stylesheet, [selector, rules]) => (
+      [
+        stylesheet,
+        `${selector} {`,
+        Object.entries(rules).map(
+          ([key, value]) => `  ${key}: ${value};`,
+        ).join("\n"),
+        "}",
+      ].join("\n")
+    ), "");
+  }
+
+  constructor() {
+    super()
+
+    const template = document.createElement("template");
+
+    template.innerHTML = `<style>${
+      FlowViewElement.generateStylesheet(FlowViewElement.style)
+    }</style>`;
+
+    this.attachShadow({ mode: "open" }).appendChild(
+      template.content.cloneNode(true),
     );
-    container.appendChild(canvas);
+  }
+}
+
+export class FlowView {
+  static defaultItems = {
+    node: FlowViewNode
+  }
+
+  constructor(
+    { root = document.body  } = {},
+  ) {
+
+    const itemClass = this.itemClass = new Map()
+    Object.entries(FlowView.defaultItems).forEach(([key, Class] ) => {
+    itemClass.set(key, Class)
+    })
 
     this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this));
     this.rootResizeObserver.observe(root);
 
-    root.appendChild(container);
+    const {customElementName } = FlowViewElement
 
-    flowViewInit(customElements);
+    if (!window.customElements.get(customElementName)) {
+      window.customElements.define(customElementName, FlowViewElement)
+    }
+
+    const view =  document.createElement(customElementName);
+    this.view = view
+    root.appendChild(view);
+
+    this.nodes = new Map()
+    this.edges = new Map()
   }
 
   set width(value) {
-    this.container.style.width = `${value}px`;
+    this.view.style.width = `${value}px`;
   }
 
   set height(value) {
-    this.container.style.height = `${value}px`;
+    this.view.style.height = `${value}px`;
   }
 
   connect(sourceNode, sourcePosition = 0) {
     return {
       to: (targetNode, targetPosition) => {
         const sourcePin = sourceNode.output(sourcePosition);
+    element.classList.add(className)
         const targetPin = targetNode.input(targetPosition);
 
-        return this.newLink({
+        return this.newEdge({
           from: [sourceNode.id, sourcePin.id].join(),
           to: [targetNode.id, targetPin.id].join(),
         });
@@ -50,12 +104,10 @@ export class FlowView {
     };
   }
 
-  newLink({ from, to }) {
-    const link = document.createElement(FlowViewLink.customElementName);
-    this.canvas.appendChild(link);
-    link.setAttribute("from", from);
-    link.setAttribute("to", to);
-    return link;
+  newEdge({  from, to }) {
+    const Class = this.itemClass.get('edge')
+    const edge = new Class({id, shadowDom: this.shadowRoot, cssClassName: Class.cssClassName, from, to})
+    return edge
   }
 
   newNode({
@@ -64,24 +116,13 @@ export class FlowView {
     width = FlowViewNode.minSize,
     height = FlowViewNode.minSize,
     label = "node",
+    id,
+    nodeType = 'node',
     inputs = [],
     outputs = [],
   } = {}) {
-    const node = document.createElement(FlowViewNode.customElementName);
-    this.canvas.appendChild(node);
-    node.setAttribute("x", x);
-    node.setAttribute("y", y);
-    node.setAttribute("width", width);
-    node.setAttribute("height", height);
-    node.setAttribute("label", label);
-
-    for (const pin of inputs) {
-      node.addInput(pin);
-    }
-    for (const pin of outputs) {
-      node.addOutput(pin);
-    }
-
+    const Class = this.itemClass.get(nodeType)
+    const node = new Class({ id, shadowDom: this.view.shadowRoot, cssClassName: Class.cssClassName, label, inputs, outputs  })
     return node;
   }
 

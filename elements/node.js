@@ -112,6 +112,7 @@ export class FlowViewNode extends FlowViewItem {
     }
     if (!this.getAttribute("y")) {
       this.setAttribute("y", 0);
+      x;
     }
   }
 

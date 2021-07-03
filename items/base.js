@@ -9,17 +9,26 @@ export class FlowViewBase {
     }
   }
 
-  constructor ({ cssClassName, id, shadowDom, ...rest}) {
-    const element = this.element = document.createElement('div')
-    element.classList.add(cssClassName)
+  constructor({ cssClassName, id, shadowDom, ...rest }) {
+    this.shadowDom = shadowDom;
+
+    const element = this.element = document.createElement("div");
+    element.classList.add(cssClassName);
 
     const _id = id || FlowViewBase.generateId(shadowDom);
     element.setAttribute("id", _id);
 
-    shadowDom.appendChild(element)
+    shadowDom.appendChild(element);
 
-    this.init(rest)
+    this.init(rest);
   }
 
   init() {}
+
+  createDiv(cssClassName) {
+    const div = document.createElement("div");
+    div.classList.add(cssClassName);
+    this.element.appendChild(div);
+    return div;
+  }
 }

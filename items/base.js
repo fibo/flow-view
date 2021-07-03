@@ -25,6 +25,10 @@ export class FlowViewBase {
 
   init() {}
 
+  get id() {
+    return this.element.getAttribute("id");
+  }
+
   createDiv(cssClassName) {
     const div = document.createElement("div");
     div.classList.add(cssClassName);

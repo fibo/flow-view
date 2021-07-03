@@ -42,6 +42,16 @@ export class FlowViewElement extends HTMLElement {
     ), "");
   }
 
+  static pointerCoordinates(event) {
+    const { clientX, clientY, target } = event;
+    const { left, top } = target.getBoundingClientRect();
+
+    const x = Math.round(clientX - left);
+    const y = Math.round(clientY - top);
+
+    return { x, y };
+  }
+
   constructor() {
     super();
 
@@ -54,6 +64,11 @@ export class FlowViewElement extends HTMLElement {
     this.attachShadow({ mode: "open" }).appendChild(
       template.content.cloneNode(true),
     );
+
+    this._origin = { x: 0, y: 0 };
+
+    this.nodes = new Map();
+    this.edges = new Map();
   }
 
   connectedCallback() {
@@ -65,14 +80,37 @@ export class FlowViewElement extends HTMLElement {
     } else {
       this.height = this.getAttribute("height") || FlowViewElement.minHeight;
     }
+
+    this.addEventListener("pointerdown", this.onPointerdown);
+    this.addEventListener("pointermove", this.onPointermove);
+    this.addEventListener("pointerleave", this.onPointerleave);
+    this.addEventListener("pointerup", this.onPointerup);
   }
 
   disconnectedCallback() {
     // Remove eventListeners
+    if (this.canResize) {
+      this.rootResizeObserver.unobserve(this.parentNode);
+    }
+    this.removeEventListener("pointerdown", this.onPointerdown);
+    this.removeEventListener("pointermove", this.onPointermove);
+    this.removeEventListener("pointerleave", this.onPointerleave);
+    this.removeEventListener("pointerup", this.onPointerup);
   }
 
   get canResize() {
     return "ResizeObserver" in window;
+  }
+
+  get origin() {
+    if (this.translateVector) {
+      return {
+        x: this._origin.x + this.translateVector.x,
+        y: this._origin.y + this.translateVector.y,
+      };
+    } else {
+      return this._origin;
+    }
   }
 
   set width(value) {
@@ -81,6 +119,52 @@ export class FlowViewElement extends HTMLElement {
 
   set height(value) {
     this.style.height = `${value}px`;
+  }
+
+  startTranslate(event) {
+    this.startDraggingPoint = FlowViewElement.pointerCoordinates(event);
+    this.translateVector = { x: 0, y: 0 };
+  }
+
+  stopTranslate() {
+    if (this.translateVector) {
+      this._origin = {
+        x: this._origin.x + this.translateVector.x,
+        y: this._origin.y + this.translateVector.y,
+      };
+      this.translateVector = undefined;
+    }
+
+    this.startDraggingPoint = undefined;
+  }
+
+  onPointerdown(event) {
+    this.startTranslate(event);
+  }
+
+  onPointermove(event) {
+    const { startDraggingPoint } = this;
+
+    if (startDraggingPoint) {
+      const pointerPosition = FlowViewElement.pointerCoordinates(event);
+
+      this.translateVector = {
+        x: startDraggingPoint.x - pointerPosition.x,
+        y: startDraggingPoint.y - pointerPosition.y,
+      };
+
+      for (const node of this.nodes.values()) {
+        node.onViewOriginUpdate();
+      }
+    }
+  }
+
+  onPointerleave() {
+    this.stopTranslate();
+  }
+
+  onPointerup() {
+    this.stopTranslate();
   }
 
   onRootResize(entries) {
@@ -130,9 +214,6 @@ export class FlowView {
         }
       }
     }
-
-    this.nodes = new Map();
-    this.edges = new Map();
   }
 
   connect(sourceNode, sourcePosition = 0) {
@@ -173,6 +254,9 @@ export class FlowView {
       from,
       to,
     });
+
+    this.view.edges.set(edge.id, edge);
+
     return edge;
   }
 
@@ -195,7 +279,11 @@ export class FlowView {
       outputs,
       x,
       y,
+      view: this.view,
     });
+
+    this.view.nodes.set(node.id, node);
+
     return node;
   }
 }

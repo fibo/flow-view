@@ -31,7 +31,9 @@ export class FlowViewNode extends FlowViewBase {
     },
   };
 
-  init({ label, inputs = [], outputs = [], x, y }) {
+  init({ label, inputs = [], outputs = [], x, y, view }) {
+    this.view = view;
+
     this.inputs = new Map();
     this.inputListElement = this.createDiv("pins");
     for (const pin of inputs) {
@@ -58,11 +60,23 @@ export class FlowViewNode extends FlowViewBase {
     this.labelElement.textContent = value;
   }
 
-  set position({ x = 0, y = 0 } = {}) {
-    const { element } = this;
+  get position() {
+    return { x: this.x, y: this.y };
+  }
 
-    element.style.top = `${x}px`;
-    element.style.left = `${y}px`;
+  set position({ x = 0, y = 0 } = {}) {
+    const { element, view } = this;
+
+    this.x = x;
+    this.y = y;
+    element.style.top = `${y - view.origin.y}px`;
+    element.style.left = `${x - view.origin.x}px`;
+  }
+
+  onViewOriginUpdate() {
+    // Just trigger position setter.
+    const { x, y } = this.position;
+    this.position = { x, y };
   }
 
   newInput({ id }) {

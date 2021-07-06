@@ -1,7 +1,7 @@
-import { cssTheme, cssVar } from "../theme.js";
-import { FlowViewEdge } from "./edge.js";
-import { FlowViewNode } from "./node.js";
-import { FlowViewPin } from "./pin.js";
+import { cssTheme, cssVar } from "./theme.js";
+import { FlowViewEdge } from "../items/edge.js";
+import { FlowViewNode } from "../items/node.js";
+import { FlowViewPin } from "../items/pin.js";
 
 export class FlowViewElement extends HTMLElement {
   static customElementName = "flow-view";
@@ -130,31 +130,39 @@ export class FlowViewElement extends HTMLElement {
   }
 
   addEdge(edge) {
-    this.edges.set(edge.id, edge);
+    this._edges.set(edge.id, edge);
   }
 
   addNode(node) {
     this._nodes.set(node.id, node);
   }
 
-  removeEdge(id) {
+  deleteEdge(id) {
     const edge = this.edges.get(id);
     // Dispose.
     edge.remove();
-    this._edges.remove(id);
+    this._edges.delete(id);
   }
 
-  removeNode(id) {
+  deleteNode(id) {
     const node = this._nodes.get(id);
     // Remove edges connected to node.
     for (const edge of this.edges) {
       if (edge.sourceNodeId === id || edge.targetNodeId === id) {
-        this.removeEdge(edge.id);
+        this.deleteEdge(edge.id);
       }
     }
     // Dispose.
     node.remove();
-    this._nodes.remove(id);
+    this._nodes.delete(id);
+  }
+
+  edge (id) {
+    return this._edges.get(id)
+  }
+
+  node (id) {
+    return this._nodes.get(id)
   }
 
   startTranslate(event) {

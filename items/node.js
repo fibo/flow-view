@@ -31,33 +31,45 @@ export class FlowViewNode extends FlowViewBase {
     },
   };
 
-  init({ label, inputs = [], outputs = [], x, y, view }) {
-    this.view = view;
-
-    this.inputs = new Map();
-    this.inputListElement = this.createDiv("pins");
+  init({ label, inputs = [], outputs = [], x, y }) {
+    this._inputs = new Map();
+    this.inputListDiv = this.createDiv("pins");
     for (const pin of inputs) {
       this.newInput(pin);
     }
 
-    this.labelElement = this.createDiv("label");
+    this.labelDiv = this.createDiv("label");
     this.label = label;
 
-    this.outputs = new Map();
-    this.outputListElement = this.createDiv("pins");
+    this._outputs = new Map();
+    this.outputListDiv = this.createDiv("pins");
     for (const pin of outputs) {
       this.newOutput(pin);
     }
 
     this.position = { x, y };
+
+    this.element.addEventListener("pointerdown", this.onPointerdown);
+  }
+
+  dispose() {
+    this.element.removeEventListener("pointerdown", this.onPointerdown);
   }
 
   get label() {
-    return this.labelElement.textContent;
+    return this.labelDiv.textContent;
   }
 
   set label(value) {
-    this.labelElement.textContent = value;
+    this.labelDiv.textContent = value;
+  }
+
+  get inputs() {
+    return Array.from(this._inputs.values());
+  }
+
+  get outputs() {
+    return Array.from(this._outputs.values());
   }
 
   get position() {
@@ -73,6 +85,26 @@ export class FlowViewNode extends FlowViewBase {
     element.style.left = `${x - view.origin.x}px`;
   }
 
+  deleteInput (id) {
+    const input = this._inputs.get(id)
+    input.remove()
+this._inputs.delete(id)
+  }
+
+  deleteOutput (id) {
+    const output = this._outputs.get(id)
+    output.remove()
+this._outputs.delete(id)
+  }
+
+  input (id) {
+    return this._inputs.get(id)
+  }
+
+  output (id) {
+    return this._outputs.get(id)
+  }
+
   onViewOriginUpdate() {
     // Just trigger position setter.
     const { x, y } = this.position;
@@ -82,20 +114,26 @@ export class FlowViewNode extends FlowViewBase {
   newInput({ id }) {
     const pin = new FlowViewPin({
       id,
-      shadowDom: this.shadowDom,
+      node: this,
+      view: this.view,
       cssClassName: FlowViewPin.cssClassName,
     });
-    this.inputs.set(pin.id, pin);
-    this.inputListElement.appendChild(pin.element);
+    this._inputs.set(pin.id, pin);
+    this.inputListDiv.appendChild(pin.element);
   }
 
   newOutput({ id }) {
     const pin = new FlowViewPin({
       id,
-      shadowDom: this.shadowDom,
+      node: this,
+      view: this.view,
       cssClassName: FlowViewPin.cssClassName,
     });
-    this.outputs.set(pin.id, pin);
-    this.outputListElement.appendChild(pin.element);
+    this._outputs.set(pin.id, pin);
+    this.outputListDiv.appendChild(pin.element);
+  }
+
+  onPointerdown(event) {
+    event.stopPropagation();
   }
 }

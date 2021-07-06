@@ -38,8 +38,27 @@
 
     flowView.loadGraph({
       nodes: [
-        { id: 'node1', label: 'Yay', x: 100, y: 100, inputs: [{}, {}], outputs: [{}] },
-        { id: 'node2', x: 250, y: 400, inputs: [{}] }
+        {
+          id: 'node1',
+          label: 'Yay',
+          x: 100, y: 100,
+          inputs: [{}, {}],
+          outputs: [
+            { id: 'output1' }
+          ]
+        },
+        {
+          id: 'node2',
+          x: 250, y: 400,
+          inputs: [
+            { id: 'input1' }
+          ]
+        }
+      ],
+      edges: [
+        {
+          id: 'edge1', from: ['node1', 'output1'], to: ['node2', 'input1']
+        }
       ]
     });
   </script>

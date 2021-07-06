@@ -16,4 +16,18 @@ export class FlowViewPin extends FlowViewBase {
       "background-color": cssVar.connectionColorHighlighted,
     },
   };
+
+  init({ node }) {
+    this.node = node
+
+    this.element.addEventListener("pointerdown", this.onPointerdown);
+  }
+
+  dispose() {
+    this.element.removeEventListener("pointerdown", this.onPointerdown);
+  }
+
+  onPointerdown(event) {
+    event.stopPropagation();
+  }
 }

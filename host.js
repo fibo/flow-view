@@ -1,8 +1,10 @@
-import { FlowViewNode } from "./items/node.js";
-import { FlowViewElement } from "./items/view.js";
+import { FlowViewElement } from "./view.js";
+import { FlowViewEdge } from "../items/edge.js";
+import { FlowViewNode } from "../items/node.js";
 
 export class FlowView {
   static defaultItems = {
+    edge: FlowViewEdge,
     node: FlowViewNode,
   };
 
@@ -41,14 +43,13 @@ export class FlowView {
 
   connect(sourceNode, sourcePosition = 0) {
     return {
-      to: (targetNode, targetPosition) => {
+      to: (targetNode, targetPosition = 0) => {
         const sourcePin = sourceNode.output(sourcePosition);
-        element.classList.add(className);
         const targetPin = targetNode.input(targetPosition);
 
         return this.newEdge({
-          from: [sourceNode.id, sourcePin.id].join(),
-          to: [targetNode.id, targetPin.id].join(),
+          from: sourcePin,
+          to:  targetPin
         });
       },
     };
@@ -73,14 +74,19 @@ export class FlowView {
     }
   }
 
-  newEdge({ from, to }) {
+  newEdge({ id, from: [ sourceNodeId, sourcePinId ], to: [targetNodeId, targetPinId] }) {
+    const sourceNode = this.view.node(sourceNodeId)
+    const targetNode = this.view.node(targetNodeId)
+    const source = sourceNode.output(sourcePinId)
+    const target = targetNode.output(targetPinId)
+
     const Class = this.itemClass.get("edge");
     const edge = new Class({
       id,
-      shadowDom: this.view.shadowRoot,
+      view: this.view,
       cssClassName: Class.cssClassName,
-      from,
-      to,
+      source,
+      target
     });
     this.view.addEdge(edge);
     return edge;
@@ -98,7 +104,7 @@ export class FlowView {
     const Class = this.itemClass.get(nodeType);
     const node = new Class({
       id,
-      shadowDom: this.view.shadowRoot,
+      view: this.view,
       cssClassName: Class.cssClassName,
       label,
       inputs,

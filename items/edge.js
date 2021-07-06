@@ -8,6 +8,7 @@ export class FlowViewEdge extends FlowViewBase {
     [`.${FlowViewEdge.cssClassName}`]: {
       "display": "inline-block",
       "position": "absolute",
+      "border": 0
     },
     [`.${FlowViewEdge.cssClassName} line`]: {
       "stroke": cssVar.connectionColor,
@@ -18,10 +19,31 @@ export class FlowViewEdge extends FlowViewBase {
     },
   };
 
-  init({ from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }) {
-    this.sourceNodeId = sourceNodeId;
-    this.sourcePinId = sourcePinId;
-    this.targetNodeId = targetNodeId;
-    this.targetPinId = targetPinId;
+  init({ source, target }) {
+    this.source = source
+    this.target = target
+
+    const svg = this.svg= this.createSvg('svg')
+    this.element.appendChild(svg)
+
+    const line = this.line =this.createSvg('line')
+    svg.appendChild(line)
   }
+
+  set dimension([width, height]) {
+    const { style, svg } = this;
+
+    style.width = `${width}px`;
+    style.height = `${height}px`;
+
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+  }
+
+  set position([x, y]) {
+    const { style } = this;
+    style.top = `${y}px`;
+    style.left = `${x}px`;
+  }
+
 }

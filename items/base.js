@@ -1,29 +1,30 @@
 export class FlowViewBase {
-  static generateId(shadowDom) {
+  static generateId(view) {
     const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
 
-    if (shadowDom.getElementById(id)) {
-      return FlowViewBase.generateId(shadowDom);
+    if (view.shadowRoot.getElementById(id)) {
+      return FlowViewBase.generateId(view);
     } else {
       return id;
     }
   }
 
-  constructor({ cssClassName, id, shadowDom, ...rest }) {
-    this.shadowDom = shadowDom;
+  constructor({ cssClassName, id, view, ...rest }) {
+    const _id = id || FlowViewBase.generateId(view);
+
+    this.view = view;
 
     const element = this.element = document.createElement("div");
-    element.classList.add(cssClassName);
-
-    const _id = id || FlowViewBase.generateId(shadowDom);
     element.setAttribute("id", _id);
-
-    shadowDom.appendChild(element);
+    element.classList.add(cssClassName);
+    view.shadowRoot.appendChild(element);
 
     this.init(rest);
   }
 
   init() {}
+
+  dispose() {}
 
   get id() {
     return this.element.getAttribute("id");
@@ -36,7 +37,13 @@ export class FlowViewBase {
     return div;
   }
 
+  createSvg(tag) {
+    return document.createElementNS('http://www.w3.org/2000/svg',tag)
+  }
+
   remove() {
+    this.dispose();
+
     this.element.remove();
   }
 }

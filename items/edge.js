@@ -1,3 +1,4 @@
+import { cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 
 export class FlowViewEdge extends FlowViewBase {
@@ -9,11 +10,18 @@ export class FlowViewEdge extends FlowViewBase {
       "position": "absolute",
     },
     [`.${FlowViewEdge.cssClassName} line`]: {
-      "stroke": "var(--fv-connection-color)",
+      "stroke": cssVar.connectionColor,
       "stroke-width": FlowViewEdge.width,
     },
     [`.${FlowViewEdge.cssClassName} line:hover`]: {
-      "stroke": "var(--fv-highlighted-connection-color)",
+      "stroke": cssVar.connectionColorHighlighted,
     },
   };
+
+  init({ from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }) {
+    this.sourceNodeId = sourceNodeId;
+    this.sourcePinId = sourcePinId;
+    this.targetNodeId = targetNodeId;
+    this.targetPinId = targetPinId;
+  }
 }

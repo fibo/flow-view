@@ -1,15 +1,15 @@
+import { cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewPin } from "./pin.js";
 
 export class FlowViewNode extends FlowViewBase {
   static cssClassName = "fv-node";
   static minSize = FlowViewPin.size * 4;
-
   static style = {
     [`.${FlowViewNode.cssClassName}`]: {
       "position": "absolute",
-      "background-color": "var(--fv-node-background-color, #fefefe)",
-      "box-shadow": "var(--fv-box-shadow)",
+      "background-color": cssVar.nodeBackgroundColor,
+      "box-shadow": cssVar.boxShadow,
       "display": "flex",
       "flex-direction": "column",
       "justify-content": "space-between",

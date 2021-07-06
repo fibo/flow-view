@@ -35,4 +35,8 @@ export class FlowViewBase {
     this.element.appendChild(div);
     return div;
   }
+
+  remove() {
+    this.element.remove();
+  }
 }

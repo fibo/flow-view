@@ -1,7 +1,8 @@
 import { cssTheme, cssVar } from "./theme.js";
-import { FlowViewEdge } from "../items/edge.js";
-import { FlowViewNode } from "../items/node.js";
-import { FlowViewPin } from "../items/pin.js";
+import { FlowViewEdge } from "./items/edge.js";
+import { FlowViewNode } from "./items/node.js";
+import { FlowViewPin } from "./items/pin.js";
+import { FlowViewSelector } from "./items/selector.js";
 
 export class FlowViewElement extends HTMLElement {
   static customElementName = "flow-view";
@@ -27,6 +28,7 @@ export class FlowViewElement extends HTMLElement {
     ...FlowViewEdge.style,
     ...FlowViewNode.style,
     ...FlowViewPin.style,
+    ...FlowViewSelector.style,
   };
 
   static generateStylesheet(style) {
@@ -81,6 +83,12 @@ export class FlowViewElement extends HTMLElement {
       this.height = this.getAttribute("height") || FlowViewElement.minHeight;
     }
 
+    if (!this.getAttribute("tabindex")) {
+      this.setAttribute("tabindex", 0);
+    }
+
+    this.addEventListener("dblclick", this.onDblclick);
+    this.addEventListener("keydown", this.onKeydown);
     this.addEventListener("pointerdown", this.onPointerdown);
     this.addEventListener("pointermove", this.onPointermove);
     this.addEventListener("pointerleave", this.onPointerleave);
@@ -92,6 +100,8 @@ export class FlowViewElement extends HTMLElement {
     if (this.canResize) {
       this.rootResizeObserver.unobserve(this.parentNode);
     }
+    this.removeEventListener("dblclick", this.onDblclick);
+    this.removeEventListener("keydown", this.onKeydown);
     this.removeEventListener("pointerdown", this.onPointerdown);
     this.removeEventListener("pointermove", this.onPointermove);
     this.removeEventListener("pointerleave", this.onPointerleave);
@@ -138,7 +148,7 @@ export class FlowViewElement extends HTMLElement {
   }
 
   deleteEdge(id) {
-    const edge = this.edges.get(id);
+    const edge = this._edges.get(id);
     // Dispose.
     edge.remove();
     this._edges.delete(id);
@@ -157,12 +167,12 @@ export class FlowViewElement extends HTMLElement {
     this._nodes.delete(id);
   }
 
-  edge (id) {
-    return this._edges.get(id)
+  edge(id) {
+    return this._edges.get(id);
   }
 
-  node (id) {
-    return this._nodes.get(id)
+  node(id) {
+    return this._nodes.get(id);
   }
 
   startTranslate(event) {
@@ -182,6 +192,47 @@ export class FlowViewElement extends HTMLElement {
     this.startDraggingPoint = undefined;
   }
 
+  onDblclick(event) {
+    const pointerPosition = FlowViewElement.pointerCoordinates(event);
+
+    if (this.selector) {
+      this.selector.remove();
+    }
+
+    const selector = this.selector = new FlowViewSelector({
+      id: "selector",
+      view: this,
+      cssClassName: FlowViewSelector.cssClassName,
+      position: pointerPosition,
+    });
+    selector.focus();
+  }
+
+  onKeydown(event) {
+    event.stopPropagation();
+
+    switch (true) {
+      case typeof this.selector !== "undefined": {
+        return;
+      }
+      case event.code === "Backspace": {
+        this.deleteSelection();
+        break;
+      }
+      case "KeyU": {
+        this.undo();
+        break;
+      }
+      case "KeyR": {
+        this.redo();
+        break;
+      }
+      default: {
+        // console.log(event.code);
+      }
+    }
+  }
+
   onPointerdown(event) {
     this.startTranslate(event);
   }
@@ -197,8 +248,12 @@ export class FlowViewElement extends HTMLElement {
         y: startDraggingPoint.y - pointerPosition.y,
       };
 
-      for (const node of this.nodes.values()) {
+      for (const node of this.nodes) {
         node.onViewOriginUpdate();
+      }
+
+      for (const edge of this.edges) {
+        edge.onViewOriginUpdate();
       }
     }
   }
@@ -219,5 +274,17 @@ export class FlowViewElement extends HTMLElement {
       this.width = contentBoxSize.inlineSize;
       this.height = contentBoxSize.blockSize - 10;
     }
+  }
+
+  deleteSelection() {
+    // TODO
+  }
+
+  undo() {
+    // TODO
+  }
+
+  redo() {
+    // TODO
   }
 }

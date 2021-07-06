@@ -18,13 +18,18 @@ export class FlowViewPin extends FlowViewBase {
   };
 
   init({ node }) {
-    this.node = node
+    this.node = node;
 
-    this.element.addEventListener("pointerdown", this.onPointerdown);
+    this._onPointerdown = this.onPointerdown.bind(this);
+    this.element.addEventListener("pointerdown", this._onPointerdown);
+  }
+
+  get halfPinSize() {
+    return Math.round(FlowViewPin.size / 2);
   }
 
   dispose() {
-    this.element.removeEventListener("pointerdown", this.onPointerdown);
+    this.element.removeEventListener("pointerdown", this._onPointerdown);
   }
 
   onPointerdown(event) {

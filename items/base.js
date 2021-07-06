@@ -26,6 +26,10 @@ export class FlowViewBase {
 
   dispose() {}
 
+  get bounds() {
+    return this.element.getBoundingClientRect();
+  }
+
   get id() {
     return this.element.getAttribute("id");
   }
@@ -38,7 +42,7 @@ export class FlowViewBase {
   }
 
   createSvg(tag) {
-    return document.createElementNS('http://www.w3.org/2000/svg',tag)
+    return document.createElementNS("http://www.w3.org/2000/svg", tag);
   }
 
   remove() {

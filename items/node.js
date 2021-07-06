@@ -1,9 +1,12 @@
 import { cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
+import { FlowViewInput } from "./input.js";
+import { FlowViewOutput } from "./output.js";
 import { FlowViewPin } from "./pin.js";
 
 export class FlowViewNode extends FlowViewBase {
   static cssClassName = "fv-node";
+  static borderWidth = 1;
   static minSize = FlowViewPin.size * 4;
   static style = {
     [`.${FlowViewNode.cssClassName}`]: {
@@ -13,7 +16,7 @@ export class FlowViewNode extends FlowViewBase {
       "display": "flex",
       "flex-direction": "column",
       "justify-content": "space-between",
-      "border": "1px solid transparent",
+      "border": `${FlowViewNode.borderWidth}px solid transparent`,
       "min-height": `${FlowViewNode.minSize}px`,
       "min-width": `${FlowViewNode.minSize}px`,
       "width": "fit-content",
@@ -32,6 +35,8 @@ export class FlowViewNode extends FlowViewBase {
   };
 
   init({ label, inputs = [], outputs = [], x, y }) {
+    this.borderWidth = FlowViewNode.borderWidth;
+
     this._inputs = new Map();
     this.inputListDiv = this.createDiv("pins");
     for (const pin of inputs) {
@@ -49,11 +54,12 @@ export class FlowViewNode extends FlowViewBase {
 
     this.position = { x, y };
 
-    this.element.addEventListener("pointerdown", this.onPointerdown);
+    this._onPointerdown = this.onPointerdown.bind(this);
+    this.element.addEventListener("pointerdown", this._onPointerdown);
   }
 
   dispose() {
-    this.element.removeEventListener("pointerdown", this.onPointerdown);
+    this.element.removeEventListener("pointerdown", this._onPointerdown);
   }
 
   get label() {
@@ -85,24 +91,24 @@ export class FlowViewNode extends FlowViewBase {
     element.style.left = `${x - view.origin.x}px`;
   }
 
-  deleteInput (id) {
-    const input = this._inputs.get(id)
-    input.remove()
-this._inputs.delete(id)
+  deleteInput(id) {
+    const input = this._inputs.get(id);
+    input.remove();
+    this._inputs.delete(id);
   }
 
-  deleteOutput (id) {
-    const output = this._outputs.get(id)
-    output.remove()
-this._outputs.delete(id)
+  deleteOutput(id) {
+    const output = this._outputs.get(id);
+    output.remove();
+    this._outputs.delete(id);
   }
 
-  input (id) {
-    return this._inputs.get(id)
+  input(id) {
+    return this._inputs.get(id);
   }
 
-  output (id) {
-    return this._outputs.get(id)
+  output(id) {
+    return this._outputs.get(id);
   }
 
   onViewOriginUpdate() {
@@ -112,7 +118,7 @@ this._outputs.delete(id)
   }
 
   newInput({ id }) {
-    const pin = new FlowViewPin({
+    const pin = new FlowViewInput({
       id,
       node: this,
       view: this.view,
@@ -123,7 +129,7 @@ this._outputs.delete(id)
   }
 
   newOutput({ id }) {
-    const pin = new FlowViewPin({
+    const pin = new FlowViewOutput({
       id,
       node: this,
       view: this.view,

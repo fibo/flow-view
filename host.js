@@ -1,6 +1,6 @@
 import { FlowViewElement } from "./view.js";
-import { FlowViewEdge } from "../items/edge.js";
-import { FlowViewNode } from "../items/node.js";
+import { FlowViewEdge } from "./items/edge.js";
+import { FlowViewNode } from "./items/node.js";
 
 export class FlowView {
   static defaultItems = {
@@ -41,20 +41,6 @@ export class FlowView {
     }
   }
 
-  connect(sourceNode, sourcePosition = 0) {
-    return {
-      to: (targetNode, targetPosition = 0) => {
-        const sourcePin = sourceNode.output(sourcePosition);
-        const targetPin = targetNode.input(targetPosition);
-
-        return this.newEdge({
-          from: sourcePin,
-          to:  targetPin
-        });
-      },
-    };
-  }
-
   clearGraph() {
     this.view.nodes.clear();
     this.view.edges.clear();
@@ -74,11 +60,13 @@ export class FlowView {
     }
   }
 
-  newEdge({ id, from: [ sourceNodeId, sourcePinId ], to: [targetNodeId, targetPinId] }) {
-    const sourceNode = this.view.node(sourceNodeId)
-    const targetNode = this.view.node(targetNodeId)
-    const source = sourceNode.output(sourcePinId)
-    const target = targetNode.output(targetPinId)
+  newEdge(
+    { id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
+  ) {
+    const sourceNode = this.view.node(sourceNodeId);
+    const targetNode = this.view.node(targetNodeId);
+    const source = sourceNode.output(sourcePinId);
+    const target = targetNode.input(targetPinId);
 
     const Class = this.itemClass.get("edge");
     const edge = new Class({
@@ -86,7 +74,7 @@ export class FlowView {
       view: this.view,
       cssClassName: Class.cssClassName,
       source,
-      target
+      target,
     });
     this.view.addEdge(edge);
     return edge;
@@ -111,7 +99,6 @@ export class FlowView {
       outputs,
       x,
       y,
-      view: this.view,
     });
     this.view.addNode(node);
     return node;

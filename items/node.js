@@ -1,4 +1,4 @@
-import { cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewInput } from "./input.js";
 import { FlowViewOutput } from "./output.js";
@@ -12,6 +12,7 @@ export class FlowViewNode extends FlowViewBase {
     [`.${FlowViewNode.cssClassName}`]: {
       "position": "absolute",
       "background-color": cssVar.nodeBackgroundColor,
+      "border-radius": cssVar.borderRadius,
       "box-shadow": cssVar.boxShadow,
       "display": "flex",
       "flex-direction": "column",
@@ -20,6 +21,9 @@ export class FlowViewNode extends FlowViewBase {
       "min-height": `${FlowViewNode.minSize}px`,
       "min-width": `${FlowViewNode.minSize}px`,
       "width": "fit-content",
+    },
+    [`.${cssModifierHighlighted(FlowViewNode.cssClassName)}`]: {
+      "border-color": cssVar.nodeBorderColorHighlighted,
     },
     [`.${FlowViewNode.cssClassName} .label`]: {
       "user-select": "none",
@@ -141,5 +145,7 @@ export class FlowViewNode extends FlowViewBase {
 
   onPointerdown(event) {
     event.stopPropagation();
+
+    this.view.selectNode(this);
   }
 }

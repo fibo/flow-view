@@ -1,3 +1,5 @@
+import { cssModifierHighlighted } from "../theme.js";
+
 export class FlowViewBase {
   static generateId(view) {
     const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
@@ -10,6 +12,8 @@ export class FlowViewBase {
   }
 
   constructor({ cssClassName, id, view, ...rest }) {
+    this.cssClassName = cssClassName;
+
     const _id = id || FlowViewBase.generateId(view);
 
     this.view = view;
@@ -32,6 +36,16 @@ export class FlowViewBase {
 
   get id() {
     return this.element.getAttribute("id");
+  }
+
+  set highlight(value) {
+    const cssClassName = cssModifierHighlighted(this.cssClassName);
+
+    if (value) {
+      this.element.classList.add(cssClassName);
+    } else {
+      this.element.classList.remove(cssClassName);
+    }
   }
 
   createDiv(cssClassName) {

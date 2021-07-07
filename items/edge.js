@@ -1,4 +1,4 @@
-import { cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 
 export class FlowViewEdge extends FlowViewBase {
@@ -14,7 +14,11 @@ export class FlowViewEdge extends FlowViewBase {
       "stroke": cssVar.connectionColor,
       "stroke-width": FlowViewEdge.width,
     },
-    [`.${FlowViewEdge.cssClassName} line:hover`]: {
+    [
+      `.${FlowViewEdge.cssClassName} line:hover, .${
+        cssModifierHighlighted(FlowViewEdge.cssClassName)
+      } line`
+    ]: {
       "stroke": cssVar.connectionColorHighlighted,
     },
   };
@@ -65,8 +69,10 @@ export class FlowViewEdge extends FlowViewBase {
     style.left = `${Math.round(x)}px`;
   }
 
-  onPointerdownLine() {
-    this.view.deleteEdge(this.id);
+  onPointerdownLine(event) {
+    event.stopPropagation();
+
+    this.view.selectEdge(this);
   }
 
   onViewOriginUpdate() {

@@ -13,7 +13,7 @@ export class FlowViewElement extends HTMLElement {
       "display": "none",
     },
     ":host": {
-      ...cssTheme,
+      ...cssTheme("light"),
       "position": "relative",
       "display": "block",
       "overflow": "hidden",
@@ -59,9 +59,14 @@ export class FlowViewElement extends HTMLElement {
 
     const template = document.createElement("template");
 
-    template.innerHTML = `<style>${
-      FlowViewElement.generateStylesheet(FlowViewElement.style)
-    }</style>`;
+    template.innerHTML = [
+      "<style>",
+      FlowViewElement.generateStylesheet(FlowViewElement.style),
+      "@media (prefers-color-scheme: dark) {",
+      FlowViewElement.generateStylesheet({ ":host": cssTheme("dark") }),
+      "}",
+      "</style>",
+    ].join("\n");
 
     this.attachShadow({ mode: "open" }).appendChild(
       template.content.cloneNode(true),
@@ -71,6 +76,9 @@ export class FlowViewElement extends HTMLElement {
 
     this._nodes = new Map();
     this._edges = new Map();
+
+    this.selectedNodes = new Set();
+    this.selectedEdges = new Set();
   }
 
   connectedCallback() {
@@ -137,6 +145,26 @@ export class FlowViewElement extends HTMLElement {
 
   set height(value) {
     this.style.height = `${value}px`;
+  }
+
+  selectEdge(edge) {
+    edge.highlight = true;
+    this.selectedEdges.add(edge);
+  }
+
+  selectNode(node) {
+    node.highlight = true;
+    this.selectedNodes.add(node);
+  }
+
+  deselectEdge(edge) {
+    edge.highlight = false;
+    this.selectedEdges.delete(edge);
+  }
+
+  deselectNode(node) {
+    node.highlight = false;
+    this.selectedNodes.delete(node);
   }
 
   addEdge(edge) {
@@ -216,7 +244,7 @@ export class FlowViewElement extends HTMLElement {
         return;
       }
       case event.code === "Backspace": {
-        this.deleteSelection();
+        this.deleteSelectedItems();
         break;
       }
       case "KeyU": {
@@ -276,8 +304,27 @@ export class FlowViewElement extends HTMLElement {
     }
   }
 
-  deleteSelection() {
-    // TODO
+  clearSelection() {
+    for (const edge of this.selectedEdges) {
+      this.deselectEdge(edge);
+    }
+
+    for (const node of this.selectedNodes) {
+      this.deselectNode(node.id);
+    }
+  }
+
+  deleteSelectItems() {
+    // Delete edges first...
+    for (const edge of this.selectedEdges) {
+      this.deleteEdge(edge.id);
+    }
+    this.selectedEdges.clear();
+    // ...then delete nodes.
+    for (const node of this.selectedNodes) {
+      this.deleteNode(node.id);
+    }
+    this.selectedNodes.clear();
   }
 
   undo() {

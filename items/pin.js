@@ -8,6 +8,7 @@ export class FlowViewPin extends FlowViewBase {
   static style = {
     [`.${FlowViewPin.cssClassName}`]: {
       "background-color": cssVar.connectionColor,
+      "border-radius": cssVar.borderRadius,
       "display": "block",
       "width": `${FlowViewPin.size}px`,
       "height": `${FlowViewPin.size}px`,

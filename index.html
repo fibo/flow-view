@@ -40,26 +40,35 @@
     flowView.loadGraph({
       nodes: [
         {
-          id: 'node1',
-          label: 'Yay',
-          x: 100, y: 100,
-          inputs: [{}, {}],
-          outputs: [
-            { id: 'output1' }
-          ]
+          id: 'dad',
+          label: 'Homer',
+          x: 60, y: 70,
+          outputs: [{ id: 'sons' }]
         },
         {
-          id: 'node2',
-          x: 250, y: 400,
-          inputs: [
-            { id: 'input1' }
-          ]
+          id: 'mom',
+          label: 'Marge',
+          x: 160, y: 70,
+          outputs: [{ id: 'sons' }]
+        },
+        {
+          id: 'son',
+          label: 'Bart',
+          x: 60, y: 240,
+          inputs: [{ id: 'father' }, { id: 'mother' }]
+        },
+        {
+          id: 'daughter',
+          label: 'Lisa',
+          x: 220, y: 220,
+          inputs: [{ id: 'father' }, { id: 'mother' }]
         }
       ],
       edges: [
-        {
-          id: 'edge1', from: ['node1', 'output1'], to: ['node2', 'input1']
-        }
+        { from: ['dad', 'sons'], to: ['son', 'father'] },
+        { from: ['dad', 'sons'], to: ['daughter', 'father'] },
+        { from: ['mom', 'sons'], to: ['son', 'mother'] },
+        { from: ['mom', 'sons'], to: ['daughter', 'mother'] }
       ]
     });
   </script>

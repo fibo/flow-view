@@ -20,6 +20,7 @@ export class FlowViewElement extends HTMLElement {
       "border": 0,
       "margin": 0,
       "background-color": cssVar.backgroundColor,
+      "border-radius": cssVar.borderRadius,
       "box-shadow": cssVar.boxShadow,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
@@ -175,24 +176,21 @@ export class FlowViewElement extends HTMLElement {
     this._nodes.set(node.id, node);
   }
 
-  deleteEdge(id) {
-    const edge = this._edges.get(id);
-    // Dispose.
+  deleteEdge(edge) {
+    this._edges.delete(edge.id);
     edge.remove();
-    this._edges.delete(id);
   }
 
-  deleteNode(id) {
-    const node = this._nodes.get(id);
+  deleteNode(node) {
     // Remove edges connected to node.
     for (const edge of this.edges) {
-      if (edge.sourceNodeId === id || edge.targetNodeId === id) {
-        this.deleteEdge(edge.id);
+      if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
+        this.deleteEdge(edge);
       }
     }
     // Dispose.
+    this._nodes.delete(node.id);
     node.remove();
-    this._nodes.delete(id);
   }
 
   edge(id) {
@@ -314,15 +312,15 @@ export class FlowViewElement extends HTMLElement {
     }
   }
 
-  deleteSelectItems() {
+  deleteSelectedItems() {
     // Delete edges first...
     for (const edge of this.selectedEdges) {
-      this.deleteEdge(edge.id);
+      this.deleteEdge(edge);
     }
     this.selectedEdges.clear();
     // ...then delete nodes.
     for (const node of this.selectedNodes) {
-      this.deleteNode(node.id);
+      this.deleteNode(node);
     }
     this.selectedNodes.clear();
   }

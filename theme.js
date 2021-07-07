@@ -40,12 +40,13 @@ export const cssDefault = {
     "text-color": "#111",
   },
   dark: {
-    "background-color": "#121212",
-    "connection-color": "#ccc",
-    "box-shadow": "0px 0px 7px 1px rgba(0, 0, 0, 0.1)",
-    [cssModifierHighlighted("connection-color")]: "#717171",
-    "node-background-color": "#fefefe",
-    "text-color": "#111",
+    "background-color": "#555",
+    "connection-color": "#aaa",
+    "box-shadow": "0px 0px 7px 1px rgba(117, 117, 117, 0.7)",
+    [cssModifierHighlighted("connection-color")]: "#ddd",
+    "node-background-color": "#212121",
+    [cssModifierHighlighted("node-border-color")]: "#efefef",
+    "text-color": "#bbb",
   },
 };
 

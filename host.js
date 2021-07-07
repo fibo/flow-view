@@ -29,14 +29,14 @@ export class FlowView {
     if (element instanceof FlowViewElement) {
       this.view = element;
     } else {
-      this.view = document.createElement(FlowViewElement.customElementName);
+      const view = this.view = document.createElement(
+        FlowViewElement.customElementName,
+      );
 
-      if (!element.parentNode) {
-        if (container instanceof HTMLElement) {
-          container.appendChild(element);
-        } else {
-          document.body.appendChild(element);
-        }
+      if (container instanceof HTMLElement) {
+        container.appendChild(view);
+      } else {
+        document.body.appendChild(view);
       }
     }
   }

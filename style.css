@@ -15,6 +15,13 @@ body {
   flex-direction: column;
 }
 
+ @media (prefers-color-scheme: dark) {
+   body {
+     background: #333;
+     color: #eee;
+   }
+ }
+
 h1 {
   font-size: 3em;
 }

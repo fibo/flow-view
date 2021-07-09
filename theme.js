@@ -1,5 +1,9 @@
 export const cssModifierHighlighted = (cssName) => (`${cssName}--highlighted`);
 
+export const cssTransition = (prop) => ({
+  transition: `${prop} 117ms ease-in-out`,
+});
+
 const fvCssDefaultVarName = (name) => (`--fv-default-${name}`);
 const fvCssVar = (
   name,

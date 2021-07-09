@@ -1,13 +1,15 @@
-import { cssModifierHighlighted, cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewInput } from "./input.js";
 import { FlowViewOutput } from "./output.js";
+import { FlowViewEdge } from "./edge.js";
 import { FlowViewPin } from "./pin.js";
 
 export class FlowViewNode extends FlowViewBase {
   static cssClassName = "fv-node";
   static borderWidth = 1;
   static minSize = FlowViewPin.size * 4;
+  static zIndex = FlowViewEdge.zIndex + 1;
   static style = {
     [`.${FlowViewNode.cssClassName}`]: {
       "position": "absolute",
@@ -21,6 +23,8 @@ export class FlowViewNode extends FlowViewBase {
       "min-height": `${FlowViewNode.minSize}px`,
       "min-width": `${FlowViewNode.minSize}px`,
       "width": "fit-content",
+      "z-index": FlowViewNode.zIndex,
+      ...cssTransition("border-color"),
     },
     [`.${cssModifierHighlighted(FlowViewNode.cssClassName)}`]: {
       "border-color": cssVar.nodeBorderColorHighlighted,
@@ -39,6 +43,8 @@ export class FlowViewNode extends FlowViewBase {
   };
 
   init({ label, inputs = [], outputs = [], x, y }) {
+    const { element } = this;
+
     this.borderWidth = FlowViewNode.borderWidth;
 
     this._inputs = new Map();
@@ -58,12 +64,16 @@ export class FlowViewNode extends FlowViewBase {
 
     this.position = { x, y };
 
+    this._onDblclick = this.onDblclick.bind(this);
+    element.addEventListener("dblclick", this._onDblclick);
     this._onPointerdown = this.onPointerdown.bind(this);
-    this.element.addEventListener("pointerdown", this._onPointerdown);
+    element.addEventListener("pointerdown", this._onPointerdown);
   }
 
   dispose() {
-    this.element.removeEventListener("pointerdown", this._onPointerdown);
+    const { element } = this;
+    element.removeEventListener("dblclick", this._onDblclick);
+    element.removeEventListener("pointerdown", this._onPointerdown);
   }
 
   get label() {
@@ -143,9 +153,13 @@ export class FlowViewNode extends FlowViewBase {
     this.outputListDiv.appendChild(pin.element);
   }
 
+  onDblclick(event) {
+    console.log("xxxx");
+    event.stopPropagation();
+  }
+
   onPointerdown(event) {
     event.stopPropagation();
-
     this.view.selectNode(this);
   }
 }

@@ -1,4 +1,4 @@
-import { cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 
 export class FlowViewPin extends FlowViewBase {
@@ -8,12 +8,12 @@ export class FlowViewPin extends FlowViewBase {
   static style = {
     [`.${FlowViewPin.cssClassName}`]: {
       "background-color": cssVar.connectionColor,
-      "border-radius": cssVar.borderRadius,
       "display": "block",
       "width": `${FlowViewPin.size}px`,
       "height": `${FlowViewPin.size}px`,
+      ...cssTransition("background-color"),
     },
-    [`.${FlowViewPin.cssClassName}:hover`]: {
+    [`.${cssModifierHighlighted(FlowViewPin.cssClassName)}`]: {
       "background-color": cssVar.connectionColorHighlighted,
     },
   };
@@ -23,6 +23,10 @@ export class FlowViewPin extends FlowViewBase {
 
     this._onPointerdown = this.onPointerdown.bind(this);
     this.element.addEventListener("pointerdown", this._onPointerdown);
+    this._onPointerenter = this.onPointerenter.bind(this);
+    this.element.addEventListener("pointerenter", this._onPointerenter);
+    this._onPointerleave = this.onPointerleave.bind(this);
+    this.element.addEventListener("pointerleave", this._onPointerleave);
   }
 
   get halfPinSize() {
@@ -31,9 +35,21 @@ export class FlowViewPin extends FlowViewBase {
 
   dispose() {
     this.element.removeEventListener("pointerdown", this._onPointerdown);
+    this.element.removeEventListener("pointerenter", this._onPointerenter);
+    this.element.removeEventListener("pointerleave", this._onPointerleave);
   }
 
   onPointerdown(event) {
     event.stopPropagation();
+  }
+
+  onPointerenter(event) {
+    event.stopPropagation();
+    this.highlight = true;
+  }
+
+  onPointerleave(event) {
+    event.stopPropagation();
+    this.highlight = false;
   }
 }

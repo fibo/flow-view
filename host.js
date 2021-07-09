@@ -50,19 +50,21 @@ export class FlowView {
     if (!Array.isArray(nodes) || !Array.isArray(edges)) {
       throw new TypeError("Invalid graph");
     }
-
+    // Create nodes first...
     for (const node of nodes) {
       this.newNode(node);
     }
-
+    // ...then create edges.
     for (const edge of edges) {
       this.newEdge(edge);
     }
   }
 
-  newEdge(
-    { id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
-  ) {
+  newEdge({
+    id,
+    from: [sourceNodeId, sourcePinId],
+    to: [targetNodeId, targetPinId],
+  }) {
     const sourceNode = this.view.node(sourceNodeId);
     const targetNode = this.view.node(targetNodeId);
     const source = sourceNode.output(sourcePinId);

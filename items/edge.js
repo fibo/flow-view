@@ -1,24 +1,25 @@
-import { cssModifierHighlighted, cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 
 export class FlowViewEdge extends FlowViewBase {
   static cssClassName = "fv-edge";
-  static width = 2;
+  static lineWidth = 2;
+  static padding = 1;
+  static zIndex = 0;
   static style = {
     [`.${FlowViewEdge.cssClassName}`]: {
       "display": "inline-block",
       "position": "absolute",
       "border": 0,
+      "pointer-events": "none",
     },
     [`.${FlowViewEdge.cssClassName} line`]: {
+      "pointer-events": "all",
       "stroke": cssVar.connectionColor,
-      "stroke-width": FlowViewEdge.width,
+      "stroke-width": FlowViewEdge.lineWidth,
+      ...cssTransition("stroke"),
     },
-    [
-      `.${FlowViewEdge.cssClassName} line:hover, .${
-        cssModifierHighlighted(FlowViewEdge.cssClassName)
-      } line`
-    ]: {
+    [`.${cssModifierHighlighted(FlowViewEdge.cssClassName)} line`]: {
       "stroke": cssVar.connectionColorHighlighted,
     },
   };
@@ -36,11 +37,18 @@ export class FlowViewEdge extends FlowViewBase {
     this.updateGeometry();
 
     this._onPointerdownLine = this.onPointerdownLine.bind(this);
-    this.line.addEventListener("pointerdown", this._onPointerdownLine);
+    line.addEventListener("pointerdown", this._onPointerdownLine);
+    this._onPointerenterLine = this.onPointerenterLine.bind(this);
+    line.addEventListener("pointerenter", this._onPointerenterLine);
+    this._onPointerleaveLine = this.onPointerleaveLine.bind(this);
+    line.addEventListener("pointerleave", this._onPointerleaveLine);
   }
 
   dispose() {
-    this.line.removeEventListener("pointerdown", this._onPointerdownLine);
+    const { line } = this;
+    line.removeEventListener("pointerdown", this._onPointerdownLine);
+    line.removeEventListener("pointerenter", this._onPointerenterLine);
+    line.removeEventListener("pointerleave", this._onPointerleaveLine);
   }
 
   set start({ x, y }) {
@@ -54,9 +62,12 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   set dimension([_width, _height]) {
+    const { padding } = FlowViewEdge;
     const { element: { style }, svg } = this;
-    const width = Math.round(_width);
-    const height = Math.round(_height);
+
+    const width = _width + padding * 2;
+    const height = _height + padding * 2;
+
     style.width = `${width}px`;
     style.height = `${height}px`;
     svg.setAttribute("width", width);
@@ -64,15 +75,33 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   set position({ x, y }) {
+    const { padding } = FlowViewEdge;
     const { element: { style } } = this;
-    style.top = `${Math.round(y)}px`;
-    style.left = `${Math.round(x)}px`;
+    style.top = `${Math.round(y) - padding}px`;
+    style.left = `${Math.round(x) - padding}px`;
   }
 
   onPointerdownLine(event) {
     event.stopPropagation();
 
+    this.view.clearSelection();
     this.view.selectEdge(this);
+  }
+
+  onPointerenterLine() {
+    if (!this.isSelected) {
+      this.highlight = true;
+      this.source.highlight = true;
+      this.target.highlight = true;
+    }
+  }
+
+  onPointerleaveLine() {
+    if (!this.isSelected) {
+      this.highlight = false;
+      this.source.highlight = false;
+      this.target.highlight = false;
+    }
   }
 
   onViewOriginUpdate() {
@@ -80,6 +109,7 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   updateGeometry() {
+    const { lineWidth, padding } = FlowViewEdge;
     const {
       source: { center: { x: sourceX, y: sourceY } },
       target: { center: { x: targetX, y: targetY } },
@@ -94,18 +124,18 @@ export class FlowViewEdge extends FlowViewBase {
       y: (invertedY ? targetY : sourceY) - originY,
     };
 
-    const width = Math.abs(targetX - sourceX);
-    const height = Math.abs(targetY - sourceY);
+    const width = Math.max(Math.abs(Math.round(targetX - sourceX)), lineWidth);
+    const height = Math.max(Math.abs(Math.round(targetY - sourceY)), lineWidth);
     this.dimension = [width, height];
 
     this.start = {
-      x: (invertedX ? width : 0),
-      y: (invertedY ? height : 0),
+      x: (invertedX ? width : 0) + padding,
+      y: (invertedY ? height : 0) + padding,
     };
 
     this.end = {
-      x: (invertedX ? 0 : width),
-      y: (invertedY ? 0 : height),
+      x: (invertedX ? 0 : width) + padding,
+      y: (invertedY ? 0 : height) + padding,
     };
   }
 }

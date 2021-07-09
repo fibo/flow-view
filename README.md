@@ -2,6 +2,8 @@
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
+[![flow view Simpsons example](screenshot.png)](http://g14n.info/flow-view/)
+
 ## Installation
 
 ### Using npm
@@ -21,17 +23,6 @@ Try this in your HTML page
   import { FlowView } from 'https://unpkg.com/flow-view'
 
   const flowView = new FlowView()
-
-  const node1 = flowView.newNode({
-    label: 'Yay', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
-  });
-  const node2 = flowView.newNode({
-    label: 'node2', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
-  });
-  flowView.newEdge({
-    from: [node1.id, 'output1'],
-    to: [node2.id, 'input1']
-  })
 </script>
 ```
 

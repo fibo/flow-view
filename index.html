@@ -43,13 +43,13 @@
           id: 'dad',
           label: 'Homer',
           x: 60, y: 70,
-          outputs: [{ id: 'sons' }]
+          outputs: [{ id: 'children' }]
         },
         {
           id: 'mom',
           label: 'Marge',
           x: 160, y: 70,
-          outputs: [{ id: 'sons' }]
+          outputs: [{ id: 'children' }]
         },
         {
           id: 'son',
@@ -65,10 +65,10 @@
         }
       ],
       edges: [
-        { from: ['dad', 'sons'], to: ['son', 'father'] },
-        { from: ['dad', 'sons'], to: ['daughter', 'father'] },
-        { from: ['mom', 'sons'], to: ['son', 'mother'] },
-        { from: ['mom', 'sons'], to: ['daughter', 'mother'] }
+        { from: ['dad', 'children'], to: ['son', 'father'] },
+        { from: ['dad', 'children'], to: ['daughter', 'father'] },
+        { from: ['mom', 'children'], to: ['son', 'mother'] },
+        { from: ['mom', 'children'], to: ['daughter', 'mother'] }
       ]
     });
   </script>

@@ -3,12 +3,20 @@ import { FlowViewPin } from "./pin.js";
 export class FlowViewOutput extends FlowViewPin {
   get center() {
     const {
+      bounds: { x: boundsX },
       halfPinSize,
-      node: { borderWidth, bounds: { height }, position: { x, y } },
+      node: {
+        borderWidth,
+        bounds: { height: nodeHeight, x: nodeBoundsX },
+        position: { x, y },
+      },
     } = this;
+
+    const offsetX = boundsX - nodeBoundsX;
+
     return {
-      x: x + halfPinSize + borderWidth,
-      y: y + height - halfPinSize - borderWidth,
+      x: x + halfPinSize + borderWidth + offsetX,
+      y: y + nodeHeight - halfPinSize - borderWidth,
     };
   }
 }

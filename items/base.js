@@ -12,16 +12,16 @@ export class FlowViewBase {
   }
 
   constructor({ cssClassName, id, view, ...rest }) {
-    this.cssClassName = cssClassName;
-
     const _id = id || FlowViewBase.generateId(view);
-
-    this.view = view;
 
     const element = this.element = document.createElement("div");
     element.setAttribute("id", _id);
     element.classList.add(cssClassName);
     view.shadowRoot.appendChild(element);
+    this.view = view;
+
+    this._selected = false;
+    this.cssClassName = cssClassName;
 
     this.init(rest);
   }
@@ -45,6 +45,18 @@ export class FlowViewBase {
       this.element.classList.add(cssClassName);
     } else {
       this.element.classList.remove(cssClassName);
+    }
+  }
+
+  get isSelected() {
+    return this._selected;
+  }
+
+  set selected(value) {
+    if (value) {
+      this._selected = true;
+    } else {
+      this._selected = false;
     }
   }
 

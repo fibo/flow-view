@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="data:;base64,=">
 
-  <title>flow-view programmatic</title>
+  <title>flow-view example</title>
   <link rel="stylesheet" href="../../style.css">
 </head>
 <body>
@@ -12,14 +12,16 @@
   <main></main>
 
   <script type="module">
-    import { FlowView } from '../../main.js';
+    // import { FlowView } from '../../main.js';
+    import { FlowView } from 'https://unpkg.com/flow-view';
+
     const flowView = new FlowView({ container: document.querySelector('main') });
 
     const node1 = flowView.newNode({
-      label: 'Yay', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+      label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
     });
     const node2 = flowView.newNode({
-      label: 'node2', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
+      label: 'World', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
     });
     flowView.newEdge({
       from: [node1.id, 'output1'],

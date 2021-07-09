@@ -1,8 +1,10 @@
 import { cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
+import { FlowViewNode } from "./node.js";
 
 export class FlowViewSelector extends FlowViewBase {
   static cssClassName = "fv-selector";
+  static zIndex = FlowViewNode.zIndex + 1;
   static style = {
     [`.${FlowViewSelector.cssClassName}`]: {
       "position": "absolute",
@@ -10,23 +12,37 @@ export class FlowViewSelector extends FlowViewBase {
     },
     [`.${FlowViewSelector.cssClassName} input`]: {
       "border": 0,
+      "border-radius": cssVar.borderRadius,
+      "font-family": cssVar.fontFamily,
+      "font-size": cssVar.fontSize,
+      "padding": "0.5em",
+      "z-index": FlowViewSelector.zIndex,
     },
   };
 
   init({ position }) {
-    this.element.setAttribute("tabindex", 0);
+    const { element } = this;
+
+    element.setAttribute("tabindex", 0);
 
     const input = this.input = document.createElement("input");
-    this.element.appendChild(input);
+    element.appendChild(input);
 
     this.position = position;
 
+    this._onDblclick = this.onDblclick.bind(this);
+    element.addEventListener("dblclick", this._onDblclick);
     this._onKeydown = this.onKeydown.bind(this);
-    this.element.addEventListener("keydown", this._onKeydown);
+    element.addEventListener("keydown", this._onKeydown);
+    this._onPointerdown = this.onPointerdown.bind(this);
+    element.addEventListener("pointerdown", this._onPointerdown);
   }
 
   dispose() {
-    this.element.removeEventListener("keydown", this._onKeydown);
+    const { element } = this;
+    element.removeEventListener("dblclick", this._onDblclick);
+    element.removeEventListener("keydown", this._onKeydown);
+    element.removeEventListener("pointerdown", this._onPointerdown);
   }
 
   focus() {
@@ -39,10 +55,22 @@ export class FlowViewSelector extends FlowViewBase {
     element.style.left = `${x - view.origin.x}px`;
   }
 
+  onDblclick(event) {
+    event.stopPropagation();
+  }
+
   onKeydown(event) {
     event.stopPropagation();
 
     switch (true) {
+      case event.code === "Enter": {
+        console.log("create node", this.input.value, this.position);
+        break;
+      }
+      case event.code === "Escape": {
+        this.view.removeSelector();
+        break;
+      }
       case event.code === "Tab": {
         event.preventDefault();
         break;
@@ -51,5 +79,9 @@ export class FlowViewSelector extends FlowViewBase {
         // console.log(event.code);
       }
     }
+  }
+
+  onPointerdown(event) {
+    event.stopPropagation();
   }
 }

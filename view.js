@@ -77,9 +77,6 @@ export class FlowViewElement extends HTMLElement {
 
     this._nodes = new Map();
     this._edges = new Map();
-
-    this.selectedNodes = new Set();
-    this.selectedEdges = new Set();
   }
 
   connectedCallback() {
@@ -132,6 +129,14 @@ export class FlowViewElement extends HTMLElement {
     }
   }
 
+  get selectedEdges() {
+    return this.edges.filter((edge) => edge.isSelected);
+  }
+
+  get selectedNodes() {
+    return this.nodes.filter((node) => node.isSelected);
+  }
+
   get edges() {
     return Array.from(this._edges.values());
   }
@@ -150,22 +155,49 @@ export class FlowViewElement extends HTMLElement {
 
   selectEdge(edge) {
     edge.highlight = true;
-    this.selectedEdges.add(edge);
+    edge.selected = true;
+    edge.source.highlight = true;
+    edge.target.highlight = true;
   }
 
   selectNode(node) {
     node.highlight = true;
-    this.selectedNodes.add(node);
+    node.selected = true;
+    // Highlight inputs and outputs
+    for (const input of node.inputs) {
+      input.highlight = true;
+    }
+    for (const output of node.outputs) {
+      output.highlight = true;
+    }
+    // Select edges which source and target are in selected nodes.
+    for (const edge of this.edges) {
+      if (edge.source.node.isSelected && edge.target.node.isSelected) {
+        this.selectEdge(edge);
+      }
+    }
   }
 
   deselectEdge(edge) {
     edge.highlight = false;
-    this.selectedEdges.delete(edge);
+    edge.selected = false;
+    if (!edge.source.node.isSelected) {
+      edge.source.highlight = false;
+    }
+    if (!edge.target.node.isSelected) {
+      edge.target.highlight = false;
+    }
   }
 
   deselectNode(node) {
     node.highlight = false;
-    this.selectedNodes.delete(node);
+    node.selected = false;
+    for (const input of node.inputs) {
+      input.highlight = false;
+    }
+    for (const output of node.outputs) {
+      output.highlight = false;
+    }
   }
 
   addEdge(edge) {
@@ -178,6 +210,8 @@ export class FlowViewElement extends HTMLElement {
 
   deleteEdge(edge) {
     this._edges.delete(edge.id);
+    edge.source.highlight = false;
+    edge.target.highlight = false;
     edge.remove();
   }
 
@@ -219,17 +253,21 @@ export class FlowViewElement extends HTMLElement {
   }
 
   onDblclick(event) {
-    const pointerPosition = FlowViewElement.pointerCoordinates(event);
+    const { origin } = this;
 
-    if (this.selector) {
-      this.selector.remove();
-    }
+    this.clearSelection();
+    this.removeSelector();
+
+    const pointerPosition = FlowViewElement.pointerCoordinates(event);
 
     const selector = this.selector = new FlowViewSelector({
       id: "selector",
       view: this,
       cssClassName: FlowViewSelector.cssClassName,
-      position: pointerPosition,
+      position: {
+        x: pointerPosition.x + origin.x,
+        y: pointerPosition.y + origin.y,
+      },
     });
     selector.focus();
   }
@@ -238,11 +276,15 @@ export class FlowViewElement extends HTMLElement {
     event.stopPropagation();
 
     switch (true) {
-      case typeof this.selector !== "undefined": {
+      case this.selector instanceof FlowViewSelector: {
         return;
       }
       case event.code === "Backspace": {
         this.deleteSelectedItems();
+        break;
+      }
+      case event.code === "Escape": {
+        this.clearSelection();
         break;
       }
       case "KeyU": {
@@ -254,12 +296,15 @@ export class FlowViewElement extends HTMLElement {
         break;
       }
       default: {
-        // console.log(event.code);
+        console.log(event.code);
       }
     }
   }
 
   onPointerdown(event) {
+    event.stopPropagation();
+    this.removeSelector();
+    this.clearSelection();
     this.startTranslate(event);
   }
 
@@ -303,12 +348,13 @@ export class FlowViewElement extends HTMLElement {
   }
 
   clearSelection() {
+    // First deselect nodes...
+    for (const node of this.selectedNodes) {
+      this.deselectNode(node);
+    }
+    // ...then deselect edges
     for (const edge of this.selectedEdges) {
       this.deselectEdge(edge);
-    }
-
-    for (const node of this.selectedNodes) {
-      this.deselectNode(node.id);
     }
   }
 
@@ -317,12 +363,17 @@ export class FlowViewElement extends HTMLElement {
     for (const edge of this.selectedEdges) {
       this.deleteEdge(edge);
     }
-    this.selectedEdges.clear();
     // ...then delete nodes.
     for (const node of this.selectedNodes) {
       this.deleteNode(node);
     }
-    this.selectedNodes.clear();
+  }
+
+  removeSelector() {
+    const { selector } = this;
+    if (selector instanceof FlowViewSelector) {
+      selector.remove();
+    }
   }
 
   undo() {

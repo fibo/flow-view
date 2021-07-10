@@ -1,6 +1,6 @@
 {
   "name": "flow-view",
-  "description": "is a visual editor for Dataflow programming",
+  "description": "is a visual editor for dataflow programming",
   "version": "5.0.0",
   "engines": {
     "node": ">=14",

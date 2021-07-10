@@ -125,12 +125,6 @@ export class FlowViewNode extends FlowViewBase {
     return this._outputs.get(id);
   }
 
-  onViewPointermove() {
-    // Just trigger position setter.
-    const { x, y } = this.position;
-    this.position = { x, y };
-  }
-
   newInput({ id }) {
     const pin = new FlowViewInput({
       id,
@@ -159,6 +153,11 @@ export class FlowViewNode extends FlowViewBase {
 
   onPointerdown(event) {
     event.isBubblingFromNode = true;
+    const isMultiSelection = event.shiftKey ||
+      (this.view.hasSelectedNodes && this.isSelected);
+    if (!isMultiSelection) {
+      this.view.clearSelection();
+    }
     this.view.selectNode(this);
   }
 }

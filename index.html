@@ -10,9 +10,7 @@
 
   <style>
     .container {
-      display: inline-block;
       max-width: 800px;
-      width: 90%;
       height: 500px;
     }
   </style>
@@ -23,7 +21,17 @@
   <main>
     <h1>flow-view</h1>
 
-    <blockquote>is a visual editor for Dataflow programming</blockquote>
+    <blockquote>is a visual editor for <em>dataflow programming</em></blockquote>
+
+      <ul>
+        <li>Drag on canvas to translate all items.</li>
+        <li>Click on item to select it.</li>
+        <li>Click while pressing <kbd>SHIFT</kbd> to enable <b>multi</b> selection.</li>
+        <li>Drag selected items to translate them.</li>
+        <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
+        <li>Double click on canvas to open the <b>selector</b>.</li>
+        <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
+      </ul>
 
     <div class="container">
       <flow-view id="element"></flow-view>
@@ -72,5 +80,9 @@
       ]
     });
   </script>
+
+  <footer>
+    GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a>
+  </footer>
 </body>
 </html>

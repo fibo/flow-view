@@ -84,7 +84,10 @@ export class FlowViewEdge extends FlowViewBase {
   onPointerdownLine(event) {
     event.stopPropagation();
 
-    this.view.clearSelection();
+    const isMultiSelection = event.shiftKey;
+    if (!isMultiSelection) {
+      this.view.clearSelection();
+    }
     this.view.selectEdge(this);
   }
 
@@ -106,10 +109,6 @@ export class FlowViewEdge extends FlowViewBase {
         this.target.highlight = false;
       }
     }
-  }
-
-  onViewPointermove() {
-    this.updateGeometry();
   }
 
   updateGeometry() {

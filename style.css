@@ -15,12 +15,16 @@ body {
   flex-direction: column;
 }
 
- @media (prefers-color-scheme: dark) {
-   body {
-     background: #333;
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #333;
+    color: #eee;
+  }
+
+   a:visited, a:active, a:link, a:hover, a:focus {
      color: #eee;
    }
- }
+}
 
 main {
   padding: 1em;
@@ -60,5 +64,5 @@ footer {
 }
 
 a:visited, a:active, a:link, a:hover, a:focus {
-  color: white;
+  color: #1c1c1c;
 }

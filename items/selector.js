@@ -12,6 +12,8 @@ export class FlowViewSelector extends FlowViewBase {
     },
     [`.${FlowViewSelector.cssClassName} input`]: {
       "border": 0,
+      "margin": 0,
+      "outline": 0,
       "border-radius": cssVar.borderRadius,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,

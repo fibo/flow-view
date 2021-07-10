@@ -16,9 +16,7 @@ export class FlowView {
     }
   }
 
-  constructor(
-    { container, element } = {},
-  ) {
+  constructor({ container, element } = {}) {
     FlowView.defineCustomElement();
 
     const itemClass = this.itemClass = new Map();

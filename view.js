@@ -19,6 +19,7 @@ export class FlowViewElement extends HTMLElement {
       "overflow": "hidden",
       "border": 0,
       "margin": 0,
+      "outline": 0,
       "background-color": cssVar.backgroundColor,
       "border-radius": cssVar.borderRadius,
       "box-shadow": cssVar.boxShadow,
@@ -339,11 +340,23 @@ export class FlowViewElement extends HTMLElement {
 
   onRootResize(entries) {
     for (const entry of entries) {
-      const contentBoxSize = Array.isArray(entry.contentBoxSize)
-        ? entry.contentBoxSize[0]
-        : entry.contentBoxSize;
-      this.width = contentBoxSize.inlineSize;
-      this.height = contentBoxSize.blockSize - 10;
+      // Only listen to parentNode
+      if (this.parentNode === entry.target) {
+        // Try with contentBoxSize
+        const contentBoxSize = Array.isArray(entry.contentBoxSize)
+          ? entry.contentBoxSize[0]
+          : entry.contentBoxSize;
+        if (contentBoxSize) {
+          this.width = contentBoxSize.inlineSize;
+          this.height = contentBoxSize.blockSize - 10;
+        } else {
+          // Fallback to contentRect
+          if (entry.contentRect) {
+            this.width = entry.contentRect.width;
+            this.height = entry.contentRect.height;
+          }
+        }
+      }
     }
   }
 

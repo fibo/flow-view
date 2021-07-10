@@ -7,6 +7,10 @@ import { FlowViewSelector } from "./items/selector.js";
 export class FlowViewElement extends HTMLElement {
   static customElementName = "flow-view";
   static minHeight = 200;
+  static defaultItems = {
+    edge: FlowViewEdge,
+    node: FlowViewNode,
+  };
 
   static style = {
     ":host([hidden])": {
@@ -78,6 +82,11 @@ export class FlowViewElement extends HTMLElement {
 
     this._nodes = new Map();
     this._edges = new Map();
+
+    const itemClass = this.itemClass = new Map();
+    Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
+      itemClass.set(key, Class);
+    });
   }
 
   connectedCallback() {
@@ -152,6 +161,43 @@ export class FlowViewElement extends HTMLElement {
 
   set height(value) {
     this.style.height = `${value}px`;
+  }
+
+  newEdge({id, source, target}) {
+    const Class = this.itemClass.get("edge");
+    const edge = new Class({
+      id,
+      view: this,
+      cssClassName: Class.cssClassName,
+      source,
+      target,
+    });
+    this.addEdge(edge);
+    return edge;
+  }
+
+  newNode ({
+    x = 0,
+    y = 0,
+    label = "node",
+    id,
+    nodeType = "node",
+    inputs = [],
+    outputs = [],
+  }) {
+    const Class = this.itemClass.get(nodeType);
+    const node = new Class({
+      id,
+      view: this,
+      cssClassName: Class.cssClassName,
+      label,
+      inputs,
+      outputs,
+      x,
+      y,
+    });
+    this.addNode(node);
+    return node;
   }
 
   selectEdge(edge) {

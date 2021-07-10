@@ -99,8 +99,12 @@ export class FlowViewEdge extends FlowViewBase {
   onPointerleaveLine() {
     if (!this.isSelected) {
       this.highlight = false;
-      this.source.highlight = false;
-      this.target.highlight = false;
+      if (!this.source.node.isSelected) {
+        this.source.highlight = false;
+      }
+      if (!this.target.node.isSelected) {
+        this.target.highlight = false;
+      }
     }
   }
 

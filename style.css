@@ -30,3 +30,10 @@ main {
   padding: 1em;
   flex-grow: 1;
 }
+
+blockquote {
+  font-size: 1.2em;
+}
+blockquote::before {
+  content: open-quote;
+}

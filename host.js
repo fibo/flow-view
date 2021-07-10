@@ -13,11 +13,13 @@ export class FlowView {
     FlowView.defineCustomElement();
 
     if (element instanceof FlowViewElement) {
+      element.host = this;
       this.view = element;
     } else {
       const view = this.view = document.createElement(
         FlowViewElement.customElementName,
       );
+      view.host = this;
 
       if (container instanceof HTMLElement) {
         container.appendChild(view);
@@ -25,6 +27,8 @@ export class FlowView {
         document.body.appendChild(view);
       }
     }
+
+    this._onViewChange = () => {};
   }
 
   clearGraph() {
@@ -44,6 +48,20 @@ export class FlowView {
     for (const edge of edges) {
       this.newEdge(edge);
     }
+  }
+
+  get onViewChange() {
+    return this._onViewChange;
+  }
+
+  onChange(value) {
+    if (typeof value === "function") {
+      this._onViewChange = value;
+    }
+  }
+
+  viewChange(args) {
+    this.onViewChange(args);
   }
 
   newEdge({

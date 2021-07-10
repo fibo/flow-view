@@ -141,4 +141,17 @@ export class FlowViewEdge extends FlowViewBase {
       y: (invertedY ? 0 : height) + padding,
     };
   }
+
+  toObject() {
+    const { source, target } = this;
+    const sourceNodeId = source.node.id;
+    const sourcePinId = source.id;
+    const targetNodeId = target.node.id;
+    const targetPinId = target.id;
+    return {
+      ...super.toObject(),
+      from: [sourceNodeId, sourcePinId],
+      to: [targetNodeId, targetPinId],
+    };
+  }
 }

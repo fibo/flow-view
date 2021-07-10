@@ -20,10 +20,6 @@ body {
     background: #333;
     color: #eee;
   }
-
-   a:visited, a:active, a:link, a:hover, a:focus {
-     color: #eee;
-   }
 }
 
 main {
@@ -64,5 +60,5 @@ footer {
 }
 
 a:visited, a:active, a:link, a:hover, a:focus {
-  color: #1c1c1c;
+  color: tomato;
 }

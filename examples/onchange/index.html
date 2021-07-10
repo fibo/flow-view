@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:;base64,=">
+
+  <title>flow-view example</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <main></main>
+
+  <div id="newNodes"></div>
+  <div id="newEdges"></div>
+  <div id="deletedNodes"></div>
+  <div id="deletedEdges"></div>
+
+  <script type="module">
+    import { FlowView } from '../../main.js';
+    // import { FlowView } from 'https://unpkg.com/flow-view';
+
+    const flowView = new FlowView({ container: document.querySelector('main') });
+
+    flowView.onChange(({ newNodes, newEdges, deletedNodes, deletedEdges }) => {
+      if (newEdges) {
+        document.getElementById('newEdges').innerHTML = JSON.stringify({ newEdges })
+      } else {
+        document.getElementById('newEdges').innerHTML = ''
+      }
+      if (newNodes) {
+        document.getElementById('newNodes').innerHTML = JSON.stringify({ newNodes })
+      } else {
+        document.getElementById('newNodes').innerHTML = ''
+      }
+      if (deletedEdges) {
+        document.getElementById('deletedEdges').innerHTML = JSON.stringify({ deletedEdges })
+      } else {
+        document.getElementById('deletedEdges').innerHTML = ''
+      }
+      if (deletedNodes) {
+        document.getElementById('deletedNodes').innerHTML = JSON.stringify({ deletedNodes })
+      } else {
+        document.getElementById('deletedNodes').innerHTML = ''
+      }
+    })
+  </script>
+
+  <footer>
+    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/onchange/index.html">here</a>.
+  </footer>
+</body>
+</html>

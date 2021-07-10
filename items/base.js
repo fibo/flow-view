@@ -76,4 +76,10 @@ export class FlowViewBase {
 
     this.element.remove();
   }
+
+  toObject() {
+    return {
+      id: this.id,
+    };
+  }
 }

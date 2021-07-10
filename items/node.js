@@ -160,4 +160,10 @@ export class FlowViewNode extends FlowViewBase {
     }
     this.view.selectNode(this);
   }
+
+  toObject() {
+    return {
+      ...super.toObject(),
+    };
+  }
 }

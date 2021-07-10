@@ -2,7 +2,10 @@
 
 > is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
-[![flow view Simpsons example](screenshot.png)](http://g14n.info/flow-view/)
+<a href="http://g14n.info/flow-view/">
+<div>Demo</div>
+<img width="517" height="490" src="screenshot.png" alt="flow view Simpsons example">
+</a>
 
 ## Installation
 

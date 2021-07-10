@@ -108,7 +108,7 @@ export class FlowViewEdge extends FlowViewBase {
     }
   }
 
-  onViewOriginUpdate() {
+  onViewPointermove() {
     this.updateGeometry();
   }
 

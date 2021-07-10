@@ -125,7 +125,7 @@ export class FlowViewNode extends FlowViewBase {
     return this._outputs.get(id);
   }
 
-  onViewOriginUpdate() {
+  onViewPointermove() {
     // Just trigger position setter.
     const { x, y } = this.position;
     this.position = { x, y };
@@ -154,12 +154,11 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   onDblclick(event) {
-    console.log("xxxx");
     event.stopPropagation();
   }
 
   onPointerdown(event) {
-    event.stopPropagation();
+    event.isBubblingFromNode = true;
     this.view.selectNode(this);
   }
 }

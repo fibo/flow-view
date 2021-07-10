@@ -143,6 +143,14 @@ export class FlowViewElement extends HTMLElement {
     return this.edges.filter((edge) => edge.isSelected);
   }
 
+  get hasSelectedNodes() {
+    return this.selectedNodes.length > 0;
+  }
+
+  get selectedNodeIds() {
+    return this.selectedNodes.map((node) => node.id);
+  }
+
   get selectedNodes() {
     return this.nodes.filter((node) => node.isSelected);
   }
@@ -163,7 +171,7 @@ export class FlowViewElement extends HTMLElement {
     this.style.height = `${value}px`;
   }
 
-  newEdge({id, source, target}) {
+  newEdge({ id, source, target }) {
     const Class = this.itemClass.get("edge");
     const edge = new Class({
       id,
@@ -176,7 +184,7 @@ export class FlowViewElement extends HTMLElement {
     return edge;
   }
 
-  newNode ({
+  newNode({
     x = 0,
     y = 0,
     label = "node",
@@ -221,6 +229,8 @@ export class FlowViewElement extends HTMLElement {
     for (const edge of this.edges) {
       if (edge.source.node.isSelected && edge.target.node.isSelected) {
         this.selectEdge(edge);
+      } else {
+        this.deselectEdge(edge);
       }
     }
   }
@@ -343,7 +353,7 @@ export class FlowViewElement extends HTMLElement {
         break;
       }
       default: {
-        console.log(event.code);
+        // console.log(event.code);
       }
     }
   }
@@ -351,14 +361,16 @@ export class FlowViewElement extends HTMLElement {
   onPointerdown(event) {
     event.stopPropagation();
     this.removeSelector();
-    this.clearSelection();
+    if (!event.isBubblingFromNode) {
+      this.clearSelection();
+    }
     this.startTranslate(event);
   }
 
   onPointermove(event) {
     const { startDraggingPoint } = this;
-
     if (startDraggingPoint) {
+      const { edges, nodes } = this;
       const pointerPosition = FlowViewElement.pointerCoordinates(event);
 
       this.translateVector = {
@@ -366,12 +378,27 @@ export class FlowViewElement extends HTMLElement {
         y: startDraggingPoint.y - pointerPosition.y,
       };
 
-      for (const node of this.nodes) {
-        node.onViewOriginUpdate();
-      }
+      if (this.hasSelectedNodes) {
+        const { selectedNodes, selectedNodeIds } = this;
+        for (const node of selectedNodes) {
+          node.onViewPointermove();
+        }
+        for (const edge of edges) {
+          if (
+            selectedNodeIds.includes(edge.source.node.id) ||
+            selectedNodeIds.includes(edge.target.node.id)
+          ) {
+            edge.onViewPointermove();
+          }
+        }
+      } else {
+        for (const node of nodes) {
+          node.onViewPointermove();
+        }
 
-      for (const edge of this.edges) {
-        edge.onViewOriginUpdate();
+        for (const edge of edges) {
+          edge.onViewPointermove();
+        }
       }
     }
   }

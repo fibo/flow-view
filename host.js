@@ -1,6 +1,4 @@
 import { FlowViewElement } from "./view.js";
-import { FlowViewEdge } from "./items/edge.js";
-import { FlowViewNode } from "./items/node.js";
 
 export class FlowView {
   static defineCustomElement() {
@@ -58,7 +56,7 @@ export class FlowView {
     const source = sourceNode.output(sourcePinId);
     const target = targetNode.input(targetPinId);
 
-    return this.view.newEdge({id, source, target})
+    return this.view.newEdge({ id, source, target });
   }
 
   newNode({
@@ -70,6 +68,6 @@ export class FlowView {
     x,
     y,
   } = {}) {
-    return this.view.newNode({ id, label, nodeType, inputs, outputs, x, y })
+    return this.view.newNode({ id, label, nodeType, inputs, outputs, x, y });
   }
 }

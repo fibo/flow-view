@@ -55,12 +55,12 @@ export class FlowViewSelector extends FlowViewBase {
     const { element, view } = this;
     element.style.top = `${y - view.origin.y}px`;
     element.style.left = `${x - view.origin.x}px`;
-    this.x = x
-    this.y = y
+    this.x = x;
+    this.y = y;
   }
 
-  get position () {
-    return { x: this.x, y: this.y }
+  get position() {
+    return { x: this.x, y: this.y };
   }
 
   onDblclick(event) {
@@ -72,13 +72,13 @@ export class FlowViewSelector extends FlowViewBase {
 
     switch (true) {
       case event.code === "Enter": {
-        const { x, y } = this.position
+        const { x, y } = this.position;
         this.view.newNode({
           x,
           y,
-          label: this.input.value
-        })
-        this.view.removeSelector()
+          label: this.input.value,
+        });
+        this.view.removeSelector();
         break;
       }
       case event.code === "Escape": {

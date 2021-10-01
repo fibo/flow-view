@@ -15,7 +15,7 @@
     "url": "http://g14n.info"
   },
   "scripts": {
-    "bundle": "deno bundle main.js | esbuild --minify > flow-view.js",
+    "bundle": "deno bundle main.js | esbuild --minify --target=safari11 > flow-view.js",
     "fmt": "deno fmt --ignore=./flow-view.js",
     "lint": "deno lint --ignore=./flow-view.js",
     "start": "serve",

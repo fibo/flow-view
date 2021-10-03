@@ -19,4 +19,13 @@ export class FlowViewOutput extends FlowViewPin {
       y: y + nodeHeight - halfPinSize - borderWidth,
     };
   }
+
+  onPointerdown(event) {
+    event.isBubblingFromPin = true;
+
+    this.view.createSemiEdge({ source: this });
+  }
+
+  onPointerup(_event) {
+  }
 }

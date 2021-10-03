@@ -1,10 +1,11 @@
 import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
+import { FlowViewInput } from "./input.js";
+import { FlowViewOutput } from "./output.js";
 
 export class FlowViewEdge extends FlowViewBase {
   static cssClassName = "fv-edge";
   static lineWidth = 2;
-  static padding = 1;
   static zIndex = 0;
   static style = {
     [`.${FlowViewEdge.cssClassName}`]: {
@@ -24,9 +25,28 @@ export class FlowViewEdge extends FlowViewBase {
     },
   };
 
+  get hasSourcePin() {
+    return this.target instanceof FlowViewOutput;
+  }
+
+  get hasTargetPin() {
+    return this.target instanceof FlowViewInput;
+  }
+
+  get isSemiEdge() {
+    return !this.hasTargetPin || !this.hasSourcePin;
+  }
+
   init({ source, target }) {
-    this.source = source;
-    this.target = target;
+    const hasSourcePin = source instanceof FlowViewOutput;
+    const hasTargetPin = target instanceof FlowViewInput;
+
+    this.source = (hasTargetPin && !hasSourcePin)
+      ? { center: { x: target.center.x, y: target.center.y } }
+      : source;
+    this.target = (hasSourcePin && !hasTargetPin)
+      ? { center: { x: source.center.x, y: source.center.y } }
+      : target;
 
     const svg = this.svg = this.createSvg("svg");
     this.element.appendChild(svg);
@@ -62,11 +82,11 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   set dimension([_width, _height]) {
-    const { padding } = FlowViewEdge;
+    const { lineWidth } = FlowViewEdge;
     const { element: { style }, svg } = this;
 
-    const width = _width + padding * 2;
-    const height = _height + padding * 2;
+    const width = Math.max(_width, lineWidth);
+    const height = Math.max(_height, lineWidth);
 
     style.width = `${width}px`;
     style.height = `${height}px`;
@@ -75,10 +95,9 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   set position({ x, y }) {
-    const { padding } = FlowViewEdge;
     const { element: { style } } = this;
-    style.top = `${Math.round(y) - padding}px`;
-    style.left = `${Math.round(x) - padding}px`;
+    style.top = `${y}px`;
+    style.left = `${x}px`;
   }
 
   onPointerdownLine(event) {
@@ -100,6 +119,8 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   onPointerleaveLine() {
+    if (this.isSemiEdge) return;
+
     if (!this.isSelected) {
       this.highlight = false;
       if (!this.source.node.isSelected) {
@@ -112,7 +133,6 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   updateGeometry() {
-    const { lineWidth, padding } = FlowViewEdge;
     const {
       source: { center: { x: sourceX, y: sourceY } },
       target: { center: { x: targetX, y: targetY } },
@@ -127,23 +147,26 @@ export class FlowViewEdge extends FlowViewBase {
       y: (invertedY ? targetY : sourceY) - originY,
     };
 
-    const width = Math.max(Math.abs(Math.round(targetX - sourceX)), lineWidth);
-    const height = Math.max(Math.abs(Math.round(targetY - sourceY)), lineWidth);
+    const width = Math.abs(Math.round(targetX - sourceX));
+    const height = Math.abs(Math.round(targetY - sourceY));
     this.dimension = [width, height];
 
     this.start = {
-      x: (invertedX ? width : 0) + padding,
-      y: (invertedY ? height : 0) + padding,
+      x: (invertedX ? width : 0),
+      y: (invertedY ? height : 0),
     };
 
     this.end = {
-      x: (invertedX ? 0 : width) + padding,
-      y: (invertedY ? 0 : height) + padding,
+      x: (invertedX ? 0 : width),
+      y: (invertedY ? 0 : height),
     };
   }
 
   toObject() {
-    const { source, target } = this;
+    const { isSemiEdge, source, target } = this;
+
+    if (isSemiEdge) return;
+
     const sourceNodeId = source.node.id;
     const sourcePinId = source.id;
     const targetNodeId = target.node.id;

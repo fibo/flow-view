@@ -9,6 +9,7 @@ export class FlowViewSelector extends FlowViewBase {
     [`.${FlowViewSelector.cssClassName}`]: {
       "position": "absolute",
       "box-shadow": cssVar.boxShadow,
+      "z-index": FlowViewSelector.zIndex,
     },
     [`.${FlowViewSelector.cssClassName} input`]: {
       "border": 0,
@@ -18,7 +19,6 @@ export class FlowViewSelector extends FlowViewBase {
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
       "padding": "0.5em",
-      "z-index": FlowViewSelector.zIndex,
     },
   };
 

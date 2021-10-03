@@ -27,6 +27,8 @@ export class FlowViewPin extends FlowViewBase {
     this.element.addEventListener("pointerenter", this._onPointerenter);
     this._onPointerleave = this.onPointerleave.bind(this);
     this.element.addEventListener("pointerleave", this._onPointerleave);
+    this._onPointerup = this.onPointerup.bind(this);
+    this.element.addEventListener("pointerup", this._onPointerup);
   }
 
   get halfPinSize() {
@@ -37,10 +39,7 @@ export class FlowViewPin extends FlowViewBase {
     this.element.removeEventListener("pointerdown", this._onPointerdown);
     this.element.removeEventListener("pointerenter", this._onPointerenter);
     this.element.removeEventListener("pointerleave", this._onPointerleave);
-  }
-
-  onPointerdown(event) {
-    event.stopPropagation();
+    this.element.removeEventListener("pointerup", this._onPointerup);
   }
 
   onPointerenter(event) {

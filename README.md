@@ -47,26 +47,8 @@ Try <a href="http://g14n.info/flow-view/">demo here</a>.
 
 ### Web Component
 
-Add in your HTML the `flow-view` Web Component and use `FlowView` to define the
-custom element.
-
-```html
-<!DOCTYPE html>
-<html>
-  <body>
-    <flow-view></flow-view>
-
-    <script type="module">
-      import { FlowView } from 'https://unpkg.com/flow-view';
-
-      FlowView.defineCustomElement();
-    </script>
-  </body>
-</html>
-```
-
-It is also possible to create the custom element and attach it to a container.
-If `ResizeObserver` is available, it will resize to fit into its container.
+Create a `FlowView` instance and pass it a `container` argument. It will create
+a `flow-view` custom element and attach it to the _container_.
 
 ```html
 <!DOCTYPE html>
@@ -81,27 +63,27 @@ If `ResizeObserver` is available, it will resize to fit into its container.
 </html>
 ```
 
-If the `flow-view` custom element is already in the page, it can be passed to a
-`FlowView` instance.
+If some `flow-view` custom element is already in the page, it can be passed to a
+`FlowView` instance via the `element` argument.
 
 ```html
 <!DOCTYPE html>
 <html>
   <body>
-    <flow-view id="element"></flow-view>
+    <flow-view id="my-view"></flow-view>
 
     <script type="module">
       import { FlowView } from 'https://unpkg.com/flow-view';
 
-      const flowView = new FlowView({ element: document.getElementById('element') });
+      const flowView = new FlowView({ element: document.getElementById('my-view') });
     </script>
   </body>
 </html>
 ```
 
-### `loadGraph()`
+### `loadGraph({ nodes = [], edges = [] })`
 
-Load a flow-view graph.
+Load a _flow-view_ graph.
 
 ```javascript
 flowView.loadGraph({

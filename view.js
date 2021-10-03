@@ -306,7 +306,7 @@ export class FlowViewElement extends HTMLElement {
     return this._nodes.get(id);
   }
 
-  startTranslate(event) {
+  startTranslation(event) {
     this.startDraggingPoint = FlowViewElement.pointerCoordinates(event);
     this.translateVector = { x: 0, y: 0 };
     if (this.hasSelectedNodes) {
@@ -318,8 +318,8 @@ export class FlowViewElement extends HTMLElement {
     }
   }
 
-  stopTranslate() {
-    if (this.translateVector && !this.hasSelectedNodes) {
+  stopTranslation() {
+    if (this.translateVector && !this.hasSelectedNodes && !this.semiEdge) {
       this._origin = {
         x: this._origin.x + this.translateVector.x,
         y: this._origin.y + this.translateVector.y,
@@ -331,6 +331,15 @@ export class FlowViewElement extends HTMLElement {
     this.selectedNodesStartPosition = undefined;
   }
 
+  createSelector({ position }) {
+    return this.selector = new FlowViewSelector({
+      id: "selector",
+      view: this,
+      cssClassName: FlowViewSelector.cssClassName,
+      position,
+    });
+  }
+
   onDblclick(event) {
     const { origin } = this;
 
@@ -339,10 +348,7 @@ export class FlowViewElement extends HTMLElement {
 
     const pointerPosition = FlowViewElement.pointerCoordinates(event);
 
-    const selector = this.selector = new FlowViewSelector({
-      id: "selector",
-      view: this,
-      cssClassName: FlowViewSelector.cssClassName,
+    const selector = this.createSelector({
       position: {
         x: pointerPosition.x + origin.x,
         y: pointerPosition.y + origin.y,
@@ -386,54 +392,80 @@ export class FlowViewElement extends HTMLElement {
     if (!event.isBubblingFromNode) {
       this.clearSelection();
     }
-    this.startTranslate(event);
+    this.startTranslation(event);
   }
 
   onPointermove(event) {
-    const { startDraggingPoint } = this;
-    if (startDraggingPoint) {
-      const { edges, nodes } = this;
-      const pointerPosition = FlowViewElement.pointerCoordinates(event);
+    const { hasSelectedNodes, semiEdge, startDraggingPoint } = this;
 
+    if (startDraggingPoint) {
+      const pointerPosition = FlowViewElement.pointerCoordinates(event);
       const x = startDraggingPoint.x - pointerPosition.x;
       const y = startDraggingPoint.y - pointerPosition.y;
-      this.translateVector = { x, y };
 
-      if (this.hasSelectedNodes) {
-        const { selectedNodes, selectedNodeIds, selectedNodesStartPosition } =
-          this;
-        for (const node of selectedNodes) {
-          const { x: startX, y: startY } = selectedNodesStartPosition[node.id];
-          node.position = { x: startX - x, y: startY - y };
+      switch (true) {
+        case !!semiEdge: {
+          const { origin } = this;
+
+          if (!semiEdge.hasTarget) {
+            semiEdge.target.center.x = pointerPosition.x + origin.x;
+            semiEdge.target.center.y = pointerPosition.y + origin.y;
+          }
+          semiEdge.updateGeometry();
+          break;
         }
-        for (const edge of edges) {
-          if (
-            selectedNodeIds.includes(edge.source.node.id) ||
-            selectedNodeIds.includes(edge.target.node.id)
-          ) {
+
+        case hasSelectedNodes: {
+          this.translateVector = { x, y };
+          const {
+            edges,
+            selectedNodes,
+            selectedNodeIds,
+            selectedNodesStartPosition,
+          } = this;
+
+          for (const node of selectedNodes) {
+            const { x: startX, y: startY } =
+              selectedNodesStartPosition[node.id];
+            node.position = { x: startX - x, y: startY - y };
+          }
+          for (const edge of edges) {
+            if (
+              selectedNodeIds.includes(edge.source.node.id) ||
+              selectedNodeIds.includes(edge.target.node.id)
+            ) {
+              edge.updateGeometry();
+            }
+          }
+
+          break;
+        }
+
+        default: {
+          this.translateVector = { x, y };
+          const { nodes, edges } = this;
+
+          for (const node of nodes) {
+            // Just trigger position setter, since it reads view origin.
+            const { x, y } = node.position;
+            node.position = { x, y };
+          }
+
+          for (const edge of edges) {
             edge.updateGeometry();
           }
-        }
-      } else {
-        for (const node of nodes) {
-          // Just trigger position setter, since it reads view origin.
-          const { x, y } = node.position;
-          node.position = { x, y };
-        }
-
-        for (const edge of edges) {
-          edge.updateGeometry();
         }
       }
     }
   }
 
   onPointerleave() {
-    this.stopTranslate();
+    this.stopTranslation();
   }
 
   onPointerup() {
-    this.stopTranslate();
+    this.stopTranslation();
+    this.removeSemiEdge();
   }
 
   onRootResize(entries) {
@@ -458,6 +490,16 @@ export class FlowViewElement extends HTMLElement {
     }
   }
 
+  createSemiEdge({ source, target }) {
+    const Class = this.itemClass.get("edge");
+    return this.semiEdge = new Class({
+      view: this,
+      cssClassName: Class.cssClassName,
+      source,
+      target,
+    });
+  }
+
   clearSelection() {
     // First deselect nodes...
     for (const node of this.selectedNodes) {
@@ -478,6 +520,14 @@ export class FlowViewElement extends HTMLElement {
     for (const node of this.selectedNodes) {
       this.deleteNode(node);
     }
+  }
+
+  removeSemiEdge() {
+    const { semiEdge } = this;
+    if (semiEdge instanceof FlowViewEdge) {
+      semiEdge.remove();
+    }
+    this.semiEdge = undefined;
   }
 
   removeSelector() {

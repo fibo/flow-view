@@ -30,6 +30,7 @@ export class FlowViewNode extends FlowViewBase {
       "border-color": cssVar.nodeBorderColorHighlighted,
     },
     [`.${FlowViewNode.cssClassName} .label`]: {
+      "user-drag": "none",
       "user-select": "none",
       "padding-left": "0.5em",
       "padding-right": "0.5em",
@@ -152,6 +153,8 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   onPointerdown(event) {
+    if (event.isBubblingFromPin) return;
+
     event.isBubblingFromNode = true;
     const isMultiSelection = event.shiftKey ||
       (this.view.hasSelectedNodes && this.isSelected);

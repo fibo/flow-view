@@ -15,4 +15,11 @@ export class FlowViewInput extends FlowViewPin {
       y: y + halfPinSize - borderWidth,
     };
   }
+
+  onPointerdown(event) {
+    event.stopPropagation();
+  }
+
+  onPointerup(_event) {
+  }
 }

@@ -20,6 +20,15 @@ export class FlowViewSelector extends FlowViewBase {
       "font-size": cssVar.fontSize,
       "padding": "0.5em",
     },
+    [`.${FlowViewSelector.cssClassName}__hint`]: {
+      "position": "absolute",
+      "left": "0",
+      "background": "transparent",
+      "pointer-events": "none",
+    },
+    [`.${FlowViewSelector.cssClassName}__hint::placeholder`]: {
+      "opacity": "0.4",
+    },
   };
 
   init({ position }) {
@@ -29,6 +38,10 @@ export class FlowViewSelector extends FlowViewBase {
 
     const input = this.input = document.createElement("input");
     element.appendChild(input);
+
+    const hint = this.hint = document.createElement("input");
+    hint.classList.add(`${FlowViewSelector.cssClassName}__hint`);
+    element.appendChild(hint);
 
     this.position = position;
 
@@ -49,6 +62,14 @@ export class FlowViewSelector extends FlowViewBase {
 
   focus() {
     this.input.focus();
+  }
+
+  get suggestion() {
+    return this.hint.getAttribute("placeholder");
+  }
+
+  set suggestion(text) {
+    this.hint.setAttribute("placeholder", text);
   }
 
   set position({ x, y }) {
@@ -87,6 +108,10 @@ export class FlowViewSelector extends FlowViewBase {
       }
       case event.code === "Tab": {
         event.preventDefault();
+        const { suggestion } = this;
+        if (suggestion) {
+          this.input.value = suggestion;
+        }
         break;
       }
       default: {

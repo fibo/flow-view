@@ -30,7 +30,6 @@ export class FlowViewNode extends FlowViewBase {
       "border-color": cssVar.nodeBorderColorHighlighted,
     },
     [`.${FlowViewNode.cssClassName} .label`]: {
-      "user-drag": "none",
       "user-select": "none",
       "padding-left": "0.5em",
       "padding-right": "0.5em",

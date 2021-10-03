@@ -6,19 +6,26 @@
 
   <title>flow-view example</title>
   <link rel="stylesheet" href="../../style.css">
+
+  <style>
+    .change-viewer {
+      padding-left: 1em;
+      padding-right: 1em;
+      background-color: black;
+    }
+  </style>
 </head>
 <body>
 
   <main></main>
 
-  <div id="newNodes"></div>
-  <div id="newEdges"></div>
-  <div id="deletedNodes"></div>
-  <div id="deletedEdges"></div>
+  <div class="change-viewer" id="newNodes"></div>
+  <div class="change-viewer" id="newEdges"></div>
+  <div class="change-viewer" id="deletedNodes"></div>
+  <div class="change-viewer" id="deletedEdges"></div>
 
   <script type="module">
     import { FlowView } from '../../main.js';
-    // import { FlowView } from 'https://unpkg.com/flow-view';
 
     const flowView = new FlowView({ container: document.querySelector('main') });
 

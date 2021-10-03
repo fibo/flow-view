@@ -40,6 +40,7 @@ Try <a href="http://g14n.info/flow-view/">demo here</a>.
   <li>Click on item to select it.</li>
   <li>Click while pressing <kbd>SHIFT</kbd> to enable <b>multi</b> selection.</li>
   <li>Drag selected items to translate them.</li>
+  <li>Drag from a node output to a node input to create an edge.</li>
   <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
   <li>Double click on canvas to open the <b>selector</b>.</li>
   <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>

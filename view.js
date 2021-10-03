@@ -155,6 +155,10 @@ export class FlowViewElement extends HTMLElement {
     return this.selectedNodes.length > 0;
   }
 
+  get isDraggingEdge() {
+    return this.semiEdge instanceof FlowViewEdge;
+  }
+
   get selectedNodeIds() {
     return this.selectedNodes.map((node) => node.id);
   }
@@ -189,7 +193,7 @@ export class FlowViewElement extends HTMLElement {
       target,
     });
     this.addEdge(edge);
-    this.host.onChange({ newEdges: [edge.toObject()] });
+    this.host.viewChange({ newEdges: [edge.toObject()] });
     return edge;
   }
 
@@ -214,7 +218,7 @@ export class FlowViewElement extends HTMLElement {
       y,
     });
     this.addNode(node);
-    this.host.onChange({ newNodes: [node.toObject()] });
+    this.host.viewChange({ newNodes: [node.toObject()] });
     return node;
   }
 
@@ -279,7 +283,7 @@ export class FlowViewElement extends HTMLElement {
     this._edges.delete(edge.id);
     edge.source.highlight = false;
     edge.target.highlight = false;
-    this.host.onChange({ deletedEdges: [edge.toObject()] });
+    this.host.viewChange({ deletedEdges: [edge.toObject()] });
     edge.remove();
   }
 
@@ -294,7 +298,7 @@ export class FlowViewElement extends HTMLElement {
     }
     // Dispose.
     this._nodes.delete(node.id);
-    this.host.onChange({ deletedEdges, deletedNodes: [node.toObject()] });
+    this.host.viewChange({ deletedEdges, deletedNodes: [node.toObject()] });
     node.remove();
   }
 

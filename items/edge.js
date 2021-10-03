@@ -26,7 +26,7 @@ export class FlowViewEdge extends FlowViewBase {
   };
 
   get hasSourcePin() {
-    return this.target instanceof FlowViewOutput;
+    return this.source instanceof FlowViewOutput;
   }
 
   get hasTargetPin() {
@@ -111,6 +111,9 @@ export class FlowViewEdge extends FlowViewBase {
   }
 
   onPointerenterLine() {
+    if (this.isSemiEdge) return;
+    if (this.view.isDraggingEdge) return;
+
     if (!this.isSelected) {
       this.highlight = true;
       this.source.highlight = true;
@@ -143,8 +146,8 @@ export class FlowViewEdge extends FlowViewBase {
     const invertedY = targetY < sourceY;
 
     this.position = {
-      x: (invertedX ? targetX : sourceX) - originX,
-      y: (invertedY ? targetY : sourceY) - originY,
+      x: Math.round((invertedX ? targetX : sourceX) - originX),
+      y: Math.round((invertedY ? targetY : sourceY) - originY),
     };
 
     const width = Math.abs(Math.round(targetX - sourceX));

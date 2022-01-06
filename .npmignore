@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-.browserslistrc
-.editorconfig
-build
-public
-media
-src
-test
-_config.yml
-rollup.config.js
-=======
-# Do not ignore dist folder to support unpkg.com CDN.
-docs
-src
->>>>>>> next
+.ackrc
+DEVELOPMENT.md
+examples
+index.html
+screenshot.png
+style.css

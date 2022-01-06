@@ -44,8 +44,12 @@ export class FlowViewSelector extends FlowViewBase {
     element.appendChild(hint);
 
     this.position = position;
-    this.nodeDefinitions = nodeDefinitions;
-    this.nodeTypes = nodeDefinitions.map(({ type }) => type);
+
+    // Sort nodeDefinitions by type, there should not be two equal types.
+    this.nodeDefinitions = nodeDefinitions.sort((
+      { type: a },
+      { type: b },
+    ) => (a < b ? -1 : 1));
 
     this._onDblclick = this.onDblclick.bind(this);
     element.addEventListener("dblclick", this._onDblclick);

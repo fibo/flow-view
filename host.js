@@ -8,6 +8,13 @@ export class FlowView {
     }
   };
 
+  static ErrorDuplicatedNodeType = class ErrorDuplicatedNodeType
+    extends TypeError {
+    constructor() {
+      super("Duplicated flow-view node type");
+    }
+  };
+
   static defineCustomElement() {
     const { customElementName } = FlowViewElement;
 
@@ -38,24 +45,47 @@ export class FlowView {
   static reservedTypes = ["node", "edge"];
 
   constructor({ container, element, nodes = [] } = {}) {
+    // 1. Define custom element.
+
     FlowView.defineCustomElement();
 
+    // 2. Validate nodes.
+
+    const nodeTypes = new Set();
     for (const node of nodes) {
       try {
+        // Validate every node.
         FlowView.nodeDefinitionIsValid(node);
+
+        // Check that node types are unique.
+        if (nodeTypes.has(node.type)) {
+          throw new FlowView.ErrorDuplicatedNodeType();
+        } else {
+          nodeTypes.add(node.type);
+        }
       } catch (error) {
         throw error;
       }
     }
+
     this.nodes = nodes;
 
+    // 2. Create DOM element and attach host.
+
     if (element instanceof FlowViewElement) {
+      // Apply custom element inline styles.
+      element.style.isolation = "isolate";
+
       element.host = this;
       this.view = element;
     } else {
       const view = this.view = document.createElement(
         FlowViewElement.customElementName,
       );
+
+      // Apply custom element inline styles.
+      view.style.isolation = "isolate";
+
       view.host = this;
 
       if (container instanceof HTMLElement) {
@@ -64,6 +94,8 @@ export class FlowView {
         document.body.appendChild(view);
       }
     }
+
+    // 3. Other initializations.
 
     this._onViewChange = () => {};
   }

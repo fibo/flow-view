@@ -10,17 +10,25 @@
 <body>
 
   <main>
-    <flow-view></flow-view>
   </main>
 
   <script type="module">
     import { FlowView } from '../../main.js';
 
-    FlowView.defineCustomElement();
+    new FlowView({
+      container: document.querySelector('main'),
+      nodes: [
+        {
+          type: 'pippo',
+          inputs: [],
+          outputs: []
+        }
+      ]
+    });
   </script>
 
   <footer>
-    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-element/index.html">here</a>.
+    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/autocompletion/index.html">here</a>.
   </footer>
 </body>
 </html>

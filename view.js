@@ -175,6 +175,10 @@ export class FlowViewElement extends HTMLElement {
     return Array.from(this._nodes.values());
   }
 
+  get nodeDefinitions() {
+    return this.host.nodes;
+  }
+
   set width(value) {
     this.style.width = `${value}px`;
   }
@@ -341,6 +345,7 @@ export class FlowViewElement extends HTMLElement {
       view: this,
       cssClassName: FlowViewSelector.cssClassName,
       position,
+      nodeDefinitions: this.nodeDefinitions,
     });
   }
 

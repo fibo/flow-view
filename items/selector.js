@@ -31,7 +31,7 @@ export class FlowViewSelector extends FlowViewBase {
     },
   };
 
-  init({ position }) {
+  init({ position, nodeDefinitions }) {
     const { element } = this;
 
     element.setAttribute("tabindex", 0);
@@ -44,6 +44,8 @@ export class FlowViewSelector extends FlowViewBase {
     element.appendChild(hint);
 
     this.position = position;
+    this.nodeDefinitions = nodeDefinitions;
+    this.nodeTypes = nodeDefinitions.map(({ type }) => type);
 
     this._onDblclick = this.onDblclick.bind(this);
     element.addEventListener("dblclick", this._onDblclick);

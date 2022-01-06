@@ -1,6 +1,13 @@
 import { FlowViewElement } from "./view.js";
 
 export class FlowView {
+  static ErrorInvalidNodeDefinition = class ErrorInvalidNodeDefinition
+    extends TypeError {
+    constructor() {
+      super("Invalid flow-view node definition");
+    }
+  };
+
   static defineCustomElement() {
     const { customElementName } = FlowViewElement;
 
@@ -9,8 +16,38 @@ export class FlowView {
     }
   }
 
-  constructor({ container, element } = {}) {
+  static nodeDefinitionIsValid(node) {
+    if (node === null || typeof node !== "object") {
+      throw new FlowView.ErrorInvalidNodeDefinition();
+    }
+
+    const { type, inputs, outputs } = node;
+
+    if (
+      typeof type !== "string" || type === "" ||
+      FlowView.reservedTypes.includes(type)
+    ) {
+      throw new FlowView.ErrorInvalidNodeDefinition();
+    }
+
+    if (!Array.isArray(inputs) || !Array.isArray(outputs)) {
+      throw new FlowView.ErrorInvalidNodeDefinition();
+    }
+  }
+
+  static reservedTypes = ["node", "edge"];
+
+  constructor({ container, element, nodes = [] } = {}) {
     FlowView.defineCustomElement();
+
+    for (const node of nodes) {
+      try {
+        FlowView.nodeDefinitionIsValid(node);
+      } catch (error) {
+        throw error;
+      }
+    }
+    this.nodes = nodes;
 
     if (element instanceof FlowViewElement) {
       element.host = this;

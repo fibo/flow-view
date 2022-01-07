@@ -18,8 +18,10 @@ export class FlowViewPin extends FlowViewBase {
     },
   };
 
-  init({ node }) {
+  init({ name, node, types }) {
+    this.name = name;
     this.node = node;
+    this.types = types;
 
     this._onPointerdown = this.onPointerdown.bind(this);
     this.element.addEventListener("pointerdown", this._onPointerdown);
@@ -45,5 +47,20 @@ export class FlowViewPin extends FlowViewBase {
   onPointerleave(event) {
     event.stopPropagation();
     this.highlight = false;
+  }
+
+  toObject() {
+    const { name, types } = this;
+    const obj = {};
+    if (typeof name !== "undefined") {
+      obj.name = name;
+    }
+    if (typeof types !== "undefined") {
+      obj.types = types;
+    }
+    return {
+      ...super.toObject(),
+      ...obj,
+    };
   }
 }

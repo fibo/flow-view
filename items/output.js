@@ -36,4 +36,10 @@ export class FlowViewOutput extends FlowViewPin {
 
   onPointerup(_event) {
   }
+
+  toObject() {
+    return {
+      ...super.toObject(),
+    };
+  }
 }

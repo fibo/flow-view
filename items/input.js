@@ -40,4 +40,10 @@ export class FlowViewInput extends FlowViewPin {
       }
     }
   }
+
+  toObject() {
+    return {
+      ...super.toObject(),
+    };
+  }
 }

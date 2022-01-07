@@ -45,10 +45,10 @@ export class FlowViewSelector extends FlowViewBase {
 
     this.position = position;
 
-    // Sort nodeDefinitions by type, there should not be two equal types.
+    // Sort nodeDefinitions by label, there should not be two equal labels.
     this.nodeDefinitions = nodeDefinitions.sort((
-      { type: a },
-      { type: b },
+      { label: a },
+      { label: b },
     ) => (a < b ? -1 : 1));
 
     this._onDblclick = this.onDblclick.bind(this);
@@ -90,13 +90,13 @@ export class FlowViewSelector extends FlowViewBase {
     // Type at least few chars to start showing completion.
     if (value.length < 2) return [];
 
-    return this.nodeDefinitions.filter(({ type }) => (
-      // input value fits into node type...
-      type.startsWith(value) &&
+    return this.nodeDefinitions.filter(({ label }) => (
+      // input value fits into node label...
+      label.startsWith(value) &&
       // ...but they are not the same yet.
-      // Otherwise if a type starts with another type,
+      // Otherwise if a label starts with another label,
       // some completions could be missed.
-      type !== value
+      label !== value
     ));
   }
 
@@ -112,6 +112,22 @@ export class FlowViewSelector extends FlowViewBase {
     return { x: this.x, y: this.y };
   }
 
+  createNode() {
+    const { input: { value }, nodeDefinitions, position: { x, y }, view } =
+      this;
+
+    const nodeDefinition =
+      nodeDefinitions.find(({ label }) => (label === value)) || {};
+
+    view.newNode({
+      x,
+      y,
+      label: value,
+      ...nodeDefinition,
+    });
+    view.removeSelector();
+  }
+
   onDblclick(event) {
     event.stopPropagation();
   }
@@ -121,13 +137,7 @@ export class FlowViewSelector extends FlowViewBase {
 
     switch (true) {
       case event.code === "Enter": {
-        const { x, y } = this.position;
-        this.view.newNode({
-          x,
-          y,
-          label: this.input.value,
-        });
-        this.view.removeSelector();
+        this.createNode();
         break;
       }
 
@@ -162,7 +172,7 @@ export class FlowViewSelector extends FlowViewBase {
         break;
       }
       case 1: {
-        this.completion = matchingNodeDefinitions[0].type;
+        this.completion = matchingNodeDefinitions[0].label;
         break;
       }
       default: {
@@ -171,14 +181,14 @@ export class FlowViewSelector extends FlowViewBase {
         const shortestMatch = matchingNodeDefinitions.reduce((
           shortest,
           match,
-        ) => (shortest.type.length < match.type.length ? shortest : match));
+        ) => (shortest.label.length < match.label.length ? shortest : match));
 
-        for (let i = value.length; i < shortestMatch.type.length; i++) {
-          const currentChar = shortestMatch.type[i];
+        for (let i = value.length; i < shortestMatch.label.length; i++) {
+          const currentChar = shortestMatch.label[i];
 
           if (
-            matchingNodeDefinitions.every(({ type }) =>
-              type.startsWith(completion + currentChar)
+            matchingNodeDefinitions.every(({ label }) =>
+              label.startsWith(completion + currentChar)
             )
           ) {
             completion += currentChar;

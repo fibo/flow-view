@@ -1,20 +1,6 @@
 import { FlowViewElement } from "./view.js";
 
 export class FlowView {
-  static ErrorInvalidNodeDefinition = class ErrorInvalidNodeDefinition
-    extends TypeError {
-    constructor() {
-      super("Invalid flow-view node definition");
-    }
-  };
-
-  static ErrorDuplicatedNodeType = class ErrorDuplicatedNodeType
-    extends TypeError {
-    constructor() {
-      super("Duplicated flow-view node type");
-    }
-  };
-
   static defineCustomElement() {
     const { customElementName } = FlowViewElement;
 
@@ -25,20 +11,72 @@ export class FlowView {
 
   static nodeDefinitionIsValid(node) {
     if (node === null || typeof node !== "object") {
-      throw new FlowView.ErrorInvalidNodeDefinition();
+      throw new TypeError(
+        "invalid flow-view node definition: must be an object",
+      );
     }
 
-    const { type, inputs, outputs } = node;
+    const { label, inputs, outputs } = node;
 
     if (
-      typeof type !== "string" || type === "" ||
-      FlowView.reservedTypes.includes(type)
+      typeof label !== "string" || label === "" ||
+      FlowView.reservedTypes.includes(label)
     ) {
-      throw new FlowView.ErrorInvalidNodeDefinition();
+      throw new TypeError(
+        `invalid flow-view node label: ${
+          label === "" ? "empty string" : label
+        }`,
+      );
     }
 
-    if (!Array.isArray(inputs) || !Array.isArray(outputs)) {
-      throw new FlowView.ErrorInvalidNodeDefinition();
+    if (Array.isArray(inputs) && Array.isArray(outputs)) {
+      for (const pin of inputs.concat(outputs)) {
+        if (pin === null || typeof pin !== "object") {
+          throw new TypeError("invalid flow-view node pin: must be an object");
+        }
+
+        const { name, types } = pin;
+
+        // Attribute `name` is optional but, if provided,
+        // must be a non empty string.
+        if (typeof name !== "undefined") {
+          if (typeof name !== "string" || name === "") {
+            throw new TypeError(
+              `invalid flow-view node pin name: ${
+                name === ""
+                  ? "empty string"
+                  : name
+              }`,
+            );
+          }
+        }
+
+        // Attribute `types` is optional but, if provided,
+        // must be a non empty array of strings.
+        if (typeof types !== "undefined") {
+          if (Array.isArray(types) && types.length > 0) {
+            for (const type of types) {
+              if (typeof type !== "string" || type === "") {
+                throw new TypeError(
+                  `invalid flow-view node pin type: ${
+                    type === ""
+                      ? "empty string"
+                      : type
+                  }`,
+                );
+              }
+            }
+          } else {
+            throw new TypeError(
+              "invalid flow-view node pin, types must be a not empty array",
+            );
+          }
+        }
+      }
+    } else {
+      throw new TypeError(
+        "invalid flow-view node, inputs or outputs are missing",
+      );
     }
   }
 
@@ -51,17 +89,18 @@ export class FlowView {
 
     // 2. Validate nodes.
 
-    const nodeTypes = new Set();
+    const nodeLabels = new Set();
     for (const node of nodes) {
       try {
         // Validate every node.
         FlowView.nodeDefinitionIsValid(node);
 
-        // Check that node types are unique.
-        if (nodeTypes.has(node.type)) {
-          throw new FlowView.ErrorDuplicatedNodeType();
+        // Check that node labels are unique.
+        const { label } = node;
+        if (nodeLabels.has(label)) {
+          throw new TypeError(`duplicated flow-view node label ${label}`);
         } else {
-          nodeTypes.add(node.type);
+          nodeLabels.add(label);
         }
       } catch (error) {
         throw error;

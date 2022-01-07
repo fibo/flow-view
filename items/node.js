@@ -125,10 +125,12 @@ export class FlowViewNode extends FlowViewBase {
     return this._outputs.get(id);
   }
 
-  newInput({ id }) {
+  newInput({ id, name, types }) {
     const pin = new FlowViewInput({
       id,
+      name,
       node: this,
+      types,
       view: this.view,
       cssClassName: FlowViewPin.cssClassName,
     });
@@ -136,10 +138,12 @@ export class FlowViewNode extends FlowViewBase {
     this.inputListDiv.appendChild(pin.element);
   }
 
-  newOutput({ id }) {
+  newOutput({ id, name, types }) {
     const pin = new FlowViewOutput({
       id,
+      name,
       node: this,
+      types,
       view: this.view,
       cssClassName: FlowViewPin.cssClassName,
     });
@@ -164,8 +168,12 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   toObject() {
+    const { label, inputs, outputs } = this;
     return {
       ...super.toObject(),
+      label,
+      inputs: inputs.map((pin) => pin.toObject()),
+      outputs: outputs.map((pin) => pin.toObject()),
     };
   }
 }

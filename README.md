@@ -46,10 +46,13 @@ Try <a href="http://g14n.info/flow-view/">demo here</a>.
   <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
 </ul>
 
-### Web Component
+### Constructor
 
 Create a `FlowView` instance and pass it a `container` argument. It will create
-a `flow-view` custom element and attach it to the _container_.
+a `flow-view` custom element and attach it to the _container_. If no argument is
+provided, default _container_ will be `document.body`. Be aware that the
+`flow-view` custom element will fit the whole height of its container, so make
+sure to style properly to avoid a zero height container.
 
 ```html
 <!DOCTYPE html>
@@ -80,6 +83,33 @@ If some `flow-view` custom element is already in the page, it can be passed to a
     </script>
   </body>
 </html>
+```
+
+There is another parameter which is _optional_ but it makes sense to be provided
+in the majority of use cases, that is **node definitions**. It is used to define
+which nodes are available and how many inputs and outputs they have.
+
+```javascript
+new FlowView({
+  nodes: [
+    {
+      label: "Sum",
+      inputs: [
+        {
+          name: "input1",
+        },
+        {
+          name: "input2",
+        },
+      ],
+      outputs: [
+        {
+          name: "output",
+        },
+      ],
+    },
+  ],
+});
 ```
 
 ### `loadGraph({ nodes = [], edges = [] })`

@@ -19,22 +19,37 @@
       container: document.querySelector('main'),
       nodes: [
         {
-          type: 'pizza',
+          label: 'pizza',
+          inputs: [
+            {
+              name: 'in'
+            }
+          ],
+          outputs: [
+            {
+              name: 'out'
+            }
+          ]
+        },
+        {
+          label: 'pizzeria',
+          inputs: [
+            {
+              name: 'in1'
+            },
+            {
+              name: 'in2'
+            }
+          ],
+          outputs: []
+        },
+        {
+          label: 'mare',
           inputs: [],
           outputs: []
         },
         {
-          type: 'pizzeria',
-          inputs: [],
-          outputs: []
-        },
-        {
-          type: 'mare',
-          inputs: [],
-          outputs: []
-        },
-        {
-          type: 'marechiaro',
+          label: 'marechiaro',
           inputs: [],
           outputs: []
         }

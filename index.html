@@ -44,7 +44,37 @@
     // import { FlowView } from './main.js';
 
     const flowView = new FlowView({
-      element: document.getElementById('element')
+      element: document.getElementById('element'),
+      nodes: [
+        {
+          label: 'Homer',
+          inputs: [],
+          outputs: [
+            { name: 'out' }
+          ]
+        },
+        {
+          label: 'Marge',
+          inputs: [],
+          outputs: [
+            { name: 'out' }
+          ]
+        },
+        {
+          label: 'Lisa',
+          inputs: [
+            { name: 'in' }
+          ],
+          outputs: []
+        },
+        {
+          label: 'Bart',
+          inputs: [
+            { name: 'in' }
+          ],
+          outputs: []
+        }
+      ]
     });
 
     flowView.loadGraph({

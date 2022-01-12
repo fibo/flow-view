@@ -30,7 +30,6 @@ main {
 h1 {
   font-size: 3em;
   font-family: Georgia, serif;
-  margin: 1rem;
 }
 
 blockquote {
@@ -61,4 +60,14 @@ footer {
 
 a:visited, a:active, a:link, a:hover, a:focus {
   color: tomato;
+}
+
+button {
+  padding: 0.5em 0.7em;
+  text-transform: uppercase;
+}
+
+.container {
+  max-width: 800px;
+  height: 500px;
 }

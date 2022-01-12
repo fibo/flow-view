@@ -2,7 +2,7 @@
 
 > is a visual editor for [dataflow programming][dataflow_wikipedia]
 
-<a href="http://g14n.info/flow-view/">
+<a href="http://fibo.github.io/flow-view/">
 <div>Demo</div>
 <img width="517" height="490" src="screenshot.png" alt="flow view Simpsons example">
 </a>
@@ -23,9 +23,9 @@ Try this in your HTML page
 
 ```html
 <script type="module">
-  import { FlowView } from 'https://unpkg.com/flow-view'
+  import { FlowView } from 'https://unpkg.com/flow-view';
 
-  const flowView = new FlowView()
+  const flowView = new FlowView();
 </script>
 ```
 
@@ -85,31 +85,16 @@ If some `flow-view` custom element is already in the page, it can be passed to a
 </html>
 ```
 
-There is another parameter which is _optional_ but it makes sense to be provided
-in the majority of use cases, that is **node definitions**. It is used to define
-which nodes are available and how many inputs and outputs they have.
+Add a list to define which nodes are available. It makes sense to be provided in
+the majority of use cases.
 
 ```javascript
-new FlowView({
-  nodes: [
-    {
-      label: "Sum",
-      inputs: [
-        {
-          name: "input1",
-        },
-        {
-          name: "input2",
-        },
-      ],
-      outputs: [
-        {
-          name: "output",
-        },
-      ],
-    },
-  ],
-});
+flowView.addNodeLabels([
+  "Marge",
+  "Homer",
+  "Bart",
+  "Lisa",
+]);
 ```
 
 ### `loadGraph({ nodes = [], edges = [] })`
@@ -157,6 +142,14 @@ flowView.loadGraph({
 });
 ```
 
+### `clearGraph()`
+
+Empty current graph.
+
+```javascript
+flowView.clearGraph();
+```
+
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
@@ -164,6 +157,8 @@ Create nodes and edges programmatically. See
 here</a>.
 
 ```javascript
+// Create two nodes.
+
 const node1 = flowView.newNode({
   label: "Hello",
   inputs: [{}, {}],
@@ -179,6 +174,8 @@ const node2 = flowView.newNode({
   x: 250,
   y: 400,
 });
+
+// Connect nodes with an edge.
 flowView.newEdge({
   from: [node1.id, "output1"],
   to: [node2.id, "input1"],

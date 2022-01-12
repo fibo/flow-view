@@ -1,6 +1,12 @@
 import { FlowViewPin } from "./pin.js";
 
 export class FlowViewOutput extends FlowViewPin {
+  constructor(args) {
+    super(args);
+
+    this.info.style.top = "15px";
+  }
+
   get center() {
     const {
       bounds: { x: boundsX },

@@ -9,23 +9,54 @@
 </head>
 <body>
 
-  <main></main>
+  <main>
+    <h1>flow-view</h1>
+
+    <h2>programmatic example</h2>
+
+    <div class="container">
+      <flow-view id="element"></flow-view>
+    </div>
+
+    <div>
+      <button id="reset">Reset</button>
+      <button id="clear">Clear</button>
+    </div>
+  </main>
 
   <script type="module">
     import { FlowView } from '../../main.js';
-    // import { FlowView } from 'https://unpkg.com/flow-view';
 
-    const flowView = new FlowView({ container: document.querySelector('main') });
+    const flowView = new FlowView({
+      element: document.getElementById('element')
+    });
 
-    const node1 = flowView.newNode({
-      label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
-    });
-    const node2 = flowView.newNode({
-      label: 'World', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
-    });
-    flowView.newEdge({
-      from: [node1.id, 'output1'],
-      to: [node2.id, 'input1']
+    function createGraphProgrammatically() {
+      const node1 = flowView.newNode({
+        label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+      });
+      const node2 = flowView.newNode({
+        label: 'World', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
+      });
+      flowView.newEdge({
+        from: [node1.id, 'output1'],
+        to: [node2.id, 'input1']
+      })
+    }
+
+    createGraphProgrammatically();
+
+    // Controls
+
+    const resetButton = document.querySelector('button#reset');
+    resetButton.addEventListener('click', () => {
+      flowView.clearGraph();
+      createGraphProgrammatically();
+    })
+
+    const clearButton = document.querySelector('button#clear');
+    clearButton.addEventListener('click', () => {
+      flowView.clearGraph();
     })
   </script>
 

@@ -8,13 +8,6 @@
   <title>flow-view</title>
   <meta name="description" content="is a visual editor for Dataflow programming">
 
-  <style>
-    .container {
-      max-width: 800px;
-      height: 500px;
-    }
-  </style>
-
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -35,49 +28,76 @@
       </ul>
 
     <div class="container">
-      <flow-view id="element"></flow-view>
+    </div>
+
+    <div>
+      <button id="reset">Reset</button>
+      <button id="clear">Clear</button>
     </div>
   </main>
 
   <script type="module">
-    import { FlowView } from './flow-view.js';
-    // import { FlowView } from './main.js';
+    import { FlowView } from './main.js';
+    // import { FlowView } from './flow-view.js';
+    // import { FlowView } from 'https://unpkg.com/flow-view';
 
     const flowView = new FlowView({
-      element: document.getElementById('element'),
-      nodes: [
-        {
-          label: 'Homer',
-          inputs: [],
-          outputs: [
-            { name: 'out' }
-          ]
-        },
-        {
-          label: 'Marge',
-          inputs: [],
-          outputs: [
-            { name: 'out' }
-          ]
-        },
-        {
-          label: 'Lisa',
-          inputs: [
-            { name: 'in' }
-          ],
-          outputs: []
-        },
-        {
-          label: 'Bart',
-          inputs: [
-            { name: 'in' }
-          ],
-          outputs: []
-        }
-      ]
+      container: document.querySelector('.container')
     });
 
-    flowView.loadGraph({
+    const nodeLabels = [
+      "Marge",
+      "Homer",
+      "Bart",
+      "Lisa"
+    ];
+    flowView.addNodeLabels(nodeLabels);
+
+    flowView.onChange(({ action, data }) => {
+      switch(action) {
+        case FlowView.action.CREATE_NODE: {
+          const node = flowView.node(data.id);
+
+          // Make it case insensitive.
+          const label = nodeLabels.find((nodeLabel) => {
+            return (nodeLabel.toLowerCase() === data.label.toLowerCase());
+          }) || data.label;
+          node.label = label
+
+          switch (label) {
+            case 'Marge':
+            case 'Homer': {
+              if (node.outputs.length === 0) {
+                node.newOutput({})
+              }
+              node.outputs[0].text = 'out'
+              break;
+            }
+
+            case 'Bart':
+            case 'Lisa': {
+              if (node.inputs.length === 0) {
+                node.newInput({});
+                node.newInput({});
+              }
+              node.inputs[0].text = 'in1'
+              node.inputs[1].text = 'in2'
+              break;
+            }
+
+            default: {
+              console.log('Unknown node', node);
+            }
+          }
+        }
+
+        default: {
+          console.log(action, data);
+        }
+      }
+    })
+
+    const initialGraph = {
       nodes: [
         {
           id: 'dad',
@@ -110,7 +130,22 @@
         { from: ['mom', 'children'], to: ['son', 'mother'] },
         { from: ['mom', 'children'], to: ['daughter', 'mother'] }
       ]
-    });
+    }
+
+    flowView.loadGraph(initialGraph);
+
+    // Controls
+
+    const resetButton = document.querySelector('button#reset');
+    resetButton.addEventListener('click', () => {
+      flowView.clearGraph();
+      flowView.loadGraph(initialGraph);
+    })
+
+    const clearButton = document.querySelector('button#clear');
+    clearButton.addEventListener('click', () => {
+      flowView.clearGraph();
+    })
   </script>
 
   <footer>

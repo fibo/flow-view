@@ -5,6 +5,8 @@ import { FlowViewNode } from "./node.js";
 export class FlowViewSelector extends FlowViewBase {
   static cssClassName = "fv-selector";
   static zIndex = FlowViewNode.zIndex + 1;
+  static width = 216;
+  static padding = 9;
   static style = {
     [`.${FlowViewSelector.cssClassName}`]: {
       "position": "absolute",
@@ -18,7 +20,8 @@ export class FlowViewSelector extends FlowViewBase {
       "border-radius": cssVar.borderRadius,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
-      "padding": "0.5em",
+      "padding": `${FlowViewSelector.padding}px`,
+      "width": `${FlowViewSelector.width - 2 * FlowViewSelector.padding}px`,
     },
     [`.${FlowViewSelector.cssClassName}__hint`]: {
       "position": "absolute",
@@ -31,7 +34,7 @@ export class FlowViewSelector extends FlowViewBase {
     },
   };
 
-  init({ position, nodeDefinitions }) {
+  init({ nodeLabels, position }) {
     const { element } = this;
 
     element.setAttribute("tabindex", 0);
@@ -43,13 +46,8 @@ export class FlowViewSelector extends FlowViewBase {
     const input = this.input = document.createElement("input");
     element.appendChild(input);
 
+    this.nodeLabels = nodeLabels;
     this.position = position;
-
-    // Sort nodeDefinitions by label, there should not be two equal labels.
-    this.nodeDefinitions = nodeDefinitions.sort((
-      { label: a },
-      { label: b },
-    ) => (a < b ? -1 : 1));
 
     this._onDblclick = this.onDblclick.bind(this);
     element.addEventListener("dblclick", this._onDblclick);
@@ -84,13 +82,13 @@ export class FlowViewSelector extends FlowViewBase {
     this.hint.setAttribute("placeholder", text);
   }
 
-  get matchingNodeDefinitions() {
+  get matchingNodeLabels() {
     const { input: { value } } = this;
 
     // Type at least few chars to start showing completion.
     if (value.length < 2) return [];
 
-    return this.nodeDefinitions.filter(({ label }) => (
+    return this.nodeLabels.filter((label) => (
       // input value fits into node label...
       label.startsWith(value) &&
       // ...but they are not the same yet.
@@ -102,10 +100,20 @@ export class FlowViewSelector extends FlowViewBase {
 
   set position({ x, y }) {
     const { element, view } = this;
-    element.style.top = `${y - view.origin.y}px`;
-    element.style.left = `${x - view.origin.x}px`;
-    this.x = x;
-    this.y = y;
+
+    // Avoid overflow, using some heuristic values.
+    const overflowY = y - view.origin.y + 40 >= view.height;
+    const overflowX = x - view.origin.x + FlowViewSelector.width >= view.width;
+    const _x = overflowX
+      ? view.width + view.origin.x - FlowViewSelector.width - 10
+      : x;
+    const _y = overflowY ? view.height + view.origin.y - 50 : y;
+
+    element.style.top = `${_y - view.origin.y}px`;
+    element.style.left = `${_x - view.origin.x}px`;
+
+    this.x = _x;
+    this.y = _y;
   }
 
   get position() {
@@ -113,18 +121,13 @@ export class FlowViewSelector extends FlowViewBase {
   }
 
   createNode() {
-    const { input: { value }, nodeDefinitions, position: { x, y }, view } =
-      this;
+    const {
+      input: { value },
+      position: { x, y },
+      view,
+    } = this;
 
-    const nodeDefinition =
-      nodeDefinitions.find(({ label }) => (label === value)) || {};
-
-    view.newNode({
-      x,
-      y,
-      label: value,
-      ...nodeDefinition,
-    });
+    view.newNode({ x, y, label: value });
     view.removeSelector();
   }
 
@@ -164,30 +167,30 @@ export class FlowViewSelector extends FlowViewBase {
   onKeyup(event) {
     event.stopPropagation();
 
-    const { input: { value }, matchingNodeDefinitions } = this;
+    const { input: { value }, matchingNodeLabels } = this;
 
-    switch (matchingNodeDefinitions.length) {
+    switch (matchingNodeLabels.length) {
       case 0: {
         this.completion = "";
         break;
       }
       case 1: {
-        this.completion = matchingNodeDefinitions[0].label;
+        this.completion = matchingNodeLabels[0];
         break;
       }
       default: {
         let completion = value;
 
-        const shortestMatch = matchingNodeDefinitions.reduce((
+        const shortestMatch = matchingNodeLabels.reduce((
           shortest,
           match,
-        ) => (shortest.label.length < match.label.length ? shortest : match));
+        ) => (shortest.length < match.length ? shortest : match));
 
-        for (let i = value.length; i < shortestMatch.label.length; i++) {
-          const currentChar = shortestMatch.label[i];
+        for (let i = value.length; i < shortestMatch.length; i++) {
+          const currentChar = shortestMatch[i];
 
           if (
-            matchingNodeDefinitions.every(({ label }) =>
+            matchingNodeLabels.every((label) =>
               label.startsWith(completion + currentChar)
             )
           ) {

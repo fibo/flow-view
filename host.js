@@ -1,6 +1,13 @@
 import { FlowViewElement } from "./view.js";
 
 export class FlowView {
+  static action = {
+    CREATE_NODE: "CREATE_NODE",
+    CREATE_EDGE: "CREATE_EDGE",
+    DELETE_NODE: "DELETE_NODE",
+    DELETE_EDGE: "DELETE_EDGE",
+  };
+
   static defineCustomElement() {
     const { customElementName } = FlowViewElement;
 
@@ -9,111 +16,19 @@ export class FlowView {
     }
   }
 
-  static nodeDefinitionIsValid(node) {
-    if (node === null || typeof node !== "object") {
-      throw new TypeError(
-        "invalid flow-view node definition: must be an object",
-      );
-    }
-
-    const { label, inputs, outputs } = node;
-
-    if (
-      typeof label !== "string" || label === "" ||
-      FlowView.reservedTypes.includes(label)
-    ) {
-      throw new TypeError(
-        `invalid flow-view node label: ${
-          label === "" ? "empty string" : label
-        }`,
-      );
-    }
-
-    if (Array.isArray(inputs) && Array.isArray(outputs)) {
-      for (const pin of inputs.concat(outputs)) {
-        if (pin === null || typeof pin !== "object") {
-          throw new TypeError("invalid flow-view node pin: must be an object");
-        }
-
-        const { name, types } = pin;
-
-        // Attribute `name` is optional but, if provided,
-        // must be a non empty string.
-        if (typeof name !== "undefined") {
-          if (typeof name !== "string" || name === "") {
-            throw new TypeError(
-              `invalid flow-view node pin name: ${
-                name === ""
-                  ? "empty string"
-                  : name
-              }`,
-            );
-          }
-        }
-
-        // Attribute `types` is optional but, if provided,
-        // must be a non empty array of strings.
-        if (typeof types !== "undefined") {
-          if (Array.isArray(types) && types.length > 0) {
-            for (const type of types) {
-              if (typeof type !== "string" || type === "") {
-                throw new TypeError(
-                  `invalid flow-view node pin type: ${
-                    type === ""
-                      ? "empty string"
-                      : type
-                  }`,
-                );
-              }
-            }
-          } else {
-            throw new TypeError(
-              "invalid flow-view node pin, types must be a not empty array",
-            );
-          }
-        }
-      }
-    } else {
-      throw new TypeError(
-        "invalid flow-view node, inputs or outputs are missing",
-      );
-    }
-  }
-
-  static reservedTypes = ["node", "edge"];
-
-  constructor({ container, element, nodes = [] } = {}) {
+  constructor({ container, element } = {}) {
     // 1. Define custom element.
 
     FlowView.defineCustomElement();
 
-    // 2. Validate nodes.
-
-    const nodeLabels = new Set();
-    for (const node of nodes) {
-      try {
-        // Validate every node.
-        FlowView.nodeDefinitionIsValid(node);
-
-        // Check that node labels are unique.
-        const { label } = node;
-        if (nodeLabels.has(label)) {
-          throw new TypeError(`duplicated flow-view node label ${label}`);
-        } else {
-          nodeLabels.add(label);
-        }
-      } catch (error) {
-        throw error;
-      }
-    }
-
-    this.nodes = nodes;
-
     // 2. Create DOM element and attach host.
 
+    const applyInlineStyles = (style) => {
+      style.isolation = "isolate";
+    };
+
     if (element instanceof FlowViewElement) {
-      // Apply custom element inline styles.
-      element.style.isolation = "isolate";
+      applyInlineStyles(element.style);
 
       element.host = this;
       this.view = element;
@@ -121,11 +36,9 @@ export class FlowView {
       const view = this.view = document.createElement(
         FlowViewElement.customElementName,
       );
-
-      // Apply custom element inline styles.
-      view.style.isolation = "isolate";
-
       view.host = this;
+
+      applyInlineStyles(view.style);
 
       if (container instanceof HTMLElement) {
         container.appendChild(view);
@@ -136,12 +49,31 @@ export class FlowView {
 
     // 3. Other initializations.
 
+    this.nodeLabels = new Set();
+
     this._onViewChange = () => {};
   }
 
+  node(id) {
+    return this.view.node(id);
+  }
+
+  edge(id) {
+    return this.view.edge(id);
+  }
+
+  addNodeLabels(nodeLabels) {
+    if (Array.isArray(nodeLabels)) {
+      nodeLabels.forEach((nodeLabel) => {
+        if (typeof nodeLabel === "string" && nodeLabel !== "") {
+          this.nodeLabels.add(nodeLabel);
+        }
+      });
+    }
+  }
+
   clearGraph() {
-    this.view.nodes.clear();
-    this.view.edges.clear();
+    this.view.clear();
   }
 
   loadGraph({ nodes = [], edges = [] }) {
@@ -168,8 +100,31 @@ export class FlowView {
     }
   }
 
-  viewChange(args) {
-    this.onViewChange(args);
+  viewChange({ createdNode, createdEdge, deletedNode, deletedEdge }) {
+    if (createdNode) {
+      this.onViewChange({
+        action: FlowView.action.CREATE_NODE,
+        data: createdNode,
+      });
+    }
+    if (createdEdge) {
+      this.onViewChange({
+        action: FlowView.action.CREATE_EDGE,
+        data: createdEdge,
+      });
+    }
+    if (deletedNode) {
+      this.onViewChange({
+        action: FlowView.action.DELETE_NODE,
+        data: deletedNode,
+      });
+    }
+    if (deletedEdge) {
+      this.onViewChange({
+        action: FlowView.action.DELETE_EDGE,
+        data: deletedEdge,
+      });
+    }
   }
 
   newEdge({

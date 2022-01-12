@@ -8,20 +8,33 @@ export class FlowViewPin extends FlowViewBase {
   static style = {
     [`.${FlowViewPin.cssClassName}`]: {
       "background-color": cssVar.connectionColor,
+      "cursor": "none",
+      "position": "relative",
       "display": "block",
       "width": `${FlowViewPin.size}px`,
       "height": `${FlowViewPin.size}px`,
       ...cssTransition("background-color"),
+    },
+    [`.${FlowViewPin.cssClassName} .info`]: {
+      "visibility": "hidden",
+      "position": "absolute",
+      "background-color": "transparent",
+      "user-select": "none",
+    },
+    [`.${FlowViewPin.cssClassName}:hover .info`]: {
+      "visibility": "visible",
     },
     [`.${cssModifierHighlighted(FlowViewPin.cssClassName)}`]: {
       "background-color": cssVar.connectionColorHighlighted,
     },
   };
 
-  init({ name, node, types }) {
+  init({ name, node }) {
     this.name = name;
     this.node = node;
-    this.types = types;
+
+    this.info = this.createDiv("info");
+    this.text = name || "";
 
     this._onPointerdown = this.onPointerdown.bind(this);
     this.element.addEventListener("pointerdown", this._onPointerdown);
@@ -31,6 +44,10 @@ export class FlowViewPin extends FlowViewBase {
     this.element.addEventListener("pointerleave", this._onPointerleave);
     this._onPointerup = this.onPointerup.bind(this);
     this.element.addEventListener("pointerup", this._onPointerup);
+  }
+
+  set text(value) {
+    this.info.innerHTML = value;
   }
 
   get halfPinSize() {
@@ -50,13 +67,10 @@ export class FlowViewPin extends FlowViewBase {
   }
 
   toObject() {
-    const { name, types } = this;
+    const { name } = this;
     const obj = {};
     if (typeof name !== "undefined") {
       obj.name = name;
-    }
-    if (typeof types !== "undefined") {
-      obj.types = types;
     }
     return {
       ...super.toObject(),

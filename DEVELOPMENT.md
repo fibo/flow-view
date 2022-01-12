@@ -15,4 +15,4 @@ npm install esbuild serve -g
 - Start demo: `npm start`
 - Format code: `npm run fmt`
 - Lint code: `npm run lint`
-- Generate code bundles: `npm run bundle`
+- Generate code bundle: `npm run bundle`

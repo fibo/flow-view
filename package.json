@@ -9,7 +9,7 @@
   "type": "module",
   "main": "flow-view.js",
   "license": "MIT",
-  "homepage": "http://g14n.info/flow-view",
+  "homepage": "http://fibo.github.io/flow-view",
   "author": {
     "name": "Gianluca Casati",
     "url": "http://g14n.info"

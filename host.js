@@ -1,13 +1,6 @@
 import { FlowViewElement } from "./view.js";
 
 export class FlowView {
-  static action = {
-    CREATE_NODE: "CREATE_NODE",
-    CREATE_EDGE: "CREATE_EDGE",
-    DELETE_NODE: "DELETE_NODE",
-    DELETE_EDGE: "DELETE_EDGE",
-  };
-
   static defineCustomElement() {
     const { customElementName } = FlowViewElement;
 
@@ -103,25 +96,25 @@ export class FlowView {
   viewChange({ createdNode, createdEdge, deletedNode, deletedEdge }) {
     if (createdNode) {
       this.onViewChange({
-        action: FlowView.action.CREATE_NODE,
+        action: 'CREATE_NODE',
         data: createdNode,
       });
     }
     if (createdEdge) {
       this.onViewChange({
-        action: FlowView.action.CREATE_EDGE,
+        action: "CREATE_EDGE",
         data: createdEdge,
       });
     }
     if (deletedNode) {
       this.onViewChange({
-        action: FlowView.action.DELETE_NODE,
+        action: "DELETE_NODE",
         data: deletedNode,
       });
     }
     if (deletedEdge) {
       this.onViewChange({
-        action: FlowView.action.DELETE_EDGE,
+        action: "DELETE_EDGE",
         data: deletedEdge,
       });
     }

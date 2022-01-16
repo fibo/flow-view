@@ -175,10 +175,6 @@ export class FlowViewElement extends HTMLElement {
     return Array.from(this._nodes.values());
   }
 
-  get nodeDefinitions() {
-    return this.host.nodes;
-  }
-
   get height() {
     return parseInt(this.style.height);
   }
@@ -197,7 +193,7 @@ export class FlowViewElement extends HTMLElement {
 
   clear() {
     this.nodes.forEach((node) => {
-      this.deleteNode(node);
+      this.deleteNode(node.id);
     });
   }
 
@@ -297,25 +293,40 @@ export class FlowViewElement extends HTMLElement {
     this._nodes.set(node.id, node);
   }
 
-  deleteEdge(edge) {
-    this._edges.delete(edge.id);
+  deleteEdge(id) {
+    const edge = this._edges.get(id)
+    if (!edge) return
+
     edge.source.highlight = false;
     edge.target.highlight = false;
-    this.host.viewChange({ deletedEdge: edge.toObject() });
+
+    // Dispose.
+    this._edges.delete(edge.id);
     edge.remove();
+
+    const serializedEdge = edge.toObject()
+    this.host.viewChange({ deletedEdge: serializedEdge });
+    return serializedEdge
   }
 
-  deleteNode(node) {
+  deleteNode(id) {
+    const node = this._nodes.get(id)
+    if (!node) return
+
     // Remove edges connected to node.
     for (const edge of this.edges) {
       if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
-        this.deleteEdge(edge);
+        this.deleteEdge(edge.id);
       }
     }
+
     // Dispose.
     this._nodes.delete(node.id);
-    this.host.viewChange({ deletedNode: node.toObject() });
     node.remove();
+
+    const serializedNode = node.toObject()
+    this.host.viewChange({ deletedNode: serializedNode });
+    return serializedNode
   }
 
   edge(id) {
@@ -535,11 +546,11 @@ export class FlowViewElement extends HTMLElement {
   deleteSelectedItems() {
     // Delete edges first...
     for (const edge of this.selectedEdges) {
-      this.deleteEdge(edge);
+      this.deleteEdge(edge.id);
     }
     // ...then delete nodes.
     for (const node of this.selectedNodes) {
-      this.deleteNode(node);
+      this.deleteNode(node.id);
     }
   }
 

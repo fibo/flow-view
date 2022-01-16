@@ -144,4 +144,12 @@ export class FlowView {
   } = {}) {
     return this.view.newNode({ id, label, nodeType, inputs, outputs, x, y });
   }
+
+  deleteNode(id) {
+    return this.view.deleteNode(id)
+  }
+
+  deleteEdge(id) {
+    return this.view.deleteEdge(id)
+  }
 }

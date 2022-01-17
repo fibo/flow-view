@@ -47,6 +47,15 @@ export class FlowView {
     this._onViewChange = () => {};
   }
 
+  get graph() {
+    const { view: { nodes, edges } } = this;
+
+    return {
+      nodes: nodes.map((node) => node.toObject()),
+      edges: edges.map((edge) => edge.toObject()),
+    };
+  }
+
   node(id) {
     return this.view.node(id);
   }
@@ -70,6 +79,8 @@ export class FlowView {
   }
 
   loadGraph({ nodes = [], edges = [] }) {
+    this.clearGraph();
+
     if (!Array.isArray(nodes) || !Array.isArray(edges)) {
       throw new TypeError("Invalid graph");
     }
@@ -96,7 +107,7 @@ export class FlowView {
   viewChange({ createdNode, createdEdge, deletedNode, deletedEdge }) {
     if (createdNode) {
       this.onViewChange({
-        action: 'CREATE_NODE',
+        action: "CREATE_NODE",
         data: createdNode,
       });
     }
@@ -146,10 +157,10 @@ export class FlowView {
   }
 
   deleteNode(id) {
-    return this.view.deleteNode(id)
+    return this.view.deleteNode(id);
   }
 
   deleteEdge(id) {
-    return this.view.deleteEdge(id)
+    return this.view.deleteEdge(id);
   }
 }

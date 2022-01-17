@@ -294,8 +294,8 @@ export class FlowViewElement extends HTMLElement {
   }
 
   deleteEdge(id) {
-    const edge = this._edges.get(id)
-    if (!edge) return
+    const edge = this._edges.get(id);
+    if (!edge) return;
 
     edge.source.highlight = false;
     edge.target.highlight = false;
@@ -304,14 +304,14 @@ export class FlowViewElement extends HTMLElement {
     this._edges.delete(edge.id);
     edge.remove();
 
-    const serializedEdge = edge.toObject()
+    const serializedEdge = edge.toObject();
     this.host.viewChange({ deletedEdge: serializedEdge });
-    return serializedEdge
+    return serializedEdge;
   }
 
   deleteNode(id) {
-    const node = this._nodes.get(id)
-    if (!node) return
+    const node = this._nodes.get(id);
+    if (!node) return;
 
     // Remove edges connected to node.
     for (const edge of this.edges) {
@@ -324,9 +324,9 @@ export class FlowViewElement extends HTMLElement {
     this._nodes.delete(node.id);
     node.remove();
 
-    const serializedNode = node.toObject()
+    const serializedNode = node.toObject();
     this.host.viewChange({ deletedNode: serializedNode });
-    return serializedNode
+    return serializedNode;
   }
 
   edge(id) {

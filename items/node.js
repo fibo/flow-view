@@ -33,7 +33,7 @@ export class FlowViewNode extends FlowViewBase {
       "user-select": "none",
       "padding-left": "0.5em",
       "padding-right": "0.5em",
-      "text-align": "center"
+      "text-align": "center",
     },
     [`.${FlowViewNode.cssClassName} .pins`]: {
       "display": "flex",

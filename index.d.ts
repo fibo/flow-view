@@ -24,6 +24,11 @@ export type FlowViewSerializedEdge = {
   to: [FlowViewSerializedNode["id"], FlowViewSerializedInput["id"]];
 };
 
+export type FlowViewSerializedGraph = {
+  nodes: FlowViewSerializedNode[];
+  edges: FlowViewSerializedEdge[];
+};
+
 declare class FlowViewPin {
   constructor(arg: FlowViewSerializedPin);
 
@@ -77,6 +82,8 @@ type OnChangeCallback = (arg: FlowViewOnChangeArg) => void;
 export declare class FlowView {
   constructor(arg?: ConstructorArg);
 
+  get graph(): FlowViewSerializedGraph;
+
   addNodeLabels(nodeLabels: string[]);
 
   clearGraph();
@@ -90,13 +97,15 @@ export declare class FlowView {
   edge(id: string): FlowViewEdge;
 
   newNode(
-    arg: Omit<FlowViewSerializedNode, "id"> &
-      Partial<Pick<FlowViewSerializedNode, "id">>
+    arg:
+      & Omit<FlowViewSerializedNode, "id">
+      & Partial<Pick<FlowViewSerializedNode, "id">>,
   ): FlowViewNode;
 
   newEdge(
-    arg: Omit<FlowViewSerializedEdge, "id"> &
-      Partial<Pick<FlowViewSerializedEdge, "id">>
+    arg:
+      & Omit<FlowViewSerializedEdge, "id">
+      & Partial<Pick<FlowViewSerializedEdge, "id">>,
   ): FlowViewEdge;
 
   deleteNode(id: FlowViewSerializedNode["id"]): FlowViewSerializedNode;

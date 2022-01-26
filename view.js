@@ -510,7 +510,7 @@ export class FlowViewElement extends HTMLElement {
           : entry.contentBoxSize;
         if (contentBoxSize) {
           this.width = contentBoxSize.inlineSize;
-          this.height = contentBoxSize.blockSize - 10;
+          this.height = contentBoxSize.blockSize;
         } else {
           // Fallback to contentRect
           if (entry.contentRect) {

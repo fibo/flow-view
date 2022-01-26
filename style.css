@@ -71,3 +71,7 @@ button {
   max-width: 800px;
   height: 500px;
 }
+
+.controls {
+  margin: 1em;
+}

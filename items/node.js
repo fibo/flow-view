@@ -167,12 +167,14 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   toObject() {
-    const { label, inputs, outputs } = this;
+    const { label, inputs, outputs, x, y } = this;
     return {
       ...super.toObject(),
       label,
       inputs: inputs.map((pin) => pin.toObject()),
       outputs: outputs.map((pin) => pin.toObject()),
+      x,
+      y,
     };
   }
 }

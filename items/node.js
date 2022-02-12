@@ -38,6 +38,7 @@ export class FlowViewNode extends FlowViewBase {
     [`.${FlowViewNode.cssClassName} .pins`]: {
       "display": "flex",
       "flex-direction": "row",
+      "gap": `${FlowViewPin.size}px`,
       "justify-content": "space-between",
       "height": `${FlowViewPin.size}px`,
     },

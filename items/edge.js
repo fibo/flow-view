@@ -9,7 +9,7 @@ export class FlowViewEdge extends FlowViewBase {
   static zIndex = 0;
   static style = {
     [`.${FlowViewEdge.cssClassName}`]: {
-      "display": "inline-block",
+      "display": "flex",
       "position": "absolute",
       "border": 0,
       "pointer-events": "none",

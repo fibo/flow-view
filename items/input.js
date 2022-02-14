@@ -26,14 +26,6 @@ export class FlowViewInput extends FlowViewPin {
     event.stopPropagation();
   }
 
-  onPointerenter(event) {
-    event.stopPropagation();
-
-    if (this.view.isDraggingEdge) return;
-
-    this.highlight = true;
-  }
-
   onPointerup() {
     const { view } = this;
 

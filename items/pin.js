@@ -61,9 +61,19 @@ export class FlowViewPin extends FlowViewBase {
     this.element.removeEventListener("pointerup", this._onPointerup);
   }
 
+  onPointerenter(event) {
+    event.stopPropagation();
+
+    if (this.view.isDraggingEdge) return;
+    if (this.node.isSelected) return;
+
+    this.highlight = true;
+  }
+
   onPointerleave(event) {
     event.stopPropagation();
-    this.highlight = false;
+    if (this.node.isSelected) return;
+      this.highlight = false;
   }
 
   toObject() {

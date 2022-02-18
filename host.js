@@ -75,22 +75,20 @@ export class FlowView {
   }
 
   clearGraph() {
-    this.view.clear();
+    this.view.clear({ isClearGraph: true });
   }
 
   loadGraph({ nodes = [], edges = [] }) {
-    this.clearGraph();
-
     if (!Array.isArray(nodes) || !Array.isArray(edges)) {
       throw new TypeError("Invalid graph");
     }
     // Create nodes first...
     for (const node of nodes) {
-      this.newNode(node);
+      this.newNode(node, { isLoadGraph: true });
     }
     // ...then create edges.
     for (const edge of edges) {
-      this.newEdge(edge);
+      this.newEdge(edge, { isLoadGraph: true });
     }
   }
 
@@ -104,30 +102,33 @@ export class FlowView {
     }
   }
 
-  viewChange({ createdNode, createdEdge, deletedNode, deletedEdge }) {
+  viewChange(
+    { createdNode, createdEdge, deletedNode, deletedEdge },
+    viewChangeInfo = {},
+  ) {
     if (createdNode) {
       this.onViewChange({
         action: "CREATE_NODE",
         data: createdNode,
-      });
+      }, viewChangeInfo);
     }
     if (createdEdge) {
       this.onViewChange({
         action: "CREATE_EDGE",
         data: createdEdge,
-      });
+      }, viewChangeInfo);
     }
     if (deletedNode) {
       this.onViewChange({
         action: "DELETE_NODE",
         data: deletedNode,
-      });
+      }, viewChangeInfo);
     }
     if (deletedEdge) {
       this.onViewChange({
         action: "DELETE_EDGE",
         data: deletedEdge,
-      });
+      }, viewChangeInfo);
     }
   }
 
@@ -135,13 +136,13 @@ export class FlowView {
     id,
     from: [sourceNodeId, sourcePinId],
     to: [targetNodeId, targetPinId],
-  }) {
+  }, viewChangeInfo = { isProgrammatic: true }) {
     const sourceNode = this.view.node(sourceNodeId);
     const targetNode = this.view.node(targetNodeId);
     const source = sourceNode.output(sourcePinId);
     const target = targetNode.input(targetPinId);
 
-    return this.view.newEdge({ id, source, target });
+    return this.view.newEdge({ id, source, target }, viewChangeInfo);
   }
 
   newNode({
@@ -152,15 +153,18 @@ export class FlowView {
     outputs,
     x,
     y,
-  } = {}) {
-    return this.view.newNode({ id, label, nodeType, inputs, outputs, x, y });
+  } = {}, viewChangeInfo = { isProgrammatic: true }) {
+    return this.view.newNode(
+      { id, label, nodeType, inputs, outputs, x, y },
+      viewChangeInfo,
+    );
   }
 
-  deleteNode(id) {
-    return this.view.deleteNode(id);
+  deleteNode(id, viewChangeInfo = { isProgrammatic: true }) {
+    return this.view.deleteNode(id, viewChangeInfo);
   }
 
-  deleteEdge(id) {
-    return this.view.deleteEdge(id);
+  deleteEdge(id, viewChangeInfo = { isProgrammatic: true }) {
+    return this.view.deleteEdge(id, viewChangeInfo);
   }
 }

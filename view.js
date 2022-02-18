@@ -191,13 +191,13 @@ export class FlowViewElement extends HTMLElement {
     this.style.width = `${value}px`;
   }
 
-  clear() {
+  clear(viewChangeInfo) {
     this.nodes.forEach((node) => {
-      this.deleteNode(node.id);
+      this.deleteNode(node.id, viewChangeInfo);
     });
   }
 
-  newEdge({ id, source, target }) {
+  newEdge({ id, source, target }, viewChangeInfo) {
     const Class = this.itemClass.get("edge");
     const edge = new Class({
       id,
@@ -207,7 +207,7 @@ export class FlowViewElement extends HTMLElement {
       target,
     });
     this.addEdge(edge);
-    this.host.viewChange({ createdEdge: edge.toObject() });
+    this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo);
     return edge;
   }
 
@@ -219,7 +219,7 @@ export class FlowViewElement extends HTMLElement {
     nodeType = "node",
     inputs = [],
     outputs = [],
-  }) {
+  }, viewChangeInfo) {
     const Class = this.itemClass.get(nodeType);
     const node = new Class({
       id,
@@ -232,7 +232,7 @@ export class FlowViewElement extends HTMLElement {
       y,
     });
     this.addNode(node);
-    this.host.viewChange({ createdNode: node.toObject() });
+    this.host.viewChange({ createdNode: node.toObject() }, viewChangeInfo);
     return node;
   }
 
@@ -293,7 +293,7 @@ export class FlowViewElement extends HTMLElement {
     this._nodes.set(node.id, node);
   }
 
-  deleteEdge(id) {
+  deleteEdge(id, viewChangeInfo) {
     const edge = this._edges.get(id);
     if (!edge) return;
 
@@ -305,18 +305,18 @@ export class FlowViewElement extends HTMLElement {
     edge.remove();
 
     const serializedEdge = edge.toObject();
-    this.host.viewChange({ deletedEdge: serializedEdge });
+    this.host.viewChange({ deletedEdge: serializedEdge }, viewChangeInfo);
     return serializedEdge;
   }
 
-  deleteNode(id) {
+  deleteNode(id, viewChangeInfo) {
     const node = this._nodes.get(id);
     if (!node) return;
 
     // Remove edges connected to node.
     for (const edge of this.edges) {
       if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
-        this.deleteEdge(edge.id);
+        this.deleteEdge(edge.id, viewChangeInfo);
       }
     }
 
@@ -325,7 +325,7 @@ export class FlowViewElement extends HTMLElement {
     node.remove();
 
     const serializedNode = node.toObject();
-    this.host.viewChange({ deletedNode: serializedNode });
+    this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo);
     return serializedNode;
   }
 
@@ -568,13 +568,5 @@ export class FlowViewElement extends HTMLElement {
       selector.remove();
     }
     this.selector = undefined;
-  }
-
-  undo() {
-    // TODO
-  }
-
-  redo() {
-    // TODO
   }
 }

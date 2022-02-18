@@ -33,7 +33,7 @@ export class FlowViewOutput extends FlowViewPin {
   }
 
   onPointerup(event) {
-    event.stopPropagation()
+    event.stopPropagation();
   }
 
   toObject() {

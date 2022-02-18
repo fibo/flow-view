@@ -77,35 +77,42 @@ export type FlowViewOnChangeArg = {
   data: FlowViewSerializedNode | FlowViewSerializedEdge;
 };
 
-type OnChangeCallback = (arg: FlowViewOnChangeArg) => void;
+export type FlowViewOnChangeInfo = {
+  isclearGraph?: boolean;
+  isLoadGraph?: boolean;
+  isProgrammaticGraph?: boolean;
+};
+
+type OnChangeCallback = (
+  arg: FlowViewOnChangeArg,
+  info: FlowViewOnChangeInfo
+) => void;
 
 export declare class FlowView {
   constructor(arg?: ConstructorArg);
 
   get graph(): FlowViewSerializedGraph;
 
-  addNodeLabels(nodeLabels: string[]);
+  addNodeLabels(nodeLabels: string[]): void;
 
-  clearGraph();
+  clearGraph(): void;
 
-  loadGraph(FlowViewGraph);
+  loadGraph(graph: FlowViewGraph): void;
 
-  onChange(arg: OnChangeCallback);
+  onChange(arg: OnChangeCallback): void;
 
   node(id: string): FlowViewNode;
 
   edge(id: string): FlowViewEdge;
 
   newNode(
-    arg:
-      & Omit<FlowViewSerializedNode, "id">
-      & Partial<Pick<FlowViewSerializedNode, "id">>,
+    arg: Omit<FlowViewSerializedNode, "id"> &
+      Partial<Pick<FlowViewSerializedNode, "id">>
   ): FlowViewNode;
 
   newEdge(
-    arg:
-      & Omit<FlowViewSerializedEdge, "id">
-      & Partial<Pick<FlowViewSerializedEdge, "id">>,
+    arg: Omit<FlowViewSerializedEdge, "id"> &
+      Partial<Pick<FlowViewSerializedEdge, "id">>
   ): FlowViewEdge;
 
   deleteNode(id: FlowViewSerializedNode["id"]): FlowViewSerializedNode;

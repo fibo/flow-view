@@ -73,7 +73,7 @@ export class FlowViewPin extends FlowViewBase {
   onPointerleave(event) {
     event.stopPropagation();
     if (this.node.isSelected) return;
-      this.highlight = false;
+    this.highlight = false;
   }
 
   toObject() {

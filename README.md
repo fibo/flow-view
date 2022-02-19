@@ -33,7 +33,7 @@ Try this in your HTML page
 
 ### GUI
 
-Try <a href="http://g14n.info/flow-view/">demo here</a>.
+Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
 
 <ul>
   <li>Drag on canvas to translate all items.</li>
@@ -97,6 +97,30 @@ flowView.addNodeLabels([
 ]);
 ```
 
+### `node(id)`
+
+Get _flow-view_ node by id.
+
+```javascript
+const node = flowView.node('abc');
+```
+
+### `edge(id)`
+
+Get _flow-view_ edge by id.
+
+```javascript
+const edge = flowView.edge('abc');
+```
+
+### `graph`
+
+Access current _flow-view_ graph.
+
+```javascript
+console.log(flowView.graph);
+```
+
 ### `loadGraph({ nodes = [], edges = [] })`
 
 Load a _flow-view_ graph.
@@ -153,7 +177,7 @@ flowView.clearGraph();
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://g14n.info/flow-view/examples/programmatic">programmatic example
+<a href="http://fibo.github.io/flow-view/examples/programmatic">programmatic example
 here</a>.
 
 ```javascript
@@ -182,8 +206,34 @@ flowView.newEdge({
 });
 ```
 
+### `deleteNode()` and `deleteEdge()`
+
+Delete nodes and edges programmatically. Notice that when a node is deleted,
+all its connected edges are deleted too.
+
+```javascript
+const nodeId = 'abc';
+const edgeId = '123';
+
+flowView.deleteNode(nodeId);
+flowView.deleteEdge(edgeId);
+```
+
+### `onChange(callback)`
+
+React to _flow-view_ changes.
+See <a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code here</a>.
+
+Callback signature is `({ action, data }, info) => void`, where
+
+* **action** can be `CREATE_NODE`, `DELETE_NODE`, ecc
+* **data** change based on action
+* **info** can contain `{ isLoadGraph: true }` or other optional information.
+
+Just take advantage of autocompletion and suggestion provided by [typings definitions](https://github.com/fibo/flow-view/blob/main/index.d.ts).
+
 ## License
 
-[MIT](http://g14n.info/mit-license)
+[MIT](http://fibo.github.io/mit-license)
 
 [dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"

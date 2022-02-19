@@ -12,7 +12,7 @@
   "homepage": "http://fibo.github.io/flow-view",
   "author": {
     "name": "Gianluca Casati",
-    "url": "http://g14n.info"
+    "url": "http://fibo.github.io"
   },
   "scripts": {
     "build": "deno bundle main.js | esbuild --minify --target=safari11 > flow-view.js",

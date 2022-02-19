@@ -101,9 +101,9 @@ export declare class FlowView {
 
   onChange(arg: OnChangeCallback): void;
 
-  node(id: string): FlowViewNode;
+  node(id: string): FlowViewNode | undefined;
 
-  edge(id: string): FlowViewEdge;
+  edge(id: string): FlowViewEdge | undefined;
 
   newNode(
     arg: Omit<FlowViewSerializedNode, "id"> &

@@ -88,7 +88,7 @@ export type FlowViewOnChangeArg = {
 export type FlowViewOnChangeInfo = {
   isclearGraph?: boolean;
   isLoadGraph?: boolean;
-  isProgrammaticGraph?: boolean;
+  isProgrammatic?: boolean;
 };
 
 type OnChangeCallback = (

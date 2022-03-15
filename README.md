@@ -219,6 +219,12 @@ flowView.deleteNode(nodeId);
 flowView.deleteEdge(edgeId);
 ```
 
+### `addNodeClass(nodeType, NodeClass)`
+
+Can add custom node class. See
+<a href="http://fibo.github.io/flow-view/examples/custom=-node">custom node
+example here</a>.
+
 ### `onChange(callback)`
 
 React to _flow-view_ changes. See

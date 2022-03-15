@@ -6,7 +6,6 @@ export class FlowViewEditableNode extends FlowViewNode {
 
     this._onDblclick = this.onDblclick.bind(this);
     this.element.addEventListener("dblclick", this._onDblclick);
-    console.log(this.labelDiv);
   }
 
   disposeLabelEditor() {

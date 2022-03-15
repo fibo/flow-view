@@ -2,7 +2,10 @@ import { cssModifierHighlighted } from "../theme.js";
 
 export class FlowViewBase {
   static generateId(view) {
-    const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
+    const id = Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, "")
+      .substring(0, 5);
 
     if (view.shadowRoot.getElementById(id)) {
       return FlowViewBase.generateId(view);
@@ -14,7 +17,7 @@ export class FlowViewBase {
   constructor({ cssClassName, id, view, ...rest }) {
     const _id = id || FlowViewBase.generateId(view);
 
-    const element = this.element = document.createElement("div");
+    const element = (this.element = document.createElement("div"));
     element.setAttribute("id", _id);
     element.classList.add(cssClassName);
     view.shadowRoot.appendChild(element);

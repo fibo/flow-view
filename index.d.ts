@@ -1,4 +1,10 @@
-type ConstructorArg = { container?: HTMLElement; element?: HTMLElement };
+declare class FlowViewElement extends HTMLElement {}
+
+type ConstructorArg = {
+  container?: HTMLElement;
+  element?: HTMLElement;
+  CustomElement?: FlowViewElement;
+};
 
 type FlowViewSerializedPin = {
   id: string;
@@ -11,11 +17,12 @@ type FlowViewSerializedOutput = FlowViewSerializedPin;
 
 export type FlowViewSerializedNode = {
   id: string;
-  label: string;
+  type?: string;
+  label?: string;
   x: number;
   y: number;
-  inputs: FlowViewSerializedInput[];
-  outputs: FlowViewSerializedOutput[];
+  inputs?: FlowViewSerializedInput[];
+  outputs?: FlowViewSerializedOutput[];
 };
 
 export type FlowViewSerializedEdge = {
@@ -70,7 +77,8 @@ type FlowViewAction =
   | "CREATE_NODE"
   | "CREATE_EDGE"
   | "DELETE_NODE"
-  | "DELETE_EDGE";
+  | "DELETE_EDGE"
+  | "UPDATE_NODE";
 
 export type FlowViewOnChangeArg = {
   action: FlowViewAction;
@@ -85,7 +93,7 @@ export type FlowViewOnChangeInfo = {
 
 type OnChangeCallback = (
   arg: FlowViewOnChangeArg,
-  info: FlowViewOnChangeInfo
+  info: FlowViewOnChangeInfo,
 ) => void;
 
 export declare class FlowView {
@@ -106,16 +114,20 @@ export declare class FlowView {
   edge(id: string): FlowViewEdge | undefined;
 
   newNode(
-    arg: Omit<FlowViewSerializedNode, "id"> &
-      Partial<Pick<FlowViewSerializedNode, "id">>
+    arg:
+      & Omit<FlowViewSerializedNode, "id">
+      & Partial<Pick<FlowViewSerializedNode, "id">>,
   ): FlowViewNode;
 
   newEdge(
-    arg: Omit<FlowViewSerializedEdge, "id"> &
-      Partial<Pick<FlowViewSerializedEdge, "id">>
+    arg:
+      & Omit<FlowViewSerializedEdge, "id">
+      & Partial<Pick<FlowViewSerializedEdge, "id">>,
   ): FlowViewEdge;
 
   deleteNode(id: FlowViewSerializedNode["id"]): FlowViewSerializedNode;
 
   deleteEdge(id: FlowViewSerializedEdge["id"]): FlowViewSerializedEdge;
+
+  addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
 }

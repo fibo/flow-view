@@ -12,17 +12,17 @@ export class FlowViewNode extends FlowViewBase {
   static zIndex = FlowViewEdge.zIndex + 1;
   static style = {
     [`.${FlowViewNode.cssClassName}`]: {
-      "position": "absolute",
+      position: "absolute",
       "background-color": cssVar.nodeBackgroundColor,
       "border-radius": cssVar.borderRadius,
       "box-shadow": cssVar.boxShadow,
-      "display": "flex",
+      display: "flex",
       "flex-direction": "column",
       "justify-content": "space-between",
-      "border": `${FlowViewNode.borderWidth}px solid transparent`,
+      border: `${FlowViewNode.borderWidth}px solid transparent`,
       "min-height": `${FlowViewNode.minSize}px`,
       "min-width": `${FlowViewNode.minSize}px`,
-      "width": "fit-content",
+      width: "fit-content",
       "z-index": FlowViewNode.zIndex,
       ...cssTransition("border-color"),
     },
@@ -36,15 +36,28 @@ export class FlowViewNode extends FlowViewBase {
       "text-align": "center",
     },
     [`.${FlowViewNode.cssClassName} .pins`]: {
-      "display": "flex",
+      display: "flex",
       "flex-direction": "row",
-      "gap": `${FlowViewPin.size}px`,
+      gap: `${FlowViewPin.size}px`,
       "justify-content": "space-between",
-      "height": `${FlowViewPin.size}px`,
+      height: `${FlowViewPin.size}px`,
     },
   };
 
-  init({ label, inputs = [], outputs = [], x, y }) {
+  _createContent({ label }) {
+    const labelDiv = this.createDiv("label");
+    labelDiv.textContent = label;
+    this.labelDiv = labelDiv;
+    this.label = label;
+  }
+
+  init(node) {
+    const { type, inputs = [], outputs = [], x, y } = node;
+
+    if (type) {
+      this.type = type;
+    }
+
     const { element } = this;
 
     this.borderWidth = FlowViewNode.borderWidth;
@@ -55,8 +68,7 @@ export class FlowViewNode extends FlowViewBase {
       this.newInput(pin);
     }
 
-    this.labelDiv = this.createDiv("label");
-    this.label = label;
+    this._createContent(node);
 
     this._outputs = new Map();
     this.outputListDiv = this.createDiv("pins");
@@ -76,14 +88,6 @@ export class FlowViewNode extends FlowViewBase {
     const { element } = this;
     element.removeEventListener("dblclick", this._onDblclick);
     element.removeEventListener("pointerdown", this._onPointerdown);
-  }
-
-  get label() {
-    return this.labelDiv.textContent;
-  }
-
-  set label(value) {
-    this.labelDiv.textContent = value;
   }
 
   get inputs() {
@@ -168,12 +172,21 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   toObject() {
-    const { label, inputs, outputs, x, y } = this;
+    const { label, type, inputs, outputs, x, y } = this;
     return {
       ...super.toObject(),
-      label,
-      inputs: inputs.map((pin) => pin.toObject()),
-      outputs: outputs.map((pin) => pin.toObject()),
+      ...(type ? { type } : {}),
+      ...(label ? { label } : {}),
+      ...(inputs.length > 0
+        ? {
+          inputs: inputs.map((pin) => pin.toObject()),
+        }
+        : {}),
+      ...(outputs.length > 0
+        ? {
+          outputs: outputs.map((pin) => pin.toObject()),
+        }
+        : {}),
       x,
       y,
     };

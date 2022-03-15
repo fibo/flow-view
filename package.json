@@ -3,11 +3,11 @@
   "description": "is a visual editor for dataflow programming",
   "version": "5.5.0",
   "engines": {
-    "node": ">=14",
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
     "deno": ">=1.10"
   },
   "type": "module",
-  "main": "flow-view.js",
+  "exports": "./flow-view.js",
   "license": "MIT",
   "homepage": "http://fibo.github.io/flow-view",
   "author": {

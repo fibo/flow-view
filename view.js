@@ -14,22 +14,22 @@ export class FlowViewElement extends HTMLElement {
 
   static style = {
     ":host([hidden])": {
-      "display": "none",
+      display: "none",
     },
     ":host": {
       ...cssTheme("light"),
-      "position": "relative",
-      "display": "block",
-      "overflow": "hidden",
-      "border": 0,
-      "margin": 0,
-      "outline": 0,
+      position: "relative",
+      display: "block",
+      overflow: "hidden",
+      border: 0,
+      margin: 0,
+      outline: 0,
       "background-color": cssVar.backgroundColor,
       "border-radius": cssVar.borderRadius,
       "box-shadow": cssVar.boxShadow,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
-      "color": cssVar.textColor,
+      color: cssVar.textColor,
     },
     ...FlowViewEdge.style,
     ...FlowViewNode.style,
@@ -38,16 +38,18 @@ export class FlowViewElement extends HTMLElement {
   };
 
   static generateStylesheet(style) {
-    return Object.entries(style).reduce((stylesheet, [selector, rules]) => (
-      [
-        stylesheet,
-        `${selector}{`,
-        Object.entries(rules).map(
-          ([key, value]) => `${key}:${value};`,
-        ).join(""),
-        "}",
-      ].join("")
-    ), "");
+    return Object.entries(style).reduce(
+      (stylesheet, [selector, rules]) =>
+        [
+          stylesheet,
+          `${selector}{`,
+          Object.entries(rules)
+            .map(([key, value]) => `${key}:${value};`)
+            .join(""),
+          "}",
+        ].join(""),
+      "",
+    );
   }
 
   static pointerCoordinates(event) {
@@ -83,9 +85,9 @@ export class FlowViewElement extends HTMLElement {
     this._nodes = new Map();
     this._edges = new Map();
 
-    const itemClass = this.itemClass = new Map();
+    this.itemClass = new Map();
     Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
-      itemClass.set(key, Class);
+      this.itemClass.set(key, Class);
     });
   }
 
@@ -211,16 +213,11 @@ export class FlowViewElement extends HTMLElement {
     return edge;
   }
 
-  newNode({
-    x = 0,
-    y = 0,
-    label = "node",
-    id,
-    nodeType = "node",
-    inputs = [],
-    outputs = [],
-  }, viewChangeInfo) {
-    const Class = this.itemClass.get(nodeType);
+  newNode(
+    { x = 0, y = 0, label = "node", id, type, inputs = [], outputs = [] },
+    viewChangeInfo,
+  ) {
+    const Class = this.itemClass.get(type) || this.itemClass.get("node");
     const node = new Class({
       id,
       view: this,
@@ -230,6 +227,7 @@ export class FlowViewElement extends HTMLElement {
       outputs,
       x,
       y,
+      type,
     });
     this.addNode(node);
     this.host.viewChange({ createdNode: node.toObject() }, viewChangeInfo);
@@ -363,13 +361,17 @@ export class FlowViewElement extends HTMLElement {
   }
 
   createSelector({ position }) {
-    return this.selector = new FlowViewSelector({
+    return (this.selector = new FlowViewSelector({
       id: "selector",
       view: this,
       cssClassName: FlowViewSelector.cssClassName,
       position,
       nodeLabels: Array.from(this.host.nodeLabels),
-    });
+    }));
+  }
+
+  updateNode({ node }) {
+    this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo);
   }
 
   onDblclick(event) {
@@ -524,12 +526,12 @@ export class FlowViewElement extends HTMLElement {
 
   createSemiEdge({ source, target }) {
     const Class = this.itemClass.get("edge");
-    return this.semiEdge = new Class({
+    return (this.semiEdge = new Class({
       view: this,
       cssClassName: Class.cssClassName,
       source,
       target,
-    });
+    }));
   }
 
   clearSelection() {

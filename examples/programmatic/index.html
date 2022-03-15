@@ -5,7 +5,7 @@
   <link rel="icon" href="data:;base64,=">
 
   <title>flow-view example</title>
-  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
@@ -18,14 +18,14 @@
       <flow-view id="element"></flow-view>
     </div>
 
-    <div>
+    <div class="controls">
       <button id="reset">Reset</button>
       <button id="clear">Clear</button>
     </div>
   </main>
 
   <script type="module">
-    import { FlowView } from '../../main.js';
+    import { FlowView } from '/main.js';
 
     const flowView = new FlowView({
       element: document.getElementById('element')

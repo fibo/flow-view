@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:;base64,=">
+
+  <title>flow-view example</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <main>
+    <h1>flow-view</h1>
+
+    <h2>custom node example</h2>
+
+    <div class="container">
+    </div>
+  </main>
+
+  <script type="module">
+    import { FlowView } from '/main.js';
+    import { FlowViewEditableNode } from '/examples/custom-node/editable.js'
+
+    const flowView = new FlowView({
+      container: document.querySelector('.container')
+    });
+
+    flowView.addNodeClass('editable', FlowViewEditableNode);
+
+    flowView.onChange(({ action, data }) => {
+      console.log(action, data);
+    })
+
+    flowView.loadGraph({
+      nodes: [
+        {
+          type: 'editable',
+          id: 'test',
+          label: 'Click me',
+          outputs: [{ id: 'out' }],
+          x: 100, y: 150
+        }
+      ]
+    })
+
+    console.log(flowView.graph)
+  </script>
+
+  <footer>
+    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-node/index.html">here</a>.
+  </footer>
+</body>
+</html>
+

@@ -40,7 +40,7 @@ export class FlowViewEditableNode extends FlowViewNode {
     labelDiv.setAttribute("contenteditable", true);
     this.isEditing = true;
 
-    // Move cursor to end ot text
+    // Move cursor to end of text
     const range = document.createRange();
     range.selectNodeContents(labelDiv);
     range.collapse(false);

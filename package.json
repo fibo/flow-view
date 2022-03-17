@@ -7,6 +7,7 @@
     "deno": ">=1.10"
   },
   "type": "module",
+  "main": "./flow-view.js",
   "exports": "./flow-view.js",
   "license": "MIT",
   "homepage": "http://fibo.github.io/flow-view",

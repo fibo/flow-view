@@ -177,7 +177,7 @@ flowView.clearGraph();
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://fibo.github.io/flow-view/examples/programmatic">programmatic
+<a href="http://fibo.github.io/flow-view/examples/programmatic/index.html">programmatic
 example here</a>.
 
 ```javascript
@@ -222,7 +222,7 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom=-node">custom node
+<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom node
 example here</a>.
 
 ### `onChange(callback)`

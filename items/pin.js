@@ -8,21 +8,21 @@ export class FlowViewPin extends FlowViewBase {
   static style = {
     [`.${FlowViewPin.cssClassName}`]: {
       "background-color": cssVar.connectionColor,
-      "cursor": "none",
-      "position": "relative",
-      "display": "block",
-      "width": `${FlowViewPin.size}px`,
-      "height": `${FlowViewPin.size}px`,
+      cursor: "none",
+      position: "relative",
+      display: "block",
+      width: `${FlowViewPin.size}px`,
+      height: `${FlowViewPin.size}px`,
       ...cssTransition("background-color"),
     },
     [`.${FlowViewPin.cssClassName} .info`]: {
-      "visibility": "hidden",
-      "position": "absolute",
-      "background-color": "transparent",
+      visibility: "hidden",
+      position: "absolute",
+      "font-family": "monospace",
       "user-select": "none",
     },
     [`.${FlowViewPin.cssClassName}:hover .info`]: {
-      "visibility": "visible",
+      visibility: "visible",
     },
     [`.${cssModifierHighlighted(FlowViewPin.cssClassName)}`]: {
       "background-color": cssVar.connectionColorHighlighted,

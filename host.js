@@ -1,4 +1,5 @@
 import { FlowViewElement } from "./view.js";
+import { FlowViewErrorItemNotFound } from "./errors.js";
 
 export class FlowView {
   static defineCustomElement(CustomElement) {
@@ -27,7 +28,7 @@ export class FlowView {
       this.view = element;
     } else {
       const view = (this.view = document.createElement(
-        CustomElement.customElementName,
+        CustomElement.customElementName
       ));
       view.host = this;
 
@@ -59,11 +60,19 @@ export class FlowView {
   }
 
   node(id) {
-    return this.view.node(id);
+    const item = this.view.node(id);
+    if (!item) {
+      throw new FlowViewErrorItemNotFound({ kind: "node", id });
+    }
+    return item;
   }
 
   edge(id) {
-    return this.view.edge(id);
+    const item = this.view.edge(id);
+    if (!item) {
+      throw new FlowViewErrorItemNotFound({ kind: "edge", id });
+    }
+    return item;
   }
 
   addNodeLabels(nodeLabels) {
@@ -106,7 +115,7 @@ export class FlowView {
 
   viewChange(
     { createdNode, createdEdge, deletedNode, deletedEdge, updatedNode },
-    viewChangeInfo = {},
+    viewChangeInfo = {}
   ) {
     if (createdNode) {
       this.onViewChange(
@@ -114,7 +123,7 @@ export class FlowView {
           action: "CREATE_NODE",
           data: createdNode,
         },
-        viewChangeInfo,
+        viewChangeInfo
       );
     }
     if (createdEdge) {
@@ -123,7 +132,7 @@ export class FlowView {
           action: "CREATE_EDGE",
           data: createdEdge,
         },
-        viewChangeInfo,
+        viewChangeInfo
       );
     }
     if (deletedNode) {
@@ -132,7 +141,7 @@ export class FlowView {
           action: "DELETE_NODE",
           data: deletedNode,
         },
-        viewChangeInfo,
+        viewChangeInfo
       );
     }
     if (deletedEdge) {
@@ -141,7 +150,7 @@ export class FlowView {
           action: "DELETE_EDGE",
           data: deletedEdge,
         },
-        viewChangeInfo,
+        viewChangeInfo
       );
     }
     if (updatedNode) {
@@ -150,14 +159,14 @@ export class FlowView {
           action: "UPDATE_NODE",
           data: updatedNode,
         },
-        viewChangeInfo,
+        viewChangeInfo
       );
     }
   }
 
   newEdge(
     { id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
-    viewChangeInfo = { isProgrammatic: true },
+    viewChangeInfo = { isProgrammatic: true }
   ) {
     const sourceNode = this.view.node(sourceNodeId);
     const targetNode = this.view.node(targetNodeId);

@@ -1,43 +1,43 @@
 declare class FlowViewElement extends HTMLElement {}
 
-type ConstructorArg = {
+type FlowViewConstructorArg = {
   container?: HTMLElement;
   element?: HTMLElement;
   CustomElement?: FlowViewElement;
 };
 
-type FlowViewSerializedPin = {
+type FlowViewSerializablePin = {
   id: string;
   name?: string;
 };
 
-type FlowViewSerializedInput = FlowViewSerializedPin;
+type FlowViewSerializableInput = FlowViewSerializablePin;
 
-type FlowViewSerializedOutput = FlowViewSerializedPin;
+type FlowViewSerializableOutput = FlowViewSerializablePin;
 
-export type FlowViewSerializedNode = {
+export type FlowViewSerializableNode = {
   id: string;
   type?: string;
   label?: string;
   x: number;
   y: number;
-  inputs?: FlowViewSerializedInput[];
-  outputs?: FlowViewSerializedOutput[];
+  inputs?: FlowViewSerializableInput[];
+  outputs?: FlowViewSerializableOutput[];
 };
 
-export type FlowViewSerializedEdge = {
+export type FlowViewSerializableEdge = {
   id: string;
-  from: [FlowViewSerializedNode["id"], FlowViewSerializedOutput["id"]];
-  to: [FlowViewSerializedNode["id"], FlowViewSerializedInput["id"]];
+  from: [FlowViewSerializableNode["id"], FlowViewSerializableOutput["id"]];
+  to: [FlowViewSerializableNode["id"], FlowViewSerializableInput["id"]];
 };
 
-export type FlowViewSerializedGraph = {
-  nodes: FlowViewSerializedNode[];
-  edges: FlowViewSerializedEdge[];
+export type FlowViewSerializableGraph = {
+  nodes: FlowViewSerializableNode[];
+  edges: FlowViewSerializableEdge[];
 };
 
 declare class FlowViewPin {
-  constructor(arg: FlowViewSerializedPin);
+  constructor(arg: FlowViewSerializablePin);
 
   readonly id: string;
 
@@ -55,9 +55,9 @@ declare class FlowViewNode {
 
   label: string;
 
-  newInput(arg: Omit<FlowViewSerializedPin, "id">): FlowViewInput;
+  newInput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewInput;
 
-  newOutput(arg: Omit<FlowViewSerializedPin, "id">): FlowViewOutput;
+  newOutput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewOutput;
 
   inputs: FlowViewInput[];
 
@@ -69,8 +69,8 @@ declare class FlowViewEdge {
 }
 
 declare type FlowViewGraph = {
-  nodes: FlowViewSerializedNode[];
-  edges: FlowViewSerializedEdge[];
+  nodes: FlowViewSerializableNode[];
+  edges: FlowViewSerializableEdge[];
 };
 
 type FlowViewAction =
@@ -82,7 +82,7 @@ type FlowViewAction =
 
 export type FlowViewOnChangeArg = {
   action: FlowViewAction;
-  data: FlowViewSerializedNode | FlowViewSerializedEdge;
+  data: FlowViewSerializableNode | FlowViewSerializableEdge;
 };
 
 export type FlowViewOnChangeInfo = {
@@ -93,13 +93,13 @@ export type FlowViewOnChangeInfo = {
 
 type OnChangeCallback = (
   arg: FlowViewOnChangeArg,
-  info: FlowViewOnChangeInfo,
+  info: FlowViewOnChangeInfo
 ) => void;
 
 export declare class FlowView {
-  constructor(arg?: ConstructorArg);
+  constructor(arg?: FlowViewConstructorArg);
 
-  get graph(): FlowViewSerializedGraph;
+  get graph(): FlowViewSerializableGraph;
 
   addNodeLabels(nodeLabels: string[]): void;
 
@@ -109,25 +109,33 @@ export declare class FlowView {
 
   onChange(arg: OnChangeCallback): void;
 
-  node(id: string): FlowViewNode | undefined;
+  /**
+   * Get node by id.
+   *
+   * @throws FlowViewErrorItemNotFound
+   */
+  node(id: FlowViewSerializableNode["id"]): FlowViewNode;
 
-  edge(id: string): FlowViewEdge | undefined;
+  /**
+   * Get edge by id.
+   *
+   * @throws FlowViewErrorItemNotFound
+   */
+  edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
 
   newNode(
-    arg:
-      & Omit<FlowViewSerializedNode, "id">
-      & Partial<Pick<FlowViewSerializedNode, "id">>,
+    arg: Omit<FlowViewSerializableNode, "id"> &
+      Partial<Pick<FlowViewSerializableNode, "id">>
   ): FlowViewNode;
 
   newEdge(
-    arg:
-      & Omit<FlowViewSerializedEdge, "id">
-      & Partial<Pick<FlowViewSerializedEdge, "id">>,
+    arg: Omit<FlowViewSerializableEdge, "id"> &
+      Partial<Pick<FlowViewSerializableEdge, "id">>
   ): FlowViewEdge;
 
-  deleteNode(id: FlowViewSerializedNode["id"]): FlowViewSerializedNode;
+  deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode;
 
-  deleteEdge(id: FlowViewSerializedEdge["id"]): FlowViewSerializedEdge;
+  deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge;
 
   addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
 }

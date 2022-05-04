@@ -238,7 +238,7 @@ Callback signature is `({ action, data }, info) => void`, where
 - **info** can contain `{ isLoadGraph: true }` or other optional information.
 
 Just take advantage of autocompletion and suggestion provided by
-[typings definitions](https://github.com/fibo/flow-view/blob/main/index.d.ts).
+[typings definitions](https://github.com/fibo/flow-view/blob/main/flow-view.d.ts).
 
 ## License
 

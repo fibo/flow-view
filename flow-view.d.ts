@@ -1,5 +1,7 @@
 declare class FlowViewElement extends HTMLElement {}
 
+declare class FlowViewErrorItemNotFound extends Error {}
+
 type FlowViewConstructorArg = {
   container?: HTMLElement;
   element?: HTMLElement;
@@ -86,7 +88,7 @@ export type FlowViewOnChangeArg = {
 };
 
 export type FlowViewOnChangeInfo = {
-  isclearGraph?: boolean;
+  isClearGraph?: boolean;
   isLoadGraph?: boolean;
   isProgrammatic?: boolean;
 };

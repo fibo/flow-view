@@ -1,5 +1,6 @@
 import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
+import { FlowViewPin } from "./pin.js";
 import { FlowViewInput } from "./input.js";
 import { FlowViewOutput } from "./output.js";
 
@@ -9,19 +10,19 @@ export class FlowViewEdge extends FlowViewBase {
   static zIndex = 0;
   static style = {
     [`.${FlowViewEdge.cssClassName}`]: {
-      "display": "flex",
-      "position": "absolute",
-      "border": 0,
+      display: "flex",
+      position: "absolute",
+      border: 0,
       "pointer-events": "none",
     },
     [`.${FlowViewEdge.cssClassName} line`]: {
       "pointer-events": "all",
-      "stroke": cssVar.connectionColor,
+      stroke: cssVar.connectionColor,
       "stroke-width": FlowViewEdge.lineWidth,
       ...cssTransition("stroke"),
     },
     [`.${cssModifierHighlighted(FlowViewEdge.cssClassName)} line`]: {
-      "stroke": cssVar.connectionColorHighlighted,
+      stroke: cssVar.connectionColorHighlighted,
     },
   };
 
@@ -41,17 +42,19 @@ export class FlowViewEdge extends FlowViewBase {
     const hasSourcePin = source instanceof FlowViewOutput;
     const hasTargetPin = target instanceof FlowViewInput;
 
-    this.source = (hasTargetPin && !hasSourcePin)
-      ? { center: { x: target.center.x, y: target.center.y } }
-      : source;
-    this.target = (hasSourcePin && !hasTargetPin)
-      ? { center: { x: source.center.x, y: source.center.y } }
-      : target;
+    this.source =
+      hasTargetPin && !hasSourcePin
+        ? { center: { x: target.center.x, y: target.center.y } }
+        : source;
+    this.target =
+      hasSourcePin && !hasTargetPin
+        ? { center: { x: source.center.x, y: source.center.y } }
+        : target;
 
-    const svg = this.svg = this.createSvg("svg");
+    const svg = (this.svg = this.createSvg("svg"));
     this.element.appendChild(svg);
 
-    const line = this.line = this.createSvg("line");
+    const line = (this.line = this.createSvg("line"));
     svg.appendChild(line);
 
     this.updateGeometry();
@@ -69,35 +72,6 @@ export class FlowViewEdge extends FlowViewBase {
     line.removeEventListener("pointerdown", this._onPointerdownLine);
     line.removeEventListener("pointerenter", this._onPointerenterLine);
     line.removeEventListener("pointerleave", this._onPointerleaveLine);
-  }
-
-  set start({ x, y }) {
-    this.line.setAttribute("x1", Math.round(x));
-    this.line.setAttribute("y1", Math.round(y));
-  }
-
-  set end({ x, y }) {
-    this.line.setAttribute("x2", Math.round(x));
-    this.line.setAttribute("y2", Math.round(y));
-  }
-
-  set dimension([_width, _height]) {
-    const { lineWidth } = FlowViewEdge;
-    const { element: { style }, svg } = this;
-
-    const width = Math.max(_width, lineWidth);
-    const height = Math.max(_height, lineWidth);
-
-    style.width = `${width}px`;
-    style.height = `${height}px`;
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
-  }
-
-  set position({ x, y }) {
-    const { element: { style } } = this;
-    style.top = `${y}px`;
-    style.left = `${x}px`;
   }
 
   onPointerdownLine(event) {
@@ -137,32 +111,54 @@ export class FlowViewEdge extends FlowViewBase {
 
   updateGeometry() {
     const {
-      source: { center: { x: sourceX, y: sourceY } },
-      target: { center: { x: targetX, y: targetY } },
-      view: { origin: { x: originX, y: originY } },
+      element,
+      line,
+      svg,
+      source: {
+        center: { x: sourceX, y: sourceY },
+      },
+      target: {
+        center: { x: targetX, y: targetY },
+      },
+      view: {
+        origin: { x: originX, y: originY },
+      },
     } = this;
+    const { size: pinSize } = FlowViewPin;
+    const halfPinSize = pinSize / 2;
 
     const invertedX = targetX < sourceX;
     const invertedY = targetY < sourceY;
 
-    this.position = {
-      x: Math.round((invertedX ? targetX : sourceX) - originX),
-      y: Math.round((invertedY ? targetY : sourceY) - originY),
-    };
+    const top =
+      (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - originY;
+    const left =
+      (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - originX;
+    element.style.top = `${top}px`;
+    element.style.left = `${left}px`;
 
-    const width = Math.abs(Math.round(targetX - sourceX));
-    const height = Math.abs(Math.round(targetY - sourceY));
-    this.dimension = [width, height];
+    const width = invertedX
+      ? sourceX - targetX + pinSize
+      : targetX - sourceX + pinSize;
+    element.style.width = `${width}px`;
+    svg.setAttribute("width", width);
 
-    this.start = {
-      x: (invertedX ? width : 0),
-      y: (invertedY ? height : 0),
-    };
+    const height = invertedY
+      ? sourceY - targetY + pinSize
+      : targetY - sourceY + pinSize;
+    element.style.height = `${height}px`;
+    svg.setAttribute("height", height);
 
-    this.end = {
-      x: (invertedX ? 0 : width),
-      y: (invertedY ? 0 : height),
-    };
+    const startX = invertedX ? width - halfPinSize : halfPinSize;
+    const startY = invertedY ? height - halfPinSize : halfPinSize;
+
+    const endX = invertedX ? halfPinSize : width - halfPinSize;
+    const endY = invertedY ? halfPinSize : height - halfPinSize;
+
+    line.setAttribute("x2", endX);
+    line.setAttribute("y2", endY);
+    line.setAttribute("x1", startX);
+    line.setAttribute("y1", startY);
   }
 
   toObject() {

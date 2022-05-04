@@ -137,8 +137,16 @@
     flowView.loadGraph(initialGraph);
 
     // Few tests.
-    console.log('not a node', flowView.node('xxx'));
-    console.log('not an edge', flowView.edge('xxx'));
+    try {
+      console.log('not a node', flowView.node('xxx'));
+    } catch (error) {
+      console.log('THIS IS A TEST:', error.message)
+    }
+    try {
+      console.log('not an edge', flowView.edge('xxx'));
+    } catch (error) {
+      console.log('THIS IS A TEST:', error.message)
+    }
     console.log('Homer node', flowView.node('dad'));
     flowView.graph.edges.slice(0, 1).forEach(({ id }) => {
       console.log('First edge', flowView.edge(id));

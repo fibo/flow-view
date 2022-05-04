@@ -9,28 +9,28 @@ export class FlowViewSelector extends FlowViewBase {
   static padding = 9;
   static style = {
     [`.${FlowViewSelector.cssClassName}`]: {
-      "position": "absolute",
+      position: "absolute",
       "box-shadow": cssVar.boxShadow,
       "z-index": FlowViewSelector.zIndex,
     },
     [`.${FlowViewSelector.cssClassName} input`]: {
-      "border": 0,
-      "margin": 0,
-      "outline": 0,
+      border: 0,
+      margin: 0,
+      outline: 0,
       "border-radius": cssVar.borderRadius,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
-      "padding": `${FlowViewSelector.padding}px`,
-      "width": `${FlowViewSelector.width - 2 * FlowViewSelector.padding}px`,
+      padding: `${FlowViewSelector.padding}px`,
+      width: `${FlowViewSelector.width - 2 * FlowViewSelector.padding}px`,
     },
     [`.${FlowViewSelector.cssClassName}__hint`]: {
-      "position": "absolute",
-      "left": "0",
-      "background": "transparent",
+      position: "absolute",
+      left: "0",
+      background: "transparent",
       "pointer-events": "none",
     },
     [`.${FlowViewSelector.cssClassName}__hint::placeholder`]: {
-      "opacity": "0.4",
+      opacity: "0.4",
     },
   };
 
@@ -39,11 +39,11 @@ export class FlowViewSelector extends FlowViewBase {
 
     element.setAttribute("tabindex", 0);
 
-    const hint = this.hint = document.createElement("input");
+    const hint = (this.hint = document.createElement("input"));
     hint.classList.add(`${FlowViewSelector.cssClassName}__hint`);
     element.appendChild(hint);
 
-    const input = this.input = document.createElement("input");
+    const input = (this.input = document.createElement("input"));
     element.appendChild(input);
 
     this.nodeLabels = nodeLabels;
@@ -83,19 +83,22 @@ export class FlowViewSelector extends FlowViewBase {
   }
 
   get matchingNodeLabels() {
-    const { input: { value } } = this;
+    const {
+      input: { value },
+    } = this;
 
     // Type at least few chars to start showing completion.
     if (value.length < 2) return [];
 
-    return this.nodeLabels.filter((label) => (
-      // input value fits into node label...
-      label.startsWith(value) &&
-      // ...but they are not the same yet.
-      // Otherwise if a label starts with another label,
-      // some completions could be missed.
-      label !== value
-    ));
+    return this.nodeLabels.filter(
+      (label) =>
+        // input value fits into node label...
+        label.startsWith(value) &&
+        // ...but they are not the same yet.
+        // Otherwise if a label starts with another label,
+        // some completions could be missed.
+        label !== value
+    );
   }
 
   set position({ x, y }) {
@@ -145,7 +148,19 @@ export class FlowViewSelector extends FlowViewBase {
       }
 
       case event.code === "Escape": {
-        this.view.removeSelector();
+        if (this.input.value === "") {
+          this.view.removeSelector();
+        } else {
+          this.input.value = "";
+        }
+        break;
+      }
+
+      case event.code === "ArrowRight": {
+        const { completion, input } = this;
+        if (completion && input.value.length === event.target.selectionStart) {
+          this.input.value = completion;
+        }
         break;
       }
 
@@ -167,7 +182,10 @@ export class FlowViewSelector extends FlowViewBase {
   onKeyup(event) {
     event.stopPropagation();
 
-    const { input: { value }, matchingNodeLabels } = this;
+    const {
+      input: { value },
+      matchingNodeLabels,
+    } = this;
 
     switch (matchingNodeLabels.length) {
       case 0: {
@@ -181,10 +199,9 @@ export class FlowViewSelector extends FlowViewBase {
       default: {
         let completion = value;
 
-        const shortestMatch = matchingNodeLabels.reduce((
-          shortest,
-          match,
-        ) => (shortest.length < match.length ? shortest : match));
+        const shortestMatch = matchingNodeLabels.reduce((shortest, match) =>
+          shortest.length < match.length ? shortest : match
+        );
 
         for (let i = value.length; i < shortestMatch.length; i++) {
           const currentChar = shortestMatch[i];

@@ -32,6 +32,14 @@ export class FlowViewSelector extends FlowViewBase {
     [`.${FlowViewSelector.cssClassName}__hint::placeholder`]: {
       opacity: "0.4",
     },
+    [`.${FlowViewSelector.cssClassName}__options`]: {
+      "background-color": cssVar.nodeBackgroundColor,
+      height: "fit-content",
+    },
+    [`.${FlowViewSelector.cssClassName}__option`]: {
+      padding: "0.5em",
+      cursor: "default",
+    },
   };
 
   init({ nodeLabels, position }) {
@@ -39,12 +47,16 @@ export class FlowViewSelector extends FlowViewBase {
 
     element.setAttribute("tabindex", 0);
 
-    const hint = (this.hint = document.createElement("input"));
-    hint.classList.add(`${FlowViewSelector.cssClassName}__hint`);
-    element.appendChild(hint);
+    this.hint = this.createElement(
+      "input",
+      `${FlowViewSelector.cssClassName}__hint`
+    );
 
-    const input = (this.input = document.createElement("input"));
-    element.appendChild(input);
+    const input = (this.input = this.createElement("input"));
+
+    this.options = this.createElement("div", [
+      `${FlowViewSelector.cssClassName}__options`,
+    ]);
 
     this.nodeLabels = nodeLabels;
     this.position = position;
@@ -87,8 +99,8 @@ export class FlowViewSelector extends FlowViewBase {
       input: { value },
     } = this;
 
-    // Type at least few chars to start showing completion.
-    if (value.length < 2) return [];
+    // Type at least one char to start showing completion.
+    if (value.length === 0) return [];
 
     return this.nodeLabels.filter(
       (label) =>
@@ -182,10 +194,24 @@ export class FlowViewSelector extends FlowViewBase {
   onKeyup(event) {
     event.stopPropagation();
 
-    const {
-      input: { value },
-      matchingNodeLabels,
-    } = this;
+    const { createNode, input, options, matchingNodeLabels } = this;
+
+    // Delete previous options.
+    while (options.firstChild) {
+      options.removeChild(options.lastChild);
+    }
+    // Create new options.
+    for (let i = 0; i < matchingNodeLabels.length; i++) {
+      const label = matchingNodeLabels[i];
+      const option = document.createElement("div");
+      option.classList.add(`${FlowViewSelector.cssClassName}__option`);
+      option.textContent = label;
+      option.onclick = () => {
+        this.input.value = label;
+        this.createNode();
+      };
+      options.append(option);
+    }
 
     switch (matchingNodeLabels.length) {
       case 0: {
@@ -197,13 +223,13 @@ export class FlowViewSelector extends FlowViewBase {
         break;
       }
       default: {
-        let completion = value;
+        let completion = input.value;
 
         const shortestMatch = matchingNodeLabels.reduce((shortest, match) =>
           shortest.length < match.length ? shortest : match
         );
 
-        for (let i = value.length; i < shortestMatch.length; i++) {
+        for (let i = input.value.length; i < shortestMatch.length; i++) {
           const currentChar = shortestMatch[i];
 
           if (

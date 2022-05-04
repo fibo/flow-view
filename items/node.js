@@ -45,7 +45,7 @@ export class FlowViewNode extends FlowViewBase {
   };
 
   _createContent({ label }) {
-    const labelDiv = this.createDiv("label");
+    const labelDiv = this.createElement("div", "label");
     labelDiv.textContent = label;
     this.labelDiv = labelDiv;
     this.label = label;
@@ -63,7 +63,7 @@ export class FlowViewNode extends FlowViewBase {
     this.borderWidth = FlowViewNode.borderWidth;
 
     this._inputs = new Map();
-    this.inputListDiv = this.createDiv("pins");
+    this.inputListDiv = this.createElement("div", "pins");
     for (const pin of inputs) {
       this.newInput(pin);
     }
@@ -71,7 +71,8 @@ export class FlowViewNode extends FlowViewBase {
     this._createContent(node);
 
     this._outputs = new Map();
-    this.outputListDiv = this.createDiv("pins");
+    this.outputListDiv = this.createElement("div", "pins");
+
     for (const pin of outputs) {
       this.newOutput(pin);
     }
@@ -163,8 +164,8 @@ export class FlowViewNode extends FlowViewBase {
     if (event.isBubblingFromPin) return;
 
     event.isBubblingFromNode = true;
-    const isMultiSelection = event.shiftKey ||
-      (this.view.hasSelectedNodes && this.isSelected);
+    const isMultiSelection =
+      event.shiftKey || (this.view.hasSelectedNodes && this.isSelected);
     if (!isMultiSelection) {
       this.view.clearSelection();
     }
@@ -179,13 +180,13 @@ export class FlowViewNode extends FlowViewBase {
       ...(label ? { label } : {}),
       ...(inputs.length > 0
         ? {
-          inputs: inputs.map((pin) => pin.toObject()),
-        }
+            inputs: inputs.map((pin) => pin.toObject()),
+          }
         : {}),
       ...(outputs.length > 0
         ? {
-          outputs: outputs.map((pin) => pin.toObject()),
-        }
+            outputs: outputs.map((pin) => pin.toObject()),
+          }
         : {}),
       x,
       y,

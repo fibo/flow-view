@@ -63,11 +63,13 @@ export class FlowViewBase {
     }
   }
 
-  createDiv(cssClassName) {
-    const div = document.createElement("div");
-    div.classList.add(cssClassName);
-    this.element.appendChild(div);
-    return div;
+  createElement(tag, cssClassName) {
+    const element = document.createElement(tag);
+    if (cssClassName) {
+      element.classList.add(cssClassName);
+    }
+    this.element.appendChild(element);
+    return element;
   }
 
   createSvg(tag) {

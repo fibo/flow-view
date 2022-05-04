@@ -33,7 +33,7 @@ export class FlowViewPin extends FlowViewBase {
     this.name = name;
     this.node = node;
 
-    this.info = this.createDiv("info");
+    this.info = this.createElement("div", "info");
     this.text = name || "";
 
     this._onPointerdown = this.onPointerdown.bind(this);

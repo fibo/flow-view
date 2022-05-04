@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for dataflow programming",
-  "version": "5.6.1",
+  "version": "5.7.0",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
     "deno": ">=1.10"

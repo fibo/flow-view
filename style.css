@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
@@ -53,18 +55,25 @@ ul {
 }
 
 footer {
-  padding-left: 1em;
-  margin-top: 1em;
-  margin-bottom: 2em;
+  margin-top: 2em;
+  padding: 1em;
 }
 
-a:visited, a:active, a:link, a:hover, a:focus {
+a:visited,
+a:active,
+a:link,
+a:hover,
+a:focus {
   color: tomato;
 }
 
 button {
   padding: 0.5em 0.7em;
   text-transform: uppercase;
+  border-radius: 0.2em;
+  border-color: #bbb;
+  color: #121212;
+  background-color: #eee;
 }
 
 .container {
@@ -73,5 +82,5 @@ button {
 }
 
 .controls {
-  margin: 1em;
+  margin-top: 1em;
 }

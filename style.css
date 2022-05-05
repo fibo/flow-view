@@ -29,6 +29,11 @@ main {
   flex-grow: 1;
 }
 
+main,
+footer {
+  padding-left: min(max(0.17em, 7vw), 10em);
+}
+
 h1 {
   font-size: 3em;
   font-family: Georgia, serif;
@@ -54,9 +59,13 @@ ul {
   word-break: break-word;
 }
 
+section {
+  margin-top: 2em;
+}
+
 footer {
   margin-top: 2em;
-  padding: 1em;
+  margin-bottom: 1em;
 }
 
 a:visited,

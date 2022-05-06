@@ -93,3 +93,27 @@ button {
 .controls {
   margin-top: 1em;
 }
+
+code {
+  padding: 2px 4px;
+  background-color: $semi-transparent;
+  border-radius: $border-radius;
+  font-family: $font-family-mono;
+  word-break: break-all;
+}
+
+code::selection {
+  background-color: green;
+  color: lightgreen;
+}
+
+code span::selection {
+  background-color: green;
+  color: lightgreen;
+}
+
+pre {
+  background: #111;
+  padding: 0.5em;
+  overflow-x: auto;
+}

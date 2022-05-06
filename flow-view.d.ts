@@ -38,6 +38,11 @@ export type FlowViewSerializableGraph = {
   edges: FlowViewSerializableEdge[];
 };
 
+declare class FlowViewBase {
+  set ghost(value: boolean);
+  set highlighted(value: boolean);
+}
+
 declare class FlowViewPin {
   constructor(arg: FlowViewSerializablePin);
 
@@ -77,6 +82,7 @@ declare type FlowViewGraph = {
 
 type FlowViewAction =
   | "CREATE_NODE"
+  | "CREATE_SEMI_EDGE"
   | "CREATE_EDGE"
   | "DELETE_NODE"
   | "DELETE_EDGE"

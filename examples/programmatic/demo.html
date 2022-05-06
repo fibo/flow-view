@@ -14,50 +14,88 @@
 
     <h2>programmatic example</h2>
 
+    <p>Nodes and edges are created via API. See code below.</p>
+
+    <p>The GHOST button set the <code>ghost</code> attribute to few items, it makes them semi transparent. The NORMAL button reset them.</p>
+
     <div class="container">
       <flow-view id="element"></flow-view>
     </div>
 
     <div class="controls">
-      <button id="reset">Reset</button>
-      <button id="clear">Clear</button>
+      <button id="ghost">ghost</button>
+      <button id="normal">normal</button>
     </div>
+
+    <p>Nodes and edges are created with the following code.</p>
+
+    <pre><code>
+import { FlowView } from 'https://unpkg.com/flow-view';
+
+const flowView = new FlowView({
+  element: document.getElementById('element')
+});
+
+const node1 = flowView.newNode({
+  label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+});
+const node2 = flowView.newNode({
+  label: 'World', inputs:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
+});
+const node3 = flowView.newNode({
+  label: 'ciao', outputs:[{ id: 'saluto' }], x: 400, y: 280
+})
+const edge1 = flowView.newEdge({
+  from: [node1.id, 'output1'],
+  to: [node2.id, 'input1']
+})
+const edge2 = flowView.newEdge({
+  from: [node3.id, 'saluto'],
+  to: [node2.id, 'ghost']
+})
+    </code></pre>
   </main>
 
   <script type="module">
-    import { FlowView } from 'https://unpkg.com/flow-view';
-    // import { FlowView } from '../../main.js';
+    // import { FlowView } from 'https://unpkg.com/flow-view';
+    import { FlowView } from '../../main.js';
 
     const flowView = new FlowView({
       element: document.getElementById('element')
     });
 
-    function createGraphProgrammatically() {
-      const node1 = flowView.newNode({
-        label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
-      });
-      const node2 = flowView.newNode({
-        label: 'World', inputs:[{ id: 'input1' }], width: 100, x: 250, y: 400
-      });
-      flowView.newEdge({
-        from: [node1.id, 'output1'],
-        to: [node2.id, 'input1']
-      })
-    }
-
-    createGraphProgrammatically();
+    const node1 = flowView.newNode({
+      label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+    });
+    const node2 = flowView.newNode({
+      label: 'World', inputs:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
+    });
+    const node3 = flowView.newNode({
+      label: 'ciao', outputs:[{ id: 'saluto' }], x: 400, y: 280
+    })
+    const edge1 = flowView.newEdge({
+      from: [node1.id, 'output1'],
+      to: [node2.id, 'input1']
+    })
+    const edge2 = flowView.newEdge({
+      from: [node3.id, 'saluto'],
+      to: [node2.id, 'ghost']
+    })
 
     // Controls
 
-    const resetButton = document.querySelector('button#reset');
-    resetButton.addEventListener('click', () => {
-      flowView.clearGraph();
-      createGraphProgrammatically();
+    const ghostButton = document.querySelector('button#ghost');
+    ghostButton.addEventListener('click', () => {
+      node1.ghost = true;
+      node2.input('ghost').ghost = true;
+      edge2.ghost = true;
     })
 
-    const clearButton = document.querySelector('button#clear');
-    clearButton.addEventListener('click', () => {
-      flowView.clearGraph();
+    const normalButton = document.querySelector('button#normal');
+    normalButton.addEventListener('click', () => {
+      node1.ghost = false;
+      node2.input('ghost').ghost = false;
+      edge2.ghost = false;
     })
   </script>
 

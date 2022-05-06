@@ -1,13 +1,12 @@
-export const cssModifierHighlighted = (cssName) => (`${cssName}--highlighted`);
+export const cssModifierHighlighted = (cssName) => `${cssName}--highlighted`;
 
 export const cssTransition = (prop) => ({
   transition: `${prop} 117ms ease-in-out`,
 });
 
-const fvCssDefaultVarName = (name) => (`--fv-default-${name}`);
-const fvCssVar = (
-  name,
-) => (`var(--fv-${name},var(${fvCssDefaultVarName(name)}))`);
+const fvCssDefaultVarName = (name) => `--fv-default-${name}`;
+const fvCssVar = (name) =>
+  `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`;
 
 export const cssVar = {
   backgroundColor: fvCssVar("background-color"),
@@ -15,13 +14,13 @@ export const cssVar = {
   boxShadow: fvCssVar("box-shadow"),
   connectionColor: fvCssVar("connection-color"),
   connectionColorHighlighted: fvCssVar(
-    cssModifierHighlighted("connection-color"),
+    cssModifierHighlighted("connection-color")
   ),
   fontFamily: fvCssVar("font-family"),
   fontSize: fvCssVar("font-size"),
   nodeBackgroundColor: fvCssVar("node-background-color"),
   nodeBorderColorHighlighted: fvCssVar(
-    cssModifierHighlighted("node-border-color"),
+    cssModifierHighlighted("node-border-color")
   ),
   textColor: fvCssVar("text-color"),
 };
@@ -58,5 +57,5 @@ export const cssDefault = {
 export const cssTheme = (colorScheme) =>
   Object.entries(cssDefault[colorScheme]).reduce(
     (theme, [key, value]) => ({ ...theme, [fvCssDefaultVarName(key)]: value }),
-    {},
+    {}
   );

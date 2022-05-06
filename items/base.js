@@ -41,6 +41,14 @@ export class FlowViewBase {
     return this.element.getAttribute("id");
   }
 
+  set ghost(value) {
+    if (value) {
+      this.element.style.opacity = 0.4;
+    } else {
+      this.element.style.opacity = "";
+    }
+  }
+
   set highlight(value) {
     const cssClassName = cssModifierHighlighted(this.cssClassName);
 

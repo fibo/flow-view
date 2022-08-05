@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
 
@@ -78,7 +78,7 @@ export class FlowViewElement extends HTMLElement {
 		].join("");
 
 		this.attachShadow({ mode: "open" }).appendChild(
-			template.content.cloneNode(true)
+			template.content.cloneNode(true),
 		);
 
 		this._origin = { x: 0, y: 0 };
@@ -103,7 +103,7 @@ export class FlowViewElement extends HTMLElement {
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
 			this.rootResizeObserver = new ResizeObserver(
-				this.onRootResize.bind(this)
+				this.onRootResize.bind(this),
 			);
 			this.rootResizeObserver.observe(this.parentNode);
 		} else {
@@ -213,7 +213,7 @@ export class FlowViewElement extends HTMLElement {
 
 	newNode(
 		{ x = 0, y = 0, label = "node", id, type, inputs = [], outputs = [] },
-		viewChangeInfo
+		viewChangeInfo,
 	) {
 		const Class = this.itemClass.get(type) || this.itemClass.get("node");
 		const node = new Class({
@@ -539,17 +539,15 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				createdSemiEdge: {
-					from:
-						source instanceof FlowViewPin
-							? [source.node.id, source.id]
-							: undefined,
-					to:
-						target instanceof FlowViewPin
-							? [target.node.id, target.id]
-							: undefined,
+					from: source instanceof FlowViewPin
+						? [source.node.id, source.id]
+						: undefined,
+					to: target instanceof FlowViewPin
+						? [target.node.id, target.id]
+						: undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 
@@ -584,17 +582,15 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				deletedSemiEdge: {
-					from:
-						source instanceof FlowViewPin
-							? [source.node.id, source.id]
-							: undefined,
-					to:
-						target instanceof FlowViewPin
-							? [target.node.id, target.id]
-							: undefined,
+					from: source instanceof FlowViewPin
+						? [source.node.id, source.id]
+						: undefined,
+					to: target instanceof FlowViewPin
+						? [target.node.id, target.id]
+						: undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 

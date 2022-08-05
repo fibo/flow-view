@@ -29,6 +29,16 @@ Try this in your HTML page
 </script>
 ```
 
+### Old school
+
+Just download the `flow-view.js` build
+[from here](https://github.com/fibo/flow-view/blob/main/flow-view.js), upload it
+wherever you like and load it with a `script` tag like
+
+```html
+<script type="module" src="https://your.domain.com/path/to/flow-view.js"></script>
+```
+
 ## Usage
 
 ### GUI
@@ -90,10 +100,10 @@ the majority of use cases.
 
 ```javascript
 flowView.addNodeLabels([
-  "Marge",
-  "Homer",
-  "Bart",
-  "Lisa",
+	"Marge",
+	"Homer",
+	"Bart",
+	"Lisa",
 ]);
 ```
 
@@ -127,42 +137,42 @@ Load a _flow-view_ graph.
 
 ```javascript
 flowView.loadGraph({
-  nodes: [
-    {
-      id: "dad",
-      label: "Homer",
-      x: 60,
-      y: 70,
-      outputs: [{ id: "children" }],
-    },
-    {
-      id: "mom",
-      label: "Marge",
-      x: 160,
-      y: 70,
-      outputs: [{ id: "children" }],
-    },
-    {
-      id: "son",
-      label: "Bart",
-      x: 60,
-      y: 240,
-      inputs: [{ id: "father" }, { id: "mother" }],
-    },
-    {
-      id: "daughter",
-      label: "Lisa",
-      x: 220,
-      y: 220,
-      inputs: [{ id: "father" }, { id: "mother" }],
-    },
-  ],
-  edges: [
-    { from: ["dad", "children"], to: ["son", "father"] },
-    { from: ["dad", "children"], to: ["daughter", "father"] },
-    { from: ["mom", "children"], to: ["son", "mother"] },
-    { from: ["mom", "children"], to: ["daughter", "mother"] },
-  ],
+	nodes: [
+		{
+			id: "dad",
+			label: "Homer",
+			x: 60,
+			y: 70,
+			outputs: [{ id: "children" }],
+		},
+		{
+			id: "mom",
+			label: "Marge",
+			x: 160,
+			y: 70,
+			outputs: [{ id: "children" }],
+		},
+		{
+			id: "son",
+			label: "Bart",
+			x: 60,
+			y: 240,
+			inputs: [{ id: "father" }, { id: "mother" }],
+		},
+		{
+			id: "daughter",
+			label: "Lisa",
+			x: 220,
+			y: 220,
+			inputs: [{ id: "father" }, { id: "mother" }],
+		},
+	],
+	edges: [
+		{ from: ["dad", "children"], to: ["son", "father"] },
+		{ from: ["dad", "children"], to: ["daughter", "father"] },
+		{ from: ["mom", "children"], to: ["son", "mother"] },
+		{ from: ["mom", "children"], to: ["daughter", "mother"] },
+	],
 });
 ```
 
@@ -182,9 +192,9 @@ Delete `flow-view` custom element.
 flowView.destroy();
 ```
 
-An use case for `destroy()` is the following.
-Support you are using Next.js, you need to load `flow-view` with an async import into a `useEffect`
-which need to return a callback to be called when component is unmounted.
+An use case for `destroy()` is the following. Support you are using Next.js, you
+need to load `flow-view` with an async import into a `useEffect` which need to
+return a callback to be called when component is unmounted.
 
 This is a sample code.
 
@@ -193,37 +203,35 @@ import type { FlowView } from "flow-view";
 import { FC, useEffect, useRef } from "react";
 
 const MyComponent: FC = () => {
-  const flowViewContainerRef = useRef<HTMLDivElement | null>(null);
-  const flowViewRef = useRef<FlowView | null>(null);
+	const flowViewContainerRef = useRef<HTMLDivElement | null>(null);
+	const flowViewRef = useRef<FlowView | null>(null);
 
-  useEffect(() => {
-    let unmounted = false;
+	useEffect(() => {
+		let unmounted = false;
 
-    const importFlowView = async () => {
-      if (unmounted) return;
-      if (flowViewContainerRef.current === null) return;
-      if (flowViewRef.current !== null) return;
+		const importFlowView = async () => {
+			if (unmounted) return;
+			if (flowViewContainerRef.current === null) return;
+			if (flowViewRef.current !== null) return;
 
-      const { FlowView } = await import("flow-view");
+			const { FlowView } = await import("flow-view");
 
-      const flowView = new FlowView({
-        container: flowViewContainerRef.current,
-      });
-      flowViewRef.current = flowView;
-    };
+			const flowView = new FlowView({
+				container: flowViewContainerRef.current,
+			});
+			flowViewRef.current = flowView;
+		};
 
-    importFlowView();
+		importFlowView();
 
-    return () => {
-      unmounted = true;
-      if (flowViewRef.current !== null) flowViewRef.current.destroy();
-    };
-  }, [flowViewRef, flowViewContainerRef]);
+		return () => {
+			unmounted = true;
+			if (flowViewRef.current !== null) flowViewRef.current.destroy();
+		};
+	}, [flowViewRef, flowViewContainerRef]);
 
-  return (
-    <div ref={flowViewContainerRef}></div>
-  )
-}
+	return <div ref={flowViewContainerRef}></div>;
+};
 ```
 
 ### `newNode()` and `newEdge()`
@@ -236,25 +244,25 @@ example here</a>.
 // Create two nodes.
 
 const node1 = flowView.newNode({
-  label: "Hello",
-  inputs: [{}, {}],
-  outputs: [{ id: "output1" }],
-  x: 100,
-  y: 100,
-  width: 80,
+	label: "Hello",
+	inputs: [{}, {}],
+	outputs: [{ id: "output1" }],
+	x: 100,
+	y: 100,
+	width: 80,
 });
 const node2 = flowView.newNode({
-  label: "World",
-  inputs: [{ id: "input1" }],
-  width: 100,
-  x: 250,
-  y: 400,
+	label: "World",
+	inputs: [{ id: "input1" }],
+	width: 100,
+	x: 250,
+	y: 400,
 });
 
 // Connect nodes with an edge.
 flowView.newEdge({
-  from: [node1.id, "output1"],
-  to: [node2.id, "input1"],
+	from: [node1.id, "output1"],
+	to: [node2.id, "input1"],
 });
 ```
 
@@ -274,8 +282,8 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom node
-example here</a>.
+<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom
+node example here</a>.
 
 ### `onChange(callback)`
 

@@ -33,46 +33,58 @@ export type FlowViewSerializableEdge = {
   to: [FlowViewSerializableNode["id"], FlowViewSerializableInput["id"]];
 };
 
+export type FlowViewSerializableSemiEdge = Partial<
+  Pick<FlowViewSerializableEdge, "from" | "to">
+>;
+
 export type FlowViewSerializableGraph = {
   nodes: FlowViewSerializableNode[];
   edges: FlowViewSerializableEdge[];
 };
 
 declare class FlowViewBase {
+  readonly id: string;
   set ghost(value: boolean);
   set highlighted(value: boolean);
 }
 
-declare class FlowViewPin {
+declare class FlowViewPin extends FlowViewBase {
   constructor(arg: FlowViewSerializablePin);
-
-  readonly id: string;
-
   name: string;
-
   text: string;
 }
 
-declare class FlowViewInput extends FlowViewPin {}
-
-declare class FlowViewOutput extends FlowViewPin {}
-
-declare class FlowViewNode {
-  readonly id: string;
-
-  label: string;
-
-  newInput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewInput;
-
-  newOutput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewOutput;
-
-  inputs: FlowViewInput[];
-
-  outputs: FlowViewOutput[];
+declare class FlowViewInput extends FlowViewPin {
+  toObject(): FlowViewSerializableInput;
 }
 
-declare class FlowViewEdge {
-  readonly id: string;
+declare class FlowViewOutput extends FlowViewPin {
+  toObject(): FlowViewSerializableOutput;
+}
+
+declare class FlowViewNode extends FlowViewBase {
+  label: string;
+  /**
+   * Get input by id.
+   *
+   * @throws FlowViewErrorItemNotFound
+   */
+  input(id: FlowViewSerializableInput["id"]): FlowViewInput;
+  /**
+   * Get output by id.
+   *
+   * @throws FlowViewErrorItemNotFound
+   */
+  output(id: FlowViewSerializableOutput["id"]): FlowViewOutput;
+  inputs: FlowViewInput[];
+  outputs: FlowViewOutput[];
+  newInput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewInput;
+  newOutput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewOutput;
+  toObject(): FlowViewSerializableNode;
+}
+
+declare class FlowViewEdge extends FlowViewBase {
+  toObject(): FlowViewSerializableEdge;
 }
 
 declare type FlowViewGraph = {
@@ -82,10 +94,11 @@ declare type FlowViewGraph = {
 
 type FlowViewAction =
   | "CREATE_NODE"
-  | "CREATE_SEMI_EDGE"
   | "CREATE_EDGE"
+  | "CREATE_SEMI_EDGE"
   | "DELETE_NODE"
   | "DELETE_EDGE"
+  | "DELETE_SEMI_EDGE"
   | "UPDATE_NODE";
 
 export type FlowViewOnChangeArg = {
@@ -112,6 +125,8 @@ export declare class FlowView {
   addNodeLabels(nodeLabels: string[]): void;
 
   clearGraph(): void;
+
+  destroy(): void;
 
   loadGraph(graph: FlowViewGraph): void;
 

@@ -2,24 +2,24 @@
   "name": "flow-view",
   "description": "is a visual editor for dataflow programming",
   "version": "5.7.0",
-  "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
-    "deno": ">=1.10"
-  },
-  "type": "module",
-  "main": "./flow-view.js",
-  "types": "flow-view.d.ts",
-  "exports": {
-    ".": {
-      "import": "./flow-view.js",
-      "types": "./flow-view.d.ts"
-    }
-  },
   "license": "MIT",
   "homepage": "http://fibo.github.io/flow-view",
   "author": {
     "name": "Gianluca Casati",
     "url": "http://fibo.github.io"
+  },
+  "type": "module",
+  "main": "./main.js",
+  "types": "flow-view.d.ts",
+  "exports": {
+    ".": {
+      "import": "./main.js",
+      "types": "./flow-view.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "deno": ">=1.10"
   },
   "scripts": {
     "build": "deno bundle main.js | esbuild --minify --target=safari11 > flow-view.js",

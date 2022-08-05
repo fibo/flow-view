@@ -1,5 +1,9 @@
 .ackrc
-DEVELOPMENT.md
+.editorconfig
+DEVELOP.md
+LICENSE
+README.md
 examples
 index.html
+screenshot.png
 style.css

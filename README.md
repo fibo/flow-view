@@ -174,6 +174,58 @@ Empty current graph.
 flowView.clearGraph();
 ```
 
+### `destroy()`
+
+Delete `flow-view` custom element.
+
+```javascript
+flowView.destroy();
+```
+
+An use case for `destroy()` is the following.
+Support you are using Next.js, you need to load `flow-view` with an async import into a `useEffect`
+which need to return a callback to be called when component is unmounted.
+
+This is a sample code.
+
+```typescript
+import type { FlowView } from "flow-view";
+import { FC, useEffect, useRef } from "react";
+
+const MyComponent: FC = () => {
+  const flowViewContainerRef = useRef<HTMLDivElement | null>(null);
+  const flowViewRef = useRef<FlowView | null>(null);
+
+  useEffect(() => {
+    let unmounted = false;
+
+    const importFlowView = async () => {
+      if (unmounted) return;
+      if (flowViewContainerRef.current === null) return;
+      if (flowViewRef.current !== null) return;
+
+      const { FlowView } = await import("flow-view");
+
+      const flowView = new FlowView({
+        container: flowViewContainerRef.current,
+      });
+      flowViewRef.current = flowView;
+    };
+
+    importFlowView();
+
+    return () => {
+      unmounted = true;
+      if (flowViewRef.current !== null) flowViewRef.current.destroy();
+    };
+  }, [flowViewRef, flowViewContainerRef]);
+
+  return (
+    <div ref={flowViewContainerRef}></div>
+  )
+}
+```
+
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See

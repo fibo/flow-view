@@ -1,3 +1,4 @@
+import { FlowViewErrorItemNotFound } from "../errors.js";
 import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewInput } from "./input.js";
@@ -125,10 +126,16 @@ export class FlowViewNode extends FlowViewBase {
   }
 
   input(id) {
+    if (!this._inputs.has(id)) {
+      throw new FlowViewErrorItemNotFound({ kind: "input", id });
+    }
     return this._inputs.get(id);
   }
 
   output(id) {
+    if (!this._outputs.has(id)) {
+      throw new FlowViewErrorItemNotFound({ kind: "output", id });
+    }
     return this._outputs.get(id);
   }
 

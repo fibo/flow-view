@@ -43,7 +43,7 @@ export class FlowViewBase {
 
   set ghost(value) {
     if (value) {
-      this.element.style.opacity = 0.4;
+      this.element.style.opacity = 0.17;
     } else {
       this.element.style.opacity = "";
     }

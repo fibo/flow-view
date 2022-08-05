@@ -194,7 +194,7 @@ export class FlowViewSelector extends FlowViewBase {
   onKeyup(event) {
     event.stopPropagation();
 
-    const { createNode, input, options, matchingNodeLabels } = this;
+    const { input, options, matchingNodeLabels } = this;
 
     // Delete previous options.
     while (options.firstChild) {

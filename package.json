@@ -1,7 +1,7 @@
 {
   "name": "flow-view",
   "description": "is a visual editor for dataflow programming",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "license": "MIT",
   "homepage": "http://fibo.github.io/flow-view",
   "author": {

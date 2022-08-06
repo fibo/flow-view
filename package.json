@@ -23,8 +23,8 @@
   },
   "scripts": {
     "build": "deno bundle main.js | esbuild --minify --target=safari11 > flow-view.js",
-    "fmt": "deno fmt --options-use-tabs --ignore=./flow-view.js --ignore=./package.json",
-    "lint": "deno lint --ignore=./flow-view.js",
+    "fmt": "deno fmt",
+    "lint": "deno lint",
     "postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
     "start": "serve",
     "test": "echo \"Error: no test specified\" && exit 1"

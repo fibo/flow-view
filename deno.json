@@ -1,0 +1,20 @@
+{
+  "fmt": {
+    "files": {
+      "exclude": ["deno.json", "flow-view.js", "package.json"]
+    },
+    "options": {
+      "useTabs": true,
+      "lineWidth": 120
+    }
+  },
+  "lint": {
+    "files": {
+      "exclude": ["flow-view.js"]
+    },
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["no-case-declarations"]
+    }
+  }
+}

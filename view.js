@@ -92,14 +92,6 @@ export class FlowViewElement extends HTMLElement {
 		});
 	}
 
-	get host() {
-		return this._host || { viewChange: () => {} };
-	}
-
-	set host(value) {
-		this._host = value;
-	}
-
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
 			this.rootResizeObserver = new ResizeObserver(
@@ -131,8 +123,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	removeResizeObserver() {
-		if (!this.rootResizeObserver) return;
-		if (this.parentNode) this.rootResizeObserver.unobserve(this.parentNode);
+		if (this.parentNode) this.rootResizeObserver?.unobserve(this.parentNode);
 		delete this.rootResizeObserver;
 	}
 
@@ -262,23 +253,15 @@ export class FlowViewElement extends HTMLElement {
 	deselectEdge(edge) {
 		edge.highlight = false;
 		edge.selected = false;
-		if (!edge.source.node.isSelected) {
-			edge.source.highlight = false;
-		}
-		if (!edge.target.node.isSelected) {
-			edge.target.highlight = false;
-		}
+		if (!edge.source.node.isSelected) edge.source.highlight = false;
+		if (!edge.target.node.isSelected) edge.target.highlight = false;
 	}
 
 	deselectNode(node) {
 		node.highlight = false;
 		node.selected = false;
-		for (const input of node.inputs) {
-			input.highlight = false;
-		}
-		for (const output of node.outputs) {
-			output.highlight = false;
-		}
+		for (const input of node.inputs) input.highlight = false;
+		for (const output of node.outputs) output.highlight = false;
 	}
 
 	addEdge(edge) {
@@ -359,9 +342,9 @@ export class FlowViewElement extends HTMLElement {
 			};
 		}
 
-		this.translateVector = undefined;
-		this.startDraggingPoint = undefined;
-		this.selectedNodesStartPosition = undefined;
+		delete this.translateVector;
+		delete this.startDraggingPoint;
+		delete this.selectedNodesStartPosition;
 	}
 
 	createSelector({ position }) {
@@ -379,8 +362,6 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	onDblclick(event) {
-		const { origin } = this;
-
 		this.clearSelection();
 		this.removeSelector();
 
@@ -388,8 +369,8 @@ export class FlowViewElement extends HTMLElement {
 
 		const selector = this.createSelector({
 			position: {
-				x: pointerPosition.x + origin.x,
-				y: pointerPosition.y + origin.y,
+				x: pointerPosition.x + this.origin.x,
+				y: pointerPosition.y + this.origin.y,
 			},
 		});
 		selector.focus();
@@ -399,37 +380,28 @@ export class FlowViewElement extends HTMLElement {
 		event.stopPropagation();
 
 		switch (true) {
-			case this.selector instanceof FlowViewSelector: {
+			case this.selector instanceof FlowViewSelector:
 				return;
-			}
-			case event.code === "Backspace": {
+			case event.code === "Backspace":
 				this.deleteSelectedItems();
 				break;
-			}
-			case event.code === "Escape": {
+			case event.code === "Escape":
 				this.clearSelection();
 				break;
-			}
-			case "KeyU": {
+			case "KeyU":
 				this.undo();
 				break;
-			}
-			case "KeyR": {
+			case "KeyR":
 				this.redo();
 				break;
-			}
-			default: {
-				// console.log(event.code);
-			}
+			default: // console.log(event.code);
 		}
 	}
 
 	onPointerdown(event) {
 		event.stopPropagation();
 		this.removeSelector();
-		if (!event.isBubblingFromNode) {
-			this.clearSelection();
-		}
+		if (!event.isBubblingFromNode) this.clearSelection();
 		this.startTranslation(event);
 	}
 
@@ -443,11 +415,9 @@ export class FlowViewElement extends HTMLElement {
 
 			switch (true) {
 				case !!semiEdge: {
-					const { origin } = this;
-
 					if (!semiEdge.hasTarget) {
-						semiEdge.target.center.x = pointerPosition.x + origin.x;
-						semiEdge.target.center.y = pointerPosition.y + origin.y;
+						semiEdge.target.center.x = pointerPosition.x + this.origin.x;
+						semiEdge.target.center.y = pointerPosition.y + this.origin.y;
 					}
 					semiEdge.updateGeometry();
 					break;
@@ -463,8 +433,7 @@ export class FlowViewElement extends HTMLElement {
 					} = this;
 
 					for (const node of selectedNodes) {
-						const { x: startX, y: startY } =
-							selectedNodesStartPosition[node.id];
+						const { x: startX, y: startY } = selectedNodesStartPosition[node.id];
 						node.position = { x: startX - x, y: startY - y };
 					}
 					for (const edge of edges) {
@@ -507,13 +476,11 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	onRootResize(entries) {
+		// Only listen to parentNode
 		for (const entry of entries) {
-			// Only listen to parentNode
 			if (this.parentNode === entry.target) {
 				// Try with contentBoxSize
-				const contentBoxSize = Array.isArray(entry.contentBoxSize)
-					? entry.contentBoxSize[0]
-					: entry.contentBoxSize;
+				const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
 				if (contentBoxSize) {
 					this.width = contentBoxSize.inlineSize;
 					this.height = contentBoxSize.blockSize;
@@ -539,12 +506,8 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				createdSemiEdge: {
-					from: source instanceof FlowViewPin
-						? [source.node.id, source.id]
-						: undefined,
-					to: target instanceof FlowViewPin
-						? [target.node.id, target.id]
-						: undefined,
+					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
+					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
 			viewChangeInfo,
@@ -552,25 +515,13 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	clearSelection() {
-		// First deselect nodes...
-		for (const node of this.selectedNodes) {
-			this.deselectNode(node);
-		}
-		// ...then deselect edges
-		for (const edge of this.selectedEdges) {
-			this.deselectEdge(edge);
-		}
+		for (const node of this.selectedNodes) this.deselectNode(node);
+		for (const edge of this.selectedEdges) this.deselectEdge(edge);
 	}
 
 	deleteSelectedItems() {
-		// Delete edges first...
-		for (const edge of this.selectedEdges) {
-			this.deleteEdge(edge.id);
-		}
-		// ...then delete nodes.
-		for (const node of this.selectedNodes) {
-			this.deleteNode(node.id);
-		}
+		for (const edge of this.selectedEdges) this.deleteEdge(edge.id);
+		for (const node of this.selectedNodes) this.deleteNode(node.id);
 	}
 
 	removeSemiEdge(viewChangeInfo) {
@@ -578,16 +529,12 @@ export class FlowViewElement extends HTMLElement {
 		if (!semiEdge) return;
 		const { source, target } = semiEdge;
 		semiEdge.remove();
-		this.semiEdge = undefined;
+		delete this.semiEdge;
 		this.host.viewChange(
 			{
 				deletedSemiEdge: {
-					from: source instanceof FlowViewPin
-						? [source.node.id, source.id]
-						: undefined,
-					to: target instanceof FlowViewPin
-						? [target.node.id, target.id]
-						: undefined,
+					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
+					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
 			viewChangeInfo,
@@ -596,9 +543,7 @@ export class FlowViewElement extends HTMLElement {
 
 	removeSelector() {
 		const { selector } = this;
-		if (selector instanceof FlowViewSelector) {
-			selector.remove();
-		}
+		if (selector instanceof FlowViewSelector) selector.remove();
 		this.selector = undefined;
 	}
 }

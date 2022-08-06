@@ -31,8 +31,7 @@ Try this in your HTML page
 
 ### Old school
 
-Just download the `flow-view.js` build
-[from here](https://github.com/fibo/flow-view/blob/main/flow-view.js), upload it
+Just download the `flow-view.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.js), upload it
 wherever you like and load it with a `script` tag like
 
 ```html
@@ -58,11 +57,10 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
 
 ### Constructor
 
-Create a `FlowView` instance and pass it a `container` argument. It will create
-a `flow-view` custom element and attach it to the _container_. If no argument is
-provided, default _container_ will be `document.body`. Be aware that the
-`flow-view` custom element will fit the whole height of its container, so make
-sure to style properly to avoid a zero height container.
+Create a `FlowView` instance and pass it a `container` argument. It will create a `flow-view` custom element and attach
+it to the _container_. If no argument is provided, default _container_ will be `document.body`. Be aware that the
+`flow-view` custom element will fit the whole height of its container, so make sure to style properly to avoid a zero
+height container.
 
 ```html
 <!DOCTYPE html>
@@ -77,8 +75,8 @@ sure to style properly to avoid a zero height container.
 </html>
 ```
 
-If some `flow-view` custom element is already in the page, it can be passed to a
-`FlowView` instance via the `element` argument.
+If some `flow-view` custom element is already in the page, it can be passed to a `FlowView` instance via the `element`
+argument.
 
 ```html
 <!DOCTYPE html>
@@ -95,8 +93,7 @@ If some `flow-view` custom element is already in the page, it can be passed to a
 </html>
 ```
 
-Add a list to define which nodes are available. It makes sense to be provided in
-the majority of use cases.
+Add a list to define which nodes are available. It makes sense to be provided in the majority of use cases.
 
 ```javascript
 flowView.addNodeLabels([
@@ -192,9 +189,8 @@ Delete `flow-view` custom element.
 flowView.destroy();
 ```
 
-An use case for `destroy()` is the following. Support you are using Next.js, you
-need to load `flow-view` with an async import into a `useEffect` which need to
-return a callback to be called when component is unmounted.
+An use case for `destroy()` is the following. Support you are using Next.js, you need to load `flow-view` with an async
+import into a `useEffect` which need to return a callback to be called when component is unmounted.
 
 This is a sample code.
 
@@ -237,8 +233,7 @@ const MyComponent: FC = () => {
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://fibo.github.io/flow-view/examples/programmatic/index.html">programmatic
-example here</a>.
+<a href="http://fibo.github.io/flow-view/examples/programmatic/index.html">programmatic example here</a>.
 
 ```javascript
 // Create two nodes.
@@ -268,8 +263,7 @@ flowView.newEdge({
 
 ### `deleteNode()` and `deleteEdge()`
 
-Delete nodes and edges programmatically. Notice that when a node is deleted, all
-its connected edges are deleted too.
+Delete nodes and edges programmatically. Notice that when a node is deleted, all its connected edges are deleted too.
 
 ```javascript
 const nodeId = "abc";
@@ -282,14 +276,12 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom
-node example here</a>.
+<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom node example here</a>.
 
 ### `onChange(callback)`
 
 React to _flow-view_ changes. See
-<a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code
-here</a>.
+<a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code here</a>.
 
 Callback signature is `({ action, data }, info) => void`, where
 

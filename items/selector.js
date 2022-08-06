@@ -43,28 +43,21 @@ export class FlowViewSelector extends FlowViewBase {
 	};
 
 	init({ nodeLabels, position }) {
-		const { element } = this;
+		this.element.setAttribute("tabindex", 0);
 
-		element.setAttribute("tabindex", 0);
-
-		this.hint = this.createElement(
-			"input",
-			`${FlowViewSelector.cssClassName}__hint`,
-		);
+		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`);
 
 		const input = (this.input = this.createElement("input"));
 
-		this.options = this.createElement("div", [
-			`${FlowViewSelector.cssClassName}__options`,
-		]);
+		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`]);
 
 		this.nodeLabels = nodeLabels;
 		this.position = position;
 
 		this._onDblclick = this.onDblclick.bind(this);
-		element.addEventListener("dblclick", this._onDblclick);
+		this.element.addEventListener("dblclick", this._onDblclick);
 		this._onPointerdown = this.onPointerdown.bind(this);
-		element.addEventListener("pointerdown", this._onPointerdown);
+		this.element.addEventListener("pointerdown", this._onPointerdown);
 
 		this._onKeydown = this.onKeydown.bind(this);
 		input.addEventListener("keydown", this._onKeydown);
@@ -73,13 +66,10 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	dispose() {
-		const { element, input } = this;
-
-		element.removeEventListener("dblclick", this._onDblclick);
-		element.removeEventListener("pointerdown", this._onPointerdown);
-
-		input.removeEventListener("keydown", this._onKeydown);
-		input.removeEventListener("keyup", this._onKeyup);
+		this.element.removeEventListener("dblclick", this._onDblclick);
+		this.element.removeEventListener("pointerdown", this._onPointerdown);
+		this.input.removeEventListener("keydown", this._onKeydown);
+		this.input.removeEventListener("keyup", this._onKeyup);
 	}
 
 	focus() {
@@ -95,13 +85,8 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	get matchingNodeLabels() {
-		const {
-			input: { value },
-		} = this;
-
-		// Type at least one char to start showing completion.
+		const value = this.input.value;
 		if (value.length === 0) return [];
-
 		return this.nodeLabels.filter(
 			(label) =>
 				// input value fits into node label...
@@ -119,9 +104,7 @@ export class FlowViewSelector extends FlowViewBase {
 		// Avoid overflow, using some heuristic values.
 		const overflowY = y - view.origin.y + 40 >= view.height;
 		const overflowX = x - view.origin.x + FlowViewSelector.width >= view.width;
-		const _x = overflowX
-			? view.width + view.origin.x - FlowViewSelector.width - 10
-			: x;
+		const _x = overflowX ? view.width + view.origin.x - FlowViewSelector.width - 10 : x;
 		const _y = overflowY ? view.height + view.origin.y - 50 : y;
 
 		element.style.top = `${_y - view.origin.y}px`;
@@ -136,14 +119,8 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	createNode() {
-		const {
-			input: { value },
-			position: { x, y },
-			view,
-		} = this;
-
-		view.newNode({ x, y, label: value });
-		view.removeSelector();
+		this.view.newNode({ x: this.position.x, y: this.position.y, label: this.input.value });
+		this.view.removeSelector();
 	}
 
 	onDblclick(event) {
@@ -152,42 +129,23 @@ export class FlowViewSelector extends FlowViewBase {
 
 	onKeydown(event) {
 		event.stopPropagation();
-
 		switch (true) {
-			case event.code === "Enter": {
+			case event.code === "Enter":
 				this.createNode();
 				break;
-			}
-
-			case event.code === "Escape": {
-				if (this.input.value === "") {
-					this.view.removeSelector();
-				} else {
-					this.input.value = "";
-				}
+			case event.code === "Escape":
+				if (this.input.value === "") this.view.removeSelector();
+				else this.input.value = "";
 				break;
-			}
-
-			case event.code === "ArrowRight": {
+			case event.code === "ArrowRight":
 				const { completion, input } = this;
-				if (completion && input.value.length === event.target.selectionStart) {
-					this.input.value = completion;
-				}
+				if (completion && input.value.length === event.target.selectionStart) this.input.value = completion;
 				break;
-			}
-
-			case event.code === "Tab": {
+			case event.code === "Tab":
 				event.preventDefault();
-				const { completion } = this;
-				if (completion) {
-					this.input.value = completion;
-				}
+				if (this.completion) this.input.value = completion;
 				break;
-			}
-
-			default: {
-				// console.log(event.code);
-			}
+			default: // console.log(event.code);
 		}
 	}
 
@@ -214,15 +172,13 @@ export class FlowViewSelector extends FlowViewBase {
 		}
 
 		switch (matchingNodeLabels.length) {
-			case 0: {
+			case 0:
 				this.completion = "";
 				break;
-			}
-			case 1: {
+			case 1:
 				this.completion = matchingNodeLabels[0];
 				break;
-			}
-			default: {
+			default:
 				let completion = input.value;
 
 				const shortestMatch = matchingNodeLabels.reduce((shortest, match) =>
@@ -231,18 +187,12 @@ export class FlowViewSelector extends FlowViewBase {
 
 				for (let i = input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-
-					if (
-						matchingNodeLabels.every((label) =>
-							label.startsWith(completion + currentChar)
-						)
-					) {
+					if (matchingNodeLabels.every((label) => label.startsWith(completion + currentChar))) {
 						completion += currentChar;
 					}
 				}
 
 				this.completion = completion;
-			}
 		}
 	}
 

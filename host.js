@@ -52,13 +52,7 @@ export class FlowView {
 	}
 
 	addNodeLabels(nodeLabels) {
-		if (Array.isArray(nodeLabels)) {
-			nodeLabels.forEach((nodeLabel) => {
-				if (typeof nodeLabel === "string" && nodeLabel !== "") {
-					this.nodeLabels.add(nodeLabel);
-				}
-			});
-		}
+		nodeLabels.forEach((nodeLabel) => this.nodeLabels.add(nodeLabel));
 	}
 
 	clearGraph() {
@@ -66,15 +60,8 @@ export class FlowView {
 	}
 
 	loadGraph({ nodes = [], edges = [] }) {
-		if (!Array.isArray(nodes) || !Array.isArray(edges)) {
-			throw new TypeError("Invalid graph");
-		}
-		for (const node of nodes) {
-			this.newNode(node, { isLoadGraph: true });
-		}
-		for (const edge of edges) {
-			this.newEdge(edge, { isLoadGraph: true });
-		}
+		for (const node of nodes) this.newNode(node, { isLoadGraph: true });
+		for (const edge of edges) this.newEdge(edge, { isLoadGraph: true });
 	}
 
 	get onViewChange() {
@@ -82,7 +69,7 @@ export class FlowView {
 	}
 
 	onChange(value) {
-		if (typeof value === "function") this._onViewChange = value;
+		this._onViewChange = value;
 	}
 
 	viewChange(

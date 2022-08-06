@@ -42,12 +42,8 @@ export class FlowViewEdge extends FlowViewBase {
 		const hasSourcePin = source instanceof FlowViewOutput;
 		const hasTargetPin = target instanceof FlowViewInput;
 
-		this.source = hasTargetPin && !hasSourcePin
-			? { center: { x: target.center.x, y: target.center.y } }
-			: source;
-		this.target = hasSourcePin && !hasTargetPin
-			? { center: { x: source.center.x, y: source.center.y } }
-			: target;
+		this.source = hasTargetPin && !hasSourcePin ? { center: { x: target.center.x, y: target.center.y } } : source;
+		this.target = hasSourcePin && !hasTargetPin ? { center: { x: source.center.x, y: source.center.y } } : target;
 
 		const svg = (this.svg = this.createSvg("svg"));
 		this.element.appendChild(svg);
@@ -66,26 +62,21 @@ export class FlowViewEdge extends FlowViewBase {
 	}
 
 	dispose() {
-		const { line } = this;
-		line.removeEventListener("pointerdown", this._onPointerdownLine);
-		line.removeEventListener("pointerenter", this._onPointerenterLine);
-		line.removeEventListener("pointerleave", this._onPointerleaveLine);
+		this.line.removeEventListener("pointerdown", this._onPointerdownLine);
+		this.line.removeEventListener("pointerenter", this._onPointerenterLine);
+		this.line.removeEventListener("pointerleave", this._onPointerleaveLine);
 	}
 
 	onPointerdownLine(event) {
 		event.stopPropagation();
-
 		const isMultiSelection = event.shiftKey;
-		if (!isMultiSelection) {
-			this.view.clearSelection();
-		}
+		if (!isMultiSelection) this.view.clearSelection();
 		this.view.selectEdge(this);
 	}
 
 	onPointerenterLine() {
 		if (this.isSemiEdge) return;
 		if (this.view.isDraggingEdge) return;
-
 		if (!this.isSelected) {
 			this.highlight = true;
 			this.source.highlight = true;
@@ -95,7 +86,6 @@ export class FlowViewEdge extends FlowViewBase {
 
 	onPointerleaveLine() {
 		if (this.isSemiEdge) return;
-
 		if (!this.isSelected) {
 			this.highlight = false;
 			if (!this.source.node.isSelected) {
@@ -128,22 +118,16 @@ export class FlowViewEdge extends FlowViewBase {
 		const invertedX = targetX < sourceX;
 		const invertedY = targetY < sourceY;
 
-		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) -
-			originY;
-		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) -
-			originX;
+		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - originY;
+		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - originX;
 		element.style.top = `${top}px`;
 		element.style.left = `${left}px`;
 
-		const width = invertedX
-			? sourceX - targetX + pinSize
-			: targetX - sourceX + pinSize;
+		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize;
 		element.style.width = `${width}px`;
 		svg.setAttribute("width", width);
 
-		const height = invertedY
-			? sourceY - targetY + pinSize
-			: targetY - sourceY + pinSize;
+		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize;
 		element.style.height = `${height}px`;
 		svg.setAttribute("height", height);
 
@@ -160,18 +144,11 @@ export class FlowViewEdge extends FlowViewBase {
 	}
 
 	toObject() {
-		const { isSemiEdge, source, target } = this;
-
-		if (isSemiEdge) return;
-
-		const sourceNodeId = source.node.id;
-		const sourcePinId = source.id;
-		const targetNodeId = target.node.id;
-		const targetPinId = target.id;
+		if (this.isSemiEdge) return;
 		return {
 			...super.toObject(),
-			from: [sourceNodeId, sourcePinId],
-			to: [targetNodeId, targetPinId],
+			from: [this.source.node.id, this.source.id],
+			to: [this.target.node.id, this.target.id],
 		};
 	}
 }

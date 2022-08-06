@@ -29,8 +29,7 @@
 
     <p>Nodes and edges are created with the following code.</p>
 
-    <pre><code>
-import { FlowView } from 'https://unpkg.com/flow-view';
+    <pre><code>import { FlowView } from 'https://unpkg.com/flow-view';
 
 const flowView = new FlowView({
   element: document.getElementById('element')
@@ -52,13 +51,12 @@ const edge1 = flowView.newEdge({
 const edge2 = flowView.newEdge({
   from: [node3.id, 'saluto'],
   to: [node2.id, 'ghost']
-})
-    </code></pre>
+})</code></pre>
   </main>
 
   <script type="module">
-    // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView } from '../../main.js';
+    import { FlowView } from 'https://unpkg.com/flow-view';
+    // import { FlowView } from '../../main.js';
 
     const flowView = new FlowView({
       element: document.getElementById('element')

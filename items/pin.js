@@ -46,6 +46,10 @@ export class FlowViewPin extends FlowViewBase {
 		this.element.addEventListener("pointerup", this._onPointerup);
 	}
 
+	get offsetX() {
+		return this.bounds.x - this.node.bounds.x;
+	}
+
 	set text(value) {
 		this.info.innerHTML = value;
 	}
@@ -63,10 +67,8 @@ export class FlowViewPin extends FlowViewBase {
 
 	onPointerenter(event) {
 		event.stopPropagation();
-
 		if (this.view.isDraggingEdge) return;
 		if (this.node.isSelected) return;
-
 		this.highlight = true;
 	}
 
@@ -77,11 +79,8 @@ export class FlowViewPin extends FlowViewBase {
 	}
 
 	toObject() {
-		const { name } = this;
 		const obj = {};
-		if (typeof name !== "undefined") {
-			obj.name = name;
-		}
+		if (!this.name) obj.name = this.name;
 		return {
 			...super.toObject(),
 			...obj,

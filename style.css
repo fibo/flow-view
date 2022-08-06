@@ -117,3 +117,7 @@ pre {
   padding: 0.5em;
   overflow-x: auto;
 }
+
+pre code {
+  color: white;
+}

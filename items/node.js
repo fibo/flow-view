@@ -74,9 +74,7 @@ export class FlowViewNode extends FlowViewBase {
 		this._outputs = new Map();
 		this.outputListDiv = this.createElement("div", "pins");
 
-		for (const pin of outputs) {
-			this.newOutput(pin);
-		}
+		for (const pin of outputs) this.newOutput(pin);
 
 		this.position = { x, y };
 
@@ -126,16 +124,12 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	input(id) {
-		if (!this._inputs.has(id)) {
-			throw new FlowViewErrorItemNotFound({ kind: "input", id });
-		}
+		if (!this._inputs.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id });
 		return this._inputs.get(id);
 	}
 
 	output(id) {
-		if (!this._outputs.has(id)) {
-			throw new FlowViewErrorItemNotFound({ kind: "output", id });
-		}
+		if (!this._outputs.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id });
 		return this._outputs.get(id);
 	}
 
@@ -169,13 +163,9 @@ export class FlowViewNode extends FlowViewBase {
 
 	onPointerdown(event) {
 		if (event.isBubblingFromPin) return;
-
 		event.isBubblingFromNode = true;
-		const isMultiSelection = event.shiftKey ||
-			(this.view.hasSelectedNodes && this.isSelected);
-		if (!isMultiSelection) {
-			this.view.clearSelection();
-		}
+		const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected);
+		if (!isMultiSelection) this.view.clearSelection();
 		this.view.selectNode(this);
 	}
 

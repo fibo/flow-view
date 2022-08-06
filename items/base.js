@@ -9,9 +9,7 @@ export class FlowViewBase {
 
 		if (view.shadowRoot.getElementById(id)) {
 			return FlowViewBase.generateId(view);
-		} else {
-			return id;
-		}
+		} else return id;
 	}
 
 	constructor({ cssClassName, id, view, ...rest }) {
@@ -42,21 +40,14 @@ export class FlowViewBase {
 	}
 
 	set ghost(value) {
-		if (value) {
-			this.element.style.opacity = 0.17;
-		} else {
-			this.element.style.opacity = "";
-		}
+		this.element.style.opacity = value ? 0.17 : "";
 	}
 
 	set highlight(value) {
 		const cssClassName = cssModifierHighlighted(this.cssClassName);
 
-		if (value) {
-			this.element.classList.add(cssClassName);
-		} else {
-			this.element.classList.remove(cssClassName);
-		}
+		if (value) this.element.classList.add(cssClassName);
+		else this.element.classList.remove(cssClassName);
 	}
 
 	get isSelected() {
@@ -64,18 +55,12 @@ export class FlowViewBase {
 	}
 
 	set selected(value) {
-		if (value) {
-			this._selected = true;
-		} else {
-			this._selected = false;
-		}
+		this._selected = value ? true : false;
 	}
 
 	createElement(tag, cssClassName) {
 		const element = document.createElement(tag);
-		if (cssClassName) {
-			element.classList.add(cssClassName);
-		}
+		if (cssClassName) element.classList.add(cssClassName);
 		this.element.appendChild(element);
 		return element;
 	}
@@ -86,7 +71,6 @@ export class FlowViewBase {
 
 	remove() {
 		this.dispose();
-
 		this.element.remove();
 	}
 

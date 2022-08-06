@@ -1,5 +1,0 @@
-## Ack is awesome: https://beyondgrep.com/
-#
---smart-case
-# ignore the following files and folders
---ignore-file=match:/flow-view.js/

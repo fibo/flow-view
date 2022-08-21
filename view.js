@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -77,9 +77,7 @@ export class FlowViewElement extends HTMLElement {
 			"</style>",
 		].join("");
 
-		this.attachShadow({ mode: "open" }).appendChild(
-			template.content.cloneNode(true),
-		);
+		this.attachShadow({ mode: "open" }).appendChild(template.content.cloneNode(true));
 
 		this._origin = { x: 0, y: 0 };
 
@@ -94,9 +92,7 @@ export class FlowViewElement extends HTMLElement {
 
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
-			this.rootResizeObserver = new ResizeObserver(
-				this.onRootResize.bind(this),
-			);
+			this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this));
 			this.rootResizeObserver.observe(this.parentNode);
 		} else {
 			this.height = this.getAttribute("height") || FlowViewElement.minHeight;
@@ -202,18 +198,15 @@ export class FlowViewElement extends HTMLElement {
 		return edge;
 	}
 
-	newNode(
-		{ x = 0, y = 0, label = "node", id, type, inputs = [], outputs = [] },
-		viewChangeInfo,
-	) {
+	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
 		const Class = this.itemClass.get(type) || this.itemClass.get("node");
 		const node = new Class({
 			id,
 			view: this,
 			cssClassName: Class.cssClassName,
-			label,
-			inputs,
-			outputs,
+			text,
+			ins,
+			outs,
 			x,
 			y,
 			type,
@@ -309,9 +302,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	edge(id) {
-		if (!this._edges.has(id)) {
-			throw new FlowViewErrorItemNotFound({ kind: "edge", id });
-		}
+		if (!this._edges.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id });
 		return this._edges.get(id);
 	}
 
@@ -353,7 +344,7 @@ export class FlowViewElement extends HTMLElement {
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
 			position,
-			nodeLabels: Array.from(this.host.nodeLabels),
+			nodeDefinitions: Array.from(this.host.nodeDefinitions),
 		}));
 	}
 
@@ -425,22 +416,14 @@ export class FlowViewElement extends HTMLElement {
 
 				case hasSelectedNodes: {
 					this.translateVector = { x, y };
-					const {
-						edges,
-						selectedNodes,
-						selectedNodeIds,
-						selectedNodesStartPosition,
-					} = this;
+					const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this;
 
 					for (const node of selectedNodes) {
 						const { x: startX, y: startY } = selectedNodesStartPosition[node.id];
 						node.position = { x: startX - x, y: startY - y };
 					}
 					for (const edge of edges) {
-						if (
-							selectedNodeIds.includes(edge.source.node.id) ||
-							selectedNodeIds.includes(edge.target.node.id)
-						) {
+						if (selectedNodeIds.includes(edge.source.node.id) || selectedNodeIds.includes(edge.target.node.id)) {
 							edge.updateGeometry();
 						}
 					}
@@ -510,7 +493,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -537,7 +520,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 

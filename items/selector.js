@@ -42,7 +42,7 @@ export class FlowViewSelector extends FlowViewBase {
 		},
 	};
 
-	init({ nodeLabels, position }) {
+	init({ nodeDefinitions, position }) {
 		this.element.setAttribute("tabindex", 0);
 
 		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`);
@@ -51,7 +51,7 @@ export class FlowViewSelector extends FlowViewBase {
 
 		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`]);
 
-		this.nodeLabels = nodeLabels;
+		this.nodeDefinitions = nodeDefinitions;
 		this.position = position;
 
 		this._onDblclick = this.onDblclick.bind(this);
@@ -84,18 +84,19 @@ export class FlowViewSelector extends FlowViewBase {
 		this.hint.setAttribute("placeholder", text);
 	}
 
-	get matchingNodeLabels() {
+	get matchingNodeTexts() {
 		const value = this.input.value;
 		if (value.length === 0) return [];
-		return this.nodeLabels.filter(
-			(label) =>
-				// input value fits into node label...
-				label.startsWith(value) &&
-				// ...but they are not the same yet.
-				// Otherwise if a label starts with another label,
-				// some completions could be missed.
-				label !== value,
-		);
+		return this.nodeDefinitions
+			.filter(
+				({ text }) =>
+					// input value fits into node text...
+					text.startsWith(value) &&
+					// ...but they are not the same yet.
+					text !== value
+				// Otherwise if a text starts with another text, some completions could be missed.
+			)
+			.map(({ text }) => text);
 	}
 
 	set position({ x, y }) {
@@ -119,7 +120,7 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	createNode() {
-		this.view.newNode({ x: this.position.x, y: this.position.y, label: this.input.value });
+		this.view.newNode({ x: this.position.x, y: this.position.y, text: this.input.value });
 		this.view.removeSelector();
 	}
 
@@ -152,47 +153,44 @@ export class FlowViewSelector extends FlowViewBase {
 	onKeyup(event) {
 		event.stopPropagation();
 
-		const { input, options, matchingNodeLabels } = this;
+		const { input, options, matchingNodeTexts } = this;
 
 		// Delete previous options.
 		while (options.firstChild) {
 			options.removeChild(options.lastChild);
 		}
 		// Create new options.
-		for (let i = 0; i < matchingNodeLabels.length; i++) {
-			const label = matchingNodeLabels[i];
+		for (let i = 0; i < matchingNodeTexts.length; i++) {
+			const text = matchingNodeTexts[i];
 			const option = document.createElement("div");
 			option.classList.add(`${FlowViewSelector.cssClassName}__option`);
-			option.textContent = label;
+			option.textContent = text;
 			option.onclick = () => {
-				this.input.value = label;
+				this.input.value = text;
 				this.createNode();
 			};
 			options.append(option);
 		}
 
-		switch (matchingNodeLabels.length) {
+		switch (matchingNodeTexts.length) {
 			case 0:
 				this.completion = "";
 				break;
 			case 1:
-				this.completion = matchingNodeLabels[0];
+				this.completion = matchingNodeTexts[0];
 				break;
 			default:
-				let completion = input.value;
+				this.completion = input.value;
 
-				const shortestMatch = matchingNodeLabels.reduce((shortest, match) =>
+				const shortestMatch = matchingNodeTexts.reduce((shortest, match) =>
 					shortest.length < match.length ? shortest : match
 				);
 
 				for (let i = input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-					if (matchingNodeLabels.every((label) => label.startsWith(completion + currentChar))) {
-						completion += currentChar;
-					}
+					if (matchingNodeTexts.every((text) => text.startsWith(completion + currentChar)))
+						this.completion += currentChar;
 				}
-
-				this.completion = completion;
 		}
 	}
 

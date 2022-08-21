@@ -16,16 +16,14 @@ export class FlowView {
 			element.host = this;
 			this.view = element;
 		} else {
-			const view = (this.view = document.createElement(
-				CustomElement.customElementName,
-			));
+			const view = (this.view = document.createElement(CustomElement.customElementName));
 			view.host = this;
 			if (container instanceof HTMLElement) container.appendChild(view);
 			else document.body.appendChild(view);
 		}
 		this.view.style.isolation = "isolate";
 
-		this.nodeLabels = new Set();
+		this.nodeDefinitions = new Set();
 		this._onViewChange = () => {};
 	}
 
@@ -51,8 +49,8 @@ export class FlowView {
 		return this.view.edge(id);
 	}
 
-	addNodeLabels(nodeLabels) {
-		nodeLabels.forEach((nodeLabel) => this.nodeLabels.add(nodeLabel));
+	addNodeDefinitions(nodeDefinitions) {
+		nodeDefinitions.forEach((nodeDefinition) => this.nodeDefinitions.add(nodeDefinition));
 	}
 
 	clearGraph() {
@@ -73,16 +71,8 @@ export class FlowView {
 	}
 
 	viewChange(
-		{
-			createdNode,
-			createdEdge,
-			createdSemiEdge,
-			deletedNode,
-			deletedEdge,
-			deletedSemiEdge,
-			updatedNode,
-		},
-		viewChangeInfo = {},
+		{ createdNode, createdEdge, createdSemiEdge, deletedNode, deletedEdge, deletedSemiEdge, updatedNode },
+		viewChangeInfo = {}
 	) {
 		if (createdNode) {
 			this.onViewChange(
@@ -90,7 +80,7 @@ export class FlowView {
 					action: "CREATE_NODE",
 					data: createdNode,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (createdEdge) {
@@ -99,7 +89,7 @@ export class FlowView {
 					action: "CREATE_EDGE",
 					data: createdEdge,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (createdSemiEdge) {
@@ -108,7 +98,7 @@ export class FlowView {
 					action: "CREATE_SEMI_EDGE",
 					data: createdSemiEdge,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (deletedNode) {
@@ -117,7 +107,7 @@ export class FlowView {
 					action: "DELETE_NODE",
 					data: deletedNode,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (deletedEdge) {
@@ -126,7 +116,7 @@ export class FlowView {
 					action: "DELETE_EDGE",
 					data: deletedEdge,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (deletedSemiEdge) {
@@ -135,7 +125,7 @@ export class FlowView {
 					action: "DELETE_SEMI_EDGE",
 					data: deletedSemiEdge,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 		if (updatedNode) {
@@ -144,14 +134,14 @@ export class FlowView {
 					action: "UPDATE_NODE",
 					data: updatedNode,
 				},
-				viewChangeInfo,
+				viewChangeInfo
 			);
 		}
 	}
 
 	newEdge(
 		{ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
-		viewChangeInfo = { isProgrammatic: true },
+		viewChangeInfo = { isProgrammatic: true }
 	) {
 		const sourceNode = this.view.node(sourceNodeId);
 		const targetNode = this.view.node(targetNodeId);

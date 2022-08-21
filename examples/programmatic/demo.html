@@ -36,13 +36,13 @@ const flowView = new FlowView({
 });
 
 const node1 = flowView.newNode({
-  label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+  text: 'Hello', ins:[{}, {}], outs: [{ id: 'output1' }], x: 100, y: 100
 });
 const node2 = flowView.newNode({
-  label: 'World', inputs:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
+  text: 'World', ins:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
 });
 const node3 = flowView.newNode({
-  label: 'ciao', outputs:[{ id: 'saluto' }], x: 400, y: 280
+  text: 'ciao', outs:[{ id: 'saluto' }], x: 400, y: 280
 })
 const edge1 = flowView.newEdge({
   from: [node1.id, 'output1'],
@@ -63,13 +63,13 @@ const edge2 = flowView.newEdge({
     });
 
     const node1 = flowView.newNode({
-      label: 'Hello', inputs:[{}, {}], outputs: [{ id: 'output1' }], x: 100, y: 100, width: 80
+      text: 'Hello', ins:[{}, {}], outs: [{ id: 'output1' }], x: 100, y: 100
     });
     const node2 = flowView.newNode({
-      label: 'World', inputs:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
+      text: 'World', ins:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
     });
     const node3 = flowView.newNode({
-      label: 'ciao', outputs:[{ id: 'saluto' }], x: 400, y: 280
+      text: 'ciao', outs:[{ id: 'saluto' }], x: 400, y: 280
     })
     const edge1 = flowView.newEdge({
       from: [node1.id, 'output1'],

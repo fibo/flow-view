@@ -39,10 +39,16 @@ export class FlowViewBase {
 		return this.element.getAttribute("id");
 	}
 
+	/**
+	 * @param {Boolean} value
+	 */
 	set ghost(value) {
 		this.element.style.opacity = value ? 0.17 : "";
 	}
 
+	/**
+	 * @param {Boolean} value
+	 */
 	set highlight(value) {
 		const cssClassName = cssModifierHighlighted(this.cssClassName);
 
@@ -54,6 +60,9 @@ export class FlowViewBase {
 		return this._selected;
 	}
 
+	/**
+	 * @param {Boolean} value
+	 */
 	set selected(value) {
 		this._selected = value ? true : false;
 	}

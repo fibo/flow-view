@@ -1,24 +1,17 @@
 import { FlowViewNode } from "../../items/node.js";
 
 export class FlowViewEditableNode extends FlowViewNode {
-	init(args) {
-		super.init(args);
-
-		this._onDblclick = this.onDblclick.bind(this);
-		this.element.addEventListener("dblclick", this._onDblclick);
-	}
-
-	disposeLabelEditor() {
+	disposeContentEditor() {
 		if (!this.isEditing) return;
-		const { labelDiv } = this;
-		labelDiv.removeAttribute("contenteditable");
-		if (this._onLabelBlur) {
-			labelDiv.removeEventListener("blur", this._onLabelBlur);
-			this._onLabelBlur = undefined;
+		const { contentDiv } = this;
+		contentDiv.removeAttribute("contenteditable");
+		if (this._onContentBlur) {
+			contentDiv.removeEventListener("blur", this._onContentBlur);
+			this._onContentBlur = undefined;
 		}
-		if (this._onLabelKeydown) {
-			labelDiv.removeEventListener("keydown", this._onLabelKeydown);
-			this._onLabelKeydown = undefined;
+		if (this._onContentKeydown) {
+			contentDiv.removeEventListener("keydown", this._onContentKeydown);
+			this._onContentKeydown = undefined;
 		}
 		this.isEditing = false;
 	}
@@ -26,64 +19,63 @@ export class FlowViewEditableNode extends FlowViewNode {
 	dispose() {
 		const { element } = this;
 		element.removeEventListener("dblclick", this._onDblclick);
-		this.disposeLabelEditor();
+		this.disposeContentEditor();
 		super.dispose();
 	}
 
 	onDblclick(event) {
 		event.stopPropagation();
 
-		const { labelDiv } = this;
+		const { contentDiv } = this;
 
 		if (this.isEditing) return;
 
-		labelDiv.setAttribute("contenteditable", true);
+		contentDiv.setAttribute("contenteditable", true);
 		this.isEditing = true;
 
 		// Move cursor to end of text
 		const range = document.createRange();
-		range.selectNodeContents(labelDiv);
+		range.selectNodeContents(contentDiv);
 		range.collapse(false);
 		const selection = window.getSelection();
 		selection.removeAllRanges();
 		selection.addRange(range);
 
-		this._onLabelKeydown = this.onLabelKeydown.bind(this);
-		labelDiv.addEventListener("keydown", this._onLabelKeydown);
-		this._onLabelBlur = this.onLabelBlur.bind(this);
-		labelDiv.addEventListener("blur", this._onLabelBlur);
-		labelDiv.focus();
+		this._onContentKeydown = this.onContentKeydown.bind(this);
+		contentDiv.addEventListener("keydown", this._onContentKeydown);
+		this._onContentBlur = this.onContentBlur.bind(this);
+		contentDiv.addEventListener("blur", this._onContentBlur);
+		contentDiv.focus();
 	}
 
-	onLabelBlur(event) {
+	onContentBlur(event) {
 		event.stopPropagation();
-		const { label, labelDiv, view } = this;
-		const nextLabel = labelDiv.textContent;
+		const { text, contentDiv, view } = this;
+		const nextContent = contentDiv.textContent;
 
-		if (nextLabel && label !== nextLabel) {
-			this.label = nextLabel;
+		if (nextContent && text !== nextContent) {
+			this.text = nextContent;
 			view.host.viewChange({ updatedNode: this.toObject() });
 		} else {
-			labelDiv.textContent = label;
+			contentDiv.textContent = text;
 		}
-		this.disposeLabelEditor();
+		this.disposeContentEditor();
 	}
 
-	onLabelKeydown(event) {
+	onContentKeydown(event) {
 		event.stopPropagation();
-		const { labelDiv } = this;
+		const { contentDiv } = this;
 
 		switch (true) {
 			case event.code === "Enter": {
 				event.preventDefault();
-				labelDiv.blur();
+				contentDiv.blur();
 				break;
 			}
 
 			case event.code === "Escape": {
-				this.labelDiv.textContent = this.label;
-				this.disposeLabelEditor();
-				// labelDiv.blur();
+				this.contentDiv.textContent = this.text;
+				this.disposeContentEditor();
 				break;
 			}
 

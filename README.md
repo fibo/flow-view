@@ -96,11 +96,11 @@ argument.
 Add a list to define which nodes are available. It makes sense to be provided in the majority of use cases.
 
 ```javascript
-flowView.addNodeLabels([
-	"Marge",
-	"Homer",
-	"Bart",
-	"Lisa",
+flowView.addNodeDefinitions([
+  { text: "Marge" },
+  { text: "Homer" },
+  { text: "Bart" },
+  { text: "Lisa" }
 ]);
 ```
 
@@ -137,31 +137,31 @@ flowView.loadGraph({
 	nodes: [
 		{
 			id: "dad",
-			label: "Homer",
+			text: "Homer",
 			x: 60,
 			y: 70,
-			outputs: [{ id: "children" }],
+			outs: [{ id: "children" }],
 		},
 		{
 			id: "mom",
-			label: "Marge",
+			text: "Marge",
 			x: 160,
 			y: 70,
-			outputs: [{ id: "children" }],
+			outs: [{ id: "children" }],
 		},
 		{
 			id: "son",
-			label: "Bart",
+			text: "Bart",
 			x: 60,
 			y: 240,
-			inputs: [{ id: "father" }, { id: "mother" }],
+			ins: [{ id: "father" }, { id: "mother" }],
 		},
 		{
 			id: "daughter",
-			label: "Lisa",
+			text: "Lisa",
 			x: 220,
 			y: 220,
-			inputs: [{ id: "father" }, { id: "mother" }],
+			ins: [{ id: "father" }, { id: "mother" }],
 		},
 	],
 	edges: [
@@ -239,16 +239,16 @@ Create nodes and edges programmatically. See
 // Create two nodes.
 
 const node1 = flowView.newNode({
-	label: "Hello",
-	inputs: [{}, {}],
-	outputs: [{ id: "output1" }],
+	text: "Hello",
+	ins: [{}, {}],
+	outs: [{ id: "output1" }],
 	x: 100,
 	y: 100,
 	width: 80,
 });
 const node2 = flowView.newNode({
-	label: "World",
-	inputs: [{ id: "input1" }],
+	text: "World",
+	ins: [{ id: "input1" }],
 	width: 100,
 	x: 250,
 	y: 400,

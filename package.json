@@ -9,7 +9,6 @@
     "url": "http://fibo.github.io"
   },
   "type": "module",
-  "main": "./main.js",
   "types": "flow-view.d.ts",
   "exports": {
     ".": {
@@ -37,7 +36,8 @@
     "dataflow",
     "visual",
     "editor",
-    "vanilla"
+    "vanilla",
+    "web-component"
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"

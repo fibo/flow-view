@@ -8,8 +8,11 @@ type FlowViewConstructorArg = {
 	CustomElement?: FlowViewElement;
 };
 
-type FlowViewSerializablePin = {
+type FlowViewSerializableItem = {
 	id: string;
+};
+
+type FlowViewSerializablePin = FlowViewSerializableItem & {
 	name?: string;
 };
 
@@ -17,25 +20,43 @@ type FlowViewSerializableInput = FlowViewSerializablePin;
 
 type FlowViewSerializableOutput = FlowViewSerializablePin;
 
-export type FlowViewSerializableNode = {
-	id: string;
+export type FlowViewSerializableNode = FlowViewSerializableItem & {
+	/**
+	 * List of input definitions.
+	 */
+	ins?: FlowViewSerializableInput[];
+
+	/**
+	 * List of output definitions.
+	 */
+	outs?: FlowViewSerializableOutput[];
+
 	type?: string;
-	label?: string;
+
+	text: string;
+
+	/**
+	 * Node position x coordinate.
+	 */
 	x: number;
+
+	/**
+	 * Node position y coordinate.
+	 */
 	y: number;
-	inputs?: FlowViewSerializableInput[];
-	outputs?: FlowViewSerializableOutput[];
 };
 
-export type FlowViewSerializableEdge = {
-	id: string;
+export type FlowViewSerializableEdge = FlowViewSerializableItem & {
+	/**
+	 * Describes the output where edge starts from.
+	 */
 	from: [FlowViewSerializableNode["id"], FlowViewSerializableOutput["id"]];
+
+	/**
+	 * Describes the input where edge ends to.
+	 */
 	to: [FlowViewSerializableNode["id"], FlowViewSerializableInput["id"]];
 };
-
-export type FlowViewSerializableSemiEdge = Partial<
-	Pick<FlowViewSerializableEdge, "from" | "to">
->;
 
 export type FlowViewSerializableGraph = {
 	nodes: FlowViewSerializableNode[];
@@ -50,8 +71,8 @@ declare class FlowViewBase {
 
 declare class FlowViewPin extends FlowViewBase {
 	constructor(arg: FlowViewSerializablePin);
-	name: string;
-	text: string;
+	name?: string;
+	text?: string;
 }
 
 declare class FlowViewInput extends FlowViewPin {
@@ -63,23 +84,32 @@ declare class FlowViewOutput extends FlowViewPin {
 }
 
 declare class FlowViewNode extends FlowViewBase {
-	label: string;
+	text: string;
+
+	type?: string;
+
 	/**
 	 * Get input by id.
 	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	input(id: FlowViewSerializableInput["id"]): FlowViewInput;
+
+	inputs: FlowViewInput[];
+
 	/**
 	 * Get output by id.
 	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	output(id: FlowViewSerializableOutput["id"]): FlowViewOutput;
-	inputs: FlowViewInput[];
+
 	outputs: FlowViewOutput[];
+
 	newInput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewInput;
+
 	newOutput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewOutput;
+
 	toObject(): FlowViewSerializableNode;
 }
 
@@ -112,20 +142,23 @@ export type FlowViewOnChangeInfo = {
 	isProgrammatic?: boolean;
 };
 
-type OnChangeCallback = (
-	arg: FlowViewOnChangeArg,
-	info: FlowViewOnChangeInfo,
-) => void;
+type OnChangeCallback = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
 
 export declare class FlowView {
 	constructor(arg?: FlowViewConstructorArg);
 
 	get graph(): FlowViewSerializableGraph;
 
-	addNodeLabels(nodeLabels: string[]): void;
+	addNodeDefinitions(nodeDefinitions: { text: string }[]): void;
 
+	/**
+	 * Empty graph.
+	 */
 	clearGraph(): void;
 
+	/**
+	 * Remove corresponding flow-view DOM node.
+	 */
 	destroy(): void;
 
 	loadGraph(graph: FlowViewGraph): void;
@@ -146,17 +179,9 @@ export declare class FlowView {
 	 */
 	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
 
-	newNode(
-		arg:
-			& Omit<FlowViewSerializableNode, "id">
-			& Partial<Pick<FlowViewSerializableNode, "id">>,
-	): FlowViewNode;
+	newNode(arg: Omit<FlowViewSerializableNode, "id"> & Partial<Pick<FlowViewSerializableNode, "id">>): FlowViewNode;
 
-	newEdge(
-		arg:
-			& Omit<FlowViewSerializableEdge, "id">
-			& Partial<Pick<FlowViewSerializableEdge, "id">>,
-	): FlowViewEdge;
+	newEdge(arg: Omit<FlowViewSerializableEdge, "id"> & Partial<Pick<FlowViewSerializableEdge, "id">>): FlowViewEdge;
 
 	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode;
 

@@ -30,7 +30,7 @@ export class FlowViewNode extends FlowViewBase {
 		[`.${cssModifierHighlighted(FlowViewNode.cssClassName)}`]: {
 			"border-color": cssVar.nodeBorderColorHighlighted,
 		},
-		[`.${FlowViewNode.cssClassName} .label`]: {
+		[`.${FlowViewNode.cssClassName} .content`]: {
 			"user-select": "none",
 			"padding-left": "0.5em",
 			"padding-right": "0.5em",
@@ -45,49 +45,42 @@ export class FlowViewNode extends FlowViewBase {
 		},
 	};
 
-	_createContent({ label }) {
-		const labelDiv = this.createElement("div", "label");
-		labelDiv.textContent = label;
-		this.labelDiv = labelDiv;
-		this.label = label;
-	}
-
 	init(node) {
 		const { type, inputs = [], outputs = [], x, y } = node;
 
-		if (type) {
-			this.type = type;
-		}
-
-		const { element } = this;
+		if (type) this.type = type;
 
 		this.borderWidth = FlowViewNode.borderWidth;
 
 		this._inputs = new Map();
-		this.inputListDiv = this.createElement("div", "pins");
-		for (const pin of inputs) {
-			this.newInput(pin);
-		}
+		this._inputsDiv = this.createElement("div", "pins");
+		for (const pin of inputs) this.newInput(pin);
 
-		this._createContent(node);
+		this.initContent(node);
 
 		this._outputs = new Map();
-		this.outputListDiv = this.createElement("div", "pins");
-
+		this._outputsDiv = this.createElement("div", "pins");
 		for (const pin of outputs) this.newOutput(pin);
 
 		this.position = { x, y };
 
 		this._onDblclick = this.onDblclick.bind(this);
-		element.addEventListener("dblclick", this._onDblclick);
+		this.element.addEventListener("dblclick", this._onDblclick);
 		this._onPointerdown = this.onPointerdown.bind(this);
-		element.addEventListener("pointerdown", this._onPointerdown);
+		this.element.addEventListener("pointerdown", this._onPointerdown);
+	}
+
+	initContent(node) {
+		const text = node.text ?? node.type ?? "node";
+		const div = this.createElement("div", "content");
+		div.textContent = text;
+		this.contentDiv = div;
+		this.text = text;
 	}
 
 	dispose() {
-		const { element } = this;
-		element.removeEventListener("dblclick", this._onDblclick);
-		element.removeEventListener("pointerdown", this._onPointerdown);
+		this.element.removeEventListener("dblclick", this._onDblclick);
+		this.element.removeEventListener("pointerdown", this._onPointerdown);
 	}
 
 	get inputs() {
@@ -142,7 +135,7 @@ export class FlowViewNode extends FlowViewBase {
 			cssClassName: FlowViewPin.cssClassName,
 		});
 		this._inputs.set(pin.id, pin);
-		this.inputListDiv.appendChild(pin.element);
+		this._inputsDiv.appendChild(pin.element);
 	}
 
 	newOutput({ id, name }) {
@@ -154,7 +147,7 @@ export class FlowViewNode extends FlowViewBase {
 			cssClassName: FlowViewPin.cssClassName,
 		});
 		this._outputs.set(pin.id, pin);
-		this.outputListDiv.appendChild(pin.element);
+		this._outputsDiv.appendChild(pin.element);
 	}
 
 	onDblclick(event) {
@@ -170,20 +163,20 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	toObject() {
-		const { label, type, inputs, outputs, x, y } = this;
+		const { text, type, inputs, outputs, x, y } = this;
 		return {
 			...super.toObject(),
+			text,
 			...(type ? { type } : {}),
-			...(label ? { label } : {}),
 			...(inputs.length > 0
 				? {
-					inputs: inputs.map((pin) => pin.toObject()),
-				}
+						ins: inputs.map((pin) => pin.toObject()),
+				  }
 				: {}),
 			...(outputs.length > 0
 				? {
-					outputs: outputs.map((pin) => pin.toObject()),
-				}
+						outs: outputs.map((pin) => pin.toObject()),
+				  }
 				: {}),
 			x,
 			y,

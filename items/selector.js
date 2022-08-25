@@ -139,12 +139,12 @@ export class FlowViewSelector extends FlowViewBase {
 				else this.input.value = "";
 				break;
 			case event.code === "ArrowRight":
-				const { completion, input } = this;
-				if (completion && input.value.length === event.target.selectionStart) this.input.value = completion;
+				if (this.completion && this.input.value.length === event.target.selectionStart)
+					this.input.value = this.completion;
 				break;
 			case event.code === "Tab":
 				event.preventDefault();
-				if (this.completion) this.input.value = completion;
+				if (this.completion) this.input.value = this.completion;
 				break;
 			default: // console.log(event.code);
 		}
@@ -188,7 +188,7 @@ export class FlowViewSelector extends FlowViewBase {
 
 				for (let i = input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-					if (matchingNodeTexts.every((text) => text.startsWith(completion + currentChar)))
+					if (matchingNodeTexts.every((text) => text.startsWith(this.completion + currentChar)))
 						this.completion += currentChar;
 				}
 		}

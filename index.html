@@ -48,14 +48,14 @@
   </main>
 
   <script type="module">
-    import { FlowView } from 'https://unpkg.com/flow-view';
-    // import { FlowView } from './main.js';
+    // import { FlowView } from 'https://unpkg.com/flow-view';
+    import { FlowView } from './main.js';
 
     const flowView = new FlowView({
       container: document.querySelector('.container')
     });
 
-    flowView.addNodeDefinitions([
+    const nodeDefinitions = [
       {"text": "Marge"},
       {"text": "Homer"},
       {"text": "Bart"},
@@ -68,7 +68,8 @@
       {"text": "Ralph"},
       {"text": "Selma"},
       {"text": "Mr. Burns"}
-    ]);
+    ];
+    flowView.addNodeDefinitions(nodeDefinitions);
 
     flowView.onChange(({ action, data }) => {
       switch(action) {
@@ -76,10 +77,11 @@
           const node = flowView.node(data.id);
 
           // Make it case insensitive.
-          const text = addNodeDefinitions.find(({ text }) => {
+          const nodeDefinition = nodeDefinitions.find(({ text }) => {
             return (text.toLowerCase() === data.text.toLowerCase());
-          }) || data.text;
-          node.text = text
+          })
+          const text = nodeDefinition?.text || data.text;
+          node.text = text;
 
           switch (text) {
             case 'Marge':
@@ -102,9 +104,7 @@
               break;
             }
 
-            default: {
-              console.log('Unknown node', node);
-            }
+            default: break
           }
         }
 
@@ -120,25 +120,25 @@
           id: 'dad',
           text: 'Homer',
           x: 60, y: 70,
-          outputs: [{ id: 'children' }]
+          outs: [{ id: 'children' }]
         },
         {
           id: 'mom',
           text: 'Marge',
           x: 160, y: 70,
-          outputs: [{ id: 'children' }]
+          outs: [{ id: 'children' }]
         },
         {
           id: 'son',
           text: 'Bart',
           x: 60, y: 240,
-          inputs: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father' }, { id: 'mother' }]
         },
         {
           id: 'daughter',
           text: 'Lisa',
           x: 220, y: 220,
-          inputs: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father' }, { id: 'mother' }]
         }
       ],
       edges: [
@@ -147,7 +147,7 @@
         { from: ['mom', 'children'], to: ['son', 'mother'] },
         { from: ['mom', 'children'], to: ['daughter', 'mother'] }
       ]
-    }
+    };
 
     flowView.loadGraph(initialGraph);
 
@@ -155,12 +155,12 @@
     try {
       console.log('not a node', flowView.node('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message)
+      console.log('THIS IS A TEST:', error.message);
     }
     try {
       console.log('not an edge', flowView.edge('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message)
+      console.log('THIS IS A TEST:', error.message);
     }
     console.log('Homer node', flowView.node('dad'));
     flowView.graph.edges.slice(0, 1).forEach(({ id }) => {

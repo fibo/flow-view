@@ -52,14 +52,14 @@ export class FlowViewNode extends FlowViewBase {
 
 		this.borderWidth = FlowViewNode.borderWidth;
 
-		this._inputs = new Map();
-		this._inputsDiv = this.createElement("div", "pins");
+		this.inputsMap = new Map();
+		this.inputsDiv = this.createElement("div", "pins");
 		for (const pin of inputs) this.newInput(pin);
 
 		this.initContent(node);
 
-		this._outputs = new Map();
-		this._outputsDiv = this.createElement("div", "pins");
+		this.outputsMap = new Map();
+		this.outputsDiv = this.createElement("div", "pins");
 		for (const pin of outputs) this.newOutput(pin);
 
 		this.position = { x, y };
@@ -84,11 +84,11 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	get inputs() {
-		return Array.from(this._inputs.values());
+		return [...this.inputsMap.values()];
 	}
 
 	get outputs() {
-		return Array.from(this._outputs.values());
+		return [...this.outputsMap.values()];
 	}
 
 	get position() {
@@ -105,25 +105,25 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	deleteInput(id) {
-		const input = this._inputs.get(id);
+		const input = this.inputsMap.get(id);
 		input.remove();
-		this._inputs.delete(id);
+		this.inputsMap.delete(id);
 	}
 
 	deleteOutput(id) {
-		const output = this._outputs.get(id);
+		const output = this.outputsMap.get(id);
 		output.remove();
-		this._outputs.delete(id);
+		this.outputsMap.delete(id);
 	}
 
 	input(id) {
-		if (!this._inputs.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id });
-		return this._inputs.get(id);
+		if (!this.inputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id });
+		return this.inputsMap.get(id);
 	}
 
 	output(id) {
-		if (!this._outputs.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id });
-		return this._outputs.get(id);
+		if (!this.outputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id });
+		return this.outputsMap.get(id);
 	}
 
 	newInput({ id, name }) {
@@ -134,8 +134,8 @@ export class FlowViewNode extends FlowViewBase {
 			view: this.view,
 			cssClassName: FlowViewPin.cssClassName,
 		});
-		this._inputs.set(pin.id, pin);
-		this._inputsDiv.appendChild(pin.element);
+		this.inputsMap.set(pin.id, pin);
+		this.inputsDiv.appendChild(pin.element);
 	}
 
 	newOutput({ id, name }) {
@@ -146,8 +146,8 @@ export class FlowViewNode extends FlowViewBase {
 			view: this.view,
 			cssClassName: FlowViewPin.cssClassName,
 		});
-		this._outputs.set(pin.id, pin);
-		this._outputsDiv.appendChild(pin.element);
+		this.outputsMap.set(pin.id, pin);
+		this.outputsDiv.appendChild(pin.element);
 	}
 
 	onDblclick(event) {

@@ -313,14 +313,22 @@ export class FlowViewElement extends HTMLElement {
 		return this._nodes.get(id);
 	}
 
+	enableBodyScroll() {
+		document.body.style.overflow = this._bodyOverflow;
+	}
+
+	disableBodyScroll() {
+		this._bodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+
 	startTranslation(event) {
+		this.disableBodyScroll();
 		this.startDraggingPoint = FlowViewElement.pointerCoordinates(event);
 		this.translateVector = { x: 0, y: 0 };
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {};
-			for (const node of this.selectedNodes) {
-				selectedNodesStartPosition[node.id] = node.position;
-			}
+			for (const node of this.selectedNodes) selectedNodesStartPosition[node.id] = node.position;
 			this.selectedNodesStartPosition = selectedNodesStartPosition;
 		}
 	}
@@ -332,10 +340,10 @@ export class FlowViewElement extends HTMLElement {
 				y: this._origin.y + this.translateVector.y,
 			};
 		}
-
 		delete this.translateVector;
 		delete this.startDraggingPoint;
 		delete this.selectedNodesStartPosition;
+		this.enableBodyScroll();
 	}
 
 	createSelector({ position }) {

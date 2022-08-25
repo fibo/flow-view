@@ -1,4 +1,4 @@
-import { cssVar } from "../theme.js";
+import { cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewNode } from "./node.js";
 
@@ -38,11 +38,16 @@ export class FlowViewSelector extends FlowViewBase {
 		},
 		[`.${FlowViewSelector.cssClassName}__option`]: {
 			padding: "0.5em",
+			border: "1px solid transparent",
 			cursor: "default",
+			...cssTransition("border-color"),
+		},
+		[`.${FlowViewSelector.cssClassName}__option:hover`]: {
+			"border-color": cssVar.borderColorHighlighted,
 		},
 	};
 
-	init({ nodeDefinitions, position }) {
+	init({ nodeNameTypeMap, position }) {
 		this.element.setAttribute("tabindex", 0);
 
 		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`);
@@ -51,7 +56,7 @@ export class FlowViewSelector extends FlowViewBase {
 
 		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`]);
 
-		this.nodeDefinitions = nodeDefinitions;
+		this.nodeNameTypeMap = nodeNameTypeMap;
 		this.position = position;
 
 		this._onDblclick = this.onDblclick.bind(this);
@@ -84,19 +89,18 @@ export class FlowViewSelector extends FlowViewBase {
 		this.hint.setAttribute("placeholder", text);
 	}
 
-	get matchingNodeTexts() {
-		const value = this.input.value;
-		if (value.length === 0) return [];
-		return this.nodeDefinitions
-			.filter(
-				({ text }) =>
-					// input value fits into node text...
-					text.startsWith(value) &&
+	get matchingNodes() {
+		const search = this.input.value.toLowerCase();
+		if (search.length === 0) return [];
+		return [...this.nodeNameTypeMap.entries()].filter(
+			([name, type = ""]) =>
+				// input value fits into node name...
+				(name.toLowerCase().startsWith(search) &&
 					// ...but they are not the same yet.
-					text !== value
-				// Otherwise if a text starts with another text, some completions could be missed.
-			)
-			.map(({ text }) => text);
+					// Otherwise if a text starts with another text, some completions could be missed.
+					name.toLowerCase() !== search) ||
+				search === type,
+		);
 	}
 
 	set position({ x, y }) {
@@ -139,57 +143,60 @@ export class FlowViewSelector extends FlowViewBase {
 				else this.input.value = "";
 				break;
 			case event.code === "ArrowRight":
-				if (this.completion && this.input.value.length === event.target.selectionStart)
+				if (this.completion && this.input.value.length === event.target.selectionStart) {
 					this.input.value = this.completion;
+				}
 				break;
 			case event.code === "Tab":
 				event.preventDefault();
 				if (this.completion) this.input.value = this.completion;
 				break;
-			default: // console.log(event.code);
+			default:
+				break;
 		}
 	}
 
 	onKeyup(event) {
 		event.stopPropagation();
 
-		const { input, options, matchingNodeTexts } = this;
+		const { matchingNodes } = this;
 
 		// Delete previous options.
-		while (options.firstChild) {
-			options.removeChild(options.lastChild);
-		}
+		while (this.options.firstChild) this.options.removeChild(this.options.lastChild);
 		// Create new options.
-		for (let i = 0; i < matchingNodeTexts.length; i++) {
-			const text = matchingNodeTexts[i];
+		for (let i = 0; i < matchingNodes.length; i++) {
+			const [name] = matchingNodes[i];
 			const option = document.createElement("div");
 			option.classList.add(`${FlowViewSelector.cssClassName}__option`);
-			option.textContent = text;
+			option.textContent = name;
 			option.onclick = () => {
-				this.input.value = text;
+				this.input.value = name;
 				this.createNode();
 			};
-			options.append(option);
+			this.options.append(option);
 		}
 
-		switch (matchingNodeTexts.length) {
+		switch (matchingNodes.length) {
 			case 0:
 				this.completion = "";
 				break;
-			case 1:
-				this.completion = matchingNodeTexts[0];
+			case 1: {
+				const [name] = matchingNodes[0];
+				if (name.includes(this.input.value)) this.completion = name;
 				break;
+			}
 			default:
-				this.completion = input.value;
+				this.completion = this.input.value;
 
-				const shortestMatch = matchingNodeTexts.reduce((shortest, match) =>
+				const shortestMatch = matchingNodes.reduce((shortest, match) =>
 					shortest.length < match.length ? shortest : match
 				);
 
-				for (let i = input.value.length; i < shortestMatch.length; i++) {
+				for (let i = this.input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-					if (matchingNodeTexts.every((text) => text.startsWith(this.completion + currentChar)))
+					if (matchingNodes.every(([name]) => name.startsWith(this.completion + currentChar))) {
 						this.completion += currentChar;
+					}
 				}
 		}
 	}

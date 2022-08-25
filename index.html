@@ -55,20 +55,22 @@
       container: document.querySelector('.container')
     });
 
-    const nodeDefinitions = [
-      {"text": "Marge"},
-      {"text": "Homer"},
-      {"text": "Bart"},
-      {"text": "Lisa"},
-      {"text": "Barney"},
-      {"text": "Milhouse"},
-      {"text": "Moe"},
-      {"text": "Ned"},
-      {"text": "Patty"},
-      {"text": "Ralph"},
-      {"text": "Selma"},
-      {"text": "Mr. Burns"}
-    ];
+    const nodeDefinitions = {
+      nodes: [
+        {"name": "Marge"},
+        {"name": "Homer"},
+        {"name": "Bart"},
+        {"name": "Lisa"},
+        {"name": "Barney"},
+        {"name": "Milhouse"},
+        {"name": "Moe"},
+        {"name": "Ned"},
+        {"name": "Patty"},
+        {"name": "Ralph"},
+        {"name": "Selma"},
+        {"name": "Mr. Burns"}
+      ]
+    };
     flowView.addNodeDefinitions(nodeDefinitions);
 
     flowView.onChange(({ action, data }) => {
@@ -77,8 +79,8 @@
           const node = flowView.node(data.id);
 
           // Make it case insensitive.
-          const nodeDefinition = nodeDefinitions.find(({ text }) => {
-            return (text.toLowerCase() === data.text.toLowerCase());
+          const nodeDefinition = nodeDefinitions.nodes.find(({ name }) => {
+            return (name.toLowerCase() === data.text.toLowerCase());
           })
           const text = nodeDefinition?.text || data.text;
           node.text = text;

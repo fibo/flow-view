@@ -9,6 +9,7 @@ const fvCssVar = (name) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`
 
 export const cssVar = {
 	backgroundColor: fvCssVar("background-color"),
+	borderColorHighlighted: fvCssVar(cssModifierHighlighted("node-border-color")),
 	borderRadius: fvCssVar("border-radius"),
 	boxShadow: fvCssVar("box-shadow"),
 	connectionColor: fvCssVar("connection-color"),
@@ -16,7 +17,6 @@ export const cssVar = {
 	fontFamily: fvCssVar("font-family"),
 	fontSize: fvCssVar("font-size"),
 	nodeBackgroundColor: fvCssVar("node-background-color"),
-	nodeBorderColorHighlighted: fvCssVar(cssModifierHighlighted("node-border-color")),
 	textColor: fvCssVar("text-color"),
 };
 
@@ -52,5 +52,5 @@ export const cssDefault = {
 export const cssTheme = (colorScheme) =>
 	Object.entries(cssDefault[colorScheme]).reduce(
 		(theme, [key, value]) => ({ ...theme, [fvCssDefaultVarName(key)]: value }),
-		{}
+		{},
 	);

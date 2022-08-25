@@ -19,6 +19,7 @@ export class FlowViewElement extends HTMLElement {
 		},
 		":host": {
 			...cssTheme("light"),
+			"color-scheme": "light dark",
 			position: "relative",
 			display: "block",
 			overflow: "hidden",
@@ -49,7 +50,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
 
@@ -81,12 +82,12 @@ export class FlowViewElement extends HTMLElement {
 
 		this._origin = { x: 0, y: 0 };
 
-		this._nodes = new Map();
-		this._edges = new Map();
+		this.nodesMap = new Map();
+		this.edgesMap = new Map();
 
-		this.itemClass = new Map();
+		this.itemClassMap = new Map();
 		Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
-			this.itemClass.set(key, Class);
+			this.itemClassMap.set(key, Class);
 		});
 	}
 
@@ -155,11 +156,11 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	get edges() {
-		return Array.from(this._edges.values());
+		return [...this.edgesMap.values()];
 	}
 
 	get nodes() {
-		return Array.from(this._nodes.values());
+		return [...this.nodesMap.values()];
 	}
 
 	get height() {
@@ -185,7 +186,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	newEdge({ id, source, target }, viewChangeInfo) {
-		const Class = this.itemClass.get("edge");
+		const Class = this.itemClassMap.get("edge");
 		const edge = new Class({
 			id,
 			view: this,
@@ -199,7 +200,8 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
-		const Class = this.itemClass.get(type) || this.itemClass.get("node");
+		const nodeType = type ?? this.host.nodeNameTypeMap.get(text);
+		const Class = this.itemClassMap.get(nodeType) || this.itemClassMap.get("node");
 		const node = new Class({
 			id,
 			view: this,
@@ -258,22 +260,22 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	addEdge(edge) {
-		this._edges.set(edge.id, edge);
+		this.edgesMap.set(edge.id, edge);
 	}
 
 	addNode(node) {
-		this._nodes.set(node.id, node);
+		this.nodesMap.set(node.id, node);
 	}
 
 	deleteEdge(id, viewChangeInfo) {
-		const edge = this._edges.get(id);
+		const edge = this.edgesMap.get(id);
 		if (!edge) return;
 
 		edge.source.highlight = false;
 		edge.target.highlight = false;
 
 		// Dispose.
-		this._edges.delete(edge.id);
+		this.edgesMap.delete(edge.id);
 		edge.remove();
 
 		const serializedEdge = edge.toObject();
@@ -282,7 +284,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	deleteNode(id, viewChangeInfo) {
-		const node = this._nodes.get(id);
+		const node = this.nodesMap.get(id);
 		if (!node) return;
 
 		// Remove edges connected to node.
@@ -293,7 +295,7 @@ export class FlowViewElement extends HTMLElement {
 		}
 
 		// Dispose.
-		this._nodes.delete(node.id);
+		this.nodesMap.delete(node.id);
 		node.remove();
 
 		const serializedNode = node.toObject();
@@ -302,15 +304,15 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	edge(id) {
-		if (!this._edges.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id });
-		return this._edges.get(id);
+		if (!this.edgesMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id });
+		return this.edgesMap.get(id);
 	}
 
 	node(id) {
-		if (!this._nodes.has(id)) {
+		if (!this.nodesMap.has(id)) {
 			throw new FlowViewErrorItemNotFound({ kind: "node", id });
 		}
-		return this._nodes.get(id);
+		return this.nodesMap.get(id);
 	}
 
 	enableBodyScroll() {
@@ -352,7 +354,7 @@ export class FlowViewElement extends HTMLElement {
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
 			position,
-			nodeDefinitions: Array.from(this.host.nodeDefinitions),
+			nodeNameTypeMap: this.host.nodeNameTypeMap,
 		}));
 	}
 
@@ -487,7 +489,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	createSemiEdge({ source, target }, viewChangeInfo) {
-		const Class = this.itemClass.get("edge");
+		const Class = this.itemClassMap.get("edge");
 		this.semiEdge = new Class({
 			view: this,
 			cssClassName: Class.cssClassName,
@@ -501,7 +503,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 
@@ -528,7 +530,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 

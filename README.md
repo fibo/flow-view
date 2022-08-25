@@ -93,15 +93,18 @@ argument.
 </html>
 ```
 
-Add a list to define which nodes are available. It makes sense to be provided in the majority of use cases.
+Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
+use cases.
 
 ```javascript
-flowView.addNodeDefinitions([
-  { text: "Marge" },
-  { text: "Homer" },
-  { text: "Bart" },
-  { text: "Lisa" }
-]);
+flowView.addNodeDefinitions({
+	nodes: [
+		{ name: "Marge" },
+		{ name: "Homer" },
+		{ name: "Bart" },
+		{ name: "Lisa" },
+	],
+});
 ```
 
 ### `node(id)`
@@ -189,8 +192,8 @@ Delete `flow-view` custom element.
 flowView.destroy();
 ```
 
-An use case for `destroy()` is the following. Support you are using Next.js, you need to load `flow-view` with an async
-import into a `useEffect` which need to return a callback to be called when component is unmounted.
+An use case for `destroy()` is the following. Suppose you are using Next.js, you need to load `flow-view` with an async
+import into a `useEffect` which needs to return a callback to be called when component is unmounted.
 
 This is a sample code.
 

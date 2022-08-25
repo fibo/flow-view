@@ -144,12 +144,17 @@ export type FlowViewOnChangeInfo = {
 
 type OnChangeCallback = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
 
+export type FlowViewNodeDefinition = {
+	name: string;
+	type?: string;
+};
+
 export declare class FlowView {
 	constructor(arg?: FlowViewConstructorArg);
 
 	get graph(): FlowViewSerializableGraph;
 
-	addNodeDefinitions(nodeDefinitions: { text: string }[]): void;
+	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
 
 	/**
 	 * Empty graph.
@@ -187,5 +192,8 @@ export declare class FlowView {
 
 	deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge;
 
+	/**
+	 * Add a custom node class.
+	 */
 	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
 }

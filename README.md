@@ -1,6 +1,6 @@
 # flow-view
 
-> is a visual editor for [dataflow programming][dataflow_wikipedia]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
 <a href="http://fibo.github.io/flow-view/">
 <div>Demo</div>

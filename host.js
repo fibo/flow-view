@@ -9,14 +9,14 @@ export class FlowView {
 		}
 	}
 
-	constructor({ container, element, CustomElement = FlowViewElement } = {}) {
-		FlowView.defineCustomElement(CustomElement);
+	constructor({ container, element } = {}) {
+		FlowView.defineCustomElement(FlowViewElement);
 
-		if (element instanceof CustomElement) {
+		if (element instanceof FlowViewElement) {
 			element.host = this;
 			this.view = element;
 		} else {
-			const view = (this.view = document.createElement(CustomElement.customElementName));
+			const view = (this.view = document.createElement(FlowViewElement.customElementName));
 			view.host = this;
 			if (container instanceof HTMLElement) container.appendChild(view);
 			else document.body.appendChild(view);

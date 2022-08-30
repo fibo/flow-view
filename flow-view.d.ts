@@ -5,7 +5,6 @@ declare class FlowViewErrorItemNotFound extends Error {}
 type FlowViewConstructorArg = {
 	container?: HTMLElement;
 	element?: HTMLElement;
-	CustomElement?: FlowViewElement;
 };
 
 type FlowViewSerializableItem = {

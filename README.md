@@ -288,7 +288,7 @@ React to _flow-view_ changes. See
 
 Callback signature is `({ action, data }, info) => void`, where
 
-- **action** can be `CREATE_NODE`, `DELETE_NODE`, ecc
+- **action** can be `CREATE_NODE`, `DELETE_NODE`, etc.
 - **data** change based on action
 - **info** can contain `{ isLoadGraph: true }` or other optional information.
 

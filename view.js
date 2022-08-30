@@ -1,4 +1,5 @@
 import { FlowViewErrorItemNotFound } from "./errors.js";
+import { FlowViewBase } from "./items/base.js";
 import { FlowViewEdge } from "./items/edge.js";
 import { FlowViewNode } from "./items/node.js";
 import { FlowViewPin } from "./items/pin.js";
@@ -18,8 +19,6 @@ export class FlowViewElement extends HTMLElement {
 			display: "none",
 		},
 		":host": {
-			...cssTheme("light"),
-			"color-scheme": "light dark",
 			position: "relative",
 			display: "block",
 			overflow: "hidden",
@@ -50,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -69,12 +68,24 @@ export class FlowViewElement extends HTMLElement {
 
 		const template = document.createElement("template");
 
+		const hasLight = this.hasAttribute("light");
+		const hasDark = this.hasAttribute("dark");
+		const isLight = hasLight && !hasDark;
+		const isDark = !hasLight && hasDark;
+
+		const { generateStylesheet } = FlowViewElement;
+		const lightStyle = generateStylesheet({ ":host": cssTheme("light") });
+		const darkStyle = generateStylesheet({ ":host": cssTheme("dark") });
+
 		template.innerHTML = [
 			"<style>",
-			FlowViewElement.generateStylesheet(FlowViewElement.style),
-			"@media(prefers-color-scheme:dark){",
-			FlowViewElement.generateStylesheet({ ":host": cssTheme("dark") }),
-			"}",
+			generateStylesheet(FlowViewElement.style),
+			generateStylesheet({
+				":host": {
+					"color-scheme": isLight ? "light" : isDark ? "dark" : "light dark",
+				},
+			}),
+			...(isLight ? lightStyle : isDark ? darkStyle : [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
 			"</style>",
 		].join("");
 
@@ -89,6 +100,8 @@ export class FlowViewElement extends HTMLElement {
 		Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
 			this.itemClassMap.set(key, Class);
 		});
+
+		this.selectorId = `selector-${FlowViewBase.generateId(this)}`;
 	}
 
 	connectedCallback() {
@@ -350,7 +363,7 @@ export class FlowViewElement extends HTMLElement {
 
 	createSelector({ position }) {
 		return (this.selector = new FlowViewSelector({
-			id: "selector",
+			id: this.selectorId,
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
 			position,
@@ -503,7 +516,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -530,13 +543,12 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
 	removeSelector() {
-		const { selector } = this;
-		if (selector instanceof FlowViewSelector) selector.remove();
+		if (this.selector instanceof FlowViewSelector) this.selector.remove();
 		this.selector = undefined;
 	}
 }

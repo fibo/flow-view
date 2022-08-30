@@ -107,6 +107,20 @@ flowView.addNodeDefinitions({
 });
 ```
 
+Optionally set *color scheme*. If not provided it defaults to both light and dark according to system preferences.
+
+Light scheme.
+
+```html
+<flow-view light></flow-view>
+```
+
+Dark scheme.
+
+```html
+<flow-view dark></flow-view>
+```
+
 ### `node(id)`
 
 Get _flow-view_ node by id.

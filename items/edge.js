@@ -53,6 +53,8 @@ export class FlowViewEdge extends FlowViewBase {
 
 		this.updateGeometry();
 
+		this._onDblclickLine = this.onDblclickLine.bind(this);
+		line.addEventListener("dblclick", this._onDblclickLine);
 		this._onPointerdownLine = this.onPointerdownLine.bind(this);
 		line.addEventListener("pointerdown", this._onPointerdownLine);
 		this._onPointerenterLine = this.onPointerenterLine.bind(this);
@@ -62,9 +64,15 @@ export class FlowViewEdge extends FlowViewBase {
 	}
 
 	dispose() {
+		this.line.removeEventListener("dblclick", this._onDblclickLine);
 		this.line.removeEventListener("pointerdown", this._onPointerdownLine);
 		this.line.removeEventListener("pointerenter", this._onPointerenterLine);
 		this.line.removeEventListener("pointerleave", this._onPointerleaveLine);
+	}
+
+	onDblclickLine(event) {
+		event.stopPropagation();
+		this.view.deleteEdge(this.id);
 	}
 
 	onPointerdownLine(event) {

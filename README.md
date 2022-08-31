@@ -52,6 +52,7 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
   <li>Drag from a node output to a node input to create an edge.</li>
   <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
   <li>Double click on canvas to open the <b>selector</b>.</li>
+  <li>Double click on edge to delete it.</li>
   <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
 </ul>
 

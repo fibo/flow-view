@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -207,7 +207,7 @@ export class FlowViewElement extends HTMLElement {
 			source,
 			target,
 		});
-		this.addEdge(edge);
+		this.edgesMap.set(edge.id, edge);
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo);
 		return edge;
 	}
@@ -226,7 +226,7 @@ export class FlowViewElement extends HTMLElement {
 			y,
 			type,
 		});
-		this.addNode(node);
+		this.nodesMap.set(node.id, node);
 		this.host.viewChange({ createdNode: node.toObject() }, viewChangeInfo);
 		return node;
 	}
@@ -270,14 +270,6 @@ export class FlowViewElement extends HTMLElement {
 		node.selected = false;
 		for (const input of node.inputs) input.highlight = false;
 		for (const output of node.outputs) output.highlight = false;
-	}
-
-	addEdge(edge) {
-		this.edgesMap.set(edge.id, edge);
-	}
-
-	addNode(node) {
-		this.nodesMap.set(node.id, node);
 	}
 
 	deleteEdge(id, viewChangeInfo) {
@@ -416,7 +408,8 @@ export class FlowViewElement extends HTMLElement {
 		event.stopPropagation();
 		this.removeSelector();
 		if (!event.isBubblingFromNode) this.clearSelection();
-		this.startTranslation(event);
+		const isMultiSelection = event.shiftKey;
+		if (!isMultiSelection) this.startTranslation(event);
 	}
 
 	onPointermove(event) {
@@ -516,7 +509,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -542,7 +535,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 

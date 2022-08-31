@@ -531,10 +531,9 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	removeSemiEdge(viewChangeInfo) {
-		const { semiEdge } = this;
-		if (!semiEdge) return;
-		const { source, target } = semiEdge;
-		semiEdge.remove();
+		if (!this.semiEdge) return;
+		const { source, target } = this.semiEdge;
+		this.semiEdge.remove();
 		delete this.semiEdge;
 		this.host.viewChange(
 			{

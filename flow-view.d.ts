@@ -141,7 +141,7 @@ export type FlowViewOnChangeInfo = {
 	isProgrammatic?: boolean;
 };
 
-type OnChangeCallback = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
+export type FlowViewOnChange = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
 
 export type FlowViewNodeDefinition = {
 	name: string;
@@ -167,7 +167,7 @@ export declare class FlowView {
 
 	loadGraph(graph: FlowViewGraph): void;
 
-	onChange(arg: OnChangeCallback): void;
+	onChange(callback: FlowViewOnChange): void;
 
 	/**
 	 * Get node by id.

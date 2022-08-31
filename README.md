@@ -107,7 +107,7 @@ flowView.addNodeDefinitions({
 });
 ```
 
-Optionally set *color scheme*. If not provided it defaults to both light and dark according to system preferences.
+Optionally set _color scheme_. If not provided it defaults to both light and dark according to system preferences.
 
 Light scheme.
 

@@ -124,7 +124,11 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	createNode() {
-		this.view.newNode({ x: this.position.x, y: this.position.y, text: this.input.value });
+		const text = this.input.value;
+		const matchingNode = [...this.nodeNameTypeMap.entries()].find(
+			([name]) => name.toLowerCase() === text.toLowerCase(),
+		) ?? [null, null];
+		this.view.newNode({ x: this.position.x, y: this.position.y, text: matchingNode[0] ?? text, type: matchingNode[1] });
 		this.view.removeSelector();
 	}
 
@@ -159,13 +163,11 @@ export class FlowViewSelector extends FlowViewBase {
 	onKeyup(event) {
 		event.stopPropagation();
 
-		const { matchingNodes } = this;
-
 		// Delete previous options.
 		while (this.options.firstChild) this.options.removeChild(this.options.lastChild);
 		// Create new options.
-		for (let i = 0; i < matchingNodes.length; i++) {
-			const [name] = matchingNodes[i];
+		for (let i = 0; i < this.matchingNodes.length; i++) {
+			const [name] = this.matchingNodes[i];
 			const option = document.createElement("div");
 			option.classList.add(`${FlowViewSelector.cssClassName}__option`);
 			option.textContent = name;
@@ -176,25 +178,25 @@ export class FlowViewSelector extends FlowViewBase {
 			this.options.append(option);
 		}
 
-		switch (matchingNodes.length) {
+		switch (this.matchingNodes.length) {
 			case 0:
 				this.completion = "";
 				break;
 			case 1: {
-				const [name] = matchingNodes[0];
+				const [name] = this.matchingNodes[0];
 				if (name.includes(this.input.value)) this.completion = name;
 				break;
 			}
 			default:
 				this.completion = this.input.value;
 
-				const shortestMatch = matchingNodes.reduce((shortest, match) =>
+				const shortestMatch = this.matchingNodes.reduce((shortest, match) =>
 					shortest.length < match.length ? shortest : match
 				);
 
 				for (let i = this.input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-					if (matchingNodes.every(([name]) => name.startsWith(this.completion + currentChar))) {
+					if (this.matchingNodes.every(([name]) => name.startsWith(this.completion + currentChar))) {
 						this.completion += currentChar;
 					}
 				}

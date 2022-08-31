@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
 
@@ -516,7 +516,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 
@@ -542,7 +542,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 

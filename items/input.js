@@ -8,10 +8,7 @@ export class FlowViewInput extends FlowViewPin {
 
 	get center() {
 		return {
-			x: this.node.position.x +
-				this.halfPinSize +
-				this.node.borderWidth +
-				this.offsetX,
+			x: this.node.position.x + this.halfPinSize + this.node.borderWidth + this.offsetX,
 			y: this.node.position.y + this.halfPinSize - this.node.borderWidth,
 		};
 	}
@@ -25,11 +22,5 @@ export class FlowViewInput extends FlowViewPin {
 			const { source } = this.view.semiEdge;
 			this.view.newEdge({ source, target: this });
 		}
-	}
-
-	toObject() {
-		return {
-			...super.toObject(),
-		};
 	}
 }

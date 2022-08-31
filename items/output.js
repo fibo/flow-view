@@ -21,10 +21,4 @@ export class FlowViewOutput extends FlowViewPin {
 	onPointerup(event) {
 		event.stopPropagation();
 	}
-
-	toObject() {
-		return {
-			...super.toObject(),
-		};
-	}
 }

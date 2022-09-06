@@ -51,60 +51,47 @@
 
   <script type="module">
     // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView } from './main.js';
+    import { FlowView, FlowViewNode } from './main.js';
 
     const flowView = new FlowView({
       container: document.querySelector('.container')
     });
 
-    const nodeDefinitions = {
+    flowView.addNodeDefinitions({
       nodes: [
-        {"name": "Marge"},
-        {"name": "Homer"},
-        {"name": "Bart"},
-        {"name": "Lisa"},
-        {"name": "Barney"},
-        {"name": "Milhouse"},
-        {"name": "Moe"},
-        {"name": "Ned"},
-        {"name": "Patty"},
-        {"name": "Ralph"},
-        {"name": "Selma"},
-        {"name": "Mr. Burns"}
+        { name: "Marge", type: "parent" },
+        { name: "Homer", type: "parent" },
+        { name: "Bart", type: "child" },
+        { name: "Lisa", type: "child" },
+        { name: "Barney" },
+        { name: "Milhouse", type: "child" },
+        { name: "Moe" },
+        { name: "Ned", type: "parent" },
+        { name: "Patty" },
+        { name: "Ralph", type: "child" },
+        { name: "Selma" },
+        { name: "Mr. Burns" }
       ]
-    };
-    flowView.addNodeDefinitions(nodeDefinitions);
+    });
 
     flowView.onChange(({ action, data }) => {
       switch(action) {
         case 'CREATE_NODE': {
           const node = flowView.node(data.id);
 
-          // Make it case insensitive.
-          const nodeDefinition = nodeDefinitions.nodes.find(({ name }) => {
-            return (name.toLowerCase() === data.text.toLowerCase());
-          })
-          const text = nodeDefinition?.text || data.text;
-          node.text = text;
-
-          switch (text) {
-            case 'Marge':
-            case 'Homer': {
+          switch (data.type) {
+            case 'parent': {
               if (node.outputs.length === 0) {
-                node.newOutput({})
+                node.newOutput({ name: 'out' })
               }
-              node.outputs[0].text = 'out'
               break;
             }
 
-            case 'Bart':
-            case 'Lisa': {
+            case 'child': {
               if (node.inputs.length === 0) {
-                node.newInput({});
-                node.newInput({});
+                node.newInput({ name: "in1" });
+                node.newInput({ name: "in2" });
               }
-              node.inputs[0].text = 'in1'
-              node.inputs[1].text = 'in2'
               break;
             }
 
@@ -112,9 +99,7 @@
           }
         }
 
-        default: {
-          console.log(action, data);
-        }
+        default: console.info(action, data)
       }
     })
 
@@ -157,18 +142,18 @@
 
     // Few tests.
     try {
-      console.log('not a node', flowView.node('xxx'));
+      console.info('not a node', flowView.node('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message);
+      console.info('THIS IS A TEST:', error.message);
     }
     try {
-      console.log('not an edge', flowView.edge('xxx'));
+      console.info('not an edge', flowView.edge('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message);
+      console.info('THIS IS A TEST:', error.message);
     }
-    console.log('Homer node', flowView.node('dad'));
+    console.info('Homer node', flowView.node('dad'));
     flowView.graph.edges.slice(0, 1).forEach(({ id }) => {
-      console.log('First edge', flowView.edge(id));
+      console.info('First edge', flowView.edge(id));
     });
 
     // Controls

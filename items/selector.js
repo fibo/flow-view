@@ -42,13 +42,14 @@ export class FlowViewSelector extends FlowViewBase {
 			cursor: "default",
 			...cssTransition("border-color"),
 		},
-		[`.${FlowViewSelector.cssClassName}__option:hover`]: {
+		[`.${FlowViewSelector.cssClassName}__option--highlighted`]: {
 			"border-color": cssVar.borderColorHighlighted,
 		},
 	};
 
 	init({ nodeNameTypeMap, position }) {
-		this.element.setAttribute("tabindex", 0);
+		const { element } = this;
+		element.setAttribute("tabindex", 0);
 
 		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`);
 
@@ -58,11 +59,14 @@ export class FlowViewSelector extends FlowViewBase {
 
 		this.nodeNameTypeMap = nodeNameTypeMap;
 		this.position = position;
+		this.highlightedOptionIndex = -1;
 
 		this._onDblclick = this.onDblclick.bind(this);
-		this.element.addEventListener("dblclick", this._onDblclick);
+		element.addEventListener("dblclick", this._onDblclick);
 		this._onPointerdown = this.onPointerdown.bind(this);
-		this.element.addEventListener("pointerdown", this._onPointerdown);
+		element.addEventListener("pointerdown", this._onPointerdown);
+		this._onPointerleave = this.onPointerleave.bind(this);
+		element.addEventListener("pointerleave", this._onPointerleave);
 
 		this._onKeydown = this.onKeydown.bind(this);
 		input.addEventListener("keydown", this._onKeydown);
@@ -71,10 +75,12 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	dispose() {
-		this.element.removeEventListener("dblclick", this._onDblclick);
-		this.element.removeEventListener("pointerdown", this._onPointerdown);
-		this.input.removeEventListener("keydown", this._onKeydown);
-		this.input.removeEventListener("keyup", this._onKeyup);
+		const { element, input } = this;
+		element.removeEventListener("dblclick", this._onDblclick);
+		element.removeEventListener("pointerdown", this._onPointerdown);
+		element.removeEventListener("pointerleave", this._onPointerdown);
+		input.removeEventListener("keydown", this._onKeydown);
+		input.removeEventListener("keyup", this._onKeyup);
 	}
 
 	focus() {
@@ -92,14 +98,13 @@ export class FlowViewSelector extends FlowViewBase {
 	get matchingNodes() {
 		const search = this.input.value.toLowerCase();
 		if (search.length === 0) return [];
-		return [...this.nodeNameTypeMap.entries()].filter(
-			([name, type = ""]) =>
+		return [...this.nodeNameTypeMap.keys()].filter(
+			(name) =>
 				// input value fits into node name...
-				(name.toLowerCase().startsWith(search) &&
-					// ...but they are not the same yet.
-					// Otherwise if a text starts with another text, some completions could be missed.
-					name.toLowerCase() !== search) ||
-				search === type,
+				name.toLowerCase().startsWith(search) &&
+				// ...but they are not the same yet.
+				// Otherwise if a text starts with another text, some completions could be missed.
+				name.toLowerCase() !== search
 		);
 	}
 
@@ -124,11 +129,19 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	createNode() {
-		const text = this.input.value;
-		const matchingNode = [...this.nodeNameTypeMap.entries()].find(
-			([name]) => name.toLowerCase() === text.toLowerCase(),
-		) ?? [null, null];
-		this.view.newNode({ x: this.position.x, y: this.position.y, text: matchingNode[0] ?? text, type: matchingNode[1] });
+		const nodeText =
+			this.highlightedOptionIndex !== -1
+				? this.options.children[this.highlightedOptionIndex].textContent
+				: this.input.value;
+		const [matchingNodeText, matchingNodeType] = [...this.nodeNameTypeMap.entries()].find(
+			([name]) => name.toLowerCase() === nodeText.toLowerCase()
+		) ?? [undefined, undefined];
+		this.view.newNode({
+			x: this.position.x,
+			y: this.position.y,
+			text: matchingNodeText ?? nodeText,
+			type: matchingNodeType,
+		});
 		this.view.removeSelector();
 	}
 
@@ -137,23 +150,58 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	onKeydown(event) {
+		const highlightNextOption = () => {
+			this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1);
+		};
+		const highlightPreviousOption = () => {
+			this.highlightedOptionIndex =
+				this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1;
+		};
 		event.stopPropagation();
-		switch (true) {
-			case event.code === "Enter":
+		switch (event.code) {
+			case "Enter":
 				this.createNode();
 				break;
-			case event.code === "Escape":
-				if (this.input.value === "") this.view.removeSelector();
+			case "Escape":
+				if (this.highlightedOptionIndex !== -1) this.highlightedOptionIndex = -1;
+				else if (this.input.value === "") this.view.removeSelector();
 				else this.input.value = "";
 				break;
-			case event.code === "ArrowRight":
-				if (this.completion && this.input.value.length === event.target.selectionStart) {
-					this.input.value = this.completion;
-				}
+			case "ArrowDown":
+				highlightNextOption();
 				break;
-			case event.code === "Tab":
+			case "ArrowUp":
+				event.preventDefault();
+				highlightPreviousOption();
+				break;
+			case "ArrowLeft":
+				this.highlightedOptionIndex = -1;
+				break;
+			case "ArrowRight":
+				this.highlightedOptionIndex = -1;
+				if (this.completion && this.input.value.length === event.target.selectionStart)
+					this.input.value = this.completion;
+				break;
+			case "Tab":
 				event.preventDefault();
 				if (this.completion) this.input.value = this.completion;
+				const {
+					input: { value },
+					matchingNodes,
+				} = this;
+				// Fix case with Tab.
+				const caseInsensitiveMatchingNode = matchingNodes.find((name) =>
+					name.toLowerCase().startsWith(value.toLowerCase())
+				);
+				if (caseInsensitiveMatchingNode) this.input.value = caseInsensitiveMatchingNode.substring(0, value.length);
+				// Use Tab and Shift-Tab to highlight options.
+				if (this.matchingNodes.every((name) => name.startsWith(value))) {
+					if (event.shiftKey) {
+						highlightPreviousOption();
+					} else {
+						highlightNextOption();
+					}
+				}
 				break;
 			default:
 				break;
@@ -162,12 +210,24 @@ export class FlowViewSelector extends FlowViewBase {
 
 	onKeyup(event) {
 		event.stopPropagation();
+		const highlightedClassName = `${FlowViewSelector.cssClassName}__option--highlighted`;
+		console.log(this.highlightedOptionIndex);
+
+		// Highlight options.
+		if (["ArrowDown", "ArrowUp", "Tab"].includes(event.code)) {
+			for (let i = 0; i < this.options.childElementCount; i++) {
+				const option = this.options.children[i];
+				if (this.highlightedOptionIndex === i) option.classList.add(highlightedClassName);
+				else option.classList.remove(highlightedClassName);
+			}
+			return;
+		}
 
 		// Delete previous options.
 		while (this.options.firstChild) this.options.removeChild(this.options.lastChild);
 		// Create new options.
 		for (let i = 0; i < this.matchingNodes.length; i++) {
-			const [name] = this.matchingNodes[i];
+			const name = this.matchingNodes[i];
 			const option = document.createElement("div");
 			option.classList.add(`${FlowViewSelector.cssClassName}__option`);
 			option.textContent = name;
@@ -175,15 +235,23 @@ export class FlowViewSelector extends FlowViewBase {
 				this.input.value = name;
 				this.createNode();
 			};
+			option.onpointerenter = () => {
+				this.highlightedOptionIndex = i;
+				option.classList.add(highlightedClassName);
+			};
+			option.onpointerleave = () => {
+				option.classList.remove(highlightedClassName);
+			};
 			this.options.append(option);
 		}
 
 		switch (this.matchingNodes.length) {
 			case 0:
 				this.completion = "";
+				this.highlightedOptionIndex = -1;
 				break;
 			case 1: {
-				const [name] = this.matchingNodes[0];
+				const name = this.matchingNodes[0];
 				if (name.includes(this.input.value)) this.completion = name;
 				break;
 			}
@@ -196,7 +264,7 @@ export class FlowViewSelector extends FlowViewBase {
 
 				for (let i = this.input.value.length; i < shortestMatch.length; i++) {
 					const currentChar = shortestMatch[i];
-					if (this.matchingNodes.every(([name]) => name.startsWith(this.completion + currentChar))) {
+					if (this.matchingNodes.every((name) => name.startsWith(this.completion + currentChar))) {
 						this.completion += currentChar;
 					}
 				}
@@ -205,5 +273,9 @@ export class FlowViewSelector extends FlowViewBase {
 
 	onPointerdown(event) {
 		event.stopPropagation();
+	}
+
+	onPointerleave() {
+		this.highlightedOptionIndex = -1;
 	}
 }

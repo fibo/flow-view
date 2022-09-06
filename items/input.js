@@ -15,6 +15,17 @@ export class FlowViewInput extends FlowViewPin {
 
 	onPointerdown(event) {
 		event.stopPropagation();
+		const connectedEdge = [...this.view.edgesMap.values()]
+			.map((edge) => edge.toObject())
+			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id);
+		if (!connectedEdge) return;
+		console.log(connectedEdge);
+		const {
+			id: edgeId,
+			from: [nodeId, outputId],
+		} = connectedEdge;
+		this.view.deleteEdge(edgeId);
+		this.view.createSemiEdge({ source: this.view.nodesMap.get(nodeId).outputsMap.get(outputId) });
 	}
 
 	onPointerup() {

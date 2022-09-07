@@ -24,7 +24,8 @@ export class FlowView {
 		this.view.style.isolation = "isolate";
 
 		this.nodeNameTypeMap = new Map();
-		this._onViewChange = () => {};
+		this.onViewChange = () => {};
+		this.textToType = () => {};
 	}
 
 	get graph() {
@@ -62,12 +63,8 @@ export class FlowView {
 		for (const edge of edges) this.newEdge(edge, { isLoadGraph: true });
 	}
 
-	get onViewChange() {
-		return this._onViewChange;
-	}
-
 	onChange(value) {
-		this._onViewChange = value;
+		this.onViewChange = value;
 	}
 
 	viewChange(
@@ -165,5 +162,9 @@ export class FlowView {
 
 	addNodeClass(key, NodeClass) {
 		this.view.itemClassMap.set(key, NodeClass);
+	}
+
+	nodeTextToType(textToType) {
+		this.textToType = textToType;
 	}
 }

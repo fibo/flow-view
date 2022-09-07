@@ -49,18 +49,14 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
 
 	static pointerCoordinates(event) {
 		const { clientX, clientY, target } = event;
 		const { left, top } = target.getBoundingClientRect();
-
-		const x = Math.round(clientX - left);
-		const y = Math.round(clientY - top);
-
-		return { x, y };
+		return { x: Math.round(clientX - left), y: Math.round(clientY - top) };
 	}
 
 	constructor() {
@@ -213,7 +209,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
-		const nodeType = type ?? this.host.nodeNameTypeMap.get(text);
+		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type;
 		const Class = this.itemClassMap.get(nodeType) || this.itemClassMap.get("node");
 		const node = new Class({
 			id,
@@ -224,7 +220,7 @@ export class FlowViewElement extends HTMLElement {
 			outputs: outs,
 			x,
 			y,
-			type,
+			type: nodeType,
 		});
 		this.nodesMap.set(node.id, node);
 		this.host.viewChange({ createdNode: node.toObject() }, viewChangeInfo);
@@ -359,7 +355,7 @@ export class FlowViewElement extends HTMLElement {
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
 			position,
-			nodeNameTypeMap: this.host.nodeNameTypeMap,
+			nodeNames: [...this.host.nodeNameTypeMap.keys()],
 		}));
 	}
 
@@ -394,13 +390,8 @@ export class FlowViewElement extends HTMLElement {
 			case event.code === "Escape":
 				this.clearSelection();
 				break;
-			case "KeyU":
-				this.undo();
+			default:
 				break;
-			case "KeyR":
-				this.redo();
-				break;
-			default: // console.log(event.code);
 		}
 	}
 
@@ -509,7 +500,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 
@@ -535,7 +526,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 

@@ -19,7 +19,6 @@ export class FlowViewInput extends FlowViewPin {
 			.map((edge) => edge.toObject())
 			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id);
 		if (!connectedEdge) return;
-		console.log(connectedEdge);
 		const {
 			id: edgeId,
 			from: [nodeId, outputId],

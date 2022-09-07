@@ -1,11 +1,65 @@
-declare class FlowViewElement extends HTMLElement {}
+export declare class FlowView {
+	constructor(arg?: { container?: HTMLElement; element?: HTMLElement });
+
+	get graph(): FlowViewSerializableGraph;
+
+	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
+
+	/**
+	 * Empty graph.
+	 */
+	clearGraph(): void;
+
+	/**
+	 * Remove corresponding flow-view DOM node.
+	 */
+	destroy(): void;
+
+	/**
+	 * Load a _flow-view_ graph.
+	 */
+	loadGraph(graph: FlowViewGraph): void;
+
+	/**
+	 * Set callback to be invoked on every view change.
+	 */
+	onChange(callback: FlowViewOnChange): void;
+
+	/**
+	 * Get node by id.
+	 *
+	 * @throws FlowViewErrorItemNotFound
+	 */
+	node(id: FlowViewSerializableNode["id"]): FlowViewNode;
+
+	/**
+	 * Get edge by id.
+	 *
+	 * @throws FlowViewErrorItemNotFound
+	 */
+	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
+
+	newNode(arg: Omit<FlowViewSerializableNode, "id"> & Partial<Pick<FlowViewSerializableNode, "id">>): FlowViewNode;
+
+	newEdge(arg: Omit<FlowViewSerializableEdge, "id"> & Partial<Pick<FlowViewSerializableEdge, "id">>): FlowViewEdge;
+
+	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode;
+
+	deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge;
+
+	/**
+	 * Add a custom node class.
+	 */
+	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
+
+	/**
+	 * Set nodeTextToType function that will be invoked on node creation
+	 * to resolve node type from node text.
+	 */
+	nodeTextToType(func: FlowViewNodeTextToType): void;
+}
 
 declare class FlowViewErrorItemNotFound extends Error {}
-
-type FlowViewConstructorArg = {
-	container?: HTMLElement;
-	element?: HTMLElement;
-};
 
 type FlowViewSerializableItem = {
 	id: string;
@@ -148,51 +202,7 @@ export type FlowViewNodeDefinition = {
 	type?: string;
 };
 
-export declare class FlowView {
-	constructor(arg?: FlowViewConstructorArg);
-
-	get graph(): FlowViewSerializableGraph;
-
-	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
-
-	/**
-	 * Empty graph.
-	 */
-	clearGraph(): void;
-
-	/**
-	 * Remove corresponding flow-view DOM node.
-	 */
-	destroy(): void;
-
-	loadGraph(graph: FlowViewGraph): void;
-
-	onChange(callback: FlowViewOnChange): void;
-
-	/**
-	 * Get node by id.
-	 *
-	 * @throws FlowViewErrorItemNotFound
-	 */
-	node(id: FlowViewSerializableNode["id"]): FlowViewNode;
-
-	/**
-	 * Get edge by id.
-	 *
-	 * @throws FlowViewErrorItemNotFound
-	 */
-	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
-
-	newNode(arg: Omit<FlowViewSerializableNode, "id"> & Partial<Pick<FlowViewSerializableNode, "id">>): FlowViewNode;
-
-	newEdge(arg: Omit<FlowViewSerializableEdge, "id"> & Partial<Pick<FlowViewSerializableEdge, "id">>): FlowViewEdge;
-
-	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode;
-
-	deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge;
-
-	/**
-	 * Add a custom node class.
-	 */
-	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
-}
+/**
+ * Get a node type from node text.
+ */
+export type FlowViewNodeTextToType = (text: string) => string | undefined;

@@ -251,7 +251,7 @@ const MyComponent: FC = () => {
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://fibo.github.io/flow-view/examples/programmatic/index.html">programmatic example here</a>.
+<a href="http://fibo.github.io/flow-view/examples/programmatic/demo.html">programmatic example here</a>.
 
 ```javascript
 // Create two nodes.
@@ -294,11 +294,11 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom node example here</a>.
+<a href="http://fibo.github.io/flow-view/examples/custom-node/demo.html">custom node example here</a>.
 
 ### `onChange(callback)`
 
-React to _flow-view_ changes. See
+Set callback to be invoked on every view change. See
 <a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code here</a>.
 
 Callback signature is `({ action, data }, info) => void`, where
@@ -309,6 +309,10 @@ Callback signature is `({ action, data }, info) => void`, where
 
 Just take advantage of autocompletion and suggestion provided by
 [typings definitions](https://github.com/fibo/flow-view/blob/main/flow-view.d.ts).
+
+### `nodeTextToType(func)`
+
+Set nodeTextToType function that will be invoked on node creation to resolve node type from node text.
 
 ## License
 

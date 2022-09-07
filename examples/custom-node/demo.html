@@ -32,7 +32,7 @@
     flowView.addNodeClass('editable', FlowViewEditableNode);
 
     flowView.onChange(({ action, data }) => {
-      console.log(action, data);
+      console.info(action, data);
     })
 
     flowView.loadGraph({

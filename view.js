@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -110,6 +110,7 @@ export class FlowViewElement extends HTMLElement {
 
 		if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", 0);
 
+		this.addEventListener("contextmenu", this.onContextmenu);
 		this.addEventListener("dblclick", this.onDblclick);
 		this.addEventListener("keydown", this.onKeydown);
 		this.addEventListener("pointerdown", this.onPointerdown);
@@ -120,6 +121,7 @@ export class FlowViewElement extends HTMLElement {
 
 	disconnectedCallback() {
 		this.removeResizeObserver();
+		this.removeEventListener("contextmenu", this.onContextmenu);
 		this.removeEventListener("dblclick", this.onDblclick);
 		this.removeEventListener("keydown", this.onKeydown);
 		this.removeEventListener("pointerdown", this.onPointerdown);
@@ -363,6 +365,10 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo);
 	}
 
+	onContextmenu(event) {
+		event.preventDefault();
+	}
+
 	onDblclick(event) {
 		this.clearSelection();
 		this.removeSelector();
@@ -500,7 +506,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -526,7 +532,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 

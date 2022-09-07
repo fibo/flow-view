@@ -5,7 +5,7 @@ import { FlowViewNode } from "./node.js";
 export class FlowViewSelector extends FlowViewBase {
 	static cssClassName = "fv-selector";
 	static zIndex = FlowViewNode.zIndex + 1;
-	static width = 216;
+	static width = 170;
 	static padding = 9;
 	static style = {
 		[`.${FlowViewSelector.cssClassName}`]: {
@@ -104,7 +104,7 @@ export class FlowViewSelector extends FlowViewBase {
 				name.toLowerCase().startsWith(search) &&
 				// ...but they are not the same yet.
 				// Otherwise if a text starts with another text, some completions could be missed.
-				name.toLowerCase() !== search,
+				name.toLowerCase() !== search
 		);
 	}
 
@@ -157,9 +157,8 @@ export class FlowViewSelector extends FlowViewBase {
 			this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1);
 		};
 		const previousOption = () => {
-			this.highlightedOptionIndex = this.highlightedOptionIndex !== -1
-				? Math.max(this.highlightedOptionIndex - 1, 0)
-				: -1;
+			this.highlightedOptionIndex =
+				this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1;
 		};
 		const deleteOptions = () => {
 			while (this.options.firstChild) this.options.removeChild(this.options.lastChild);
@@ -224,7 +223,7 @@ export class FlowViewSelector extends FlowViewBase {
 		};
 		const caseInsensitiveMatchingNode = () =>
 			this.matchingNodes.find(
-				(name) => !name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase()),
+				(name) => !name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
 			);
 		const fixCase = () => {
 			const text = caseInsensitiveMatchingNode();

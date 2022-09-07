@@ -21,28 +21,37 @@
   </main>
 
   <script type="module">
-    import { FlowView } from 'https://unpkg.com/flow-view';
-    // import { FlowView } from '../../main.js';
-    import { FlowViewEditableNode } from './editable.js'
+    // import { FlowView } from 'https://unpkg.com/flow-view';
+    import { FlowView } from '../../main.js';
+    import { FlowViewNodeInfo } from './info.js'
 
     const flowView = new FlowView({
       container: document.querySelector('.container')
     });
 
-    flowView.addNodeClass('editable', FlowViewEditableNode);
+    flowView.addNodeClass('info', FlowViewNodeInfo);
 
     flowView.onChange(({ action, data }) => {
       console.info(action, data);
     })
 
+    flowView.nodeTextToType((text) => {
+      if (text.indexOf('\n')>=0) return 'info'
+      if (text.indexOf(' ')>=0) return 'info'
+    })
+
     flowView.loadGraph({
       nodes: [
         {
-          type: 'editable',
-          id: 'test',
-          text: 'Click me',
+          type: 'info',
+          text: 'This content is\neditable',
           outputs: [{ id: 'out' }],
           x: 100, y: 150
+        },
+        {
+          text: 'click me to edit',
+          outputs: [{ id: 'out' }],
+          x: 150, y: 400
         }
       ]
     })

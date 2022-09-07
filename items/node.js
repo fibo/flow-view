@@ -46,9 +46,10 @@ export class FlowViewNode extends FlowViewBase {
 	};
 
 	init(node) {
-		const { type, inputs = [], outputs = [], x, y } = node;
+		const { text, type, inputs = [], outputs = [], x, y } = node;
 
-		if (type) this.type = type;
+		this.text = text;
+		this.type = type;
 
 		this.borderWidth = FlowViewNode.borderWidth;
 
@@ -71,11 +72,9 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	initContent(node) {
-		const text = node.text ?? node.type ?? "node";
 		const div = this.createElement("div", "content");
-		div.textContent = text;
+		div.textContent = node.text;
 		this.contentDiv = div;
-		this.text = text;
 	}
 
 	dispose() {
@@ -170,13 +169,13 @@ export class FlowViewNode extends FlowViewBase {
 			...(type ? { type } : {}),
 			...(inputs.length > 0
 				? {
-					ins: inputs.map((pin) => pin.toObject()),
-				}
+						ins: inputs.map((pin) => pin.toObject()),
+				  }
 				: {}),
 			...(outputs.length > 0
 				? {
-					outs: outputs.map((pin) => pin.toObject()),
-				}
+						outs: outputs.map((pin) => pin.toObject()),
+				  }
 				: {}),
 			x,
 			y,

@@ -23,8 +23,8 @@
         <li>Drag from a node output to a node input to create an edge.</li>
         <li>Drag selected items to translate them.</li>
         <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
-        <li>Double click on canvas to open the <b>selector</b>.</li>
         <li>Double click on edge to delete it.</li>
+        <li>Double click on canvas to open the <b>selector</b>.</li>
         <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
       </ul>
 
@@ -109,25 +109,25 @@
           id: 'dad',
           text: 'Homer',
           x: 60, y: 70,
-          outs: [{ id: 'children' }]
+          outs: [{ id: 'children', name: 'out' }]
         },
         {
           id: 'mom',
           text: 'Marge',
           x: 160, y: 70,
-          outs: [{ id: 'children' }]
+          outs: [{ id: 'children', name: 'out' }]
         },
         {
           id: 'son',
           text: 'Bart',
           x: 60, y: 240,
-          ins: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
         },
         {
           id: 'daughter',
           text: 'Lisa',
           x: 220, y: 220,
-          ins: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
         }
       ],
       edges: [

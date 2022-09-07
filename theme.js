@@ -43,7 +43,7 @@ export const cssDefault = {
 		"connection-color": "#aaa",
 		"box-shadow": "0px 0px 7px 1px rgba(117,117,117,0.7)",
 		[cssModifierHighlighted("connection-color")]: "#ddd",
-		"node-background-color": "#212121",
+		"node-background-color": "#2b2b2b",
 		[cssModifierHighlighted("node-border-color")]: "#efefef",
 		"text-color": "#bbb",
 	},
@@ -52,5 +52,5 @@ export const cssDefault = {
 export const cssTheme = (colorScheme) =>
 	Object.entries(cssDefault[colorScheme]).reduce(
 		(theme, [key, value]) => ({ ...theme, [fvCssDefaultVarName(key)]: value }),
-		{},
+		{}
 	);

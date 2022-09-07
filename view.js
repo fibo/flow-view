@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
 
@@ -464,9 +464,10 @@ export class FlowViewElement extends HTMLElement {
 
 	onPointerleave() {
 		this.stopTranslation();
+		this.removeSemiEdge();
 	}
 
-	onPointerup() {
+	onPointerup(event) {
 		this.stopTranslation();
 		this.removeSemiEdge();
 	}
@@ -506,7 +507,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 
@@ -532,7 +533,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo,
 		);
 	}
 

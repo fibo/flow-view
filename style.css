@@ -19,8 +19,8 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background: #333;
-    color: #eee;
+    background: #40464a;
+    color: #cbd0c7;
   }
 }
 
@@ -73,7 +73,8 @@ a:active,
 a:link,
 a:hover,
 a:focus {
-  color: tomato;
+  color: #d66c37;
+  text-decoration: none;
 }
 
 button {

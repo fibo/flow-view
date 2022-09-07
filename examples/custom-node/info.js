@@ -16,6 +16,7 @@ export class FlowViewNodeInfo extends FlowViewNode {
 
 	initContent() {
 		const textarea = this.createElement("textarea");
+		textarea.tabIndex = -1;
 		textarea.value = this.text;
 		this.textarea = textarea;
 
@@ -26,16 +27,22 @@ export class FlowViewNodeInfo extends FlowViewNode {
 		textarea.style.fontSize = "16px";
 		textarea.style.outline = "none";
 		textarea.style.overflow = "hidden";
-		textarea.style.padding = "4px 10px";
+		textarea.style.padding = "4px 0px 4px 17px";
 		textarea.style.resize = "none";
 
 		textarea.onpointerdown = (event) => {
-			this.view.selectNode(this);
+			event.stopPropagation();
+		};
+
+		textarea.onpointermove = (event) => {
+			event.preventDefault();
 			event.stopPropagation();
 		};
 
 		textarea.onkeydown = (event) => {
 			event.stopPropagation();
+			if (event.code === "Tab") event.preventDefault();
+			if (event.code === "Escape") this.textarea.blur();
 		};
 
 		textarea.onkeyup = (event) => {

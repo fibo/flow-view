@@ -169,13 +169,13 @@ export class FlowViewNode extends FlowViewBase {
 			...(type ? { type } : {}),
 			...(inputs.length > 0
 				? {
-						ins: inputs.map((pin) => pin.toObject()),
-				  }
+					ins: inputs.map((pin) => pin.toObject()),
+				}
 				: {}),
 			...(outputs.length > 0
 				? {
-						outs: outputs.map((pin) => pin.toObject()),
-				  }
+					outs: outputs.map((pin) => pin.toObject()),
+				}
 				: {}),
 			x,
 			y,

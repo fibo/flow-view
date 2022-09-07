@@ -51,8 +51,8 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
   <li>Drag selected items to translate them.</li>
   <li>Drag from a node output to a node input to create an edge.</li>
   <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
-  <li>Double click on canvas to open the <b>selector</b>.</li>
   <li>Double click on edge to delete it.</li>
+  <li>Double click on canvas to open the <b>selector</b>.</li>
   <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
 </ul>
 
@@ -100,10 +100,11 @@ use cases.
 ```javascript
 flowView.addNodeDefinitions({
 	nodes: [
-		{ name: "Marge" },
-		{ name: "Homer" },
-		{ name: "Bart" },
-		{ name: "Lisa" },
+		{ name: "Marge", type: "parent" },
+		{ name: "Homer", type: "parent" },
+		{ name: "Bart", type: "child" },
+		{ name: "Lisa", type: "child" },
+		{ name: "Mr. Burns" },
 	],
 });
 ```

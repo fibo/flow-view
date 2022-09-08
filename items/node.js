@@ -1,5 +1,5 @@
 import { FlowViewErrorItemNotFound } from "../errors.js";
-import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
+import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewInput } from "./input.js";
 import { FlowViewOutput } from "./output.js";
@@ -29,6 +29,9 @@ export class FlowViewNode extends FlowViewBase {
 		},
 		[`.${cssModifierHighlighted(FlowViewNode.cssClassName)}`]: {
 			"border-color": cssVar.borderColorHighlighted,
+		},
+		[`.${cssModifierHasError(FlowViewNode.cssClassName)}`]: {
+			"border-color": cssVar.errorColor,
 		},
 		[`.${FlowViewNode.cssClassName} .content`]: {
 			"user-select": "none",

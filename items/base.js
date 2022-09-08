@@ -1,4 +1,4 @@
-import { cssModifierHighlighted } from "../theme.js";
+import { cssModifierHasError, cssModifierHighlighted } from "../theme.js";
 
 export class FlowViewBase {
 	static generateId(view) {
@@ -49,7 +49,27 @@ export class FlowViewBase {
 	/**
 	 * @param {Boolean} value
 	 */
+	set hasError(value) {
+		const cssClassName = cssModifierHasError(this.cssClassName);
+
+		if (value) {
+			this.element.classList.add(cssClassName);
+			this._hasError = true;
+		} else {
+			this.element.classList.remove(cssClassName);
+			this._hasError = false;
+		}
+	}
+
+	get hasError() {
+		return this._hasError;
+	}
+
+	/**
+	 * @param {Boolean} value
+	 */
 	set highlight(value) {
+		if (this.hasError) return;
 		const cssClassName = cssModifierHighlighted(this.cssClassName);
 
 		if (value) this.element.classList.add(cssClassName);

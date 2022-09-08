@@ -78,6 +78,7 @@
       switch(action) {
         case 'CREATE_NODE': {
           const node = flowView.node(data.id);
+          node.hasError=true
 
           switch (data.type) {
             case 'parent': {

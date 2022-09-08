@@ -1,4 +1,4 @@
-import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
+import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewPin } from "./pin.js";
 import { FlowViewInput } from "./input.js";
@@ -20,6 +20,9 @@ export class FlowViewEdge extends FlowViewBase {
 			stroke: cssVar.connectionColor,
 			"stroke-width": FlowViewEdge.lineWidth,
 			...cssTransition("stroke"),
+		},
+		[`.${cssModifierHasError(FlowViewEdge.cssClassName)} line`]: {
+			stroke: cssVar.errorColor,
 		},
 		[`.${cssModifierHighlighted(FlowViewEdge.cssClassName)} line`]: {
 			stroke: cssVar.connectionColorHighlighted,

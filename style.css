@@ -27,6 +27,7 @@ body {
 main {
   padding: 1em;
   flex-grow: 1;
+  max-width: 80ch;
 }
 
 main,
@@ -80,15 +81,20 @@ a:focus {
 button {
   padding: 0.5em 0.7em;
   text-transform: uppercase;
-  border-radius: 0.2em;
-  border-color: #bbb;
-  color: #121212;
-  background-color: #eee;
+  border-radius: 0.4em;
+  border-color: #ccc;
+  background-color: transparent;
+  color: inherit;
 }
 
 .container {
   max-width: 800px;
   height: 500px;
+}
+
+.container--small {
+  max-width: 400px;
+  height: 250px;
 }
 
 .controls {
@@ -97,28 +103,22 @@ button {
 
 code {
   padding: 2px 4px;
-  background-color: $semi-transparent;
   border-radius: $border-radius;
-  font-family: $font-family-mono;
+  font-family: monospace;
   word-break: break-all;
 }
 
 code::selection {
-  background-color: green;
-  color: lightgreen;
-}
-
-code span::selection {
-  background-color: green;
+  background-color: rgba(0, 240, 0, 0.2);
   color: lightgreen;
 }
 
 pre {
-  background: #111;
+  background: #222;
   padding: 0.5em;
   overflow-x: auto;
 }
 
 pre code {
-  color: white;
+  color: #ddd;
 }

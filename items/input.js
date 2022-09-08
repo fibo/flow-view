@@ -13,28 +13,32 @@ export class FlowViewInput extends FlowViewPin {
 		};
 	}
 
-	onPointerdown(event) {
-		const { view } = this;
-		const connectedEdge = [...view.edgesMap.values()]
+	get connectedEdge() {
+		return [...this.view.edgesMap.values()]
 			.map((edge) => edge.toObject())
 			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id);
+	}
+
+	onPointerdown(event) {
+		event.stopPropagation();
+	}
+
+	onPointerup() {
+		const { connectedEdge, view } = this;
 		if (view.isDraggingEdge) {
-			event.stopPropagation();
 			const { semiEdge } = view;
-			if (connectedEdge) {
-				if (view.semiEdge.hasSourcePin) {
-					const isDuplicatedEdge = semiEdge.source.node.id === connectedEdge.from[0] &&
-						semiEdge.source.id === connectedEdge.from[1];
-					if (isDuplicatedEdge) return;
-				}
-				// Delete previous edge, only one edge per input is allowed.
-				view.deleteEdge(connectedEdge.id);
-			}
 			if (semiEdge.hasSourcePin) {
-				view.newEdge({ source: semiEdge.source, target: this });
+				const { source } = semiEdge;
+				if (connectedEdge) {
+					// Avoid duplicated edges.
+					if (source.node.id === connectedEdge.from[0] && source.id === connectedEdge.from[1]) return;
+					// Delete previous edge, only one edge per input is allowed.
+					view.deleteEdge(connectedEdge.id);
+				}
+				// Do not connect pins of same node.
+				if (source.node.id === this.node.id) return;
+				view.newEdge({ source, target: this });
 			}
 		}
 	}
-
-	onPointerup() {}
 }

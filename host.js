@@ -1,3 +1,4 @@
+import { FlowViewErrorCannotCreateWebComponent } from "./errors.js";
 import { FlowViewElement } from "./view.js";
 
 export class FlowView {
@@ -15,12 +16,14 @@ export class FlowView {
 		if (element instanceof FlowViewElement) {
 			element.host = this;
 			this.view = element;
-		} else {
+		} else if (container instanceof HTMLElement) {
 			const view = (this.view = document.createElement(FlowViewElement.customElementName));
 			view.host = this;
-			if (container instanceof HTMLElement) container.appendChild(view);
-			else document.body.appendChild(view);
+			container.appendChild(view);
+		} else {
+			throw new FlowViewErrorCannotCreateWebComponent();
 		}
+
 		this.view.style.isolation = "isolate";
 
 		this.nodeNameTypeMap = new Map();

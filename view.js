@@ -239,14 +239,6 @@ export class FlowViewElement extends HTMLElement {
 	selectNode(node) {
 		node.highlight = true;
 		node.selected = true;
-		// Highlight inputs and outputs
-		for (const input of node.inputs) {
-			input.highlight = true;
-		}
-		for (const output of node.outputs) {
-			output.highlight = true;
-		}
-		// Select edges which source and target are in selected nodes.
 		for (const edge of this.edges) {
 			if (edge.source.node.isSelected && edge.target.node.isSelected) {
 				this.selectEdge(edge);
@@ -467,7 +459,7 @@ export class FlowViewElement extends HTMLElement {
 		this.removeSemiEdge();
 	}
 
-	onPointerup(event) {
+	onPointerup() {
 		this.stopTranslation();
 		this.removeSemiEdge();
 	}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="data:image/x-icon;base64,AA">
-  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="width=device-width">
 
   <title>flow-view</title>
   <meta name="description" content="is a visual editor for Dataflow programming">
@@ -78,7 +78,6 @@
       switch(action) {
         case 'CREATE_NODE': {
           const node = flowView.node(data.id);
-          node.hasError=true
 
           switch (data.type) {
             case 'parent': {

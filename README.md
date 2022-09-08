@@ -59,9 +59,8 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
 ### Constructor
 
 Create a `FlowView` instance and pass it a `container` argument. It will create a `flow-view` custom element and attach
-it to the _container_. If no argument is provided, default _container_ will be `document.body`. Be aware that the
-`flow-view` custom element will fit the whole height of its container, so make sure to style properly to avoid a zero
-height container.
+it to the _container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make
+sure to style properly to avoid a zero height container.
 
 ```html
 <!DOCTYPE html>

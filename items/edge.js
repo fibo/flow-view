@@ -80,6 +80,7 @@ export class FlowViewEdge extends FlowViewBase {
 
 	onPointerdownLine(event) {
 		event.stopPropagation();
+		if (this.isSemiEdge) return;
 		const isMultiSelection = event.shiftKey;
 		if (!isMultiSelection) this.view.clearSelection();
 		this.view.selectEdge(this);

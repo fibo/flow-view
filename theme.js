@@ -38,7 +38,7 @@ export const cssDefault = {
 		"error-color": "#ffa600",
 		"node-background-color": "#fefefe",
 		[cssModifierHighlighted("node-border-color")]: "#717171",
-		"text-color": "#111",
+		"text-color": "#222",
 	},
 	dark: {
 		...cssBase,
@@ -49,7 +49,7 @@ export const cssDefault = {
 		"error-color": "#ffb600",
 		"node-background-color": "#2b2b2b",
 		[cssModifierHighlighted("node-border-color")]: "#efefef",
-		"text-color": "#bbb",
+		"text-color": "#ccc",
 	},
 };
 

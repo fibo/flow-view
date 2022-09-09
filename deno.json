@@ -1,7 +1,13 @@
 {
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "lib": ["deno.window"],
+    "strict": true
+  },
   "fmt": {
     "files": {
-      "exclude": ["deno.json", "flow-view.js", "package.json"]
+      "exclude": ["deno.json", "flow-view.min.js", "package.json"]
     },
     "options": {
       "useTabs": true,
@@ -10,7 +16,7 @@
   },
   "lint": {
     "files": {
-      "exclude": ["flow-view.js"]
+      "exclude": ["flow-view.min.js"]
     },
     "rules": {
       "tags": ["recommended"],

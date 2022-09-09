@@ -31,11 +31,11 @@ Try this in your HTML page
 
 ### Old school
 
-Just download the `flow-view.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.js), upload it
+Just download the `flow-view.min.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.min.js), upload it
 wherever you like and load it with a `script` tag like
 
 ```html
-<script type="module" src="https://your.domain.com/path/to/flow-view.js"></script>
+<script type="module" src="https://your.domain.com/path/to/flow-view.min.js"></script>
 ```
 
 ## Usage
@@ -306,9 +306,6 @@ Callback signature is `({ action, data }, info) => void`, where
 - **action** can be `CREATE_NODE`, `DELETE_NODE`, etc.
 - **data** change based on action
 - **info** can contain `{ isLoadGraph: true }` or other optional information.
-
-Just take advantage of autocompletion and suggestion provided by
-[typings definitions](https://github.com/fibo/flow-view/blob/main/flow-view.d.ts).
 
 ### `nodeTextToType(func)`
 

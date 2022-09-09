@@ -1,5 +1,5 @@
 export declare class FlowView {
-	constructor(arg?: { container?: HTMLElement; element?: HTMLElement });
+	constructor(element: HTMLElement);
 
 	private view: FlowViewElement;
 

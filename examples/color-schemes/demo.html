@@ -36,12 +36,8 @@
     // import { FlowView } from 'https://unpkg.com/flow-view';
     import { FlowView } from '../../main.js';
 
-    const flowViewLight = new FlowView({
-      element: document.getElementById('element-1')
-    });
-    const flowViewDark = new FlowView({
-      element: document.getElementById('element-2')
-    });
+    const flowViewLight = new FlowView(document.getElementById('element-1'));
+    const flowViewDark = new FlowView(document.getElementById('element-2'));
 
     flowViewLight.loadGraph({
       nodes: [

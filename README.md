@@ -25,7 +25,7 @@ Try this in your HTML page
 <script type="module">
   import { FlowView } from 'https://unpkg.com/flow-view';
 
-  const flowView = new FlowView();
+  const flowView = new FlowView(document.body);
 </script>
 ```
 
@@ -58,7 +58,7 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
 
 ### Constructor
 
-Create a `FlowView` instance and pass it a `container` argument. It will create a `flow-view` custom element and attach
+Create a `FlowView` instance and pass it a container. It will create a `flow-view` custom element and attach
 it to the _container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make
 sure to style properly to avoid a zero height container.
 
@@ -69,13 +69,13 @@ sure to style properly to avoid a zero height container.
     <script type="module">
       import { FlowView } from 'https://unpkg.com/flow-view';
 
-      const flowView = new FlowView({ container: document.body });
+      const flowView = new FlowView(document.body);
     </script>
   </body>
 </html>
 ```
 
-If some `flow-view` custom element is already in the page, it can be passed to a `FlowView` instance via the `element`
+If some `flow-view` custom element is already in the page, it can be passed to the `FlowView`  constructor.
 argument.
 
 ```html
@@ -87,7 +87,7 @@ argument.
     <script type="module">
       import { FlowView } from 'https://unpkg.com/flow-view';
 
-      const flowView = new FlowView({ element: document.getElementById('my-view') });
+      const flowView = new FlowView(document.getElementById('my-view'));
     </script>
   </body>
 </html>

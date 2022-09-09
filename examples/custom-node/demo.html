@@ -26,9 +26,7 @@
     import { FlowView } from '../../main.js';
     import { FlowViewNodeInfo } from './info.js'
 
-    const flowView = new FlowView({
-      container: document.querySelector('.container')
-    });
+    const flowView = new FlowView(document.querySelector('.container'));
 
     flowView.addNodeClass('info', FlowViewNodeInfo);
 

@@ -59,9 +59,7 @@ const edge2 = flowView.newEdge({
     // import { FlowView } from 'https://unpkg.com/flow-view';
     import { FlowView } from '../../main.js';
 
-    const flowView = new FlowView({
-      element: document.getElementById('element')
-    });
+    const flowView = new FlowView(document.getElementById('element'));
 
     const node1 = flowView.newNode({
       text: 'Hello', ins:[{}, {}], outs: [{ id: 'output1' }], x: 100, y: 100

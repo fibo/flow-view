@@ -30,6 +30,10 @@ export class FlowViewNodeInfo extends FlowViewNode {
 		textarea.style.outline = "none";
 		textarea.style.padding = "4px 17px 4px 17px";
 
+		textarea.onblur = () => {
+			this.text = textarea.value;
+		};
+
 		textarea.onpointerdown = (event) => {
 			event.stopPropagation();
 			this.view.selectNode(this);

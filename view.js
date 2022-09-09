@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -212,7 +212,7 @@ export class FlowViewElement extends HTMLElement {
 
 	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
 		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type;
-		const Class = this.itemClassMap.get(nodeType) || this.itemClassMap.get("node");
+		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node");
 		const node = new Class({
 			id,
 			view: this,
@@ -499,7 +499,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -525,7 +525,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 

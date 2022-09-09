@@ -81,25 +81,19 @@ type FlowViewSerializableInput = FlowViewSerializablePin;
 type FlowViewSerializableOutput = FlowViewSerializablePin;
 
 export type FlowViewSerializableNode = FlowViewSerializableItem & {
+	text: string;
 	/**
 	 * List of input definitions.
 	 */
 	ins?: FlowViewSerializableInput[];
-
 	/**
 	 * List of output definitions.
 	 */
 	outs?: FlowViewSerializableOutput[];
-
-	type?: string;
-
-	text: string;
-
 	/**
 	 * Node position x coordinate.
 	 */
 	x: number;
-
 	/**
 	 * Node position y coordinate.
 	 */

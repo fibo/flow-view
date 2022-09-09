@@ -45,6 +45,7 @@
         <li><a href="./examples/programmatic/demo.html">programmatic</a></li>
         <li><a href="./examples/color-schemes/demo.html">color schemes</a></li>
         <li><a href="./examples/custom-node/demo.html">custom node</a></li>
+        <li><a href="./examples/full-page/demo.html">full page</a></li>
       </ul>
     </section>
   </main>
@@ -53,9 +54,7 @@
     // import { FlowView } from 'https://unpkg.com/flow-view';
     import { FlowView, FlowViewNode } from './main.js';
 
-    const flowView = new FlowView({
-      container: document.querySelector('.container')
-    });
+    const flowView = new FlowView(document.querySelector('.container'));
 
     flowView.addNodeDefinitions({
       nodes: [

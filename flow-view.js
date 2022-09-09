@@ -1,10 +1,11 @@
-import { FlowViewErrorCannotCreateWebComponent } from "./errors.js";
-import { FlowViewElement } from "./view.js";
+import { FlowViewErrorCannotCreateWebComponent, FlowViewErrorCannotLoadStyle } from "./errors.js";
+import { FlowViewElement } from "./element.js";
 
 export class FlowView {
 	constructor(element) {
-		if (!window.customElements.get(FlowViewElement.customElementName))
+		if (!window.customElements.get(FlowViewElement.customElementName)) {
 			window.customElements.define(FlowViewElement.customElementName, FlowViewElement);
+		}
 
 		if (element instanceof FlowViewElement) {
 			element.host = this;
@@ -50,12 +51,6 @@ export class FlowView {
 		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type));
 	}
 
-	addStyleSheet(styleSheet) {
-		const style = document.createElement("style");
-		style.textContent = styleSheet;
-		this.view.shadowRoot.appendChild(style);
-	}
-
 	clearGraph() {
 		this.view.clear({ isClearGraph: true });
 	}
@@ -71,7 +66,7 @@ export class FlowView {
 
 	viewChange(
 		{ createdNode, createdEdge, createdSemiEdge, deletedNode, deletedEdge, deletedSemiEdge, updatedNode },
-		viewChangeInfo = {}
+		viewChangeInfo = {},
 	) {
 		if (createdNode) {
 			this.onViewChange(
@@ -79,7 +74,7 @@ export class FlowView {
 					action: "CREATE_NODE",
 					data: createdNode,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (createdEdge) {
@@ -88,7 +83,7 @@ export class FlowView {
 					action: "CREATE_EDGE",
 					data: createdEdge,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (createdSemiEdge) {
@@ -97,7 +92,7 @@ export class FlowView {
 					action: "CREATE_SEMI_EDGE",
 					data: createdSemiEdge,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (deletedNode) {
@@ -106,7 +101,7 @@ export class FlowView {
 					action: "DELETE_NODE",
 					data: deletedNode,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (deletedEdge) {
@@ -115,7 +110,7 @@ export class FlowView {
 					action: "DELETE_EDGE",
 					data: deletedEdge,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (deletedSemiEdge) {
@@ -124,7 +119,7 @@ export class FlowView {
 					action: "DELETE_SEMI_EDGE",
 					data: deletedSemiEdge,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 		if (updatedNode) {
@@ -133,14 +128,14 @@ export class FlowView {
 					action: "UPDATE_NODE",
 					data: updatedNode,
 				},
-				viewChangeInfo
+				viewChangeInfo,
 			);
 		}
 	}
 
 	newEdge(
 		{ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
-		viewChangeInfo = { isProgrammatic: true }
+		viewChangeInfo = { isProgrammatic: true },
 	) {
 		const sourceNode = this.view.node(sourceNodeId);
 		const targetNode = this.view.node(targetNodeId);
@@ -164,6 +159,16 @@ export class FlowView {
 
 	addNodeClass(key, NodeClass) {
 		this.view.itemClassMap.set(key, NodeClass);
+		if (NodeClass.style) {
+			try {
+				const style = document.createElement("style");
+				style.textContent = FlowViewElement.generateStylesheet(NodeClass.style);
+				this.view.shadowRoot.appendChild(style);
+			} catch (error) {
+				console.error(error);
+				throw new FlowViewErrorCannotLoadStyle();
+			}
+		}
 	}
 
 	nodeTextToType(textToType) {

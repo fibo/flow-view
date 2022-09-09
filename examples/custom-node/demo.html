@@ -29,7 +29,6 @@
     const flowView = new FlowView(document.querySelector('.container'));
 
     flowView.addNodeClass('info', FlowViewNodeInfo);
-    flowView.addStyleSheet('textarea::selection { background-color: transparent; }');
 
     flowView.onChange(({ action, data }) => {
       console.info(action, data);

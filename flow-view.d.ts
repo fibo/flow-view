@@ -8,14 +8,6 @@ export declare class FlowView {
 	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
 
 	/**
-	 * Append custom style to flow-view shadow DOM.
-	 * @example
-	 * ```js
-	 * flowView.addStyleSheet('textarea::selection { background-color: transparent; }');
-	 * ```
-	 */
-	addStyleSheet(style: string): void;
-	/**
 	 * Empty graph.
 	 */
 	clearGraph(): void;
@@ -33,13 +25,11 @@ export declare class FlowView {
 	onChange(callback: FlowViewOnChange): void;
 	/**
 	 * Get node by id.
-	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	node(id: FlowViewSerializableNode["id"]): FlowViewNode;
 	/**
 	 * Get edge by id.
-	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
@@ -54,6 +44,9 @@ export declare class FlowView {
 
 	/**
 	 * Add a custom node class.
+	 * Class must extend FlowViewNode, and should override `initContent()` method.
+	 * It can define custom style via static `style` attribute.
+	 * @see {@link https://github.com/fibo/flow-view/tree/main/examples/custom-node/|custom node example}
 	 */
 	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
 
@@ -149,7 +142,6 @@ declare class FlowViewNode extends FlowViewBase {
 
 	/**
 	 * Get input by id.
-	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	input(id: FlowViewSerializableInput["id"]): FlowViewInput;
@@ -158,7 +150,6 @@ declare class FlowViewNode extends FlowViewBase {
 
 	/**
 	 * Get output by id.
-	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	output(id: FlowViewSerializableOutput["id"]): FlowViewOutput;

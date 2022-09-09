@@ -1,6 +1,17 @@
 import { FlowViewNode } from "../../items/node.js";
 
 export class FlowViewNodeInfo extends FlowViewNode {
+	static style = {
+		textarea: {
+			border: "0",
+			"font-family": "monospace",
+			"font-size": "16px",
+			outline: "none",
+			padding: "4px 17px 4px 17px",
+		},
+		"textarea::selection": { "background-color": "transparent" },
+	};
+
 	static minNumCols = 5;
 	static minNumRows = 1;
 
@@ -23,12 +34,6 @@ export class FlowViewNodeInfo extends FlowViewNode {
 
 		this.setNumRows();
 		this.setNumCols();
-
-		textarea.style.border = 0;
-		textarea.style.fontFamily = "monospace";
-		textarea.style.fontSize = "16px";
-		textarea.style.outline = "none";
-		textarea.style.padding = "4px 17px 4px 17px";
 
 		textarea.onblur = () => {
 			this.text = textarea.value;

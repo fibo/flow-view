@@ -31,8 +31,8 @@ Try this in your HTML page
 
 ### Old school
 
-Just download the `flow-view.min.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.min.js), upload it
-wherever you like and load it with a `script` tag like
+Just download the `flow-view.min.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.min.js),
+upload it wherever you like and load it with a `script` tag like
 
 ```html
 <script type="module" src="https://your.domain.com/path/to/flow-view.min.js"></script>
@@ -58,9 +58,9 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
 
 ### Constructor
 
-Create a `FlowView` instance and pass it a container. It will create a `flow-view` custom element and attach
-it to the _container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make
-sure to style properly to avoid a zero height container.
+Create a `FlowView` instance and pass it a container. It will create a `flow-view` custom element and attach it to the
+_container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make sure to
+style properly to avoid a zero height container.
 
 ```html
 <!DOCTYPE html>
@@ -75,8 +75,7 @@ sure to style properly to avoid a zero height container.
 </html>
 ```
 
-If some `flow-view` custom element is already in the page, it can be passed to the `FlowView`  constructor.
-argument.
+If some `flow-view` custom element is already in the page, it can be passed to the `FlowView` constructor. argument.
 
 ```html
 <!DOCTYPE html>

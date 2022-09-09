@@ -1,6 +1,8 @@
 export declare class FlowView {
 	constructor(arg?: { container?: HTMLElement; element?: HTMLElement });
 
+	private view: FlowViewElement;
+
 	get graph(): FlowViewSerializableGraph;
 
 	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
@@ -59,7 +61,12 @@ export declare class FlowView {
 	nodeTextToType(func: FlowViewNodeTextToType): void;
 }
 
-declare class FlowViewErrorItemNotFound extends Error {}
+export declare class FlowViewElement extends HTMLElement {
+	deselectEdge(edge: FlowViewEdge): void;
+	deselectNode(node: FlowViewNode): void;
+	selectEdge(edge: FlowViewEdge): void;
+	selectNode(node: FlowViewNode): void;
+}
 
 type FlowViewSerializableItem = {
 	id: string;
@@ -118,7 +125,9 @@ export type FlowViewSerializableGraph = {
 
 declare class FlowViewBase {
 	readonly id: string;
+	readonly view: FlowViewElement;
 	set ghost(value: boolean);
+	set hasError(value: boolean);
 	set highlighted(value: boolean);
 }
 
@@ -206,3 +215,6 @@ export type FlowViewNodeDefinition = {
  * Get a node type from node text.
  */
 export type FlowViewNodeTextToType = (text: string) => string | undefined;
+
+declare class FlowViewErrorCannotCreateWebComponent extends TypeError {}
+declare class FlowViewErrorItemNotFound extends Error {}

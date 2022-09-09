@@ -8,32 +8,35 @@ export declare class FlowView {
 	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
 
 	/**
+	 * Append custom style to flow-view shadow DOM.
+	 * @example
+	 * ```js
+	 * flowView.addStyleSheet('textarea::selection { background-color: transparent; }');
+	 * ```
+	 */
+	addStyleSheet(style: string): void;
+	/**
 	 * Empty graph.
 	 */
 	clearGraph(): void;
-
 	/**
 	 * Remove corresponding flow-view DOM node.
 	 */
 	destroy(): void;
-
 	/**
 	 * Load a _flow-view_ graph.
 	 */
 	loadGraph(graph: FlowViewGraph): void;
-
 	/**
 	 * Set callback to be invoked on every view change.
 	 */
 	onChange(callback: FlowViewOnChange): void;
-
 	/**
 	 * Get node by id.
 	 *
 	 * @throws FlowViewErrorItemNotFound
 	 */
 	node(id: FlowViewSerializableNode["id"]): FlowViewNode;
-
 	/**
 	 * Get edge by id.
 	 *
@@ -187,9 +190,12 @@ type FlowViewAction =
 	| "DELETE_SEMI_EDGE"
 	| "UPDATE_NODE";
 
+export type FlowViewOnChangeDataNode = FlowViewSerializableNode & { type?: string };
+export type FlowViewOnChangeDataEdge = FlowViewSerializableEdge;
+
 export type FlowViewOnChangeArg = {
 	action: FlowViewAction;
-	data: FlowViewSerializableNode | FlowViewSerializableEdge;
+	data: FlowViewOnChangeDataEdge | FlowViewOnChangeDataNode;
 };
 
 export type FlowViewOnChangeInfo = {

@@ -24,20 +24,21 @@
   <script type="module">
     // import { FlowView } from 'https://unpkg.com/flow-view';
     import { FlowView } from '../../main.js';
-    import { FlowViewNodeInfo } from './info.js'
+    import { FlowViewNodeInfo } from './info.js';
 
     const flowView = new FlowView(document.querySelector('.container'));
 
     flowView.addNodeClass('info', FlowViewNodeInfo);
+    flowView.addStyleSheet('textarea::selection { background-color: transparent; }');
 
     flowView.onChange(({ action, data }) => {
       console.info(action, data);
-    })
+    });
 
     flowView.nodeTextToType((text) => {
       if (text.indexOf('\n')>=0) return 'info'
       if (text.indexOf(' ')>=0) return 'info'
-    })
+    });
 
     flowView.loadGraph({
       nodes: [
@@ -53,7 +54,7 @@
           x: 150, y: 400
         }
       ]
-    })
+    });
   </script>
 
   <footer>

@@ -50,6 +50,12 @@ export class FlowView {
 		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type));
 	}
 
+	addStyleSheet(styleSheet) {
+		const style = document.createElement("style");
+		style.textContent = styleSheet;
+		this.view.shadowRoot.appendChild(style);
+	}
+
 	clearGraph() {
 		this.view.clear({ isClearGraph: true });
 	}

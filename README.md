@@ -42,7 +42,7 @@ upload it wherever you like and load it with a `script` tag like
 
 ### GUI
 
-Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
+Try [demo here](http://fibo.github.io/flow-view/)
 
 <ul>
   <li>Drag on canvas to translate all items.</li>
@@ -107,6 +107,8 @@ flowView.addNodeDefinitions({
 });
 ```
 
+### Color schemes
+
 Optionally set _color scheme_. If not provided it defaults to both light and dark according to system preferences.
 
 Light scheme.
@@ -128,6 +130,8 @@ Get _flow-view_ node by id.
 ```javascript
 const node = flowView.node("abc");
 ```
+
+See also [color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
 
 ### `edge(id)`
 
@@ -250,7 +254,7 @@ const MyComponent: FC = () => {
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://fibo.github.io/flow-view/examples/programmatic/demo.html">programmatic example here</a>.
+[programmatically example here](http://fibo.github.io/flow-view/examples/programmatic/demo.html).
 
 ```javascript
 // Create two nodes.
@@ -293,12 +297,12 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom-node/demo.html">custom node example here</a>.
+[custom node example here](http://fibo.github.io/flow-view/examples/custom-node/demo.html).
 
 ### `onChange(callback)`
 
 Set callback to be invoked on every view change. See
-<a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code here</a>.
+[demo code here](https://github.com/fibo/flow-view/blob/main/index.html).
 
 Callback signature is `({ action, data }, info) => void`, where
 
@@ -308,7 +312,7 @@ Callback signature is `({ action, data }, info) => void`, where
 
 ### `nodeTextToType(func)`
 
-Set nodeTextToType function that will be invoked on node creation to resolve node type from node text.
+Set a function that will be invoked on node creation to resolve node type from node text.
 
 ## License
 

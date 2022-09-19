@@ -70,7 +70,15 @@
         { name: "Ralph", type: "child" },
         { name: "Selma" },
         { name: "Mr. Burns" }
-      ]
+      ],
+      types: {
+        child: {
+          inputs: [
+            { name: "in1" },
+            { name: "in2" }
+          ]
+        }
+      }
     });
 
     flowView.onChange(({ action, data }) => {
@@ -85,15 +93,6 @@
               }
               break;
             }
-
-            case 'child': {
-              if (node.inputs.length === 0) {
-                node.newInput({ name: "in1" });
-                node.newInput({ name: "in2" });
-              }
-              break;
-            }
-
             default: break
           }
         }

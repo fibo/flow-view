@@ -5,7 +5,7 @@ export declare class FlowView {
 
 	get graph(): FlowViewSerializableGraph;
 
-	addNodeDefinitions(nodeDefinitions: { nodes: FlowViewNodeDefinition[] }): void;
+	addNodeDefinitions(nodeDefinitions: { nodes?: FlowViewNodeNameType[]; types?: FlowViewTypeDefinitionRecord }): void;
 
 	/**
 	 * Empty graph.
@@ -196,7 +196,14 @@ export type FlowViewOnChangeInfo = {
 
 export type FlowViewOnChange = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
 
-export type FlowViewNodeDefinition = {
+export type FlowViewTypeDefinition = {
+	inputs?: Partial<Pick<FlowViewSerializableInput, "name">>[];
+	outputs?: Partial<Pick<FlowViewSerializableOutput, "name">>[];
+};
+
+export type FlowViewTypeDefinitionRecord = Record<string, FlowViewTypeDefinition>;
+
+export type FlowViewNodeNameType = {
 	name: string;
 	type?: string;
 };

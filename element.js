@@ -212,20 +212,24 @@ export class FlowViewElement extends HTMLElement {
 
 	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
 		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type;
+		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType);
+		const inputs = nodeTypeDefinition?.inputs?.map((item, i) => ({ ...item, ...(ins[i] ?? {}) })) ?? ins;
+		const outputs = nodeTypeDefinition?.outputs?.map((item, i) => ({ ...item, ...(outs[i] ?? {}) })) ?? outs;
 		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node");
 		const node = new Class({
 			id,
 			view: this,
 			cssClassName: Class.cssClassName,
 			text,
-			inputs: ins,
-			outputs: outs,
+			inputs,
+			outputs,
 			x,
 			y,
 			type: nodeType,
 		});
 		this.nodesMap.set(node.id, node);
-		this.host.viewChange({ createdNode: node.toObject() }, viewChangeInfo);
+		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
+		this.host.viewChange({ createdNode }, viewChangeInfo);
 		return node;
 	}
 

@@ -21,6 +21,7 @@ export class FlowView {
 		this.view.style.isolation = "isolate";
 
 		this.nodeNameTypeMap = new Map();
+		this.nodeTypeDefinitionMap = new Map();
 		this.onViewChange = () => {};
 		this.textToType = () => {};
 	}
@@ -47,8 +48,11 @@ export class FlowView {
 		return this.view.edge(id);
 	}
 
-	addNodeDefinitions({ nodes }) {
+	addNodeDefinitions({ nodes = [], types = {} }) {
 		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type));
+		Object.entries(types).forEach(([type, { inputs, outputs }]) =>
+			this.nodeTypeDefinitionMap.set(type, { inputs, outputs })
+		);
 	}
 
 	clearGraph() {

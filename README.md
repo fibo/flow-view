@@ -92,21 +92,6 @@ If some `flow-view` custom element is already in the page, it can be passed to t
 </html>
 ```
 
-Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
-use cases.
-
-```javascript
-flowView.addNodeDefinitions({
-	nodes: [
-		{ name: "Marge", type: "parent" },
-		{ name: "Homer", type: "parent" },
-		{ name: "Bart", type: "child" },
-		{ name: "Lisa", type: "child" },
-		{ name: "Mr. Burns" },
-	],
-});
-```
-
 ### Color schemes
 
 Optionally set _color scheme_. If not provided it defaults to both light and dark according to system preferences.
@@ -121,6 +106,36 @@ Dark scheme.
 
 ```html
 <flow-view dark></flow-view>
+```
+
+### `addNodeDefinitions({ nodes?, types? })`
+
+Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
+use cases.
+
+```javascript
+flowView.addNodeDefinitions({
+	nodes: [
+		{ name: "Marge", type: "parent" },
+		{ name: "Homer", type: "parent" },
+		{ name: "Bart", type: "child" },
+		{ name: "Lisa", type: "child" },
+		{ name: "Mr. Burns" },
+	],
+	types: {
+		"parent": {
+			outputs: [
+				{ name: "out" },
+			],
+		},
+		"child": {
+			inputs: [
+				{ name: "in1" },
+				{ name: "in2" },
+			],
+		},
+	},
+});
 ```
 
 ### `node(id)`

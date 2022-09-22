@@ -155,9 +155,9 @@ declare class FlowViewNode extends FlowViewBase {
 
 	outputs: FlowViewOutput[];
 
-	newInput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewInput;
+	newInput(arg: Partial<FlowViewSerializablePin>): FlowViewInput;
 
-	newOutput(arg: Omit<FlowViewSerializablePin, "id">): FlowViewOutput;
+	newOutput(arg: Partial<FlowViewSerializablePin>): FlowViewOutput;
 
 	toObject(): FlowViewSerializableNode;
 }

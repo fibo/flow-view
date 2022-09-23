@@ -3,7 +3,7 @@ import { FlowViewPin } from "./pin.js";
 export class FlowViewInput extends FlowViewPin {
 	constructor(args) {
 		super(args);
-		this.info.style.top = "-25px";
+		this.info.style.top = "-40px";
 	}
 
 	get center() {

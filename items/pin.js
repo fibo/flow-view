@@ -18,8 +18,7 @@ export class FlowViewPin extends FlowViewBase {
 		[`.${FlowViewPin.cssClassName} .info`]: {
 			visibility: "hidden",
 			position: "absolute",
-			"font-family": "monospace",
-			"user-select": "none",
+			"background-color": cssVar.nodeBackgroundColor,
 		},
 		[`.${FlowViewPin.cssClassName}:hover .info`]: {
 			visibility: "visible",
@@ -33,7 +32,7 @@ export class FlowViewPin extends FlowViewBase {
 		this.name = name;
 		this.node = node;
 
-		this.info = this.createElement("div", "info");
+		this.info = this.createElement("pre", "info");
 		this.text = name || "";
 
 		this._onPointerdown = this.onPointerdown.bind(this);

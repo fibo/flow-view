@@ -20,6 +20,9 @@ export class FlowViewPin extends FlowViewBase {
 			position: "absolute",
 			"background-color": cssVar.nodeBackgroundColor,
 		},
+		[`.${FlowViewPin.cssClassName} .info:not(:empty)`]: {
+			padding: "2px 5px",
+		},
 		[`.${FlowViewPin.cssClassName}:hover .info`]: {
 			visibility: "visible",
 		},

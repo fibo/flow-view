@@ -37,7 +37,7 @@ export class FlowView {
 	}
 
 	destroy() {
-		this.view.parentNode.removeChild(this.view);
+		this.view.parentNode?.removeChild(this.view);
 	}
 
 	node(id) {

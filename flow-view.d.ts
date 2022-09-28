@@ -67,9 +67,7 @@ type FlowViewSerializableItem = {
 	id: string;
 };
 
-type FlowViewSerializablePin = FlowViewSerializableItem & {
-	name?: string;
-};
+type FlowViewSerializablePin = FlowViewSerializableItem;
 
 type FlowViewSerializableInput = FlowViewSerializablePin;
 
@@ -120,8 +118,10 @@ declare class FlowViewBase {
 	set highlighted(value: boolean);
 }
 
+export type FlowViewPinConstructorArg = FlowViewSerializablePin & Partial<FlowViewPinDefinition>;
+
 declare class FlowViewPin extends FlowViewBase {
-	constructor(arg: FlowViewSerializablePin);
+	constructor(arg: FlowViewPinConstructorArg);
 	name?: string;
 	text?: string;
 }
@@ -155,9 +155,9 @@ declare class FlowViewNode extends FlowViewBase {
 
 	outputs: FlowViewOutput[];
 
-	newInput(arg: Partial<FlowViewSerializablePin>): FlowViewInput;
+	newInput(arg: Partial<FlowViewPinConstructorArg>): FlowViewInput;
 
-	newOutput(arg: Partial<FlowViewSerializablePin>): FlowViewOutput;
+	newOutput(arg: Partial<FlowViewPinConstructorArg>): FlowViewOutput;
 
 	toObject(): FlowViewSerializableNode;
 }
@@ -196,9 +196,13 @@ export type FlowViewOnChangeInfo = {
 
 export type FlowViewOnChange = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void;
 
+export type FlowViewPinDefinition = {
+	name: string;
+};
+
 export type FlowViewTypeDefinition = {
-	inputs?: Partial<Pick<FlowViewSerializableInput, "name">>[];
-	outputs?: Partial<Pick<FlowViewSerializableOutput, "name">>[];
+	inputs: Partial<FlowViewPinDefinition>[];
+	outputs: Partial<FlowViewPinDefinition>[];
 };
 
 export type FlowViewTypeDefinitionRecord = Record<string, FlowViewTypeDefinition>;

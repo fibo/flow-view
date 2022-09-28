@@ -115,6 +115,7 @@ flowView.addNodeDefinitions({
 	],
 	types: {
 		"parent": {
+      inputs: [],
 			outputs: [
 				{ name: "out" },
 			],
@@ -124,6 +125,7 @@ flowView.addNodeDefinitions({
 				{ name: "in1" },
 				{ name: "in2" },
 			],
+      outputs: [],
 		},
 	},
 });

@@ -31,12 +31,13 @@ export class FlowViewPin extends FlowViewBase {
 		},
 	};
 
-	init({ name, node }) {
-		this.name = name;
-		this.node = node;
-
+	init({ name = "", node }) {
 		this.info = this.createElement("pre", "info");
-		this.text = name || "";
+
+		this.name = name;
+		this.text = name;
+
+		this.node = node;
 
 		this._onPointerdown = this.onPointerdown.bind(this);
 		this.element.addEventListener("pointerdown", this._onPointerdown);
@@ -53,7 +54,7 @@ export class FlowViewPin extends FlowViewBase {
 	}
 
 	set text(value) {
-		this.info.innerHTML = value;
+		this.info.textContent = value === "" ? this.name : value;
 	}
 
 	get halfPinSize() {

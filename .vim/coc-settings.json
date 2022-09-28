@@ -1,0 +1,11 @@
+{
+  "deno.enable": true,
+  "deno.importMap": "./import_map.json",
+  "deno.lint": true,
+  "deno.unstable": true,
+  "prettier.disableLanguages": [
+    "typescript",
+    "javascript"
+  ],
+  "tsserver.enable": false
+}

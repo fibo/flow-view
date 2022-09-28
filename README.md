@@ -29,15 +29,6 @@ Try this in your HTML page
 </script>
 ```
 
-### Old school
-
-Just download the `flow-view.min.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.min.js),
-upload it wherever you like and load it with a `script` tag like
-
-```html
-<script type="module" src="https://your.domain.com/path/to/flow-view.min.js"></script>
-```
-
 ## Usage
 
 ### GUI

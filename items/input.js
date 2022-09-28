@@ -29,12 +29,8 @@ export class FlowViewInput extends FlowViewPin {
 			const { semiEdge } = view;
 			if (semiEdge.hasSourcePin) {
 				const { source } = semiEdge;
-				if (connectedEdge) {
-					// Avoid duplicated edges.
-					if (source.node.id === connectedEdge.from[0] && source.id === connectedEdge.from[1]) return;
-					// Delete previous edge, only one edge per input is allowed.
-					view.deleteEdge(connectedEdge.id);
-				}
+				// Delete previous edge, only one edge per input is allowed.
+				if (connectedEdge) view.deleteEdge(connectedEdge.id);
 				// Do not connect pins of same node.
 				if (source.node.id === this.node.id) return;
 				view.newEdge({ source, target: this });

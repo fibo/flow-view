@@ -9,8 +9,12 @@ export class FlowViewOutput extends FlowViewPin {
 	}
 
 	onPointerdown(event) {
-		event.isBubblingFromPin = true;
-		this.view.createSemiEdge({ source: this });
+		if (this.view.isDraggingEdge) {
+			event.stopPropagation();
+		} else {
+			event.isBubblingFromPin = true;
+			this.view.createSemiEdge({ source: this });
+		}
 	}
 
 	onPointerup(event) {

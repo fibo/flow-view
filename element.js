@@ -49,7 +49,7 @@ export class FlowViewElement extends HTMLElement {
 						.join(""),
 					"}",
 				].join(""),
-			"",
+			""
 		);
 	}
 
@@ -117,6 +117,7 @@ export class FlowViewElement extends HTMLElement {
 		this.addEventListener("pointermove", this.onPointermove);
 		this.addEventListener("pointerleave", this.onPointerleave);
 		this.addEventListener("pointerup", this.onPointerup);
+		this.addEventListener("touchmove", this.onTouchmove, { passive: false });
 	}
 
 	disconnectedCallback() {
@@ -128,6 +129,7 @@ export class FlowViewElement extends HTMLElement {
 		this.removeEventListener("pointermove", this.onPointermove);
 		this.removeEventListener("pointerleave", this.onPointerleave);
 		this.removeEventListener("pointerup", this.onPointerup);
+		this.removeEventListener("touchmove", this.onTouchmove);
 	}
 
 	removeResizeObserver() {
@@ -314,17 +316,7 @@ export class FlowViewElement extends HTMLElement {
 		return this.nodesMap.get(id);
 	}
 
-	enableBodyScroll() {
-		document.body.style.overflow = this._bodyOverflow;
-	}
-
-	disableBodyScroll() {
-		this._bodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-	}
-
 	startTranslation(event) {
-		this.disableBodyScroll();
 		this.startDraggingPoint = FlowViewElement.pointerCoordinates(event);
 		this.translateVector = { x: 0, y: 0 };
 		if (this.hasSelectedNodes) {
@@ -344,7 +336,6 @@ export class FlowViewElement extends HTMLElement {
 		delete this.translateVector;
 		delete this.startDraggingPoint;
 		delete this.selectedNodesStartPosition;
-		this.enableBodyScroll();
 	}
 
 	createSelector({ position }) {
@@ -488,6 +479,11 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
+	onTouchmove(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+
 	createSemiEdge({ source, target }, viewChangeInfo) {
 		const Class = this.itemClassMap.get("edge");
 		this.semiEdge = new Class({
@@ -503,7 +499,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 
@@ -529,7 +525,7 @@ export class FlowViewElement extends HTMLElement {
 					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
 				},
 			},
-			viewChangeInfo,
+			viewChangeInfo
 		);
 	}
 

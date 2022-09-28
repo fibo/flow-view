@@ -1,9 +1,0 @@
-{
-  "deno.enable": true,
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "deno.importMap": "./import_map.json",
-  "deno.lint": true,
-  "deno.unstable": true
-}

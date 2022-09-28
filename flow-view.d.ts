@@ -216,6 +216,8 @@ export type FlowViewNodeNameType = {
  */
 export type FlowViewNodeTextToType = (text: string) => string | undefined;
 
-declare class FlowViewErrorCannotCreateWebComponent extends TypeError {}
-declare class FlowViewErrorCannotLoadStyle extends Error {}
-declare class FlowViewErrorItemNotFound extends Error {}
+export declare class FlowViewErrorCannotCreateWebComponent extends TypeError {}
+export declare class FlowViewErrorCannotLoadStyle extends Error {}
+export declare class FlowViewErrorItemNotFound extends Error {
+	constructor(arg: Pick<FlowViewBase<"id"> & { kind: string }>);
+}

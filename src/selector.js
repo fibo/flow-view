@@ -1,4 +1,4 @@
-import { cssTransition, cssVar } from "../theme.js";
+import { cssTransition, cssVar } from "./theme.js";
 import { FlowViewBase } from "./base.js";
 import { FlowViewNode } from "./node.js";
 

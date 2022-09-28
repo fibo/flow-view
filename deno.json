@@ -2,12 +2,17 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
-    "lib": ["deno.window"],
+    "lib": ["deno.window", "dom"],
     "strict": true
   },
   "fmt": {
     "files": {
-      "exclude": ["deno.json", "flow-view.min.js", "package.json"]
+      "exclude": [
+        "deno.json",
+        "package.json",
+        ".vscode/settings.json",
+        ".vim/coc-settings.json"
+      ]
     },
     "options": {
       "useTabs": true,
@@ -15,9 +20,6 @@
     }
   },
   "lint": {
-    "files": {
-      "exclude": ["flow-view.min.js"]
-    },
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-case-declarations"]

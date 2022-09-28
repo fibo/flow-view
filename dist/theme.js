@@ -1,13 +1,10 @@
 export const cssModifierHighlighted = (cssName) => `${cssName}--highlighted`;
 export const cssModifierHasError = (cssName) => `${cssName}--error`;
-
 export const cssTransition = (prop) => ({
 	transition: `${prop} 117ms ease-in-out`,
 });
-
 const fvCssDefaultVarName = (name) => `--fv-default-${name}`;
 const fvCssVar = (name) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`;
-
 export const cssVar = {
 	backgroundColor: fvCssVar("background-color"),
 	borderColorHighlighted: fvCssVar(cssModifierHighlighted("node-border-color")),
@@ -21,13 +18,11 @@ export const cssVar = {
 	nodeBackgroundColor: fvCssVar("node-background-color"),
 	textColor: fvCssVar("text-color"),
 };
-
 const cssBase = {
 	"border-radius": "2px",
 	"font-family": "sans-serif",
 	"font-size": "16px",
 };
-
 export const cssDefault = {
 	light: {
 		...cssBase,
@@ -52,7 +47,6 @@ export const cssDefault = {
 		"text-color": "#ccc",
 	},
 };
-
 export const cssTheme = (colorScheme) =>
 	Object.entries(cssDefault[colorScheme]).reduce(
 		(theme, [key, value]) => ({ ...theme, [fvCssDefaultVarName(key)]: value }),

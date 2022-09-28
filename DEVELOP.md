@@ -7,7 +7,7 @@ Install [Deno](https://deno.land/).
 With [https://www.npmjs.com/] install the following packages globally:
 
 ```bash
-npm install serve -g
+npm install esbuild serve -g
 ```
 
 ## scripts

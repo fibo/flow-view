@@ -1,8 +1,6 @@
 export declare class FlowView {
 	constructor(element: HTMLElement);
 
-	private view: FlowViewElement;
-
 	get graph(): FlowViewSerializableGraph;
 
 	addNodeDefinitions(nodeDefinitions: { nodes?: FlowViewNodeNameType[]; types?: FlowViewTypeDefinitionRecord }): void;
@@ -57,6 +55,7 @@ export declare class FlowView {
 }
 
 export declare class FlowViewElement extends HTMLElement {
+	readonly host: FlowView;
 	deselectEdge(edge: FlowViewEdge): void;
 	deselectNode(node: FlowViewNode): void;
 	selectEdge(edge: FlowViewEdge): void;
@@ -218,4 +217,5 @@ export type FlowViewNodeNameType = {
 export type FlowViewNodeTextToType = (text: string) => string | undefined;
 
 declare class FlowViewErrorCannotCreateWebComponent extends TypeError {}
+declare class FlowViewErrorCannotLoadStyle extends Error {}
 declare class FlowViewErrorItemNotFound extends Error {}

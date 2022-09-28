@@ -1,4 +1,4 @@
-import { cssModifierHasError, cssModifierHighlighted } from "../theme.js";
+import { cssModifierHasError, cssModifierHighlighted } from "./theme.js";
 
 export class FlowViewBase {
 	static generateId(view) {

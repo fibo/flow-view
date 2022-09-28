@@ -1,11 +1,10 @@
 import { FlowViewErrorItemNotFound } from "./errors.js";
-import { FlowViewBase } from "./items/base.js";
-import { FlowViewEdge } from "./items/edge.js";
-import { FlowViewNode } from "./items/node.js";
-import { FlowViewPin } from "./items/pin.js";
-import { FlowViewSelector } from "./items/selector.js";
+import { FlowViewBase } from "./base.js";
+import { FlowViewEdge } from "./edge.js";
+import { FlowViewNode } from "./node.js";
+import { FlowViewPin } from "./pin.js";
+import { FlowViewSelector } from "./selector.js";
 import { cssTheme, cssVar } from "./theme.js";
-
 export class FlowViewElement extends HTMLElement {
 	static customElementName = "flow-view";
 	static minHeight = 200;
@@ -13,7 +12,6 @@ export class FlowViewElement extends HTMLElement {
 		edge: FlowViewEdge,
 		node: FlowViewNode,
 	};
-
 	static style = {
 		":host([hidden])": {
 			display: "none",
@@ -37,42 +35,33 @@ export class FlowViewElement extends HTMLElement {
 		...FlowViewPin.style,
 		...FlowViewSelector.style,
 	};
-
 	static generateStylesheet(style) {
 		return Object.entries(style).reduce(
 			(stylesheet, [selector, rules]) =>
 				[
 					stylesheet,
 					`${selector}{`,
-					Object.entries(rules)
-						.map(([key, value]) => `${key}:${value};`)
-						.join(""),
+					Object.entries(rules).map(([key, value]) => `${key}:${value};`).join(""),
 					"}",
 				].join(""),
-			""
+			"",
 		);
 	}
-
 	static pointerCoordinates(event) {
 		const { clientX, clientY, target } = event;
 		const { left, top } = target.getBoundingClientRect();
 		return { x: Math.round(clientX - left), y: Math.round(clientY - top) };
 	}
-
 	constructor() {
 		super();
-
 		const template = document.createElement("template");
-
 		const hasLight = this.hasAttribute("light");
 		const hasDark = this.hasAttribute("dark");
 		const isLight = hasLight && !hasDark;
 		const isDark = !hasLight && hasDark;
-
 		const { generateStylesheet } = FlowViewElement;
 		const lightStyle = generateStylesheet({ ":host": cssTheme("light") });
 		const darkStyle = generateStylesheet({ ":host": cssTheme("dark") });
-
 		template.innerHTML = [
 			"<style>",
 			generateStylesheet(FlowViewElement.style),
@@ -81,25 +70,19 @@ export class FlowViewElement extends HTMLElement {
 					"color-scheme": isLight ? "light" : isDark ? "dark" : "light dark",
 				},
 			}),
-			...(isLight ? lightStyle : isDark ? darkStyle : [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
+			...isLight ? lightStyle : isDark ? darkStyle : [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`],
 			"</style>",
 		].join("");
-
 		this.attachShadow({ mode: "open" }).appendChild(template.content.cloneNode(true));
-
 		this._origin = { x: 0, y: 0 };
-
-		this.nodesMap = new Map();
-		this.edgesMap = new Map();
-
-		this.itemClassMap = new Map();
+		this.nodesMap = /* @__PURE__ */ new Map();
+		this.edgesMap = /* @__PURE__ */ new Map();
+		this.itemClassMap = /* @__PURE__ */ new Map();
 		Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
 			this.itemClassMap.set(key, Class);
 		});
-
 		this.selectorId = `selector-${FlowViewBase.generateId(this)}`;
 	}
-
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
 			this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this));
@@ -107,9 +90,9 @@ export class FlowViewElement extends HTMLElement {
 		} else {
 			this.height = this.getAttribute("height") || FlowViewElement.minHeight;
 		}
-
-		if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", 0);
-
+		if (!this.getAttribute("tabindex")) {
+			this.setAttribute("tabindex", 0);
+		}
 		this.addEventListener("contextmenu", this.onContextmenu);
 		this.addEventListener("dblclick", this.onDblclick);
 		this.addEventListener("keydown", this.onKeydown);
@@ -119,7 +102,6 @@ export class FlowViewElement extends HTMLElement {
 		this.addEventListener("pointerup", this.onPointerup);
 		this.addEventListener("touchmove", this.onTouchmove, { passive: false });
 	}
-
 	disconnectedCallback() {
 		this.removeResizeObserver();
 		this.removeEventListener("contextmenu", this.onContextmenu);
@@ -131,12 +113,12 @@ export class FlowViewElement extends HTMLElement {
 		this.removeEventListener("pointerup", this.onPointerup);
 		this.removeEventListener("touchmove", this.onTouchmove);
 	}
-
 	removeResizeObserver() {
-		if (this.parentNode) this.rootResizeObserver?.unobserve(this.parentNode);
+		if (this.parentNode) {
+			this.rootResizeObserver?.unobserve(this.parentNode);
+		}
 		delete this.rootResizeObserver;
 	}
-
 	get origin() {
 		if (this.translateVector && !this.hasSelectedNodes) {
 			return {
@@ -147,58 +129,45 @@ export class FlowViewElement extends HTMLElement {
 			return this._origin;
 		}
 	}
-
 	get selectedEdges() {
 		return this.edges.filter((edge) => edge.isSelected);
 	}
-
 	get hasSelectedNodes() {
 		return this.selectedNodes.length > 0;
 	}
-
 	get isDraggingEdge() {
 		return this.semiEdge instanceof FlowViewEdge;
 	}
-
 	get selectedNodeIds() {
 		return this.selectedNodes.map((node) => node.id);
 	}
-
 	get selectedNodes() {
 		return this.nodes.filter((node) => node.isSelected);
 	}
-
 	get edges() {
 		return [...this.edgesMap.values()];
 	}
-
 	get nodes() {
 		return [...this.nodesMap.values()];
 	}
-
 	get height() {
 		return parseInt(this.style.height);
 	}
-
 	set height(value) {
 		this.style.height = `${value}px`;
 	}
-
 	get width() {
 		return parseInt(this.style.width);
 	}
-
 	set width(value) {
 		this.style.width = `${value}px`;
 	}
-
-	clear(viewChangeInfo) {
+	clear(viewChangeInfo2) {
 		this.nodes.forEach((node) => {
-			this.deleteNode(node.id, viewChangeInfo);
+			this.deleteNode(node.id, viewChangeInfo2);
 		});
 	}
-
-	newEdge({ id, source, target }, viewChangeInfo) {
+	newEdge({ id, source, target }, viewChangeInfo2) {
 		const Class = this.itemClassMap.get("edge");
 		const edge = new Class({
 			id,
@@ -208,15 +177,14 @@ export class FlowViewElement extends HTMLElement {
 			target,
 		});
 		this.edgesMap.set(edge.id, edge);
-		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo);
+		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo2);
 		return edge;
 	}
-
-	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
+	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo2) {
 		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type;
 		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType);
-		const inputs = nodeTypeDefinition?.inputs?.map((item, i) => ({ ...item, ...(ins[i] ?? {}) })) ?? ins;
-		const outputs = nodeTypeDefinition?.outputs?.map((item, i) => ({ ...item, ...(outs[i] ?? {}) })) ?? outs;
+		const inputs = nodeTypeDefinition?.inputs?.map((item, i) => ({ ...item, ...ins[i] ?? {} })) ?? ins;
+		const outputs = nodeTypeDefinition?.outputs?.map((item, i) => ({ ...item, ...outs[i] ?? {} })) ?? outs;
 		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node");
 		const node = new Class({
 			id,
@@ -231,17 +199,15 @@ export class FlowViewElement extends HTMLElement {
 		});
 		this.nodesMap.set(node.id, node);
 		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
-		this.host.viewChange({ createdNode }, viewChangeInfo);
+		this.host.viewChange({ createdNode }, viewChangeInfo2);
 		return node;
 	}
-
 	selectEdge(edge) {
 		edge.highlight = true;
 		edge.selected = true;
 		edge.source.highlight = true;
 		edge.target.highlight = true;
 	}
-
 	selectNode(node) {
 		node.highlight = true;
 		node.selected = true;
@@ -253,79 +219,78 @@ export class FlowViewElement extends HTMLElement {
 			}
 		}
 	}
-
 	deselectEdge(edge) {
 		edge.highlight = false;
 		edge.selected = false;
-		if (!edge.source.node.isSelected) edge.source.highlight = false;
-		if (!edge.target.node.isSelected) edge.target.highlight = false;
+		if (!edge.source.node.isSelected) {
+			edge.source.highlight = false;
+		}
+		if (!edge.target.node.isSelected) {
+			edge.target.highlight = false;
+		}
 	}
-
 	deselectNode(node) {
 		node.highlight = false;
 		node.selected = false;
-		for (const input of node.inputs) input.highlight = false;
-		for (const output of node.outputs) output.highlight = false;
+		for (const input of node.inputs) {
+			input.highlight = false;
+		}
+		for (const output of node.outputs) {
+			output.highlight = false;
+		}
 	}
-
-	deleteEdge(id, viewChangeInfo) {
+	deleteEdge(id, viewChangeInfo2) {
 		const edge = this.edgesMap.get(id);
-		if (!edge) return;
-
+		if (!edge) {
+			return;
+		}
 		edge.source.highlight = false;
 		edge.target.highlight = false;
-
-		// Dispose.
 		this.edgesMap.delete(edge.id);
 		edge.remove();
-
 		const serializedEdge = edge.toObject();
-		this.host.viewChange({ deletedEdge: serializedEdge }, viewChangeInfo);
+		this.host.viewChange({ deletedEdge: serializedEdge }, viewChangeInfo2);
 		return serializedEdge;
 	}
-
-	deleteNode(id, viewChangeInfo) {
+	deleteNode(id, viewChangeInfo2) {
 		const node = this.nodesMap.get(id);
-		if (!node) return;
-
-		// Remove edges connected to node.
+		if (!node) {
+			return;
+		}
 		for (const edge of this.edges) {
 			if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
-				this.deleteEdge(edge.id, viewChangeInfo);
+				this.deleteEdge(edge.id, viewChangeInfo2);
 			}
 		}
-
-		// Dispose.
 		this.nodesMap.delete(node.id);
 		node.remove();
-
 		const serializedNode = node.toObject();
-		this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo);
+		this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo2);
 		return serializedNode;
 	}
-
 	edge(id) {
-		if (!this.edgesMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id });
+		if (!this.edgesMap.has(id)) {
+			throw new FlowViewErrorItemNotFound({ kind: "edge", id });
+		}
 		return this.edgesMap.get(id);
 	}
-
 	node(id) {
 		if (!this.nodesMap.has(id)) {
 			throw new FlowViewErrorItemNotFound({ kind: "node", id });
 		}
 		return this.nodesMap.get(id);
 	}
-
 	startTranslation(event) {
 		this.startDraggingPoint = FlowViewElement.pointerCoordinates(event);
 		this.translateVector = { x: 0, y: 0 };
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {};
-			for (const node of this.selectedNodes) selectedNodesStartPosition[node.id] = node.position;
+			for (const node of this.selectedNodes) {
+				selectedNodesStartPosition[node.id] = node.position;
+			}
 			this.selectedNodesStartPosition = selectedNodesStartPosition;
 		}
 	}
-
 	stopTranslation() {
 		if (this.translateVector && !this.hasSelectedNodes && !this.semiEdge) {
 			this._origin = {
@@ -337,31 +302,25 @@ export class FlowViewElement extends HTMLElement {
 		delete this.startDraggingPoint;
 		delete this.selectedNodesStartPosition;
 	}
-
 	createSelector({ position }) {
-		return (this.selector = new FlowViewSelector({
+		return this.selector = new FlowViewSelector({
 			id: this.selectorId,
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
 			position,
 			nodeNames: [...this.host.nodeNameTypeMap.keys()],
-		}));
+		});
 	}
-
 	updateNode({ node }) {
 		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo);
 	}
-
 	onContextmenu(event) {
 		event.preventDefault();
 	}
-
 	onDblclick(event) {
 		this.clearSelection();
 		this.removeSelector();
-
 		const pointerPosition = FlowViewElement.pointerCoordinates(event);
-
 		const selector = this.createSelector({
 			position: {
 				x: pointerPosition.x + this.origin.x,
@@ -370,10 +329,8 @@ export class FlowViewElement extends HTMLElement {
 		});
 		selector.focus();
 	}
-
 	onKeydown(event) {
 		event.stopPropagation();
-
 		switch (true) {
 			case this.selector instanceof FlowViewSelector:
 				return;
@@ -387,23 +344,23 @@ export class FlowViewElement extends HTMLElement {
 				break;
 		}
 	}
-
 	onPointerdown(event) {
 		event.stopPropagation();
 		this.removeSelector();
-		if (!event.isBubblingFromNode) this.clearSelection();
+		if (!event.isBubblingFromNode) {
+			this.clearSelection();
+		}
 		const isMultiSelection = event.shiftKey;
-		if (!isMultiSelection) this.startTranslation(event);
+		if (!isMultiSelection) {
+			this.startTranslation(event);
+		}
 	}
-
 	onPointermove(event) {
 		const { hasSelectedNodes, semiEdge, startDraggingPoint } = this;
-
 		if (startDraggingPoint) {
 			const pointerPosition = FlowViewElement.pointerCoordinates(event);
 			const x = startDraggingPoint.x - pointerPosition.x;
 			const y = startDraggingPoint.y - pointerPosition.y;
-
 			switch (true) {
 				case !!semiEdge: {
 					if (!semiEdge.hasTarget) {
@@ -413,11 +370,9 @@ export class FlowViewElement extends HTMLElement {
 					semiEdge.updateGeometry();
 					break;
 				}
-
 				case hasSelectedNodes: {
 					this.translateVector = { x, y };
 					const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this;
-
 					for (const node of selectedNodes) {
 						const { x: startX, y: startY } = selectedNodesStartPosition[node.id];
 						node.position = { x: startX - x, y: startY - y };
@@ -427,20 +382,15 @@ export class FlowViewElement extends HTMLElement {
 							edge.updateGeometry();
 						}
 					}
-
 					break;
 				}
-
 				default: {
 					this.translateVector = { x, y };
 					const { nodes, edges } = this;
-
 					for (const node of nodes) {
-						// Just trigger position setter, since it reads view origin.
-						const { x, y } = node.position;
-						node.position = { x, y };
+						const { x: x2, y: y2 } = node.position;
+						node.position = { x: x2, y: y2 };
 					}
-
 					for (const edge of edges) {
 						edge.updateGeometry();
 					}
@@ -448,28 +398,22 @@ export class FlowViewElement extends HTMLElement {
 			}
 		}
 	}
-
 	onPointerleave() {
 		this.stopTranslation();
 		this.removeSemiEdge();
 	}
-
 	onPointerup() {
 		this.stopTranslation();
 		this.removeSemiEdge();
 	}
-
 	onRootResize(entries) {
-		// Only listen to parentNode
 		for (const entry of entries) {
 			if (this.parentNode === entry.target) {
-				// Try with contentBoxSize
 				const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
 				if (contentBoxSize) {
 					this.width = contentBoxSize.inlineSize;
 					this.height = contentBoxSize.blockSize;
 				} else {
-					// Fallback to contentRect
 					if (entry.contentRect) {
 						this.width = entry.contentRect.width;
 						this.height = entry.contentRect.height;
@@ -478,13 +422,11 @@ export class FlowViewElement extends HTMLElement {
 			}
 		}
 	}
-
 	onTouchmove(event) {
 		event.preventDefault();
 		event.stopPropagation();
 	}
-
-	createSemiEdge({ source, target }, viewChangeInfo) {
+	createSemiEdge({ source, target }, viewChangeInfo2) {
 		const Class = this.itemClassMap.get("edge");
 		this.semiEdge = new Class({
 			view: this,
@@ -495,42 +437,50 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				createdSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
+					from: source instanceof FlowViewPin ? [source.node.id, source.id] : void 0,
+					to: target instanceof FlowViewPin ? [target.node.id, target.id] : void 0,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo2,
 		);
 	}
-
 	clearSelection() {
-		for (const node of this.selectedNodes) this.deselectNode(node);
-		for (const edge of this.selectedEdges) this.deselectEdge(edge);
+		for (const node of this.selectedNodes) {
+			this.deselectNode(node);
+		}
+		for (const edge of this.selectedEdges) {
+			this.deselectEdge(edge);
+		}
 	}
-
 	deleteSelectedItems() {
-		for (const edge of this.selectedEdges) this.deleteEdge(edge.id);
-		for (const node of this.selectedNodes) this.deleteNode(node.id);
+		for (const edge of this.selectedEdges) {
+			this.deleteEdge(edge.id);
+		}
+		for (const node of this.selectedNodes) {
+			this.deleteNode(node.id);
+		}
 	}
-
-	removeSemiEdge(viewChangeInfo) {
-		if (!this.semiEdge) return;
+	removeSemiEdge(viewChangeInfo2) {
+		if (!this.semiEdge) {
+			return;
+		}
 		const { source, target } = this.semiEdge;
 		this.semiEdge.remove();
 		delete this.semiEdge;
 		this.host.viewChange(
 			{
 				deletedSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined,
+					from: source instanceof FlowViewPin ? [source.node.id, source.id] : void 0,
+					to: target instanceof FlowViewPin ? [target.node.id, target.id] : void 0,
 				},
 			},
-			viewChangeInfo
+			viewChangeInfo2,
 		);
 	}
-
 	removeSelector() {
-		if (this.selector instanceof FlowViewSelector) this.selector.remove();
-		this.selector = undefined;
+		if (this.selector instanceof FlowViewSelector) {
+			this.selector.remove();
+		}
+		this.selector = void 0;
 	}
 }

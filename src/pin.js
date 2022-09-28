@@ -1,4 +1,4 @@
-import { cssModifierHighlighted, cssTransition, cssVar } from "../theme.js";
+import { cssModifierHighlighted, cssTransition, cssVar } from "./theme.js";
 import { FlowViewBase } from "./base.js";
 
 export class FlowViewPin extends FlowViewBase {

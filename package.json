@@ -21,8 +21,10 @@
     "deno": ">=1.10"
   },
   "scripts": {
+    "build": "esbuild ./src/*.js --outdir=dist",
     "fmt": "deno fmt",
     "lint": "deno lint",
+    "postbuild": "npm run fmt",
     "postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
     "start": "serve",
     "test": "echo \"Error: no test specified\" && exit 1"

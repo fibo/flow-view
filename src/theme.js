@@ -23,7 +23,7 @@ export const cssVar = {
 };
 const cssBase = {
   "border-radius": "2px",
-  "font-family": "sans-serif",
+  "font-family": "sistem-ui sans-serif",
   "font-size": "16px",
 };
 export const cssDefault = {

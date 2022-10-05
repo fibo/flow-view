@@ -53,6 +53,7 @@ export class FlowViewPin extends FlowViewBase {
     return this.bounds.x - this.node.bounds.x;
   }
 
+  /** @param {string} value */
   set text(value) {
     this.info.textContent = value === "" ? this.name : value;
   }

@@ -42,7 +42,7 @@ export const cssDefault = {
     ...cssBase,
     "background-color": "#555",
     "connection-color": "#aaa",
-    "box-shadow": "0px 0px 7px 1px rgba(255,255,255,0.7)",
+    "box-shadow": "0px 0px 7px 1px rgba(217,217,217,0.4)",
     [cssModifierHighlighted("connection-color")]: "#ddd",
     "error-color": "#ffb600",
     "node-background-color": "#2b2b2b",

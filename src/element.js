@@ -27,7 +27,6 @@ export class FlowViewElement extends HTMLElement {
       outline: 0,
       "background-color": cssVar.backgroundColor,
       "border-radius": cssVar.borderRadius,
-      "box-shadow": cssVar.boxShadow,
       "font-family": cssVar.fontFamily,
       "font-size": cssVar.fontSize,
       color: cssVar.textColor,

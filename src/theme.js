@@ -23,7 +23,7 @@ export const cssVar = {
 };
 const cssBase = {
   "border-radius": "2px",
-  "font-family": "sistem-ui sans-serif",
+  "font-family": "system-ui sans-serif",
   "font-size": "16px",
 };
 export const cssDefault = {
@@ -42,7 +42,7 @@ export const cssDefault = {
     ...cssBase,
     "background-color": "#555",
     "connection-color": "#aaa",
-    "box-shadow": "0px 0px 7px 1px rgba(117,117,117,0.7)",
+    "box-shadow": "0px 0px 7px 1px rgba(255,255,255,0.7)",
     [cssModifierHighlighted("connection-color")]: "#ddd",
     "error-color": "#ffb600",
     "node-background-color": "#2b2b2b",

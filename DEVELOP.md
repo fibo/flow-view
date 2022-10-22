@@ -2,9 +2,9 @@
 
 ## Requirements
 
-With [https://www.npmjs.com/] install the following packages globally:
+With [npm](https://www.npmjs.com/) install the following packages globally:
 
-```bash
+```sh
 npm install esbuild serve -g
 ```
 

@@ -1,46 +1,43 @@
 {
-  "name": "flow-view",
-  "description": "is a visual editor for dataflow programming",
-  "version": "5.8.0",
-  "license": "MIT",
-  "homepage": "http://fibo.github.io/flow-view",
-  "author": {
-    "name": "Gianluca Casati",
-    "url": "http://fibo.github.io"
-  },
-  "type": "module",
-  "main": "./main.js",
-  "types": "flow-view.d.ts",
-  "exports": {
-    ".": {
-      "import": "./main.js",
-      "types": "./flow-view.d.ts"
-    }
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "deno": ">=1.10"
-  },
-  "scripts": {
-    "build": "deno bundle main.js | esbuild --minify --target=safari11 > flow-view.js",
-    "fmt": "deno fmt",
-    "lint": "deno lint",
-    "postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
-    "start": "serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/fibo/flow-view.git"
-  },
-  "keywords": [
-    "dataflow",
-    "visual",
-    "editor",
-    "vanilla"
-  ],
-  "bugs": {
-    "url": "https://github.com/fibo/flow-view/issues"
-  },
-  "dependencies": {}
+	"name": "flow-view",
+	"description": "is a visual editor for dataflow programming",
+	"version": "5.8.0",
+	"license": "MIT",
+	"homepage": "http://fibo.github.io/flow-view",
+	"author": {
+		"name": "Gianluca Casati",
+		"url": "http://fibo.github.io"
+	},
+	"type": "module",
+	"types": "flow-view.d.ts",
+	"exports": {
+		".": {
+			"import": "./main.js",
+			"types": "./flow-view.d.ts"
+		}
+	},
+	"engines": {
+		"node": ">=16.0.0"
+	},
+	"scripts": {
+		"build": "esbuild --minify-whitespace ./src/*.js --outdir=dist",
+		"postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
+		"start": "serve",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/fibo/flow-view.git"
+	},
+	"keywords": [
+		"dataflow",
+		"visual",
+		"editor",
+		"vanilla",
+		"web-component"
+	],
+	"bugs": {
+		"url": "https://github.com/fibo/flow-view/issues"
+	},
+	"dependencies": {}
 }

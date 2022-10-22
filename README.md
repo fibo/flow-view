@@ -1,6 +1,6 @@
 # flow-view
 
-> is a visual editor for [dataflow programming][dataflow_wikipedia]
+> is a visual editor for [Dataflow programming][dataflow_wikipedia]
 
 <a href="http://fibo.github.io/flow-view/">
 <div>Demo</div>
@@ -25,24 +25,15 @@ Try this in your HTML page
 <script type="module">
   import { FlowView } from 'https://unpkg.com/flow-view';
 
-  const flowView = new FlowView();
+  const flowView = new FlowView(document.body);
 </script>
-```
-
-### Old school
-
-Just download the `flow-view.js` build [from here](https://github.com/fibo/flow-view/blob/main/flow-view.js), upload it
-wherever you like and load it with a `script` tag like
-
-```html
-<script type="module" src="https://your.domain.com/path/to/flow-view.js"></script>
 ```
 
 ## Usage
 
 ### GUI
 
-Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
+Try [demo here](http://fibo.github.io/flow-view/)
 
 <ul>
   <li>Drag on canvas to translate all items.</li>
@@ -51,16 +42,16 @@ Try <a href="http://fibo.github.io/flow-view/">demo here</a>.
   <li>Drag selected items to translate them.</li>
   <li>Drag from a node output to a node input to create an edge.</li>
   <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
+  <li>Double click on edge to delete it.</li>
   <li>Double click on canvas to open the <b>selector</b>.</li>
   <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
 </ul>
 
 ### Constructor
 
-Create a `FlowView` instance and pass it a `container` argument. It will create a `flow-view` custom element and attach
-it to the _container_. If no argument is provided, default _container_ will be `document.body`. Be aware that the
-`flow-view` custom element will fit the whole height of its container, so make sure to style properly to avoid a zero
-height container.
+Create a `FlowView` instance and pass it a container. It will create a `flow-view` custom element and attach it to the
+_container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make sure to
+style properly to avoid a zero height container.
 
 ```html
 <!DOCTYPE html>
@@ -69,14 +60,13 @@ height container.
     <script type="module">
       import { FlowView } from 'https://unpkg.com/flow-view';
 
-      const flowView = new FlowView({ container: document.body });
+      const flowView = new FlowView(document.body);
     </script>
   </body>
 </html>
 ```
 
-If some `flow-view` custom element is already in the page, it can be passed to a `FlowView` instance via the `element`
-argument.
+If some `flow-view` custom element is already in the page, it can be passed to the `FlowView` constructor. argument.
 
 ```html
 <!DOCTYPE html>
@@ -87,21 +77,58 @@ argument.
     <script type="module">
       import { FlowView } from 'https://unpkg.com/flow-view';
 
-      const flowView = new FlowView({ element: document.getElementById('my-view') });
+      const flowView = new FlowView(document.getElementById('my-view'));
     </script>
   </body>
 </html>
 ```
 
-Add a list to define which nodes are available. It makes sense to be provided in the majority of use cases.
+### Color schemes
+
+Optionally set _color scheme_. If not provided it defaults to both light and dark according to system preferences.
+
+Light scheme.
+
+```html
+<flow-view light></flow-view>
+```
+
+Dark scheme.
+
+```html
+<flow-view dark></flow-view>
+```
+
+### `addNodeDefinitions({ nodes?, types? })`
+
+Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
+use cases.
 
 ```javascript
-flowView.addNodeLabels([
-	"Marge",
-	"Homer",
-	"Bart",
-	"Lisa",
-]);
+flowView.addNodeDefinitions({
+	nodes: [
+		{ name: "Marge", type: "parent" },
+		{ name: "Homer", type: "parent" },
+		{ name: "Bart", type: "child" },
+		{ name: "Lisa", type: "child" },
+		{ name: "Mr. Burns" },
+	],
+	types: {
+		"parent": {
+			inputs: [],
+			outputs: [
+				{ name: "out" },
+			],
+		},
+		"child": {
+			inputs: [
+				{ name: "in1" },
+				{ name: "in2" },
+			],
+			outputs: [],
+		},
+	},
+});
 ```
 
 ### `node(id)`
@@ -111,6 +138,8 @@ Get _flow-view_ node by id.
 ```javascript
 const node = flowView.node("abc");
 ```
+
+See also [color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
 
 ### `edge(id)`
 
@@ -137,31 +166,31 @@ flowView.loadGraph({
 	nodes: [
 		{
 			id: "dad",
-			label: "Homer",
+			text: "Homer",
 			x: 60,
 			y: 70,
-			outputs: [{ id: "children" }],
+			outs: [{ id: "children" }],
 		},
 		{
 			id: "mom",
-			label: "Marge",
+			text: "Marge",
 			x: 160,
 			y: 70,
-			outputs: [{ id: "children" }],
+			outs: [{ id: "children" }],
 		},
 		{
 			id: "son",
-			label: "Bart",
+			text: "Bart",
 			x: 60,
 			y: 240,
-			inputs: [{ id: "father" }, { id: "mother" }],
+			ins: [{ id: "father" }, { id: "mother" }],
 		},
 		{
 			id: "daughter",
-			label: "Lisa",
+			text: "Lisa",
 			x: 220,
 			y: 220,
-			inputs: [{ id: "father" }, { id: "mother" }],
+			ins: [{ id: "father" }, { id: "mother" }],
 		},
 	],
 	edges: [
@@ -189,8 +218,8 @@ Delete `flow-view` custom element.
 flowView.destroy();
 ```
 
-An use case for `destroy()` is the following. Support you are using Next.js, you need to load `flow-view` with an async
-import into a `useEffect` which need to return a callback to be called when component is unmounted.
+An use case for `destroy()` is the following. Suppose you are using Next.js, you need to load `flow-view` with an async
+import into a `useEffect` which needs to return a callback to be called when component is unmounted.
 
 This is a sample code.
 
@@ -233,22 +262,22 @@ const MyComponent: FC = () => {
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-<a href="http://fibo.github.io/flow-view/examples/programmatic/index.html">programmatic example here</a>.
+[programmatically example here](http://fibo.github.io/flow-view/examples/programmatic/demo.html).
 
 ```javascript
 // Create two nodes.
 
 const node1 = flowView.newNode({
-	label: "Hello",
-	inputs: [{}, {}],
-	outputs: [{ id: "output1" }],
+	text: "Hello",
+	ins: [{}, {}],
+	outs: [{ id: "output1" }],
 	x: 100,
 	y: 100,
 	width: 80,
 });
 const node2 = flowView.newNode({
-	label: "World",
-	inputs: [{ id: "input1" }],
+	text: "World",
+	ins: [{ id: "input1" }],
 	width: 100,
 	x: 250,
 	y: 400,
@@ -276,21 +305,22 @@ flowView.deleteEdge(edgeId);
 ### `addNodeClass(nodeType, NodeClass)`
 
 Can add custom node class. See
-<a href="http://fibo.github.io/flow-view/examples/custom-node/index.html">custom node example here</a>.
+[custom node example here](http://fibo.github.io/flow-view/examples/custom-node/demo.html).
 
 ### `onChange(callback)`
 
-React to _flow-view_ changes. See
-<a href="https://github.com/fibo/flow-view/blob/main/index.html">demo code here</a>.
+Set callback to be invoked on every view change. See
+[demo code here](https://github.com/fibo/flow-view/blob/main/index.html).
 
 Callback signature is `({ action, data }, info) => void`, where
 
-- **action** can be `CREATE_NODE`, `DELETE_NODE`, ecc
+- **action** can be `CREATE_NODE`, `DELETE_NODE`, etc.
 - **data** change based on action
 - **info** can contain `{ isLoadGraph: true }` or other optional information.
 
-Just take advantage of autocompletion and suggestion provided by
-[typings definitions](https://github.com/fibo/flow-view/blob/main/flow-view.d.ts).
+### `nodeTextToType(func)`
+
+Set a function that will be invoked on node creation to resolve node type from node text.
 
 ## License
 

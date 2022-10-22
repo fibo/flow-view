@@ -2,17 +2,13 @@
 
 ## Requirements
 
-Install [Deno](https://deno.land/).
+With [npm](https://www.npmjs.com/) install the following packages globally:
 
-With [https://www.npmjs.com/] install the following packages globally:
-
-```bash
+```sh
 npm install esbuild serve -g
 ```
 
 ## scripts
 
 - Start demo: `npm start`
-- Format code: `npm run fmt`
-- Lint code: `npm run lint`
 - Generate build: `npm run build`

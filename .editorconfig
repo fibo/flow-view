@@ -8,9 +8,3 @@ trim_trailing_whitespace = true
 charset = utf-8
 indent_style = space
 indent_size = 2
-
-[*.{js,ts}]
-
-indent_style = tab
-# keep in sync with deno.json
-max_line_length=120

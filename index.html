@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="data:image/x-icon;base64,AA">
-  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="width=device-width">
 
   <title>flow-view</title>
   <meta name="description" content="is a visual editor for Dataflow programming">
@@ -23,6 +23,7 @@
         <li>Drag from a node output to a node input to create an edge.</li>
         <li>Drag selected items to translate them.</li>
         <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
+        <li>Double click on edge to delete it.</li>
         <li>Double click on canvas to open the <b>selector</b>.</li>
         <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
       </ul>
@@ -42,76 +43,62 @@
       <h2>examples</h2>
       <ul>
         <li><a href="./examples/programmatic/demo.html">programmatic</a></li>
+        <li><a href="./examples/color-schemes/demo.html">color schemes</a></li>
         <li><a href="./examples/custom-node/demo.html">custom node</a></li>
+        <li><a href="./examples/full-page/demo.html">full page</a></li>
       </ul>
     </section>
   </main>
 
   <script type="module">
-    import { FlowView } from 'https://unpkg.com/flow-view';
-    // import { FlowView } from './main.js';
+    // import { FlowView } from 'https://unpkg.com/flow-view';
+    import { FlowView, FlowViewNode } from './main.js';
 
-    const flowView = new FlowView({
-      container: document.querySelector('.container')
+    const flowView = new FlowView(document.querySelector('.container'));
+
+    flowView.addNodeDefinitions({
+      nodes: [
+        { name: "Marge", type: "parent" },
+        { name: "Homer", type: "parent" },
+        { name: "Bart", type: "child" },
+        { name: "Lisa", type: "child" },
+        { name: "Barney" },
+        { name: "Milhouse", type: "child" },
+        { name: "Moe" },
+        { name: "Ned", type: "parent" },
+        { name: "Patty" },
+        { name: "Ralph", type: "child" },
+        { name: "Selma" },
+        { name: "Mr. Burns" }
+      ],
+      types: {
+        child: {
+          inputs: [
+            { name: "in1" },
+            { name: "in2" }
+          ],
+          outputs: []
+        }
+      }
     });
-
-    const nodeLabels = [
-      "Marge",
-      "Homer",
-      "Bart",
-      "Lisa",
-      "Barney",
-      "Milhouse",
-      "Moe",
-      "Ned",
-      "Patty",
-      "Ralph",
-      "Selma",
-      "Mr. Burns"
-    ];
-    flowView.addNodeLabels(nodeLabels);
 
     flowView.onChange(({ action, data }) => {
       switch(action) {
         case 'CREATE_NODE': {
           const node = flowView.node(data.id);
 
-          // Make it case insensitive.
-          const label = nodeLabels.find((nodeLabel) => {
-            return (nodeLabel.toLowerCase() === data.label.toLowerCase());
-          }) || data.label;
-          node.label = label
-
-          switch (label) {
-            case 'Marge':
-            case 'Homer': {
+          switch (data.type) {
+            case 'parent': {
               if (node.outputs.length === 0) {
-                node.newOutput({})
+                node.newOutput({ name: 'out' })
               }
-              node.outputs[0].text = 'out'
               break;
             }
-
-            case 'Bart':
-            case 'Lisa': {
-              if (node.inputs.length === 0) {
-                node.newInput({});
-                node.newInput({});
-              }
-              node.inputs[0].text = 'in1'
-              node.inputs[1].text = 'in2'
-              break;
-            }
-
-            default: {
-              console.log('Unknown node', node);
-            }
+            default: break
           }
         }
 
-        default: {
-          console.log(action, data);
-        }
+        default: console.info(action, data)
       }
     })
 
@@ -119,27 +106,27 @@
       nodes: [
         {
           id: 'dad',
-          label: 'Homer',
+          text: 'Homer',
           x: 60, y: 70,
-          outputs: [{ id: 'children' }]
+          outs: [{ id: 'children', name: 'out' }]
         },
         {
           id: 'mom',
-          label: 'Marge',
+          text: 'Marge',
           x: 160, y: 70,
-          outputs: [{ id: 'children' }]
+          outs: [{ id: 'children', name: 'out' }]
         },
         {
           id: 'son',
-          label: 'Bart',
+          text: 'Bart',
           x: 60, y: 240,
-          inputs: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
         },
         {
           id: 'daughter',
-          label: 'Lisa',
+          text: 'Lisa',
           x: 220, y: 220,
-          inputs: [{ id: 'father' }, { id: 'mother' }]
+          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
         }
       ],
       edges: [
@@ -148,24 +135,24 @@
         { from: ['mom', 'children'], to: ['son', 'mother'] },
         { from: ['mom', 'children'], to: ['daughter', 'mother'] }
       ]
-    }
+    };
 
     flowView.loadGraph(initialGraph);
 
     // Few tests.
     try {
-      console.log('not a node', flowView.node('xxx'));
+      console.info('not a node', flowView.node('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message)
+      console.info('THIS IS A TEST:', error.message);
     }
     try {
-      console.log('not an edge', flowView.edge('xxx'));
+      console.info('not an edge', flowView.edge('xxx'));
     } catch (error) {
-      console.log('THIS IS A TEST:', error.message)
+      console.info('THIS IS A TEST:', error.message);
     }
-    console.log('Homer node', flowView.node('dad'));
+    console.info('Homer node', flowView.node('dad'));
     flowView.graph.edges.slice(0, 1).forEach(({ id }) => {
-      console.log('First edge', flowView.edge(id));
+      console.info('First edge', flowView.edge(id));
     });
 
     // Controls

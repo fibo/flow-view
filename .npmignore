@@ -1,10 +1,5 @@
-.ackrc
-.editorconfig
-DEVELOP.md
 LICENSE
-README.md
 examples
 index.html
 screenshot.png
-src
 style.css

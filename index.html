@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="data:image/x-icon;base64,AA">
-  <meta name="viewport" content="width=device-width">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/x-icon;base64,AA" />
+    <meta name="viewport" content="width=device-width" />
 
-  <title>flow-view</title>
-  <meta name="description" content="is a visual editor for Dataflow programming">
+    <title>flow-view</title>
+    <meta name="description" content="is a visual editor for Dataflow programming" />
 
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <main>
-    <h1>flow-view</h1>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>flow-view</h1>
 
-    <blockquote>is a visual editor for <em>dataflow programming</em></blockquote>
+      <blockquote>is a visual editor for <em>dataflow programming</em></blockquote>
 
       <ul>
         <li>Drag on canvas to translate all items.</li>
@@ -28,156 +28,165 @@
         <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
       </ul>
 
-    <div class="container">
-    </div>
+      <div class="container"></div>
 
-    <div class="controls">
-      <button id="reset">Reset</button>
-      <button id="clear">Clear</button>
-      <button id="save">Save</button>
-    </div>
+      <div class="controls">
+        <button id="reset">Reset</button>
+        <button id="clear">Clear</button>
+        <button id="save">Save</button>
+      </div>
 
-    <a hidden href="" id="download" download="graph.json"></a>
+      <a hidden href="" id="download" download="graph.json"></a>
 
-    <section>
-      <h2>examples</h2>
-      <ul>
-        <li><a href="./examples/programmatic/demo.html">programmatic</a></li>
-        <li><a href="./examples/color-schemes/demo.html">color schemes</a></li>
-        <li><a href="./examples/custom-node/demo.html">custom node</a></li>
-        <li><a href="./examples/full-page/demo.html">full page</a></li>
-      </ul>
-    </section>
-  </main>
+      <section>
+        <h2>examples</h2>
+        <ul>
+          <li><a href="./examples/programmatic/demo.html">programmatic</a></li>
+          <li><a href="./examples/color-schemes/demo.html">color schemes</a></li>
+          <li><a href="./examples/custom-node/demo.html">custom node</a></li>
+          <li><a href="./examples/full-page/demo.html">full page</a></li>
+        </ul>
+      </section>
+    </main>
 
-  <script type="module">
-    // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView, FlowViewNode } from './main.js';
+    <script type="module">
+      // import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView, FlowViewNode } from "./main.js"
 
-    const flowView = new FlowView(document.querySelector('.container'));
+      const flowView = new FlowView(document.querySelector(".container"))
 
-    flowView.addNodeDefinitions({
-      nodes: [
-        { name: "Marge", type: "parent" },
-        { name: "Homer", type: "parent" },
-        { name: "Bart", type: "child" },
-        { name: "Lisa", type: "child" },
-        { name: "Barney" },
-        { name: "Milhouse", type: "child" },
-        { name: "Moe" },
-        { name: "Ned", type: "parent" },
-        { name: "Patty" },
-        { name: "Ralph", type: "child" },
-        { name: "Selma" },
-        { name: "Mr. Burns" }
-      ],
-      types: {
-        child: {
-          inputs: [
-            { name: "in1" },
-            { name: "in2" }
-          ],
-          outputs: []
-        }
-      }
-    });
-
-    flowView.onChange(({ action, data }) => {
-      switch(action) {
-        case 'CREATE_NODE': {
-          const node = flowView.node(data.id);
-
-          switch (data.type) {
-            case 'parent': {
-              if (node.outputs.length === 0) {
-                node.newOutput({ name: 'out' })
-              }
-              break;
-            }
-            default: break
+      flowView.addNodeDefinitions({
+        nodes: [
+          { name: "Marge", type: "parent" },
+          { name: "Homer", type: "parent" },
+          { name: "Bart", type: "child" },
+          { name: "Lisa", type: "child" },
+          { name: "Barney" },
+          { name: "Milhouse", type: "child" },
+          { name: "Moe" },
+          { name: "Ned", type: "parent" },
+          { name: "Patty" },
+          { name: "Ralph", type: "child" },
+          { name: "Selma" },
+          { name: "Mr. Burns" }
+        ],
+        types: {
+          child: {
+            inputs: [{ name: "in1" }, { name: "in2" }],
+            outputs: []
           }
         }
+      })
 
-        default: console.info(action, data)
-      }
-    })
+      flowView.onChange(({ action, data }) => {
+        switch (action) {
+          case "CREATE_NODE": {
+            const node = flowView.node(data.id)
 
-    const initialGraph = {
-      nodes: [
-        {
-          id: 'dad',
-          text: 'Homer',
-          x: 60, y: 70,
-          outs: [{ id: 'children', name: 'out' }]
-        },
-        {
-          id: 'mom',
-          text: 'Marge',
-          x: 160, y: 70,
-          outs: [{ id: 'children', name: 'out' }]
-        },
-        {
-          id: 'son',
-          text: 'Bart',
-          x: 60, y: 240,
-          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
-        },
-        {
-          id: 'daughter',
-          text: 'Lisa',
-          x: 220, y: 220,
-          ins: [{ id: 'father', name: 'in1' }, { id: 'mother', name: 'in2' }]
+            switch (data.type) {
+              case "parent": {
+                if (node.outputs.length === 0) {
+                  node.newOutput({ name: "out" })
+                }
+                break
+              }
+              default:
+                break
+            }
+          }
+
+          default:
+            console.info(action, data)
         }
-      ],
-      edges: [
-        { from: ['dad', 'children'], to: ['son', 'father'] },
-        { from: ['dad', 'children'], to: ['daughter', 'father'] },
-        { from: ['mom', 'children'], to: ['son', 'mother'] },
-        { from: ['mom', 'children'], to: ['daughter', 'mother'] }
-      ]
-    };
+      })
 
-    flowView.loadGraph(initialGraph);
+      const initialGraph = {
+        nodes: [
+          {
+            id: "dad",
+            text: "Homer",
+            x: 60,
+            y: 70,
+            outs: [{ id: "children", name: "out" }]
+          },
+          {
+            id: "mom",
+            text: "Marge",
+            x: 160,
+            y: 70,
+            outs: [{ id: "children", name: "out" }]
+          },
+          {
+            id: "son",
+            text: "Bart",
+            x: 60,
+            y: 240,
+            ins: [
+              { id: "father", name: "in1" },
+              { id: "mother", name: "in2" }
+            ]
+          },
+          {
+            id: "daughter",
+            text: "Lisa",
+            x: 220,
+            y: 220,
+            ins: [
+              { id: "father", name: "in1" },
+              { id: "mother", name: "in2" }
+            ]
+          }
+        ],
+        edges: [
+          { from: ["dad", "children"], to: ["son", "father"] },
+          { from: ["dad", "children"], to: ["daughter", "father"] },
+          { from: ["mom", "children"], to: ["son", "mother"] },
+          { from: ["mom", "children"], to: ["daughter", "mother"] }
+        ]
+      }
 
-    // Few tests.
-    try {
-      console.info('not a node', flowView.node('xxx'));
-    } catch (error) {
-      console.info('THIS IS A TEST:', error.message);
-    }
-    try {
-      console.info('not an edge', flowView.edge('xxx'));
-    } catch (error) {
-      console.info('THIS IS A TEST:', error.message);
-    }
-    console.info('Homer node', flowView.node('dad'));
-    flowView.graph.edges.slice(0, 1).forEach(({ id }) => {
-      console.info('First edge', flowView.edge(id));
-    });
+      flowView.loadGraph(initialGraph)
 
-    // Controls
+      // Few tests.
+      try {
+        console.info("not a node", flowView.node("xxx"))
+      } catch (error) {
+        console.info("THIS IS A TEST:", error.message)
+      }
+      try {
+        console.info("not an edge", flowView.edge("xxx"))
+      } catch (error) {
+        console.info("THIS IS A TEST:", error.message)
+      }
+      console.info("Homer node", flowView.node("dad"))
+      flowView.graph.edges.slice(0, 1).forEach(({ id }) => {
+        console.info("First edge", flowView.edge(id))
+      })
 
-    const resetButton = document.querySelector('button#reset');
-    resetButton.addEventListener('click', () => {
-      flowView.clearGraph();
-      flowView.loadGraph(initialGraph);
-    })
+      // Controls
 
-    const clearButton = document.querySelector('button#clear');
-    clearButton.addEventListener('click', () => {
-      flowView.clearGraph();
-    })
+      const resetButton = document.querySelector("button#reset")
+      resetButton.addEventListener("click", () => {
+        flowView.clearGraph()
+        flowView.loadGraph(initialGraph)
+      })
 
-    const downloadGraph = document.querySelector('a#download');
-    const saveButton = document.querySelector('button#save');
-    saveButton.addEventListener('click', () => {
-      downloadGraph.setAttribute('href', `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(flowView.graph))}`);
-      downloadGraph.click();
-    })
-  </script>
+      const clearButton = document.querySelector("button#clear")
+      clearButton.addEventListener("click", () => {
+        flowView.clearGraph()
+      })
 
-  <footer>
-    GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a>
-  </footer>
-</body>
+      const downloadGraph = document.querySelector("a#download")
+      const saveButton = document.querySelector("button#save")
+      saveButton.addEventListener("click", () => {
+        downloadGraph.setAttribute(
+          "href",
+          `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(flowView.graph))}`
+        )
+        downloadGraph.click()
+      })
+    </script>
+
+    <footer>GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a></footer>
+  </body>
 </html>

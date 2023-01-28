@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="data:;base64,=">
-  <meta name="viewport" content="width=device-width">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=" />
+    <meta name="viewport" content="width=device-width" />
 
-  <title>flow-view example</title>
-  <link rel="stylesheet" href="../../style.css">
-</head>
-<body>
-  <script type="module">
-    // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView } from '../../main.js';
+    <title>flow-view example</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+  <body>
+    <script type="module">
+      // import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView } from "../../main.js"
 
-    const flowView = new FlowView(document.body);
+      const flowView = new FlowView(document.body)
 
-    flowView.newNode({ text: 'flow-view', x: 100, y: 100 });
-  </script>
-</body>
+      flowView.newNode({ text: "flow-view", x: 100, y: 100 })
+    </script>
+  </body>
 </html>
-

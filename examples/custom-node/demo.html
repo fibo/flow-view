@@ -1,64 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="data:;base64,=">
-  <meta name="viewport" content="width=device-width">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=" />
+    <meta name="viewport" content="width=device-width" />
 
-  <title>flow-view example</title>
-  <link rel="stylesheet" href="../../style.css">
-</head>
-<body>
+    <title>flow-view example</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>flow-view</h1>
 
-  <main>
-    <h1>flow-view</h1>
+      <h2>custom node example</h2>
 
-    <h2>custom node example</h2>
+      <p>Click on a node to edit it. Node contain a <code>textarea</code>.</p>
 
-    <p>Click on a node to edit it. Node contain a <code>textarea</code>.</p>
+      <div class="container"></div>
+    </main>
 
-    <div class="container">
-    </div>
-  </main>
+    <script type="module">
+      // import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView } from "../../main.js"
+      import { FlowViewNodeInfo } from "./info.js"
 
-  <script type="module">
-    // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView } from '../../main.js';
-    import { FlowViewNodeInfo } from './info.js';
+      const flowView = new FlowView(document.querySelector(".container"))
 
-    const flowView = new FlowView(document.querySelector('.container'));
+      flowView.addNodeClass("info", FlowViewNodeInfo)
 
-    flowView.addNodeClass('info', FlowViewNodeInfo);
+      flowView.onChange(({ action, data }) => {
+        console.info(action, data)
+      })
 
-    flowView.onChange(({ action, data }) => {
-      console.info(action, data);
-    });
+      flowView.nodeTextToType((text) => {
+        if (text.indexOf("\n") >= 0) return "info"
+        if (text.indexOf(" ") >= 0) return "info"
+      })
 
-    flowView.nodeTextToType((text) => {
-      if (text.indexOf('\n')>=0) return 'info'
-      if (text.indexOf(' ')>=0) return 'info'
-    });
+      flowView.loadGraph({
+        nodes: [
+          {
+            type: "info",
+            text: "This content is\neditable",
+            outputs: [{ id: "out" }],
+            x: 100,
+            y: 150
+          },
+          {
+            text: "click me to edit",
+            outputs: [{ id: "out" }],
+            x: 150,
+            y: 400
+          }
+        ]
+      })
+    </script>
 
-    flowView.loadGraph({
-      nodes: [
-        {
-          type: 'info',
-          text: 'This content is\neditable',
-          outputs: [{ id: 'out' }],
-          x: 100, y: 150
-        },
-        {
-          text: 'click me to edit',
-          outputs: [{ id: 'out' }],
-          x: 150, y: 400
-        }
-      ]
-    });
-  </script>
-
-  <footer>
-    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-node/demo.html">here</a>.
-  </footer>
-</body>
+    <footer>
+      Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-node/demo.html">here</a>.
+    </footer>
+  </body>
 </html>
-

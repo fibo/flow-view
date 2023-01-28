@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="data:;base64,=">
-  <meta name="viewport" content="width=device-width">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:;base64,=" />
+    <meta name="viewport" content="width=device-width" />
 
-  <title>flow-view example</title>
-  <link rel="stylesheet" href="../../style.css">
-</head>
-<body>
+    <title>flow-view example</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>flow-view</h1>
 
-  <main>
-    <h1>flow-view</h1>
+      <h2>programmatic example</h2>
 
-    <h2>programmatic example</h2>
+      <p>Nodes and edges are created via API. See code below.</p>
 
-    <p>Nodes and edges are created via API. See code below.</p>
+      <p>
+        The GHOST button set the <code>ghost</code> attribute to few items, it makes them semi transparent. The NORMAL
+        button reset them.
+      </p>
 
-    <p>The GHOST button set the <code>ghost</code> attribute to few items, it makes them semi transparent. The NORMAL button reset them.</p>
+      <div class="container">
+        <flow-view id="element"></flow-view>
+      </div>
 
-    <div class="container">
-      <flow-view id="element"></flow-view>
-    </div>
+      <div class="controls">
+        <button id="ghost">ghost</button>
+        <button id="normal">normal</button>
+      </div>
 
-    <div class="controls">
-      <button id="ghost">ghost</button>
-      <button id="normal">normal</button>
-    </div>
+      <p>Nodes and edges are created with the following code.</p>
 
-    <p>Nodes and edges are created with the following code.</p>
-
-    <pre><code>import { FlowView } from 'https://unpkg.com/flow-view';
+      <pre><code>import { FlowView } from 'https://unpkg.com/flow-view';
 
 const flowView = new FlowView({
   element: document.getElementById('element')
@@ -53,56 +55,66 @@ const edge2 = flowView.newEdge({
   from: [node3.id, 'saluto'],
   to: [node2.id, 'ghost']
 });</code></pre>
-  </main>
+    </main>
 
-  <script type="module">
-    // import { FlowView } from 'https://unpkg.com/flow-view';
-    import { FlowView } from '../../main.js';
+    <script type="module">
+      // import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView } from "../../main.js"
 
-    const flowView = new FlowView(document.getElementById('element'));
+      const flowView = new FlowView(document.getElementById("element"))
 
-    const node1 = flowView.newNode({
-      text: 'Hello', ins:[{}, {}], outs: [{ id: 'output1' }], x: 100, y: 100
-    });
+      const node1 = flowView.newNode({
+        text: "Hello",
+        ins: [{}, {}],
+        outs: [{ id: "output1" }],
+        x: 100,
+        y: 100
+      })
 
-    const node2 = flowView.newNode({
-      text: 'World', ins:[{ id: 'input1' }, { id: 'ghost' }], x: 250, y: 400
-    });
-    const node3 = flowView.newNode({
-      text: 'ciao', outs:[{ id: 'saluto' }], x: 400, y: 280
-    });
-    const edge1 = flowView.newEdge({
-      from: [node1.id, 'output1'],
-      to: [node2.id, 'input1']
-    });
-    const edge2 = flowView.newEdge({
-      from: [node3.id, 'saluto'],
-      to: [node2.id, 'ghost']
-    });
+      const node2 = flowView.newNode({
+        text: "World",
+        ins: [{ id: "input1" }, { id: "ghost" }],
+        x: 250,
+        y: 400
+      })
+      const node3 = flowView.newNode({
+        text: "ciao",
+        outs: [{ id: "saluto" }],
+        x: 400,
+        y: 280
+      })
+      const edge1 = flowView.newEdge({
+        from: [node1.id, "output1"],
+        to: [node2.id, "input1"]
+      })
+      const edge2 = flowView.newEdge({
+        from: [node3.id, "saluto"],
+        to: [node2.id, "ghost"]
+      })
 
-    flowView.onChange(({ action, data }) => {
-      console.log(action, data)
-    });
+      flowView.onChange(({ action, data }) => {
+        console.log(action, data)
+      })
 
-    // Controls
+      // Controls
 
-    const ghostButton = document.querySelector('button#ghost');
-    ghostButton.addEventListener('click', () => {
-      node1.ghost = true;
-      node2.input('ghost').ghost = true;
-      edge2.ghost = true;
-    })
+      const ghostButton = document.querySelector("button#ghost")
+      ghostButton.addEventListener("click", () => {
+        node1.ghost = true
+        node2.input("ghost").ghost = true
+        edge2.ghost = true
+      })
 
-    const normalButton = document.querySelector('button#normal');
-    normalButton.addEventListener('click', () => {
-      node1.ghost = false;
-      node2.input('ghost').ghost = false;
-      edge2.ghost = false;
-    })
-  </script>
+      const normalButton = document.querySelector("button#normal")
+      normalButton.addEventListener("click", () => {
+        node1.ghost = false
+        node2.input("ghost").ghost = false
+        edge2.ghost = false
+      })
+    </script>
 
-  <footer>
-    Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/programmatic/demo.html">here</a>.
-  </footer>
-</body>
+    <footer>
+      Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/programmatic/demo.html">here</a>.
+    </footer>
+  </body>
 </html>

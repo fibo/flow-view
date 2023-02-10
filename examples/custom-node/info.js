@@ -1,5 +1,5 @@
 // import { FlowViewNode } from 'https://unpkg.com/flow-view';
-import { FlowViewNode } from "../../main.js"
+import { FlowViewNode } from "../../index.js"
 
 export class FlowViewNodeInfo extends FlowViewNode {
 	static style = {

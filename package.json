@@ -12,7 +12,7 @@
   "types": "flow-view.d.ts",
   "exports": {
     ".": {
-      "import": "./main.js",
+      "import": "./index.js",
       "types": "./flow-view.d.ts"
     }
   },

@@ -1,53 +1,49 @@
 export declare class FlowView {
-	constructor(element: HTMLElement);
+	constructor(element: HTMLElement)
 
-	get graph(): FlowViewSerializableGraph;
+	get graph(): FlowViewSerializableGraph
 
-	addNodeDefinitions(nodeDefinitions: {
-		nodes?: FlowViewNodeNameType[];
-		types?: FlowViewTypeDefinitionRecord;
-	}): void;
+	addNodeDefinitions(nodeDefinitions: { nodes?: FlowViewNodeNameType[]; types?: FlowViewTypeDefinitionRecord }): void
 
 	/**
 	 * Empty graph.
 	 */
-	clearGraph(): void;
+	clearGraph(): void
+
 	/**
 	 * Remove corresponding flow-view DOM node.
 	 */
-	destroy(): void;
+	destroy(): void
+
 	/**
 	 * Load a _flow-view_ graph.
 	 */
-	loadGraph(graph: FlowViewGraph): void;
+	loadGraph(graph: FlowViewGraph): void
+
 	/**
 	 * Set callback to be invoked on every view change.
 	 */
-	onChange(callback: FlowViewOnChange): void;
+	onChange(callback: FlowViewOnChange): void
+
 	/**
 	 * Get node by id.
 	 * @throws FlowViewErrorItemNotFound
 	 */
-	node(id: FlowViewSerializableNode["id"]): FlowViewNode;
+	node(id: FlowViewSerializableNode["id"]): FlowViewNode
+
 	/**
 	 * Get edge by id.
 	 * @throws FlowViewErrorItemNotFound
 	 */
-	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge;
+	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge
 
-	newNode(
-		arg: Omit<FlowViewSerializableNode, "id"> &
-			Partial<Pick<FlowViewSerializableNode, "id">>
-	): FlowViewNode;
+	newNode(arg: Omit<FlowViewSerializableNode, "id"> & Partial<Pick<FlowViewSerializableNode, "id">>): FlowViewNode
 
-	newEdge(
-		arg: Omit<FlowViewSerializableEdge, "id"> &
-			Partial<Pick<FlowViewSerializableEdge, "id">>
-	): FlowViewEdge;
+	newEdge(arg: Omit<FlowViewSerializableEdge, "id"> & Partial<Pick<FlowViewSerializableEdge, "id">>): FlowViewEdge
 
-	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode;
+	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode
 
-	deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge;
+	deleteEdge(id: FlowViewSerializableEdge["id"]): FlowViewSerializableEdge
 
 	/**
 	 * Add a custom node class.
@@ -55,130 +51,137 @@ export declare class FlowView {
 	 * It can define custom style via static `style` attribute.
 	 * @see {@link https://github.com/fibo/flow-view/tree/main/examples/custom-node/|custom node example}
 	 */
-	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void;
+	addNodeClass(nodeType: string, NodeClass: FlowViewNode): void
 
 	/**
 	 * Set a function that will be invoked on node creation to resolve node type from node text.
 	 */
-	nodeTextToType(func: FlowViewNodeTextToType): void;
+	nodeTextToType(func: FlowViewNodeTextToType): void
 }
 
 export declare class FlowViewElement extends HTMLElement {
-	readonly host: FlowView;
-	deselectEdge(edge: FlowViewEdge): void;
-	deselectNode(node: FlowViewNode): void;
-	selectEdge(edge: FlowViewEdge): void;
-	selectNode(node: FlowViewNode): void;
+	readonly host: FlowView
+
+	deselectEdge(edge: FlowViewEdge): void
+
+	deselectNode(node: FlowViewNode): void
+
+	selectEdge(edge: FlowViewEdge): void
+
+	selectNode(node: FlowViewNode): void
 }
 
 type FlowViewSerializableItem = {
-	id: string;
-};
+	id: string
+}
 
-type FlowViewSerializablePin = FlowViewSerializableItem;
+type FlowViewSerializablePin = FlowViewSerializableItem
 
-type FlowViewSerializableInput = FlowViewSerializablePin;
+type FlowViewSerializableInput = FlowViewSerializablePin
 
-type FlowViewSerializableOutput = FlowViewSerializablePin;
+type FlowViewSerializableOutput = FlowViewSerializablePin
 
 export type FlowViewSerializableNode = FlowViewSerializableItem & {
-	text: string;
+	text: string
+
 	/**
 	 * List of input definitions.
 	 */
-	ins?: FlowViewSerializableInput[];
+	ins?: FlowViewSerializableInput[]
+
 	/**
 	 * List of output definitions.
 	 */
-	outs?: FlowViewSerializableOutput[];
+	outs?: FlowViewSerializableOutput[]
+
 	/**
 	 * Node position x coordinate.
 	 */
-	x: number;
+	x: number
+
 	/**
 	 * Node position y coordinate.
 	 */
-	y: number;
-};
+	y: number
+}
 
 export type FlowViewSerializableEdge = FlowViewSerializableItem & {
 	/**
 	 * Describes the output where edge starts from.
 	 */
-	from: [FlowViewSerializableNode["id"], FlowViewSerializableOutput["id"]];
+	from: [FlowViewSerializableNode["id"], FlowViewSerializableOutput["id"]]
 
 	/**
 	 * Describes the input where edge ends to.
 	 */
-	to: [FlowViewSerializableNode["id"], FlowViewSerializableInput["id"]];
-};
-
-export type FlowViewSerializableGraph = {
-	nodes: FlowViewSerializableNode[];
-	edges: FlowViewSerializableEdge[];
-};
-
-declare class FlowViewBase {
-	readonly id: string;
-	readonly view: FlowViewElement;
-	set ghost(value: boolean);
-	set hasError(value: boolean);
-	set highlighted(value: boolean);
+	to: [FlowViewSerializableNode["id"], FlowViewSerializableInput["id"]]
 }
 
-export type FlowViewPinConstructorArg = FlowViewSerializablePin &
-	Partial<FlowViewPinDefinition>;
+export type FlowViewSerializableGraph = {
+	nodes: FlowViewSerializableNode[]
+	edges: FlowViewSerializableEdge[]
+}
+
+declare class FlowViewBase {
+	readonly id: string
+	readonly view: FlowViewElement
+	set ghost(value: boolean)
+	set hasError(value: boolean)
+	set highlighted(value: boolean)
+}
+
+export type FlowViewPinConstructorArg = FlowViewSerializablePin & Partial<FlowViewPinDefinition>
 
 declare class FlowViewPin extends FlowViewBase {
-	constructor(arg: FlowViewPinConstructorArg);
-	name?: string;
-	text?: string;
+	constructor(arg: FlowViewPinConstructorArg)
+	name?: string
+	text?: string
 }
 
 declare class FlowViewInput extends FlowViewPin {
-	toObject(): FlowViewSerializableInput;
+	toObject(): FlowViewSerializableInput
 }
 
 declare class FlowViewOutput extends FlowViewPin {
-	toObject(): FlowViewSerializableOutput;
+	toObject(): FlowViewSerializableOutput
 }
 
 declare class FlowViewNode extends FlowViewBase {
-	text: string;
+	text: string
 
-	type?: string;
+	type?: string
 
 	/**
 	 * Get input by id.
 	 * @throws FlowViewErrorItemNotFound
 	 */
-	input(id: FlowViewSerializableInput["id"]): FlowViewInput;
+	input(id: FlowViewSerializableInput["id"]): FlowViewInput
 
-	inputs: FlowViewInput[];
+	inputs: FlowViewInput[]
 
 	/**
 	 * Get output by id.
 	 * @throws FlowViewErrorItemNotFound
 	 */
-	output(id: FlowViewSerializableOutput["id"]): FlowViewOutput;
+	output(id: FlowViewSerializableOutput["id"]): FlowViewOutput
 
-	outputs: FlowViewOutput[];
+	outputs: FlowViewOutput[]
 
-	newInput(arg: Partial<FlowViewPinConstructorArg>): FlowViewInput;
+	newInput(arg: Partial<FlowViewPinConstructorArg>): FlowViewInput
 
-	newOutput(arg: Partial<FlowViewPinConstructorArg>): FlowViewOutput;
+	newOutput(arg: Partial<FlowViewPinConstructorArg>): FlowViewOutput
 
-	toObject(): FlowViewSerializableNode;
+	toObject(): FlowViewSerializableNode
 }
 
 declare class FlowViewEdge extends FlowViewBase {
-	toObject(): FlowViewSerializableEdge;
+	toObject(): FlowViewSerializableEdge
 }
 
 declare type FlowViewGraph = {
-	nodes: FlowViewSerializableNode[];
-	edges: FlowViewSerializableEdge[];
-};
+	nodes: FlowViewSerializableNode[]
+	edges: FlowViewSerializableEdge[]
+}
 
 type FlowViewAction =
 	| "CREATE_NODE"
@@ -187,55 +190,52 @@ type FlowViewAction =
 	| "DELETE_NODE"
 	| "DELETE_EDGE"
 	| "DELETE_SEMI_EDGE"
-	| "UPDATE_NODE";
+	| "UPDATE_NODE"
 
 export type FlowViewOnChangeDataNode = FlowViewSerializableNode & {
-	type?: string;
-};
-export type FlowViewOnChangeDataEdge = FlowViewSerializableEdge;
+	type?: string
+}
+
+export type FlowViewOnChangeDataEdge = FlowViewSerializableEdge
 
 export type FlowViewOnChangeArg = {
-	action: FlowViewAction;
-	data: FlowViewOnChangeDataEdge | FlowViewOnChangeDataNode;
-};
+	action: FlowViewAction
+	data: FlowViewOnChangeDataEdge | FlowViewOnChangeDataNode
+}
 
 export type FlowViewOnChangeInfo = {
-	isClearGraph?: boolean;
-	isLoadGraph?: boolean;
-	isProgrammatic?: boolean;
-};
+	isClearGraph?: boolean
+	isLoadGraph?: boolean
+	isProgrammatic?: boolean
+}
 
-export type FlowViewOnChange = (
-	arg: FlowViewOnChangeArg,
-	info: FlowViewOnChangeInfo
-) => void;
+export type FlowViewOnChange = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void
 
 export type FlowViewPinDefinition = {
-	name: string;
-};
+	name: string
+}
 
 export type FlowViewTypeDefinition = {
-	inputs: Partial<FlowViewPinDefinition>[];
-	outputs: Partial<FlowViewPinDefinition>[];
-};
+	inputs: Partial<FlowViewPinDefinition>[]
+	outputs: Partial<FlowViewPinDefinition>[]
+}
 
-export type FlowViewTypeDefinitionRecord = Record<
-	string,
-	FlowViewTypeDefinition
->;
+export type FlowViewTypeDefinitionRecord = Record<string, FlowViewTypeDefinition>
 
 export type FlowViewNodeNameType = {
-	name: string;
-	type?: string;
-};
+	name: string
+	type?: string
+}
 
 /**
  * Get a node type from node text.
  */
-export type FlowViewNodeTextToType = (text: string) => string | undefined;
+export type FlowViewNodeTextToType = (text: string) => string | undefined
 
 export declare class FlowViewErrorCannotCreateWebComponent extends TypeError {}
+
 export declare class FlowViewErrorCannotLoadStyle extends Error {}
+
 export declare class FlowViewErrorItemNotFound extends Error {
-	constructor(arg: Pick<FlowViewBase, "id"> & { kind: string });
+	constructor(arg: Pick<FlowViewBase, "id"> & { kind: string })
 }

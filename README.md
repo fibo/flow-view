@@ -322,9 +322,6 @@ Callback signature is `({ action, data }, info) => void`, where
 
 Set a function that will be invoked on node creation to resolve node type from node text.
 
-## Development
-
-Start demo with `npm start`.
 
 ## License
 

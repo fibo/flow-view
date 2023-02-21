@@ -15,9 +15,7 @@ export class FlowView {
 			view.host = this
 			element.appendChild(view)
 			this.view = view
-		} else {
-			throw new FlowViewErrorCannotCreateWebComponent()
-		}
+		} else throw new TypeError("No valid element nor container")
 
 		this.view.style.isolation = "isolate"
 
@@ -129,7 +127,7 @@ export class FlowView {
 				this.view.shadowRoot.appendChild(style)
 			} catch (error) {
 				console.error(error)
-				throw new FlowViewErrorCannotLoadStyle()
+				throw new Error("flow-view cannot load style for custom element")
 			}
 		}
 	}

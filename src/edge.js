@@ -56,57 +56,52 @@ export class FlowViewEdge extends FlowViewBase {
 
 		this.updateGeometry()
 
-		this._onDblclickLine = this.onDblclickLine.bind(this)
-		line.addEventListener("dblclick", this._onDblclickLine)
-		this._onPointerdownLine = this.onPointerdownLine.bind(this)
-		line.addEventListener("pointerdown", this._onPointerdownLine)
-		this._onPointerenterLine = this.onPointerenterLine.bind(this)
-		line.addEventListener("pointerenter", this._onPointerenterLine)
-		this._onPointerleaveLine = this.onPointerleaveLine.bind(this)
-		line.addEventListener("pointerleave", this._onPointerleaveLine)
+		line.addEventListener("dblclick", this)
+		line.addEventListener("pointerdown", this)
+		line.addEventListener("pointerenter", this)
+		line.addEventListener("pointerleave", this)
+	}
+
+	handleEvent(event) {
+		if (event.type === "dblclick") {
+			event.stopPropagation()
+			this.view.deleteEdge(this.id)
+		}
+		if (event.type === "pointerdown") {
+			event.stopPropagation()
+			if (this.isSemiEdge) return
+			const isMultiSelection = event.shiftKey
+			if (!isMultiSelection) this.view.clearSelection()
+			this.view.selectEdge(this)
+		}
+		if (event.type === "pointerenter") {
+			if (this.isSemiEdge) return
+			if (this.view.isDraggingEdge) return
+			if (!this.isSelected) {
+				this.highlight = true
+				this.source.highlight = true
+				this.target.highlight = true
+			}
+		}
+		if (event.type === "pointerleave") {
+			if (this.isSemiEdge) return
+			if (!this.isSelected) {
+				this.highlight = false
+				if (!this.source.node.isSelected) {
+					this.source.highlight = false
+				}
+				if (!this.target.node.isSelected) {
+					this.target.highlight = false
+				}
+			}
+		}
 	}
 
 	dispose() {
-		this.line.removeEventListener("dblclick", this._onDblclickLine)
-		this.line.removeEventListener("pointerdown", this._onPointerdownLine)
-		this.line.removeEventListener("pointerenter", this._onPointerenterLine)
-		this.line.removeEventListener("pointerleave", this._onPointerleaveLine)
-	}
-
-	onDblclickLine(event) {
-		event.stopPropagation()
-		this.view.deleteEdge(this.id)
-	}
-
-	onPointerdownLine(event) {
-		event.stopPropagation()
-		if (this.isSemiEdge) return
-		const isMultiSelection = event.shiftKey
-		if (!isMultiSelection) this.view.clearSelection()
-		this.view.selectEdge(this)
-	}
-
-	onPointerenterLine() {
-		if (this.isSemiEdge) return
-		if (this.view.isDraggingEdge) return
-		if (!this.isSelected) {
-			this.highlight = true
-			this.source.highlight = true
-			this.target.highlight = true
-		}
-	}
-
-	onPointerleaveLine() {
-		if (this.isSemiEdge) return
-		if (!this.isSelected) {
-			this.highlight = false
-			if (!this.source.node.isSelected) {
-				this.source.highlight = false
-			}
-			if (!this.target.node.isSelected) {
-				this.target.highlight = false
-			}
-		}
+		this.line.removeEventListener("dblclick", this)
+		this.line.removeEventListener("pointerdown", this)
+		this.line.removeEventListener("pointerenter", this)
+		this.line.removeEventListener("pointerleave", this)
 	}
 
 	updateGeometry() {

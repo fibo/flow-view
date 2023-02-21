@@ -68,10 +68,21 @@ export class FlowViewNode extends FlowViewBase {
 
 		this.position = { x, y }
 
-		this._onDblclick = this.onDblclick.bind(this)
-		this.element.addEventListener("dblclick", this._onDblclick)
-		this._onPointerdown = this.onPointerdown.bind(this)
-		this.element.addEventListener("pointerdown", this._onPointerdown)
+		this.element.addEventListener("dblclick", this)
+		this.element.addEventListener("pointerdown", this)
+	}
+
+	handleEvent(event) {
+		if (event.type === "dblclick") {
+			event.stopPropagation()
+		}
+		if (event.type === "pointerdown") {
+			if (event.isBubblingFromPin) return
+			event.isBubblingFromNode = true
+			const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected)
+			if (!isMultiSelection) this.view.clearSelection()
+			this.view.selectNode(this)
+		}
 	}
 
 	initContent(node) {
@@ -81,8 +92,8 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	dispose() {
-		this.element.removeEventListener("dblclick", this._onDblclick)
-		this.element.removeEventListener("pointerdown", this._onPointerdown)
+		this.element.removeEventListener("dblclick", this)
+		this.element.removeEventListener("pointerdown", this)
 	}
 
 	get inputs() {
@@ -150,18 +161,6 @@ export class FlowViewNode extends FlowViewBase {
 		})
 		this.outputsMap.set(pin.id, pin)
 		this.outputsDiv.appendChild(pin.element)
-	}
-
-	onDblclick(event) {
-		event.stopPropagation()
-	}
-
-	onPointerdown(event) {
-		if (event.isBubblingFromPin) return
-		event.isBubblingFromNode = true
-		const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected)
-		if (!isMultiSelection) this.view.clearSelection()
-		this.view.selectNode(this)
 	}
 
 	toObject() {

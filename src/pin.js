@@ -4,7 +4,6 @@ import { FlowViewBase } from "./base.js"
 export class FlowViewPin extends FlowViewBase {
 	static cssClassName = "fv-pin"
 	static size = 10
-
 	static style = {
 		[`.${FlowViewPin.cssClassName}`]: {
 			"background-color": cssVar.connectionColor,
@@ -39,14 +38,19 @@ export class FlowViewPin extends FlowViewBase {
 
 		this.node = node
 
-		this._onPointerdown = this.onPointerdown.bind(this)
-		this.element.addEventListener("pointerdown", this._onPointerdown)
-		this._onPointerenter = this.onPointerenter.bind(this)
-		this.element.addEventListener("pointerenter", this._onPointerenter)
-		this._onPointerleave = this.onPointerleave.bind(this)
-		this.element.addEventListener("pointerleave", this._onPointerleave)
-		this._onPointerup = this.onPointerup.bind(this)
-		this.element.addEventListener("pointerup", this._onPointerup)
+		this.element.addEventListener("pointerdown", this)
+		this.element.addEventListener("pointerenter", this)
+		this.element.addEventListener("pointerleave", this)
+		this.element.addEventListener("pointerup", this)
+	}
+
+	handleEvent(event) {
+		if (event.type === "pointerenter") {
+			this.highlight = true
+		}
+		if (event.type === "pointerleave") {
+			this.highlight = false
+		}
 	}
 
 	get offsetX() {
@@ -63,18 +67,10 @@ export class FlowViewPin extends FlowViewBase {
 	}
 
 	dispose() {
-		this.element.removeEventListener("pointerdown", this._onPointerdown)
-		this.element.removeEventListener("pointerenter", this._onPointerenter)
-		this.element.removeEventListener("pointerleave", this._onPointerleave)
-		this.element.removeEventListener("pointerup", this._onPointerup)
-	}
-
-	onPointerenter() {
-		this.highlight = true
-	}
-
-	onPointerleave() {
-		this.highlight = false
+		this.element.removeEventListener("pointerdown", this)
+		this.element.removeEventListener("pointerenter", this)
+		this.element.removeEventListener("pointerleave", this)
+		this.element.removeEventListener("pointerup", this)
 	}
 
 	toObject() {

@@ -20,7 +20,7 @@ export const cssVar = {
 }
 const cssBase = {
 	"border-radius": "2px",
-	"font-family": "system-ui sans-serif",
+	"font-family": "system-ui, Roboto, sans-serif",
 	"font-size": "16px"
 }
 export const cssDefault = {

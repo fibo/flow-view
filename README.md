@@ -99,6 +99,8 @@ Dark scheme.
 <flow-view dark></flow-view>
 ```
 
+See also [color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
+
 ### `addNodeDefinitions({ nodes?, types? })`
 
 Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
@@ -138,8 +140,6 @@ Get _flow-view_ node by id.
 ```javascript
 const node = flowView.node("abc");
 ```
-
-See also [color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
 
 ### `edge(id)`
 

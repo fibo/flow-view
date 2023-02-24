@@ -1,4 +1,3 @@
-import { FlowViewErrorCannotCreateWebComponent, FlowViewErrorCannotLoadStyle } from "./errors.js"
 import { FlowViewElement } from "./element.js"
 
 export class FlowView {

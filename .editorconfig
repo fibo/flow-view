@@ -7,6 +7,10 @@ end_of_line = lf
 trim_trailing_whitespace = true
 charset = utf-8
 
+[{package,tsconfig}.json]
+indent_style = space
+indent_size = 2
+
 [*.{js,ts}]
 # Source files are not transpiled, tabs will save bytes.
 indent_style = tab

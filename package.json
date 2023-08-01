@@ -9,17 +9,19 @@
     "url": "http://fibo.github.io"
   },
   "type": "module",
-  "types": "flow-view.d.ts",
+  "types": "index.d.ts",
   "exports": {
     ".": {
       "import": "./index.js",
-      "types": "./flow-view.d.ts"
+      "types": "./index.d.ts"
     }
   },
   "engines": {
     "node": ">=16.0.0"
   },
   "scripts": {
+    "build": "tsc --build",
+    "check_types": "tsc --noEmit .",
     "postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
     "start": "npx serve",
     "test": "echo \"Error: no test specified\" && exit 1"

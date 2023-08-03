@@ -7,6 +7,7 @@ export class FlowViewInput extends FlowViewPin {
 	}
 
 	get center() {
+		if (!this.node) return { x: 0, y: 0 }
 		return {
 			x: this.node.position.x + this.halfPinSize + this.node.borderWidth + this.offsetX,
 			y: this.node.position.y + this.halfPinSize - this.node.borderWidth

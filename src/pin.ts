@@ -1,7 +1,16 @@
 import { cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
 import { FlowViewBase } from "./base.js"
+import { type FlowViewNode } from "./node.js"
+
+const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = ["pointerenter", "pointerleave"]
+type HandledHtmlElementEventType = (typeof handledHtmlElementEvents)[number]
+type HandledHtmlElementEventMap = Pick<HTMLElementEventMap, HandledHtmlElementEventType>
 
 export class FlowViewPin extends FlowViewBase {
+	node: FlowViewNode | undefined
+	name = ""
+	info: HTMLPreElement | undefined
+
 	static cssClassName = "fv-pin"
 	static size = 10
 	static style = {
@@ -30,8 +39,9 @@ export class FlowViewPin extends FlowViewBase {
 		}
 	}
 
+	// @ts-ignore
 	init({ name = "", node }) {
-		this.info = this.createElement("pre", "info")
+		this.info = this.createElement("pre", "info") as HTMLPreElement
 
 		this.name = name
 		this.text = name
@@ -44,7 +54,7 @@ export class FlowViewPin extends FlowViewBase {
 		this.element.addEventListener("pointerup", this)
 	}
 
-	handleEvent(event) {
+	handleEvent(event: HandledHtmlElementEventMap[HandledHtmlElementEventType]) {
 		if (event.type === "pointerenter") {
 			this.highlight = true
 		}
@@ -54,11 +64,12 @@ export class FlowViewPin extends FlowViewBase {
 	}
 
 	get offsetX() {
+		if (!this.node) return 0
 		return this.bounds.x - this.node.bounds.x
 	}
 
-	/** @param {string} value */
-	set text(value) {
+	set text(value: string) {
+		if (!this.info) return
 		this.info.textContent = value === "" ? this.name : value
 	}
 
@@ -75,6 +86,7 @@ export class FlowViewPin extends FlowViewBase {
 
 	toObject() {
 		const obj = {}
+		// @ts-ignore
 		if (!this.name) obj.name = this.name
 		return {
 			...super.toObject(),

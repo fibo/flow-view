@@ -5,72 +5,72 @@
 *,
 *::before,
 *::after {
-	box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 body {
-	box-sizing: border-box;
-	min-height: 100vh;
-	margin: 0;
-	padding: 0;
-	color: #1c1c1c;
-	background: #eee;
-	font-family: Verdana, sans-serif;
-	font-size: 18px;
-	display: flex;
-	flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  color: #1c1c1c;
+  background: #eee;
+  font-family: Verdana, sans-serif;
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (prefers-color-scheme: dark) {
-	body {
-		background: #40464a;
-		color: #cbd0c7;
-	}
+  body {
+    background: #40464a;
+    color: #cbd0c7;
+  }
 }
 
 main {
-	padding: 1em;
-	flex-grow: 1;
-	max-width: 80ch;
+  padding: 1em;
+  flex-grow: 1;
+  max-width: 80ch;
 }
 
 main,
 footer {
-	padding-left: min(max(0.17em, 7vw), 10em);
+  padding-left: min(max(0.17em, 7vw), 10em);
 }
 
 h1 {
-	font-size: 3em;
-	font-family: Georgia, serif;
+  font-size: 3em;
+  font-family: Georgia, serif;
 }
 
 blockquote {
-	font-size: 1.2em;
-	margin: 2rem;
-	font-family: Georgia, serif;
+  font-size: 1.2em;
+  margin: 2rem;
+  font-family: Georgia, serif;
 }
 blockquote::before {
-	content: open-quote;
-	font-size: 1.7em;
+  content: open-quote;
+  font-size: 1.7em;
 }
 
 ul {
-	padding-left: 2em;
-	padding-right: 1em;
-	margin-top: 2em;
-	margin-bottom: 2em;
-	list-style-type: circle;
-	line-height: 1.4em;
-	word-break: break-word;
+  padding-left: 2em;
+  padding-right: 1em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  list-style-type: circle;
+  line-height: 1.4em;
+  word-break: break-word;
 }
 
 section {
-	margin-top: 2em;
+  margin-top: 2em;
 }
 
 footer {
-	margin-top: 2em;
-	margin-bottom: 1em;
+  margin-top: 2em;
+  margin-bottom: 1em;
 }
 
 a:visited,
@@ -78,51 +78,51 @@ a:active,
 a:link,
 a:hover,
 a:focus {
-	color: #d66c37;
-	text-decoration: none;
+  color: #d66c37;
+  text-decoration: none;
 }
 
 button {
-	padding: 0.5em 0.7em;
-	text-transform: uppercase;
-	border-radius: 0.4em;
-	border-color: #ccc;
-	background-color: transparent;
-	color: inherit;
+  padding: 0.5em 0.7em;
+  text-transform: uppercase;
+  border-radius: 0.4em;
+  border-color: #ccc;
+  background-color: transparent;
+  color: inherit;
 }
 
 .container {
-	max-width: 800px;
-	height: 500px;
+  max-width: 800px;
+  height: 500px;
 }
 
 .container--small {
-	max-width: 400px;
-	height: 250px;
+  max-width: 400px;
+  height: 250px;
 }
 
 .controls {
-	margin-top: 1em;
+  margin-top: 1em;
 }
 
 code {
-	padding: 2px 4px;
-	border-radius: $border-radius;
-	font-family: monospace;
-	word-break: break-all;
+  padding: 2px 4px;
+  border-radius: $border-radius;
+  font-family: monospace;
+  word-break: break-all;
 }
 
 code::selection {
-	background-color: rgba(0, 240, 0, 0.2);
-	color: lightgreen;
+  background-color: rgba(0, 240, 0, 0.2);
+  color: lightgreen;
 }
 
 pre {
-	background: #222;
-	padding: 0.5em;
-	overflow-x: auto;
+  background: #222;
+  padding: 0.5em;
+  overflow-x: auto;
 }
 
 pre code {
-	color: #ddd;
+  color: #ddd;
 }

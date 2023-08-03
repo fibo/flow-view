@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "target": "ES2020",
     "module": "ES2020",
     "isolatedModules": true,
@@ -7,5 +8,16 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true
   },
-
+  "files": [
+    "index.ts",
+    "src/base.ts",
+    "src/element.ts",
+    "src/errors.ts",
+    "src/flow-view.ts",
+    "src/input.ts",
+    "src/node.ts",
+    "src/pin.ts",
+    "src/selector.ts",
+    "src/theme.ts"
+  ]
 }

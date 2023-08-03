@@ -1,9 +1,15 @@
 import { FlowViewElement } from "./element.js"
 
+export type FlowViewOnChangeInfo = {
+	isClearGraph?: boolean
+	isLoadGraph?: boolean
+	isProgrammatic?: boolean
+}
+
 export class FlowView {
 	view: HTMLElement
 
-	constructor(element: FlowViewElement|HTMLElement) {
+	constructor(element: FlowViewElement | HTMLElement) {
 		if (!window.customElements.get(FlowViewElement.customElementName)) {
 			window.customElements.define(FlowViewElement.customElementName, FlowViewElement)
 		}

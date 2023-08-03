@@ -14,20 +14,16 @@ export class FlowViewBase {
 			.replace(/[^a-z]+/g, "")
 			.substring(0, 5)
 
-			// TODO view.getElementById
+		// TODO view.getElementById
 		if (view.shadowRoot?.getElementById(id)) {
 			return FlowViewBase.generateId(view)
 		} else return id
 	}
 
-	constructor({ cssClassName, id, view, ...rest }: {
-		cssClassName: string
-		id: string
-		view: FlowViewElement
-	}) {
+	constructor({ cssClassName, id, view, ...rest }: { cssClassName: string; id: string; view: FlowViewElement }) {
 		const _id = id || FlowViewBase.generateId(view)
 
-		const element =  document.createElement("div")
+		const element = document.createElement("div")
 		element.setAttribute("id", _id)
 		element.classList.add(cssClassName)
 		this.element = element
@@ -112,4 +108,3 @@ export class FlowViewBase {
 		}
 	}
 }
-

@@ -1,10 +1,10 @@
-export const cssModifierHighlighted = (cssName:string) => `${cssName}--highlighted`
-export const cssModifierHasError = (cssName:string) => `${cssName}--error`
-export const cssTransition = (prop:string) => ({
+export const cssModifierHighlighted = (cssName: string) => `${cssName}--highlighted`
+export const cssModifierHasError = (cssName: string) => `${cssName}--error`
+export const cssTransition = (prop: string) => ({
 	transition: `${prop} 117ms ease-in-out`
 })
-const fvCssDefaultVarName = (name:string) => `--fv-default-${name}`
-const fvCssVar = (name:string) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`
+const fvCssDefaultVarName = (name: string) => `--fv-default-${name}`
+const fvCssVar = (name: string) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`
 export const cssVar = {
 	backgroundColor: fvCssVar("background-color"),
 	borderColorHighlighted: fvCssVar(cssModifierHighlighted("node-border-color")),
@@ -24,7 +24,7 @@ const cssBase = {
 	"font-size": "16px"
 }
 
-type ColorScheme = 'light'|'dark'
+type ColorScheme = "light" | "dark"
 
 export const cssDefault: Record<ColorScheme, Record<string, string>> = {
 	light: {
@@ -51,7 +51,7 @@ export const cssDefault: Record<ColorScheme, Record<string, string>> = {
 	}
 }
 
-export const cssTheme = (colorScheme:ColorScheme) =>
+export const cssTheme = (colorScheme: ColorScheme) =>
 	Object.entries(cssDefault[colorScheme]).reduce(
 		(theme, [key, value]) => ({
 			...theme,

@@ -5,35 +5,44 @@ import { FlowViewNode } from "./node.js"
 import { FlowViewPin } from "./pin.js"
 import { FlowViewSelector } from "./selector.js"
 import { cssTheme, cssVar } from "./theme.js"
+import { type FlowViewOnChangeInfo } from "./flow-view.js"
 
 type Vector = {
-	x:number
-	y:number
+	x: number
+	y: number
 }
 
-const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = ['contextmenu', 'dblclick', 'keydown', 'pointerdown', 'pointerleave', 'pointerup', 'touchmove']
-type HandledHtmlElementEventType = typeof handledHtmlElementEvents[number]
+const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = [
+	"contextmenu",
+	"dblclick",
+	"keydown",
+	"pointerdown",
+	"pointerleave",
+	"pointerup",
+	"touchmove"
+]
+type HandledHtmlElementEventType = (typeof handledHtmlElementEvents)[number]
 type HandledHtmlElementEventMap = Pick<HTMLElementEventMap, HandledHtmlElementEventType>
-const handledHtmlElementEventOptions: { [eventType in HandledHtmlElementEventType]: AddEventListenerOptions} = {
-	touchmove: {passive: false}
+const handledHtmlElementEventOptions: { [eventType in HandledHtmlElementEventType]?: AddEventListenerOptions } = {
+	touchmove: { passive: false }
 }
 
-	const defaultItems  = {
-		edge: FlowViewEdge,
-		node: FlowViewNode
-	} as const
+const defaultItems = {
+	edge: FlowViewEdge,
+	node: FlowViewNode
+} as const
 
 export class FlowViewElement extends HTMLElement {
-	private _origin: Vector
-	private edgesMap: Map<string, FlowViewEdge>
-	private nodesMap: Map<string, FlowViewNode>
-	private selectorId: string
-	private rootResizeObserver: ResizeObserver|undefined
+	_origin: Vector
+	edgesMap: Map<string, FlowViewEdge>
+	nodesMap: Map<string, FlowViewNode>
+	selectorId: string
+	rootResizeObserver: ResizeObserver | undefined
 	// TODO private itemClassMap ??
-	private selector: FlowViewSelector | undefined
-	private semiEdge: FlowViewEdge | undefined
-	private startDraggingPoint: Vector | undefined
-	private translateVector: Vector | undefined
+	selector: FlowViewSelector | undefined
+	semiEdge: FlowViewEdge | undefined
+	startDraggingPoint: Vector | undefined
+	translateVector: Vector | undefined
 
 	static customElementName = "flow-view"
 	static minHeight = 200
@@ -59,12 +68,14 @@ export class FlowViewElement extends HTMLElement {
 		...FlowViewSelector.style
 	}
 
+	// @ts-ignore
 	static generateStylesheet(style) {
 		return Object.entries(style).reduce(
 			(stylesheet, [selector, rules]) =>
 				[
 					stylesheet,
 					`${selector}{`,
+					// @ts-ignore
 					Object.entries(rules)
 						.map(([key, value]) => `${key}:${value};`)
 						.join(""),
@@ -74,9 +85,9 @@ export class FlowViewElement extends HTMLElement {
 		)
 	}
 
-	static pointerCoordinates(event: PointerEvent) {
+	static pointerCoordinates(event: MouseEvent): Vector | undefined {
 		if (!event.target) return
-			// @ts-ignore
+		// @ts-ignore
 		const { left, top } = event.target.getBoundingClientRect()
 		return { x: Math.round(event.clientX - left), y: Math.round(event.clientY - top) }
 	}
@@ -121,7 +132,7 @@ export class FlowViewElement extends HTMLElement {
 		// @ts-ignore
 		this.itemClassMap = new Map()
 		Object.entries(defaultItems).forEach(([key, Class]) => {
-		// @ts-ignore
+			// @ts-ignore
 			this.itemClassMap.set(key, Class)
 		})
 
@@ -131,8 +142,28 @@ export class FlowViewElement extends HTMLElement {
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
 			if (this.parentNode instanceof Element) {
-			this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this))
-			this.rootResizeObserver.observe(this.parentNode)
+				this.rootResizeObserver = new ResizeObserver((entries) => {
+					// Only listen to parentNode
+					for (const entry of entries) {
+						if (this.parentNode === entry.target) {
+							// Try with contentBoxSize
+							const contentBoxSize = Array.isArray(entry.contentBoxSize)
+								? entry.contentBoxSize[0]
+								: entry.contentBoxSize
+							if (contentBoxSize) {
+								this.width = contentBoxSize.inlineSize
+								this.height = contentBoxSize.blockSize
+							} else {
+								// Fallback to contentRect
+								if (entry.contentRect) {
+									this.width = entry.contentRect.width
+									this.height = entry.contentRect.height
+								}
+							}
+						}
+					}
+				})
+				this.rootResizeObserver.observe(this.parentNode)
 			}
 		} else {
 			// TODO observe attribute height
@@ -142,9 +173,9 @@ export class FlowViewElement extends HTMLElement {
 
 		if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", "0")
 
-		handledHtmlElementEvents.forEach(type => this.addEventListener(type, this,handledHtmlElementEventOptions[type] ?? false ))
-		this.addEventListener("contextmenu", this.onContextmenu)
-		this.addEventListener("dblclick", this.onDblclick)
+		handledHtmlElementEvents.forEach((type) =>
+			this.addEventListener(type, this, handledHtmlElementEventOptions[type] ?? false)
+		)
 		this.addEventListener("keydown", this.onKeydown)
 		this.addEventListener("pointerdown", this.onPointerdown)
 		this.addEventListener("pointermove", this.onPointermove)
@@ -156,9 +187,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		// TODO
-		// Object.keys(handledHtmlElementEvents).forEach(type => this.removeEventListener(type, this))
-		this.removeEventListener("contextmenu", this.onContextmenu)
+		Object.keys(handledHtmlElementEvents).forEach((type) => this.removeEventListener(type, this))
 		this.removeEventListener("dblclick", this.onDblclick)
 		this.removeEventListener("keydown", this.onKeydown)
 		this.removeEventListener("pointerdown", this.onPointerdown)
@@ -171,8 +200,39 @@ export class FlowViewElement extends HTMLElement {
 		delete this.rootResizeObserver
 	}
 
-	// TODO
-	handleEvent(_event: HandledHtmlElementEventMap[HandledHtmlElementEventType]) {}
+	handleEvent(event: HandledHtmlElementEventMap[HandledHtmlElementEventType]) {
+		switch (event.type) {
+			case "contextmenu":
+				event.preventDefault()
+				break
+
+			case "dblclick": {
+				this.clearSelection()
+				this.removeSelector()
+
+				// @ts-ignore
+				const pointerPosition = FlowViewElement.pointerCoordinates(event)
+				if (!pointerPosition) return
+
+				const selector = this.createSelector({
+					position: {
+						x: pointerPosition.x + this.origin.x,
+						y: pointerPosition.y + this.origin.y
+					}
+				})
+				selector.focus()
+				break
+			}
+
+			case "touchmove":
+				event.preventDefault()
+				event.stopPropagation()
+				break
+
+			default:
+				break
+		}
+	}
 
 	get origin(): Vector {
 		if (this.translateVector && !this.hasSelectedNodes) {
@@ -395,29 +455,10 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	updateNode({ node }) {
-		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo)
+		this.host.viewChange({ updatedNode: node.toObject() })
 	}
 
-	onContextmenu(event) {
-		event.preventDefault()
-	}
-
-	onDblclick(event: GlobalEventHandlersEventMap['dblclick']) {
-		this.clearSelection()
-		this.removeSelector()
-
-		const pointerPosition = FlowViewElement.pointerCoordinates(event)
-
-		const selector = this.createSelector({
-			position: {
-				x: pointerPosition.x + this.origin.x,
-				y: pointerPosition.y + this.origin.y
-			}
-		})
-		selector.focus()
-	}
-
-	onKeydown(event: GlobalEventHandlersEventMap['keydown']) {
+	onKeydown(event: GlobalEventHandlersEventMap["keydown"]) {
 		event.stopPropagation()
 
 		switch (true) {
@@ -434,7 +475,7 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
-	onPointerdown(event: GlobalEventHandlersEventMap['pointerdown']) {
+	onPointerdown(event: GlobalEventHandlersEventMap["pointerdown"]) {
 		event.stopPropagation()
 		this.removeSelector()
 		// @ts-ignore
@@ -443,7 +484,7 @@ export class FlowViewElement extends HTMLElement {
 		if (!isMultiSelection) this.startTranslation(event)
 	}
 
-	onPointermove(event: GlobalEventHandlersEventMap['pointermove']) {
+	onPointermove(event: GlobalEventHandlersEventMap["pointermove"]) {
 		const { hasSelectedNodes, semiEdge, startDraggingPoint } = this
 
 		if (startDraggingPoint) {
@@ -531,12 +572,7 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
-	onTouchmove(event) {
-		event.preventDefault()
-		event.stopPropagation()
-	}
-
-	createSemiEdge({ source, target }, viewChangeInfo) {
+	createSemiEdge({ source, target }, viewChangeInfo?: FlowViewOnChangeInfo) {
 		const Class = this.itemClassMap.get("edge")
 		this.semiEdge = new Class({
 			view: this,
@@ -565,20 +601,17 @@ export class FlowViewElement extends HTMLElement {
 		for (const node of this.selectedNodes) this.deleteNode(node.id)
 	}
 
-	removeSemiEdge(viewChangeInfo) {
+	removeSemiEdge() {
 		if (!this.semiEdge) return
 		const { source, target } = this.semiEdge
 		this.semiEdge.remove()
 		delete this.semiEdge
-		this.host.viewChange(
-			{
-				deletedSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
-				}
-			},
-			viewChangeInfo
-		)
+		this.host.viewChange({
+			deletedSemiEdge: {
+				from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
+				to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
+			}
+		})
 	}
 
 	removeSelector() {

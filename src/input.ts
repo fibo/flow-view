@@ -1,7 +1,18 @@
+import { FlowViewBaseConstructorArg } from "./base.js"
 import { FlowViewPin } from "./pin.js"
 
+const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = [
+	"pointerdown",
+	"pointerup"
+]
+type HandledHtmlElementEventType = (typeof handledHtmlElementEvents)[number]
+type HandledHtmlElementEventMap = Pick<
+	HTMLElementEventMap,
+	HandledHtmlElementEventType
+>
+
 export class FlowViewInput extends FlowViewPin {
-	constructor(args) {
+	constructor(args: FlowViewBaseConstructorArg) {
 		super(args)
 		// @ts-ignore
 		this.info.style.top = "-50px"
@@ -23,12 +34,15 @@ export class FlowViewInput extends FlowViewPin {
 		return [...this.view.edgesMap.values()]
 			.map((edge) => edge.toObject())
 			.find(
+				// @ts-ignore
 				({ to: [nodeId, inputId] }) =>
 					nodeId === this.node?.id && inputId === this.id
 			)
 	}
 
-	handleEvent(event) {
+	handleEvent(
+		event: HandledHtmlElementEventMap[HandledHtmlElementEventType]
+	) {
 		super.handleEvent(event)
 		if (event.type === "pointerdown") {
 			event.stopPropagation()
@@ -40,9 +54,10 @@ export class FlowViewInput extends FlowViewPin {
 				if (semiEdge?.hasSourcePin) {
 					const { source } = semiEdge
 					// Delete previous edge, only one edge per input is allowed.
+					// @ts-ignore
 					if (connectedEdge) view.deleteEdge(connectedEdge.id)
 					// Do not connect pins of same node.
-					if (source.node.id === this.node.id) return
+					if (source?.node?.id === this.node?.id) return
 					view.newEdge({ source, target: this })
 				}
 			}

@@ -320,11 +320,20 @@ export class FlowViewElement extends HTMLElement {
 	// @ts-ignore
 	clear(viewChangeInfo) {
 		this.nodes.forEach((node) => {
+			// @ts-ignore
 			this.deleteNode(node.id, viewChangeInfo)
 		})
 	}
 
-	newEdge({ id, source, target }, viewChangeInfo) {
+	newEdge(
+		{
+			id,
+			source,
+			target
+		}: Partial<Pick<FlowViewEdge, "id" | "source" | "target">>,
+		viewChangeInfo?: FlowViewOnChangeInfo
+	) {
+		// @ts-ignore
 		const Class = this.itemClassMap.get("edge")
 		const edge = new Class({
 			id,
@@ -334,30 +343,40 @@ export class FlowViewElement extends HTMLElement {
 			target
 		})
 		this.edgesMap.set(edge.id, edge)
+		// @ts-ignore
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
 		return edge
 	}
 
 	newNode(
+		// @ts-ignore
 		{ x = 0, y = 0, text, id, type, ins = [], outs = [] },
-		viewChangeInfo
+		viewChangeInfo?: FlowViewOnChangeInfo
 	) {
 		const nodeType =
+			// @ts-ignore
 			this.host.textToType(text) ??
+			// @ts-ignore
 			this.host.nodeNameTypeMap.get(text) ??
 			type
+		// @ts-ignore
 		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType)
 		const inputs =
+			// @ts-ignore
 			nodeTypeDefinition?.inputs?.map((item, i) => ({
 				...item,
+				// @ts-ignore
 				...(ins[i] ?? {})
 			})) ?? ins
 		const outputs =
+			// @ts-ignore
 			nodeTypeDefinition?.outputs?.map((item, i) => ({
 				...item,
+				// @ts-ignore
 				...(outs[i] ?? {})
 			})) ?? outs
 		const Class =
+			// @ts-ignore
 			this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node")
 		const node = new Class({
 			id,
@@ -374,10 +393,12 @@ export class FlowViewElement extends HTMLElement {
 		const createdNode = nodeType
 			? { ...node.toObject(), type: nodeType }
 			: node.toObject()
+		// @ts-ignore
 		this.host.viewChange({ createdNode }, viewChangeInfo)
 		return node
 	}
 
+	// @ts-ignore
 	selectEdge(edge) {
 		edge.highlight = true
 		edge.selected = true
@@ -385,10 +406,12 @@ export class FlowViewElement extends HTMLElement {
 		edge.target.highlight = true
 	}
 
+	// @ts-ignore
 	selectNode(node) {
 		node.highlight = true
 		node.selected = true
 		for (const edge of this.edges) {
+			// @ts-ignore
 			if (edge.source.node.isSelected && edge.target.node.isSelected) {
 				this.selectEdge(edge)
 			} else {
@@ -397,6 +420,7 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
+	// @ts-ignore
 	deselectEdge(edge) {
 		edge.highlight = false
 		edge.selected = false
@@ -404,6 +428,7 @@ export class FlowViewElement extends HTMLElement {
 		if (!edge.target.node.isSelected) edge.target.highlight = false
 	}
 
+	// @ts-ignore
 	deselectNode(node) {
 		node.highlight = false
 		node.selected = false
@@ -438,7 +463,9 @@ export class FlowViewElement extends HTMLElement {
 		for (const edge of this.edges) {
 			// @ts-ignore
 			if (
+				// @ts-ignore
 				edge.source.node.id === node.id ||
+				// @ts-ignore
 				edge.target.node.id === node.id
 			) {
 				// @ts-ignore
@@ -452,6 +479,7 @@ export class FlowViewElement extends HTMLElement {
 		node.remove()
 
 		const serializedNode = node.toObject()
+		// @ts-ignore
 		this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo)
 		return serializedNode
 	}
@@ -474,8 +502,10 @@ export class FlowViewElement extends HTMLElement {
 		this.translateVector = { x: 0, y: 0 }
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {}
+			// @ts-ignore
 			for (const node of this.selectedNodes)
 				selectedNodesStartPosition[node.id] = node.position
+			// @ts-ignore
 			this.selectedNodesStartPosition = selectedNodesStartPosition
 		}
 	}

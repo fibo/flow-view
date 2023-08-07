@@ -1,6 +1,12 @@
 import { cssModifierHasError, cssModifierHighlighted } from "./theme.js"
 import { type FlowViewElement } from "./element.js"
 
+export type FlowViewBaseConstructorArg = {
+	cssClassName: string
+	id: string
+	view: FlowViewElement
+}
+
 export class FlowViewBase {
 	private _hasError: boolean | undefined
 	private _selected: boolean | undefined
@@ -25,11 +31,7 @@ export class FlowViewBase {
 		id,
 		view,
 		...rest
-	}: {
-		cssClassName: string
-		id: string
-		view: FlowViewElement
-	}) {
+	}: FlowViewBaseConstructorArg) {
 		const _id = id || FlowViewBase.generateId(view)
 
 		const element = document.createElement("div")

@@ -27,6 +27,9 @@
     "start": "npx serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "prettier": {
+    "semi": false
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/fibo/flow-view.git"

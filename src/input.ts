@@ -3,13 +3,18 @@ import { FlowViewPin } from "./pin.js"
 export class FlowViewInput extends FlowViewPin {
 	constructor(args) {
 		super(args)
+		// @ts-ignore
 		this.info.style.top = "-50px"
 	}
 
 	get center() {
 		if (!this.node) return { x: 0, y: 0 }
 		return {
-			x: this.node.position.x + this.halfPinSize + this.node.borderWidth + this.offsetX,
+			x:
+				this.node.position.x +
+				this.halfPinSize +
+				this.node.borderWidth +
+				this.offsetX,
 			y: this.node.position.y + this.halfPinSize - this.node.borderWidth
 		}
 	}
@@ -17,7 +22,10 @@ export class FlowViewInput extends FlowViewPin {
 	get connectedEdge() {
 		return [...this.view.edgesMap.values()]
 			.map((edge) => edge.toObject())
-			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
+			.find(
+				({ to: [nodeId, inputId] }) =>
+					nodeId === this.node?.id && inputId === this.id
+			)
 	}
 
 	handleEvent(event) {
@@ -29,7 +37,7 @@ export class FlowViewInput extends FlowViewPin {
 			const { connectedEdge, view } = this
 			if (view.isDraggingEdge) {
 				const { semiEdge } = view
-				if (semiEdge.hasSourcePin) {
+				if (semiEdge?.hasSourcePin) {
 					const { source } = semiEdge
 					// Delete previous edge, only one edge per input is allowed.
 					if (connectedEdge) view.deleteEdge(connectedEdge.id)

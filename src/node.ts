@@ -1,10 +1,25 @@
 import { FlowViewErrorItemNotFound } from "./errors.js"
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
+import {
+	cssModifierHasError,
+	cssModifierHighlighted,
+	cssTransition,
+	cssVar
+} from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 import { FlowViewEdge } from "./edge.js"
 import { FlowViewPin } from "./pin.js"
+
+const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = [
+	"dblclick",
+	"pointerdown"
+]
+type HandledHtmlElementEventType = (typeof handledHtmlElementEvents)[number]
+type HandledHtmlElementEventMap = Pick<
+	HTMLElementEventMap,
+	HandledHtmlElementEventType
+>
 
 export class FlowViewNode extends FlowViewBase {
 	static cssClassName = "fv-node"
@@ -48,46 +63,64 @@ export class FlowViewNode extends FlowViewBase {
 		}
 	}
 
+	borderWidth = FlowViewNode.borderWidth
+	inputsMap = new Map()
+	outputsMap = new Map()
+	x = 0
+	y = 0
+
+	// @ts-ignore
 	init(node) {
 		const { text, type, inputs = [], outputs = [], x, y } = node
 
+		// @ts-ignore
 		this.text = text
+		// @ts-ignore
 		this.type = type
 
-		this.borderWidth = FlowViewNode.borderWidth
-
-		this.inputsMap = new Map()
+		// @ts-ignore
 		this.inputsDiv = this.createElement("div", "pins")
 		for (const pin of inputs) this.newInput(pin)
 
 		this.initContent(node)
 
-		this.outputsMap = new Map()
+		// @ts-ignore
 		this.outputsDiv = this.createElement("div", "pins")
 		for (const pin of outputs) this.newOutput(pin)
 
 		this.position = { x, y }
 
+		// @ts-ignore
 		this.element.addEventListener("dblclick", this)
+		// @ts-ignore
 		this.element.addEventListener("pointerdown", this)
 	}
 
-	handleEvent(event) {
+	handleEvent(
+		event: HandledHtmlElementEventMap[HandledHtmlElementEventType]
+	) {
 		if (event.type === "dblclick") {
 			event.stopPropagation()
 		}
 		if (event.type === "pointerdown") {
+			// @ts-ignore
 			if (event.isBubblingFromPin) return
+			// @ts-ignore
 			event.isBubblingFromNode = true
-			const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected)
+			// @ts-ignore
+			const isMultiSelection =
+				event.shiftKey ||
+				(this.view.hasSelectedNodes && this.isSelected)
 			if (!isMultiSelection) this.view.clearSelection()
 			this.view.selectNode(this)
 		}
 	}
 
+	// @ts-ignore
 	initContent(node) {
 		const div = this.createElement("div", "content")
 		div.textContent = node.text
+		// @ts-ignore
 		this.contentDiv = div
 	}
 
@@ -108,7 +141,7 @@ export class FlowViewNode extends FlowViewBase {
 		return { x: this.x, y: this.y }
 	}
 
-	set position({ x = 0, y = 0 } = {}) {
+	set position({ x = 0, y = 0 }) {
 		const { element, view } = this
 
 		this.x = x
@@ -117,25 +150,27 @@ export class FlowViewNode extends FlowViewBase {
 		element.style.left = `${x - view.origin.x}px`
 	}
 
-	deleteInput(id) {
+	deleteInput(id: string) {
 		const input = this.inputsMap.get(id)
 		input.remove()
 		this.inputsMap.delete(id)
 	}
 
-	deleteOutput(id) {
+	deleteOutput(id: string) {
 		const output = this.outputsMap.get(id)
 		output.remove()
 		this.outputsMap.delete(id)
 	}
 
-	input(id) {
-		if (!this.inputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id })
+	input(id: string) {
+		if (!this.inputsMap.has(id))
+			throw new FlowViewErrorItemNotFound("input", id)
 		return this.inputsMap.get(id)
 	}
 
-	output(id) {
-		if (!this.outputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id })
+	output(id: string) {
+		if (!this.outputsMap.has(id))
+			throw new FlowViewErrorItemNotFound("output", id)
 		return this.outputsMap.get(id)
 	}
 
@@ -148,6 +183,7 @@ export class FlowViewNode extends FlowViewBase {
 			cssClassName: FlowViewPin.cssClassName
 		})
 		this.inputsMap.set(pin.id, pin)
+		// @ts-ignore
 		this.inputsDiv.appendChild(pin.element)
 	}
 

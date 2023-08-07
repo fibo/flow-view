@@ -3,7 +3,10 @@ export declare class FlowView {
 
 	get graph(): FlowViewSerializableGraph
 
-	addNodeDefinitions(nodeDefinitions: { nodes?: FlowViewNodeNameType[]; types?: FlowViewTypeDefinitionRecord }): void
+	addNodeDefinitions(nodeDefinitions: {
+		nodes?: FlowViewNodeNameType[]
+		types?: FlowViewTypeDefinitionRecord
+	}): void
 
 	/**
 	 * Empty graph.
@@ -37,9 +40,15 @@ export declare class FlowView {
 	 */
 	edge(id: FlowViewSerializableEdge["id"]): FlowViewEdge
 
-	newNode(arg: Omit<FlowViewSerializableNode, "id"> & Partial<Pick<FlowViewSerializableNode, "id">>): FlowViewNode
+	newNode(
+		arg: Omit<FlowViewSerializableNode, "id"> &
+			Partial<Pick<FlowViewSerializableNode, "id">>
+	): FlowViewNode
 
-	newEdge(arg: Omit<FlowViewSerializableEdge, "id"> & Partial<Pick<FlowViewSerializableEdge, "id">>): FlowViewEdge
+	newEdge(
+		arg: Omit<FlowViewSerializableEdge, "id"> &
+			Partial<Pick<FlowViewSerializableEdge, "id">>
+	): FlowViewEdge
 
 	deleteNode(id: FlowViewSerializableNode["id"]): FlowViewSerializableNode
 
@@ -130,7 +139,8 @@ declare class FlowViewBase {
 	set highlighted(value: boolean)
 }
 
-export type FlowViewPinConstructorArg = FlowViewSerializablePin & Partial<FlowViewPinDefinition>
+export type FlowViewPinConstructorArg = FlowViewSerializablePin &
+	Partial<FlowViewPinDefinition>
 
 declare class FlowViewPin extends FlowViewBase {
 	constructor(arg: FlowViewPinConstructorArg)
@@ -209,7 +219,10 @@ export type FlowViewOnChangeInfo = {
 	isProgrammatic?: boolean
 }
 
-export type FlowViewOnChange = (arg: FlowViewOnChangeArg, info: FlowViewOnChangeInfo) => void
+export type FlowViewOnChange = (
+	arg: FlowViewOnChangeArg,
+	info: FlowViewOnChangeInfo
+) => void
 
 export type FlowViewPinDefinition = {
 	name: string
@@ -220,7 +233,10 @@ export type FlowViewTypeDefinition = {
 	outputs: Partial<FlowViewPinDefinition>[]
 }
 
-export type FlowViewTypeDefinitionRecord = Record<string, FlowViewTypeDefinition>
+export type FlowViewTypeDefinitionRecord = Record<
+	string,
+	FlowViewTypeDefinition
+>
 
 export type FlowViewNodeNameType = {
 	name: string

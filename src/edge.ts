@@ -1,12 +1,17 @@
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
+import {
+	cssModifierHasError,
+	cssModifierHighlighted,
+	cssTransition,
+	cssVar
+} from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewPin } from "./pin.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
 export class FlowViewEdge extends FlowViewBase {
-	source: FlowViewInput | undefined
-	target: FlowViewOutput | undefined
+	source: FlowViewOutput | undefined
+	target: FlowViewInput | undefined
 
 	static cssClassName = "fv-edge"
 	static lineWidth = 2
@@ -48,8 +53,14 @@ export class FlowViewEdge extends FlowViewBase {
 		const hasSourcePin = source instanceof FlowViewOutput
 		const hasTargetPin = target instanceof FlowViewInput
 
-		this.source = hasTargetPin && !hasSourcePin ? { center: { x: target.center.x, y: target.center.y } } : source
-		this.target = hasSourcePin && !hasTargetPin ? { center: { x: source.center.x, y: source.center.y } } : target
+		this.source =
+			hasTargetPin && !hasSourcePin
+				? { center: { x: target.center.x, y: target.center.y } }
+				: source
+		this.target =
+			hasSourcePin && !hasTargetPin
+				? { center: { x: source.center.x, y: source.center.y } }
+				: target
 
 		const svg = (this.svg = this.createSvg("svg"))
 		this.element.appendChild(svg)
@@ -128,16 +139,24 @@ export class FlowViewEdge extends FlowViewBase {
 		const invertedX = targetX < sourceX
 		const invertedY = targetY < sourceY
 
-		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - originY
-		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - originX
+		const top =
+			(invertedY ? targetY - halfPinSize : sourceY - halfPinSize) -
+			originY
+		const left =
+			(invertedX ? targetX - halfPinSize : sourceX - halfPinSize) -
+			originX
 		element.style.top = `${top}px`
 		element.style.left = `${left}px`
 
-		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize
+		const width = invertedX
+			? sourceX - targetX + pinSize
+			: targetX - sourceX + pinSize
 		element.style.width = `${width}px`
 		svg.setAttribute("width", width)
 
-		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize
+		const height = invertedY
+			? sourceY - targetY + pinSize
+			: targetY - sourceY + pinSize
 		element.style.height = `${height}px`
 		svg.setAttribute("height", height)
 

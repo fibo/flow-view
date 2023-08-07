@@ -1,5 +1,10 @@
 import { FlowViewErrorItemNotFound } from "./errors.js"
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
+import {
+	cssModifierHasError,
+	cssModifierHighlighted,
+	cssTransition,
+	cssVar
+} from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
@@ -79,7 +84,9 @@ export class FlowViewNode extends FlowViewBase {
 		if (event.type === "pointerdown") {
 			if (event.isBubblingFromPin) return
 			event.isBubblingFromNode = true
-			const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected)
+			const isMultiSelection =
+				event.shiftKey ||
+				(this.view.hasSelectedNodes && this.isSelected)
 			if (!isMultiSelection) this.view.clearSelection()
 			this.view.selectNode(this)
 		}
@@ -130,12 +137,14 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	input(id) {
-		if (!this.inputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id })
+		if (!this.inputsMap.has(id))
+			throw new FlowViewErrorItemNotFound({ kind: "input", id })
 		return this.inputsMap.get(id)
 	}
 
 	output(id) {
-		if (!this.outputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id })
+		if (!this.outputsMap.has(id))
+			throw new FlowViewErrorItemNotFound({ kind: "output", id })
 		return this.outputsMap.get(id)
 	}
 

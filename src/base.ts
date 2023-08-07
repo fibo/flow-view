@@ -20,7 +20,16 @@ export class FlowViewBase {
 		} else return id
 	}
 
-	constructor({ cssClassName, id, view, ...rest }: { cssClassName: string; id: string; view: FlowViewElement }) {
+	constructor({
+		cssClassName,
+		id,
+		view,
+		...rest
+	}: {
+		cssClassName: string
+		id: string
+		view: FlowViewElement
+	}) {
 		const _id = id || FlowViewBase.generateId(view)
 
 		const element = document.createElement("div")

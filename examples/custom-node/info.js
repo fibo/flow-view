@@ -16,7 +16,9 @@ export class FlowViewNodeInfo extends FlowViewNode {
 	static minNumRows = 1
 
 	setNumCols() {
-		const numCols = this.textarea.value.split("\n").reduce((max, line) => Math.max(max, line.length), 0)
+		const numCols = this.textarea.value
+			.split("\n")
+			.reduce((max, line) => Math.max(max, line.length), 0)
 		this.textarea.cols = Math.max(FlowViewNodeInfo.minNumCols, numCols)
 	}
 

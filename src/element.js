@@ -75,18 +75,27 @@ export class FlowViewElement extends HTMLElement {
 			generateStylesheet(FlowViewElement.style),
 			generateStylesheet({
 				":host": {
-					"color-scheme": isLight ? "light" : isDark ? "dark" : "light dark"
+					"color-scheme": isLight
+						? "light"
+						: isDark
+						? "dark"
+						: "light dark"
 				}
 			}),
 			...(isLight
 				? lightStyle
 				: isDark
 				? darkStyle
-				: [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
+				: [
+						lightStyle,
+						`@media(prefers-color-scheme:dark){${darkStyle}}`
+				  ]),
 			"</style>"
 		].join("")
 
-		this.attachShadow({ mode: "open" }).appendChild(template.content.cloneNode(true))
+		this.attachShadow({ mode: "open" }).appendChild(
+			template.content.cloneNode(true)
+		)
 
 		this._origin = { x: 0, y: 0 }
 
@@ -103,10 +112,13 @@ export class FlowViewElement extends HTMLElement {
 
 	connectedCallback() {
 		if ("ResizeObserver" in window) {
-			this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this))
+			this.rootResizeObserver = new ResizeObserver(
+				this.onRootResize.bind(this)
+			)
 			this.rootResizeObserver.observe(this.parentNode)
 		} else {
-			this.height = this.getAttribute("height") || FlowViewElement.minHeight
+			this.height =
+				this.getAttribute("height") || FlowViewElement.minHeight
 		}
 
 		if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", 0)
@@ -215,8 +227,14 @@ export class FlowViewElement extends HTMLElement {
 		return edge
 	}
 
-	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
-		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type
+	newNode(
+		{ x = 0, y = 0, text, id, type, ins = [], outs = [] },
+		viewChangeInfo
+	) {
+		const nodeType =
+			this.host.textToType(text) ??
+			this.host.nodeNameTypeMap.get(text) ??
+			type
 		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType)
 		const inputs =
 			nodeTypeDefinition?.inputs?.map((item, i) => ({
@@ -228,7 +246,8 @@ export class FlowViewElement extends HTMLElement {
 				...item,
 				...(outs[i] ?? {})
 			})) ?? outs
-		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node")
+		const Class =
+			this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node")
 		const node = new Class({
 			id,
 			view: this,
@@ -241,7 +260,9 @@ export class FlowViewElement extends HTMLElement {
 			type: nodeType
 		})
 		this.nodesMap.set(node.id, node)
-		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject()
+		const createdNode = nodeType
+			? { ...node.toObject(), type: nodeType }
+			: node.toObject()
 		this.host.viewChange({ createdNode }, viewChangeInfo)
 		return node
 	}
@@ -301,7 +322,10 @@ export class FlowViewElement extends HTMLElement {
 
 		// Remove edges connected to node.
 		for (const edge of this.edges) {
-			if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
+			if (
+				edge.source.node.id === node.id ||
+				edge.target.node.id === node.id
+			) {
 				this.deleteEdge(edge.id, viewChangeInfo)
 			}
 		}
@@ -316,7 +340,8 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	edge(id) {
-		if (!this.edgesMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id })
+		if (!this.edgesMap.has(id))
+			throw new FlowViewErrorItemNotFound({ kind: "edge", id })
 		return this.edgesMap.get(id)
 	}
 
@@ -332,7 +357,8 @@ export class FlowViewElement extends HTMLElement {
 		this.translateVector = { x: 0, y: 0 }
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {}
-			for (const node of this.selectedNodes) selectedNodesStartPosition[node.id] = node.position
+			for (const node of this.selectedNodes)
+				selectedNodesStartPosition[node.id] = node.position
 			this.selectedNodesStartPosition = selectedNodesStartPosition
 		}
 	}
@@ -418,8 +444,10 @@ export class FlowViewElement extends HTMLElement {
 			switch (true) {
 				case !!semiEdge: {
 					if (!semiEdge.hasTarget) {
-						semiEdge.target.center.x = pointerPosition.x + this.origin.x
-						semiEdge.target.center.y = pointerPosition.y + this.origin.y
+						semiEdge.target.center.x =
+							pointerPosition.x + this.origin.x
+						semiEdge.target.center.y =
+							pointerPosition.y + this.origin.y
 					}
 					semiEdge.updateGeometry()
 					break
@@ -427,10 +455,16 @@ export class FlowViewElement extends HTMLElement {
 
 				case hasSelectedNodes: {
 					this.translateVector = { x, y }
-					const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this
+					const {
+						edges,
+						selectedNodes,
+						selectedNodeIds,
+						selectedNodesStartPosition
+					} = this
 
 					for (const node of selectedNodes) {
-						const { x: startX, y: startY } = selectedNodesStartPosition[node.id]
+						const { x: startX, y: startY } =
+							selectedNodesStartPosition[node.id]
 						node.position = { x: startX - x, y: startY - y }
 					}
 					for (const edge of edges) {
@@ -511,8 +545,14 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				createdSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
+					from:
+						source instanceof FlowViewPin
+							? [source.node.id, source.id]
+							: undefined,
+					to:
+						target instanceof FlowViewPin
+							? [target.node.id, target.id]
+							: undefined
 				}
 			},
 			viewChangeInfo
@@ -537,8 +577,14 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange(
 			{
 				deletedSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
+					from:
+						source instanceof FlowViewPin
+							? [source.node.id, source.id]
+							: undefined,
+					to:
+						target instanceof FlowViewPin
+							? [target.node.id, target.id]
+							: undefined
 				}
 			},
 			viewChangeInfo

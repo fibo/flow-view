@@ -8,7 +8,11 @@ export class FlowViewInput extends FlowViewPin {
 
 	get center() {
 		return {
-			x: this.node.position.x + this.halfPinSize + this.node.borderWidth + this.offsetX,
+			x:
+				this.node.position.x +
+				this.halfPinSize +
+				this.node.borderWidth +
+				this.offsetX,
 			y: this.node.position.y + this.halfPinSize - this.node.borderWidth
 		}
 	}
@@ -16,7 +20,10 @@ export class FlowViewInput extends FlowViewPin {
 	get connectedEdge() {
 		return [...this.view.edgesMap.values()]
 			.map((edge) => edge.toObject())
-			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
+			.find(
+				({ to: [nodeId, inputId] }) =>
+					nodeId === this.node.id && inputId === this.id
+			)
 	}
 
 	handleEvent(event) {

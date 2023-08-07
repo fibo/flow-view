@@ -23,12 +23,9 @@
     "build": "tsc --build",
     "check_types": "tsc --noEmit --project .",
     "postversion": "git push origin v${npm_package_version}; git push origin main; npm publish",
-    "prettier": "npx prettier@3 --write .",
+    "prettier": "prettier --write .",
     "start": "npx serve",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "prettier": {
-    "semi": false
   },
   "repository": {
     "type": "git",
@@ -44,5 +41,8 @@
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "prettier": "^3.0.1",
+    "typescript": "^5.1.6"
+  }
 }

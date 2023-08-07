@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width" />
 
     <title>flow-view</title>
-    <meta name="description" content="is a visual editor for Dataflow programming" />
+    <meta
+      name="description"
+      content="is a visual editor for Dataflow programming"
+    />
 
     <link rel="stylesheet" href="./style.css" />
   </head>
@@ -14,18 +17,26 @@
     <main>
       <h1>flow-view</h1>
 
-      <blockquote>is a visual editor for <em>dataflow programming</em></blockquote>
+      <blockquote>
+        is a visual editor for <em>dataflow programming</em>
+      </blockquote>
 
       <ul>
         <li>Drag on canvas to translate all items.</li>
         <li>Click on item to select it.</li>
-        <li>Click while pressing <kbd>SHIFT</kbd> to enable <b>multi</b> selection.</li>
+        <li>
+          Click while pressing <kbd>SHIFT</kbd> to enable
+          <b>multi</b> selection.
+        </li>
         <li>Drag from a node output to a node input to create an edge.</li>
         <li>Drag selected items to translate them.</li>
         <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
         <li>Double click on edge to delete it.</li>
         <li>Double click on canvas to open the <b>selector</b>.</li>
-        <li>Type into the selector then press <kbd>ENTER</kbd> to create a new node.</li>
+        <li>
+          Type into the selector then press <kbd>ENTER</kbd> to create a new
+          node.
+        </li>
       </ul>
 
       <div class="container"></div>
@@ -42,7 +53,9 @@
         <h2>examples</h2>
         <ul>
           <li><a href="./examples/programmatic/demo.html">programmatic</a></li>
-          <li><a href="./examples/color-schemes/demo.html">color schemes</a></li>
+          <li>
+            <a href="./examples/color-schemes/demo.html">color schemes</a>
+          </li>
           <li><a href="./examples/custom-node/demo.html">custom node</a></li>
           <li><a href="./examples/full-page/demo.html">full page</a></li>
         </ul>
@@ -181,12 +194,16 @@
       saveButton.addEventListener("click", () => {
         downloadGraph.setAttribute(
           "href",
-          `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(flowView.graph))}`
+          `data:text/json;charset=utf-8,${encodeURIComponent(
+            JSON.stringify(flowView.graph)
+          )}`
         )
         downloadGraph.click()
       })
     </script>
 
-    <footer>GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a></footer>
+    <footer>
+      GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a>
+    </footer>
   </body>
 </html>

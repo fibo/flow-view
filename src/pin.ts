@@ -2,9 +2,15 @@ import { cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { type FlowViewNode } from "./node.js"
 
-const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = ["pointerenter", "pointerleave"]
+const handledHtmlElementEvents: (keyof HTMLElementEventMap)[] = [
+	"pointerenter",
+	"pointerleave"
+]
 type HandledHtmlElementEventType = (typeof handledHtmlElementEvents)[number]
-type HandledHtmlElementEventMap = Pick<HTMLElementEventMap, HandledHtmlElementEventType>
+type HandledHtmlElementEventMap = Pick<
+	HTMLElementEventMap,
+	HandledHtmlElementEventType
+>
 
 export class FlowViewPin extends FlowViewBase {
 	node: FlowViewNode | undefined
@@ -54,7 +60,9 @@ export class FlowViewPin extends FlowViewBase {
 		this.element.addEventListener("pointerup", this)
 	}
 
-	handleEvent(event: HandledHtmlElementEventMap[HandledHtmlElementEventType]) {
+	handleEvent(
+		event: HandledHtmlElementEventMap[HandledHtmlElementEventType]
+	) {
 		if (event.type === "pointerenter") {
 			this.highlight = true
 		}

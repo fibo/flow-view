@@ -7,11 +7,15 @@ const fvCssDefaultVarName = (name) => `--fv-default-${name}`
 const fvCssVar = (name) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`
 export const cssVar = {
 	backgroundColor: fvCssVar("background-color"),
-	borderColorHighlighted: fvCssVar(cssModifierHighlighted("node-border-color")),
+	borderColorHighlighted: fvCssVar(
+		cssModifierHighlighted("node-border-color")
+	),
 	borderRadius: fvCssVar("border-radius"),
 	boxShadow: fvCssVar("box-shadow"),
 	connectionColor: fvCssVar("connection-color"),
-	connectionColorHighlighted: fvCssVar(cssModifierHighlighted("connection-color")),
+	connectionColorHighlighted: fvCssVar(
+		cssModifierHighlighted("connection-color")
+	),
 	errorColor: fvCssVar("error-color"),
 	fontFamily: fvCssVar("font-family"),
 	fontSize: fvCssVar("font-size"),

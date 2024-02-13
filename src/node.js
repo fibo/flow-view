@@ -130,12 +130,16 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	input(id) {
-		if (!this.inputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "input", id })
+		if (!this.inputsMap.has(id)) {
+			throw new FlowViewErrorItemNotFound({ kind: "input", id })
+		}
 		return this.inputsMap.get(id)
 	}
 
 	output(id) {
-		if (!this.outputsMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "output", id })
+		if (!this.outputsMap.has(id)) {
+			throw new FlowViewErrorItemNotFound({ kind: "output", id })
+		}
 		return this.outputsMap.get(id)
 	}
 

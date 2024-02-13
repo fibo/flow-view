@@ -44,6 +44,7 @@ export class FlowViewPin extends FlowViewBase {
 		this.element.addEventListener("pointerup", this)
 	}
 
+	/** @param {any} event */
 	handleEvent(event) {
 		if (event.type === "pointerenter") {
 			this.highlight = true

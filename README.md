@@ -23,9 +23,9 @@ Try this in your HTML page
 
 ```html
 <script type="module">
-  import { FlowView } from 'https://unpkg.com/flow-view';
+  import { FlowView } from "https://unpkg.com/flow-view"
 
-  const flowView = new FlowView(document.body);
+  const flowView = new FlowView(document.body)
 </script>
 ```
 
@@ -49,35 +49,37 @@ Try [demo here](http://fibo.github.io/flow-view/)
 
 ### Constructor
 
-Create a `FlowView` instance and pass it a container. It will create a `flow-view` custom element and attach it to the
-_container_. Be aware that the `flow-view` custom element will fit the whole height of its container, so make sure to
-style properly to avoid a zero height container.
+Create a `FlowView` instance and pass it a container. It will create a
+`flow-view` custom element and attach it to the _container_. Be aware that the
+`flow-view` custom element will fit the whole height of its container, so make
+sure to style properly to avoid a zero height container.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <script type="module">
-      import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView } from "https://unpkg.com/flow-view"
 
-      const flowView = new FlowView(document.body);
+      const flowView = new FlowView(document.body)
     </script>
   </body>
 </html>
 ```
 
-If some `flow-view` custom element is already in the page, it can be passed to the `FlowView` constructor. argument.
+If some `flow-view` custom element is already in the page, it can be passed to
+the `FlowView` constructor. argument.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <flow-view id="my-view"></flow-view>
 
     <script type="module">
-      import { FlowView } from 'https://unpkg.com/flow-view';
+      import { FlowView } from "https://unpkg.com/flow-view"
 
-      const flowView = new FlowView(document.getElementById('my-view'));
+      const flowView = new FlowView(document.getElementById("my-view"))
     </script>
   </body>
 </html>
@@ -85,7 +87,8 @@ If some `flow-view` custom element is already in the page, it can be passed to t
 
 ### Color schemes
 
-Optionally set _color scheme_. If not provided it defaults to both light and dark according to system preferences.
+Optionally set _color scheme_. If not provided it defaults to both light and
+dark according to system preferences.
 
 Light scheme.
 
@@ -99,38 +102,34 @@ Dark scheme.
 <flow-view dark></flow-view>
 ```
 
-See also [color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
+See also
+[color schemes example](http://fibo.github.io/flow-view/examples/color-schemes/demo.html).
 
 ### `addNodeDefinitions({ nodes?, types? })`
 
-Add a list to define which nodes are available. It is not required but it makes sense to be provided in the majority of
-use cases.
+Add a list to define which nodes are available. It is not required but it makes
+sense to be provided in the majority of use cases.
 
 ```javascript
 flowView.addNodeDefinitions({
-	nodes: [
-		{ name: "Marge", type: "parent" },
-		{ name: "Homer", type: "parent" },
-		{ name: "Bart", type: "child" },
-		{ name: "Lisa", type: "child" },
-		{ name: "Mr. Burns" },
-	],
-	types: {
-		"parent": {
-			inputs: [],
-			outputs: [
-				{ name: "out" },
-			],
-		},
-		"child": {
-			inputs: [
-				{ name: "in1" },
-				{ name: "in2" },
-			],
-			outputs: [],
-		},
-	},
-});
+  nodes: [
+    { name: "Marge", type: "parent" },
+    { name: "Homer", type: "parent" },
+    { name: "Bart", type: "child" },
+    { name: "Lisa", type: "child" },
+    { name: "Mr. Burns" }
+  ],
+  types: {
+    parent: {
+      inputs: [],
+      outputs: [{ name: "out" }]
+    },
+    child: {
+      inputs: [{ name: "in1" }, { name: "in2" }],
+      outputs: []
+    }
+  }
+})
 ```
 
 ### `node(id)`
@@ -138,7 +137,7 @@ flowView.addNodeDefinitions({
 Get _flow-view_ node by id.
 
 ```javascript
-const node = flowView.node("abc");
+const node = flowView.node("abc")
 ```
 
 ### `edge(id)`
@@ -146,7 +145,7 @@ const node = flowView.node("abc");
 Get _flow-view_ edge by id.
 
 ```javascript
-const edge = flowView.edge("abc");
+const edge = flowView.edge("abc")
 ```
 
 ### `graph`
@@ -154,7 +153,7 @@ const edge = flowView.edge("abc");
 Access current _flow-view_ graph.
 
 ```javascript
-console.log(flowView.graph);
+console.log(flowView.graph)
 ```
 
 ### `loadGraph({ nodes = [], edges = [] })`
@@ -163,43 +162,43 @@ Load a _flow-view_ graph.
 
 ```javascript
 flowView.loadGraph({
-	nodes: [
-		{
-			id: "dad",
-			text: "Homer",
-			x: 60,
-			y: 70,
-			outs: [{ id: "children" }],
-		},
-		{
-			id: "mom",
-			text: "Marge",
-			x: 160,
-			y: 70,
-			outs: [{ id: "children" }],
-		},
-		{
-			id: "son",
-			text: "Bart",
-			x: 60,
-			y: 240,
-			ins: [{ id: "father" }, { id: "mother" }],
-		},
-		{
-			id: "daughter",
-			text: "Lisa",
-			x: 220,
-			y: 220,
-			ins: [{ id: "father" }, { id: "mother" }],
-		},
-	],
-	edges: [
-		{ from: ["dad", "children"], to: ["son", "father"] },
-		{ from: ["dad", "children"], to: ["daughter", "father"] },
-		{ from: ["mom", "children"], to: ["son", "mother"] },
-		{ from: ["mom", "children"], to: ["daughter", "mother"] },
-	],
-});
+  nodes: [
+    {
+      id: "dad",
+      text: "Homer",
+      x: 60,
+      y: 70,
+      outs: [{ id: "children" }]
+    },
+    {
+      id: "mom",
+      text: "Marge",
+      x: 160,
+      y: 70,
+      outs: [{ id: "children" }]
+    },
+    {
+      id: "son",
+      text: "Bart",
+      x: 60,
+      y: 240,
+      ins: [{ id: "father" }, { id: "mother" }]
+    },
+    {
+      id: "daughter",
+      text: "Lisa",
+      x: 220,
+      y: 220,
+      ins: [{ id: "father" }, { id: "mother" }]
+    }
+  ],
+  edges: [
+    { from: ["dad", "children"], to: ["son", "father"] },
+    { from: ["dad", "children"], to: ["daughter", "father"] },
+    { from: ["mom", "children"], to: ["son", "mother"] },
+    { from: ["mom", "children"], to: ["daughter", "mother"] }
+  ]
+})
 ```
 
 ### `clearGraph()`
@@ -207,7 +206,7 @@ flowView.loadGraph({
 Empty current graph.
 
 ```javascript
-flowView.clearGraph();
+flowView.clearGraph()
 ```
 
 ### `destroy()`
@@ -215,11 +214,12 @@ flowView.clearGraph();
 Delete `flow-view` custom element.
 
 ```javascript
-flowView.destroy();
+flowView.destroy()
 ```
 
-An use case for `destroy()` is the following. Suppose you are using Next.js, you need to load `flow-view` with an async
-import into a `useEffect` which needs to return a callback to be called when component is unmounted.
+An use case for `destroy()` is the following. Suppose you are using Next.js, you
+need to load `flow-view` with an async import into a `useEffect` which needs to
+return a callback to be called when component is unmounted.
 
 This is a sample code.
 
@@ -228,34 +228,34 @@ import type { FlowView } from "flow-view";
 import { FC, useEffect, useRef } from "react";
 
 const MyComponent: FC = () => {
-	const flowViewContainerRef = useRef<HTMLDivElement | null>(null);
-	const flowViewRef = useRef<FlowView | null>(null);
+  const flowViewContainerRef = useRef<HTMLDivElement | null>(null);
+  const flowViewRef = useRef<FlowView | null>(null);
 
-	useEffect(() => {
-		let unmounted = false;
+  useEffect(() => {
+    let unmounted = false;
 
-		const importFlowView = async () => {
-			if (unmounted) return;
-			if (flowViewContainerRef.current === null) return;
-			if (flowViewRef.current !== null) return;
+    const importFlowView = async () => {
+      if (unmounted) return;
+      if (flowViewContainerRef.current === null) return;
+      if (flowViewRef.current !== null) return;
 
-			const { FlowView } = await import("flow-view");
+      const { FlowView } = await import("flow-view");
 
-			const flowView = new FlowView({
-				container: flowViewContainerRef.current,
-			});
-			flowViewRef.current = flowView;
-		};
+      const flowView = new FlowView({
+        container: flowViewContainerRef.current,
+      });
+      flowViewRef.current = flowView;
+    };
 
-		importFlowView();
+    importFlowView();
 
-		return () => {
-			unmounted = true;
-			if (flowViewRef.current !== null) flowViewRef.current.destroy();
-		};
-	}, [flowViewRef, flowViewContainerRef]);
+    return () => {
+      unmounted = true;
+      if (flowViewRef.current !== null) flowViewRef.current.destroy();
+    };
+  }, [flowViewRef, flowViewContainerRef]);
 
-	return <div ref={flowViewContainerRef}></div>;
+  return <div ref={flowViewContainerRef}></div>;
 };
 ```
 
@@ -268,38 +268,39 @@ Create nodes and edges programmatically. See
 // Create two nodes.
 
 const node1 = flowView.newNode({
-	text: "Hello",
-	ins: [{}, {}],
-	outs: [{ id: "output1" }],
-	x: 100,
-	y: 100,
-	width: 80,
-});
+  text: "Hello",
+  ins: [{}, {}],
+  outs: [{ id: "output1" }],
+  x: 100,
+  y: 100,
+  width: 80
+})
 const node2 = flowView.newNode({
-	text: "World",
-	ins: [{ id: "input1" }],
-	width: 100,
-	x: 250,
-	y: 400,
-});
+  text: "World",
+  ins: [{ id: "input1" }],
+  width: 100,
+  x: 250,
+  y: 400
+})
 
 // Connect nodes with an edge.
 flowView.newEdge({
-	from: [node1.id, "output1"],
-	to: [node2.id, "input1"],
-});
+  from: [node1.id, "output1"],
+  to: [node2.id, "input1"]
+})
 ```
 
 ### `deleteNode()` and `deleteEdge()`
 
-Delete nodes and edges programmatically. Notice that when a node is deleted, all its connected edges are deleted too.
+Delete nodes and edges programmatically. Notice that when a node is deleted, all
+its connected edges are deleted too.
 
 ```javascript
-const nodeId = "abc";
-const edgeId = "123";
+const nodeId = "abc"
+const edgeId = "123"
 
-flowView.deleteNode(nodeId);
-flowView.deleteEdge(edgeId);
+flowView.deleteNode(nodeId)
+flowView.deleteEdge(edgeId)
 ```
 
 ### `addNodeClass(nodeType, NodeClass)`
@@ -320,8 +321,8 @@ Callback signature is `({ action, data }, info) => void`, where
 
 ### `nodeTextToType(func)`
 
-Set a function that will be invoked on node creation to resolve node type from node text.
-
+Set a function that will be invoked on node creation to resolve node type from
+node text.
 
 ## License
 

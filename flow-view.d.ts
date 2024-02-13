@@ -121,7 +121,6 @@ export type FlowViewSerializableGraph = {
 	nodes: FlowViewSerializableNode[]
 	edges: FlowViewSerializableEdge[]
 }
-
 declare class FlowViewBase {
 	readonly id: string
 	readonly view: FlowViewElement

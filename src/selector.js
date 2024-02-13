@@ -2,6 +2,10 @@ import { cssTransition, cssVar } from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewNode } from "./node.js"
 
+/**
+ * @typedef {import("./types").Vector} Vector
+ */
+
 export class FlowViewSelector extends FlowViewBase {
 	static cssClassName = "fv-selector"
 	static zIndex = FlowViewNode.zIndex + 1
@@ -47,15 +51,22 @@ export class FlowViewSelector extends FlowViewBase {
 		}
 	}
 
+	/**
+	 * @typedef {object} FlowViewSelectorInitArg
+	 * @prop {string[]} nodeNames
+	 * @prop {Vector} position
+	 *
+	 * @param {FlowViewSelectorInitArg} arg
+	 */
 	init({ nodeNames, position }) {
 		const { element } = this
-		element.setAttribute("tabindex", 0)
+		element.setAttribute("tabindex", "0")
 
 		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`)
 
 		const input = (this.input = this.createElement("input"))
 
-		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`])
+		this.options = this.createElement("div", `${FlowViewSelector.cssClassName}__options`)
 
 		this.nodeNames = nodeNames
 		this.position = position
@@ -69,6 +80,7 @@ export class FlowViewSelector extends FlowViewBase {
 		input.addEventListener("keyup", this)
 	}
 
+	/** @param {any} event */
 	handleEvent(event) {
 		if (event.type === "dblclick") {
 			event.stopPropagation()
@@ -90,8 +102,9 @@ export class FlowViewSelector extends FlowViewBase {
 			const highlightOptions = () => {
 				for (let i = 0; i < this.options.childElementCount; i++) {
 					const option = this.options.children[i]
-					if (this.highlightedOptionIndex === i) option.classList.add(highlightedClassName)
-					else option.classList.remove(highlightedClassName)
+					if (this.highlightedOptionIndex === i) {
+						option.classList.add(highlightedClassName)
+					} else option.classList.remove(highlightedClassName)
 				}
 			}
 			const nextOption = () => {
@@ -105,7 +118,9 @@ export class FlowViewSelector extends FlowViewBase {
 					this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1
 			}
 			const deleteOptions = () => {
-				while (this.options.firstChild) this.options.removeChild(this.options.lastChild)
+				while (this.options.firstChild) {
+					this.options.removeChild(this.options.lastChild)
+				}
 			}
 			const resetOptions = () => {
 				this.highlightedOptionIndex = -1

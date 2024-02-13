@@ -19,6 +19,7 @@ export class FlowViewInput extends FlowViewPin {
 			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
 	}
 
+	/** @param {any} event */
 	handleEvent(event) {
 		super.handleEvent(event)
 		if (event.type === "pointerdown") {

@@ -11,3 +11,7 @@ charset = utf-8
 # Source files are not transpiled, tabs will save bytes.
 indent_style = tab
 indent_size = 4
+
+[*.json]
+indent_style = space
+indent_size = 2

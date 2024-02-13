@@ -5,6 +5,9 @@ import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
 export class FlowViewEdge extends FlowViewBase {
+	line = FlowViewBase.createSvg("line")
+	svg = FlowViewBase.createSvg("svg")
+
 	static cssClassName = "fv-edge"
 	static lineWidth = 2
 	static zIndex = 0
@@ -48,20 +51,18 @@ export class FlowViewEdge extends FlowViewBase {
 		this.source = hasTargetPin && !hasSourcePin ? { center: { x: target.center.x, y: target.center.y } } : source
 		this.target = hasSourcePin && !hasTargetPin ? { center: { x: source.center.x, y: source.center.y } } : target
 
-		const svg = (this.svg = this.createSvg("svg"))
-		this.element.appendChild(svg)
-
-		const line = (this.line = this.createSvg("line"))
-		svg.appendChild(line)
+		this.element.appendChild(this.svg)
+		this.svg.appendChild(this.line)
 
 		this.updateGeometry()
 
-		line.addEventListener("dblclick", this)
-		line.addEventListener("pointerdown", this)
-		line.addEventListener("pointerenter", this)
-		line.addEventListener("pointerleave", this)
+		this.line.addEventListener("dblclick", this)
+		this.line.addEventListener("pointerdown", this)
+		this.line.addEventListener("pointerenter", this)
+		this.line.addEventListener("pointerleave", this)
 	}
 
+	/** @param {any} event */
 	handleEvent(event) {
 		if (event.type === "dblclick") {
 			event.stopPropagation()

@@ -1,4 +1,5 @@
-LICENSE
+.prettierignore
+.prettierrc.json
 examples
 index.html
 screenshot.png

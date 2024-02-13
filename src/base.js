@@ -1,17 +1,34 @@
 import { cssModifierHasError, cssModifierHighlighted } from "./theme.js"
 
 export class FlowViewBase {
+	/**
+	 * @param {HTMLElement} view
+	 * @returns {string} id
+	 */
 	static generateId(view) {
 		const id = Math.random()
 			.toString(36)
 			.replace(/[^a-z]+/g, "")
 			.substring(0, 5)
 
-		if (view.shadowRoot.getElementById(id)) {
+		if (view.shadowRoot?.getElementById(id)) {
 			return FlowViewBase.generateId(view)
 		} else return id
 	}
 
+	/** @param {string} tag */
+	static createSvg(tag) {
+		return document.createElementNS("http://www.w3.org/2000/svg", tag)
+	}
+
+	/**
+	 * @typedef {object} FlowViewBaseConstructorArg
+	 * @prop {string} cssClassName
+	 * @prop {string} id
+	 * @prop {any} view
+	 *
+	 * @param {FlowViewBaseConstructorArg} arg
+	 */
 	constructor({ cssClassName, id, view, ...rest }) {
 		const _id = id || FlowViewBase.generateId(view)
 
@@ -27,7 +44,10 @@ export class FlowViewBase {
 		this.init(rest)
 	}
 
-	init() {}
+	/** @param {any} props */
+	init(props) {
+		throw new Error(`Unimplemented init with props=${JSON.stringify(props)}`)
+	}
 
 	dispose() {}
 
@@ -39,8 +59,9 @@ export class FlowViewBase {
 		return this.element.getAttribute("id")
 	}
 
+	/** @param {any} value */
 	set ghost(value) {
-		this.element.style.opacity = value ? 0.17 : ""
+		this.element.style.opacity = value ? "0.17" : ""
 	}
 
 	set hasError(value) {
@@ -59,6 +80,7 @@ export class FlowViewBase {
 		return this._hasError
 	}
 
+	/** @param {any} value */
 	set highlight(value) {
 		if (this.hasError) return
 		const cssClassName = cssModifierHighlighted(this.cssClassName)
@@ -71,19 +93,21 @@ export class FlowViewBase {
 		return this._selected
 	}
 
+	/** @param {any} value */
 	set selected(value) {
 		this._selected = value ? true : false
 	}
 
+	/**
+	 * @param {string} tag
+	 * @param {string=} cssClassName
+	 * @returns {HTMLElement} element
+	 */
 	createElement(tag, cssClassName) {
 		const element = document.createElement(tag)
 		if (cssClassName) element.classList.add(cssClassName)
 		this.element.appendChild(element)
 		return element
-	}
-
-	createSvg(tag) {
-		return document.createElementNS("http://www.w3.org/2000/svg", tag)
 	}
 
 	remove() {

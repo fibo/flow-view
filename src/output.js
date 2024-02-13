@@ -8,6 +8,7 @@ export class FlowViewOutput extends FlowViewPin {
 		}
 	}
 
+	/** @param {any} event */
 	handleEvent(event) {
 		super.handleEvent(event)
 		if (event.type === "pointerdown") {

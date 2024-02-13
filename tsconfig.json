@@ -7,6 +7,6 @@
     "strict": true,
     "target": "esnext"
   },
-  "include": ["./index.js", "./src/*.js"],
+  "include": ["./index.js", "./src/*.js", "./examples/**/*.js"],
   "exclude": []
 }

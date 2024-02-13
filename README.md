@@ -262,7 +262,7 @@ const MyComponent: FC = () => {
 ### `newNode()` and `newEdge()`
 
 Create nodes and edges programmatically. See
-[programmatically example here](http://fibo.github.io/flow-view/examples/programmatic/demo.html).
+[programmatic example here](http://fibo.github.io/flow-view/examples/programmatic/demo.html).
 
 ```javascript
 // Create two nodes.

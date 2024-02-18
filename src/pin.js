@@ -1,5 +1,6 @@
 import { cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
 import { FlowViewBase } from "./base.js"
+import {FlowViewNode} from "../flow-view.js"
 
 export class FlowViewPin extends FlowViewBase {
   static cssClassName = "fv-pin"
@@ -30,6 +31,13 @@ export class FlowViewPin extends FlowViewBase {
     }
   }
 
+	/** 
+	 * @typedef {object} PinInitArg
+	 * @prop {string} name
+	 * @prop {FlowViewNode} node
+	 *
+	 * @param {PinInitArg} arg
+	 */
   init({ name = "", node }) {
     this.info = this.createElement("pre", "info")
 
@@ -55,11 +63,13 @@ export class FlowViewPin extends FlowViewBase {
   }
 
   get offsetX() {
+	  // @ts-ignore
     return this.bounds.x - this.node.bounds.x
   }
 
   /** @param {string} value */
   set text(value) {
+	  // @ts-ignore
     this.info.textContent = value === "" ? this.name : value
   }
 

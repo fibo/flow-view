@@ -7,10 +7,14 @@ import { FlowViewSelector } from "./selector.js"
 import { cssTheme, cssVar } from "./theme.js"
 
 /**
+ * @typedef {import("./flow-view").FlowView} FlowView
  * @typedef {import("./types").Vector} Vector
+ * @typedef {import("./types").ViewChangeInfo} ViewChangeInfo
  */
 
 export class FlowViewElement extends HTMLElement {
+	/** @type { FlowView|null}*/
+	host = null
   static customElementName = "flow-view"
   static minHeight = "200"
   static defaultItems = {
@@ -106,6 +110,7 @@ export class FlowViewElement extends HTMLElement {
   connectedCallback() {
     if ("ResizeObserver" in window) {
       this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this))
+	    // @ts-ignore
       this.rootResizeObserver.observe(this.parentNode)
     } else {
       this.height = parseInt(this.getAttribute("height") || FlowViewElement.minHeight)
@@ -299,6 +304,9 @@ export class FlowViewElement extends HTMLElement {
     return serializedEdge
   }
 
+	/**
+	 * @param {string} id
+	 */
   deleteNode(id, viewChangeInfo) {
     const node = this.nodesMap.get(id)
     if (!node) return

@@ -1,6 +1,17 @@
 import { FlowViewElement } from "./element.js";
 
+/**
+ * @typedef {import("./element").FlowViewElement} FlowViewHTMLElement
+ * @typedef {import("./types").Edge} Edge
+ * @typedef {import("./types").OnViewChange} OnViewChange
+ * @typedef {import("./types").ViewChangeAction} ViewChangeAction
+ * @typedef {import("./types").ViewChangeInfo} ViewChangeInfo
+ */
+
 export class FlowView {
+	/**
+	 * @param {HTMLElement| FlowViewHTMLElement} element
+	*/
   constructor(element) {
     if (!window.customElements.get(FlowViewElement.customElementName)) {
       window.customElements.define(
@@ -14,6 +25,7 @@ export class FlowView {
       this.view = element;
     } else if (element instanceof HTMLElement) {
       const view = document.createElement(FlowViewElement.customElementName);
+	    // @ts-ignore
       view.host = this;
       element.appendChild(view);
       this.view = view;
@@ -23,7 +35,8 @@ export class FlowView {
 
     this.nodeNameTypeMap = new Map();
     this.nodeTypeDefinitionMap = new Map();
-    this.onViewChange = () => {};
+	  /** @type {OnViewChange} */
+    this.onViewChange = (_action, _viewChangeInfo) => {};
     this.textToType = () => {};
   }
 
@@ -41,11 +54,15 @@ export class FlowView {
     this.view.parentNode?.removeChild(this.view);
   }
 
+	/** @param {string} id */
   node(id) {
+	  // @ts-ignore
     return this.view.node(id);
   }
 
+	/** @param {string} id */
   edge(id) {
+	  // @ts-ignore
     return this.view.edge(id);
   }
 
@@ -57,6 +74,7 @@ export class FlowView {
   }
 
   clearGraph() {
+	  // @ts-ignore
     this.view.clear({ isClearGraph: true });
   }
 
@@ -65,10 +83,15 @@ export class FlowView {
     for (const edge of edges) this.newEdge(edge, { isLoadGraph: true });
   }
 
+	/** @param {OnViewChange} value */
   onChange(value) {
     this.onViewChange = value;
   }
 
+	/**
+	 * @param {ViewChangeAction} action
+	 * @param {ViewChangeInfo} viewChangeInfo
+	 */
   viewChange(
     {
       createdNode,
@@ -79,7 +102,7 @@ export class FlowView {
       deletedSemiEdge,
       updatedNode,
     },
-    viewChangeInfo = {},
+    viewChangeInfo,
   ) {
     if (createdNode) {
       this.onViewChange(
@@ -125,6 +148,10 @@ export class FlowView {
     }
   }
 
+	/**
+	 * @param {Edge} edge
+	 * @param {ViewChangeInfo} viewChangeInfo
+	*/
   newEdge(
     { id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
     viewChangeInfo = { isProgrammatic: true },

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export * from "./src/base.js"
 export * from "./src/edge.js"
 export * from "./src/element.js"

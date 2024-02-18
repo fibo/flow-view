@@ -7,6 +7,15 @@ import { FlowViewNode } from "./node.js"
  */
 
 export class FlowViewSelector extends FlowViewBase {
+	x = 0
+	y = 0
+
+	/** @type {HTMLElement|undefined} */
+	options = undefined
+
+	/** @type {string[]} */
+	nodeNames = []
+
   static cssClassName = "fv-selector"
   static zIndex = FlowViewNode.zIndex + 1
   static width = 170
@@ -65,7 +74,6 @@ export class FlowViewSelector extends FlowViewBase {
     this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`)
 
     const input = (this.input = this.createElement("input"))
-
     this.options = this.createElement("div", `${FlowViewSelector.cssClassName}__options`)
 
     this.nodeNames = nodeNames
@@ -100,23 +108,30 @@ export class FlowViewSelector extends FlowViewBase {
       const highlightedClassName = `${FlowViewSelector.cssClassName}__option--highlighted`
 
       const highlightOptions = () => {
-        for (let i = 0; i < this.options.childElementCount; i++) {
-          const option = this.options.children[i]
+	      const options = this.options
+	      if (!options) return
+        for (let i = 0; i < options.childElementCount; i++) {
+          const option = options.children[i]
           if (this.highlightedOptionIndex === i) {
             option.classList.add(highlightedClassName)
           } else option.classList.remove(highlightedClassName)
         }
       }
       const nextOption = () => {
-        this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1)
+	      const options = this.options
+	      if (!options) return
+        this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, options.childElementCount - 1)
       }
       const previousOption = () => {
         this.highlightedOptionIndex =
           this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1
       }
       const deleteOptions = () => {
-        while (this.options.firstChild) {
-          this.options.removeChild(this.options.lastChild)
+	      const options = this.options
+	      if (!options) return
+        while (options.firstChild) {
+		// @ts-ignore
+          options.removeChild(options.lastChild)
         }
       }
       const resetOptions = () => {
@@ -125,12 +140,14 @@ export class FlowViewSelector extends FlowViewBase {
       }
       const createOptions = () => {
         deleteOptions()
+	      const options = this.options
         for (let i = 0; i < this.matchingNodes.length; i++) {
           const name = this.matchingNodes[i]
           const option = document.createElement("div")
           option.classList.add(`${FlowViewSelector.cssClassName}__option`)
           option.textContent = name
           option.onclick = () => {
+	      // @ts-ignore
             this.input.value = name
             this.createNode()
           }
@@ -141,10 +158,11 @@ export class FlowViewSelector extends FlowViewBase {
           option.onpointerleave = () => {
             option.classList.remove(highlightedClassName)
           }
-          this.options.append(option)
+		if (options) options.append(option)
         }
       }
       const setCompletion = () => {
+	      const options = this.options
         switch (this.matchingNodes.length) {
           case 0:
             this.completion = ""
@@ -152,17 +170,20 @@ export class FlowViewSelector extends FlowViewBase {
             break
           case 1: {
             const name = this.matchingNodes[0]
+	      // @ts-ignore
             if (name.includes(this.input.value)) this.completion = name
             break
           }
           default:
             if (this.highlightedOptionIndex === -1) {
+	      // @ts-ignore
               this.completion = this.input.value
 
               const shortestMatch = this.matchingNodes.reduce((shortest, match) =>
                 shortest.length < match.length ? shortest : match
               )
 
+	      // @ts-ignore
               for (let i = this.input.value.length; i < shortestMatch.length; i++) {
                 const currentChar = shortestMatch[i]
                 if (this.matchingNodes.every((name) => name.startsWith(this.completion + currentChar))) {
@@ -170,20 +191,24 @@ export class FlowViewSelector extends FlowViewBase {
                 }
               }
             } else {
-              this.completion = this.options.children[this.highlightedOptionIndex].textContent
+		    if (options)
+              this.completion = options.children[this.highlightedOptionIndex].textContent
             }
         }
       }
       const autocomplete = () => {
+	      // @ts-ignore
         if (this.completion) this.input.value = this.completion
       }
       const caseInsensitiveMatchingNode = () =>
         this.matchingNodes.find(
+	      // @ts-ignore
           (name) => !name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
         )
       const fixCase = () => {
         const text = caseInsensitiveMatchingNode()
         if (!text) return
+	      // @ts-ignore
         this.input.value = text.substring(0, this.input.value.length)
         setCompletion()
       }
@@ -193,9 +218,11 @@ export class FlowViewSelector extends FlowViewBase {
           this.createNode()
           break
         case "Escape":
+	      // @ts-ignore
           if (this.input.value === "") this.view.removeSelector()
           else {
             this.completion = ""
+	      // @ts-ignore
             this.input.value = ""
             resetOptions()
           }
@@ -218,6 +245,7 @@ export class FlowViewSelector extends FlowViewBase {
           setCompletion()
           break
         case "ArrowRight":
+	      // @ts-ignore
           if (this.input.value.length === event.target.selectionStart) {
             autocomplete()
             resetOptions()
@@ -242,11 +270,13 @@ export class FlowViewSelector extends FlowViewBase {
           // Use Tab or Shift-Tab to highlight options ciclically.
           if (event.shiftKey) {
             if (0 === this.highlightedOptionIndex) {
+	      // @ts-ignore
               this.highlightedOptionIndex = this.options.childElementCount - 1
             } else {
               previousOption()
             }
           } else {
+	      // @ts-ignore
             if (this.options.childElementCount - 1 === this.highlightedOptionIndex) {
               this.highlightedOptionIndex = 0
             } else {
@@ -270,23 +300,29 @@ export class FlowViewSelector extends FlowViewBase {
     element.removeEventListener("dblclick", this)
     element.removeEventListener("pointerdown", this)
     element.removeEventListener("pointerleave", this)
+	      // @ts-ignore
     input.removeEventListener("keydown", this)
+	      // @ts-ignore
     input.removeEventListener("keyup", this)
   }
 
   focus() {
+	      // @ts-ignore
     this.input.focus()
   }
 
   get completion() {
+	      // @ts-ignore
     return this.hint.getAttribute("placeholder")
   }
 
   set completion(text) {
+	      // @ts-ignore
     this.hint.setAttribute("placeholder", text)
   }
 
   get matchingNodes() {
+	      // @ts-ignore
     const search = this.input.value.toLowerCase()
     if (search.length === 0) return []
     return this.nodeNames.filter(
@@ -299,6 +335,7 @@ export class FlowViewSelector extends FlowViewBase {
     )
   }
 
+	/** @param {Vector} position */
   set position({ x, y }) {
     const { element, view } = this
 

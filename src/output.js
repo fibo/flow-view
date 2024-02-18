@@ -3,7 +3,9 @@ import { FlowViewPin, halfPinSize } from "./pin.js"
 export class FlowViewOutput extends FlowViewPin {
   get center() {
     return {
+	    // @ts-ignore
       x: this.node.position.x + halfPinSize + this.node.borderWidth + this.offsetX,
+	    // @ts-ignore
       y: this.node.position.y + this.node.bounds.height - halfPinSize - this.node.borderWidth
     }
   }

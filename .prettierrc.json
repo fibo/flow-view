@@ -1,5 +1,11 @@
 {
-  "printWidth": 120,
   "semi": false,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "plugins": ["prettier-plugin-jsdoc"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "options": { "tsdoc": true }
+    }
+  ]
 }

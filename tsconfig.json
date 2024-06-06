@@ -3,10 +3,16 @@
     "allowJs": true,
     "checkJs": true,
     "module": "esnext",
-    "noEmit": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+
+    // To build stripped JS, but emit declarations with JSDoc preserved:
+    // disable comments and declaration, then in package.json add script
+    //
+    //     "build": "tsc --removeComments && tsc --declaration --emitDeclarationOnly",
+    //
+    "removeComments": false,
+    "declaration": false
   },
-  "include": ["./index.js", "./src/*.js", "./examples/**/*.js"],
-  "exclude": []
+  "files": ["./flow-view.ts"]
 }

@@ -23,9 +23,9 @@ Try this in your HTML page
 
 ```html
 <script type="module">
-  import { FlowView } from "https://unpkg.com/flow-view"
+  import { FlowView } from "https://unpkg.com/flow-view";
 
-  const flowView = new FlowView(document.body)
+  const flowView = new FlowView(document.body);
 </script>
 ```
 
@@ -59,9 +59,9 @@ sure to style properly to avoid a zero height container.
 <html>
   <body>
     <script type="module">
-      import { FlowView } from "https://unpkg.com/flow-view"
+      import { FlowView } from "https://unpkg.com/flow-view";
 
-      const flowView = new FlowView(document.body)
+      const flowView = new FlowView(document.body);
     </script>
   </body>
 </html>
@@ -77,9 +77,9 @@ the `FlowView` constructor. argument.
     <flow-view id="my-view"></flow-view>
 
     <script type="module">
-      import { FlowView } from "https://unpkg.com/flow-view"
+      import { FlowView } from "https://unpkg.com/flow-view";
 
-      const flowView = new FlowView(document.getElementById("my-view"))
+      const flowView = new FlowView(document.getElementById("my-view"));
     </script>
   </body>
 </html>
@@ -129,7 +129,7 @@ flowView.addNodeDefinitions({
       outputs: []
     }
   }
-})
+});
 ```
 
 ### `node(id)`
@@ -137,7 +137,7 @@ flowView.addNodeDefinitions({
 Get _flow-view_ node by id.
 
 ```javascript
-const node = flowView.node("abc")
+const node = flowView.node("abc");
 ```
 
 ### `edge(id)`
@@ -145,7 +145,7 @@ const node = flowView.node("abc")
 Get _flow-view_ edge by id.
 
 ```javascript
-const edge = flowView.edge("abc")
+const edge = flowView.edge("abc");
 ```
 
 ### `graph`
@@ -153,7 +153,7 @@ const edge = flowView.edge("abc")
 Access current _flow-view_ graph.
 
 ```javascript
-console.log(flowView.graph)
+console.log(flowView.graph);
 ```
 
 ### `loadGraph({ nodes = [], edges = [] })`
@@ -198,7 +198,7 @@ flowView.loadGraph({
     { from: ["mom", "children"], to: ["son", "mother"] },
     { from: ["mom", "children"], to: ["daughter", "mother"] }
   ]
-})
+});
 ```
 
 ### `clearGraph()`
@@ -206,7 +206,7 @@ flowView.loadGraph({
 Empty current graph.
 
 ```javascript
-flowView.clearGraph()
+flowView.clearGraph();
 ```
 
 ### `destroy()`
@@ -214,7 +214,7 @@ flowView.clearGraph()
 Delete `flow-view` custom element.
 
 ```javascript
-flowView.destroy()
+flowView.destroy();
 ```
 
 An use case for `destroy()` is the following. Suppose you are using Next.js, you
@@ -274,20 +274,20 @@ const node1 = flowView.newNode({
   x: 100,
   y: 100,
   width: 80
-})
+});
 const node2 = flowView.newNode({
   text: "World",
   ins: [{ id: "input1" }],
   width: 100,
   x: 250,
   y: 400
-})
+});
 
 // Connect nodes with an edge.
 flowView.newEdge({
   from: [node1.id, "output1"],
   to: [node2.id, "input1"]
-})
+});
 ```
 
 ### `deleteNode()` and `deleteEdge()`
@@ -296,11 +296,11 @@ Delete nodes and edges programmatically. Notice that when a node is deleted, all
 its connected edges are deleted too.
 
 ```javascript
-const nodeId = "abc"
-const edgeId = "123"
+const nodeId = "abc";
+const edgeId = "123";
 
-flowView.deleteNode(nodeId)
-flowView.deleteEdge(edgeId)
+flowView.deleteNode(nodeId);
+flowView.deleteEdge(edgeId);
 ```
 
 ### `addNodeClass(nodeType, NodeClass)`

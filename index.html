@@ -40,7 +40,9 @@
       </ul>
 
       <div class="container">
-        <flow-view></flow-view>
+        <flow-view>
+          <fv-node x="60" y="70"></fv-node>
+        </flow-view>
       </div>
 
       <div class="controls">
@@ -73,9 +75,9 @@
     </script>
 
     <script type="module">
-      import { defineFlowViewCustomElement } from "flow-view"
+      import { defineFlowViewCustomElements } from "flow-view";
 
-      defineFlowViewCustomElement()
+      defineFlowViewCustomElements();
 
       // import { FlowView } from 'https://unpkg.com/flow-view';
       // import { FlowView, FlowViewNode } from "./index.js"

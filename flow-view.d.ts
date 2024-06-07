@@ -1,4 +1,9 @@
 declare class FlowView extends HTMLElement {
+    constructor();
+}
+declare class FVNode extends HTMLElement {
+    constructor();
+    static get observedAttributes(): string[];
 }
 /**
  * Define flow-view Web Component.
@@ -6,15 +11,16 @@ declare class FlowView extends HTMLElement {
  * @example
  *
  * ```ts
- * import { defineFlowViewCustomElement } from "flow-view"
+ * import { defineFlowViewCustomElements } from "flow-view"
  *
- * defineFlowViewCustomElement()
+ * defineFlowViewCustomElements()
  * ```
  */
-export declare const defineFlowViewCustomElement: () => void;
+export declare const defineFlowViewCustomElements: () => void;
 declare global {
     interface HTMLElementTagNameMap {
         "flow-view": FlowView;
+        "fv-node": FVNode;
     }
 }
 export {};

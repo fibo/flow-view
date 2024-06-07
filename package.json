@@ -18,10 +18,7 @@
   },
   "scripts": {
     "build": "tsc --removeComments && tsc --declaration --emitDeclarationOnly",
-    "check_types": "tsc --project .",
-    "prettier": "prettier --write .",
-    "start": "npx serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prettier": "prettier --write ."
   },
   "repository": {
     "type": "git",

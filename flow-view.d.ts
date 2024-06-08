@@ -11,9 +11,9 @@ declare class FVNode extends HTMLElement {
  * @example
  *
  * ```ts
- * import { defineFlowViewCustomElements } from "flow-view"
+ * import { defineFlowViewCustomElements } from "flow-view";
  *
- * defineFlowViewCustomElements()
+ * defineFlowViewCustomElements();
  * ```
  */
 export declare const defineFlowViewCustomElements: () => void;

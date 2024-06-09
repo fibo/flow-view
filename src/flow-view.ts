@@ -15,7 +15,7 @@ const initElement = (element: HTMLElement, template: HTMLTemplateElement) => {
 };
 
 /** @internal */
-type FlowViewElementName =
+type FlowViewTagName =
   | "flow-view"
   | "fv-canvas"
   | "fv-edge"
@@ -23,7 +23,7 @@ type FlowViewElementName =
   | "fv-pin";
 
 /** @internal */
-const template: Record<FlowViewElementName, HTMLTemplateElement> = {
+const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "flow-view": html``,
   "fv-canvas": html`
     <style>
@@ -79,7 +79,7 @@ class FVNode extends HTMLElement {
   }
 }
 
-const customElementsMap = new Map()
+const customElementsMap = new Map<FlowViewTagName, typeof HTMLElement>()
   .set("flow-view", FlowView)
   .set("fv-canvas", FVCanvas)
   .set("fv-node", FVNode)

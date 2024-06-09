@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // To build stripped JS, but emit declarations with JSDoc preserved:
+    // disable comments and declaration, then in package.json add script
+    //
+    //     "build": "tsc --removeComments && tsc --declaration --emitDeclarationOnly",
+    //
+    "removeComments": false,
+    "declaration": false
+  },
+  "extends": "./tsconfig.json",
+  "files": ["./src/flow-view.ts"]
+}

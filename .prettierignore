@@ -1,3 +1,2 @@
-flow-view.js
-flow-view.d.ts
-package-lock.json
+/dist/
+/package-lock.json

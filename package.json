@@ -9,15 +9,16 @@
     "url": "http://fibo.github.io"
   },
   "type": "module",
-  "types": "flow-view.d.ts",
+  "types": "dist/flow-view.d.ts",
   "exports": {
     ".": {
-      "import": "./flow-view.js",
-      "types": "./flow-view.d.ts"
+      "import": "./dist/flow-view.js",
+      "types": "./dist/flow-view.d.ts"
     }
   },
   "scripts": {
-    "build": "tsc --removeComments && tsc --declaration --emitDeclarationOnly",
+    "build": "tsc --project tsconfig.build.json --removeComments && tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
+    "check_types": "tsc --noEmit",
     "lint-staged": "lint-staged"
   },
   "repository": {

@@ -38,19 +38,6 @@ const isVector = (arg: unknown): arg is Vector => {
 };
 
 /**
- * Util to get the position of an element. An HTMLElement that has a position,
- * stores it in the x and y attributes.
- */
-const getPositionOfElement = (element: HTMLElement): Vector | undefined => {
-  const vector = {
-    x: parseInt(element.getAttribute("x") ?? ""),
-    y: parseInt(element.getAttribute("y") ?? "")
-  };
-  if (!isVector(vector)) return undefined;
-  return vector;
-};
-
-/**
  * Creates an HTML template element from a string template.
  *
  * @example
@@ -112,7 +99,8 @@ type FlowViewTagName =
   | "fv-edge"
   | "fv-node"
   | "fv-pin"
-  | "fv-pins";
+  | "fv-pins"
+  | "fv-label";
 
 /**
  * All flow-view custom elements observed attributes.
@@ -121,12 +109,13 @@ type FlowViewTagName =
  */
 const obervedAttributes: Record<FlowViewTagName, string[]> = {
   "flow-view": [],
-  "fv-canvas": ["viewBox"],
+  "fv-canvas": [],
   "fv-graph": [],
   "fv-edge": [],
   "fv-node": ["x", "y"],
   "fv-pin": [],
-  "fv-pins": []
+  "fv-pins": [],
+  "fv-label": []
 };
 
 /**
@@ -176,8 +165,10 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
         position: absolute;
         display: flex;
         flex-direction: column;
+        justify-content: space-around;
         width: fit-content;
         box-shadow: var(--fv-box-shadow, 0px 0px 7px 1px rgba(0, 0, 0, 0.1));
+        border-radius: var(--fv-border-radius, 5px);
         min-height: 2em;
         min-width: 2em;
       }
@@ -187,11 +178,11 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "fv-pin": html`
     <style>
       :host {
-        cursor: none;
         display: block;
         background: var(--fv-pin-background, #ccc);
         width: var(--fv-pin-size, 10px);
         height: var(--fv-pin-size, 10px);
+        border-radius: var(--fv-border-radius, 5px);
       }
     </style>
     <slot></slot>
@@ -200,6 +191,17 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
     <style>
       :host {
         display: flex;
+        justify-content: space-between;
+        min-height: var(--fv-pin-size, 10px);
+      }
+    </style>
+    <slot></slot>
+  `,
+  "fv-label": html`
+    <style>
+      :host {
+        padding-inline: 0.5em;
+        user-select: none;
       }
     </style>
     <slot></slot>
@@ -235,6 +237,11 @@ class FlowView extends HTMLElement {
  * @internal
  */
 class FVCanvas extends HTMLElement {
+  /** Coordinate of the origin. */
+  x = 0;
+  /** Coordinate of the origin. */
+  y = 0;
+
   constructor() {
     super();
     initElement(this, template["fv-canvas"]);
@@ -260,10 +267,7 @@ class FVCanvas extends HTMLElement {
   }
 
   get origin(): Vector {
-    const { viewBox } = this;
-    if (!viewBox) return { x: 0, y: 0 };
-    const [x, y] = viewBox.split(" ").map((v) => parseInt(v));
-    return { x, y };
+    return { x: this.x, y: this.y };
   }
 
   /**
@@ -392,7 +396,12 @@ class FVNode extends HTMLElement {
 
   /** Get the node position in the canvas space. */
   get position(): Vector | undefined {
-    return getPositionOfElement(this);
+    const vector = {
+      x: parseInt(this.getAttribute("x") ?? ""),
+      y: parseInt(this.getAttribute("y") ?? "")
+    };
+    if (!isVector(vector)) return undefined;
+    return vector;
   }
 }
 
@@ -421,6 +430,18 @@ class FVPins extends HTMLElement {
 }
 
 /**
+ * Display inline text.
+ *
+ * @internal
+ */
+class FVLabel extends HTMLElement {
+  constructor() {
+    super();
+    initElement(this, template["fv-label"]);
+  }
+}
+
+/**
  * All flow-view custom elements.
  *
  * @internal
@@ -432,7 +453,8 @@ const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
   "fv-graph": FVGraph,
   "fv-node": FVNode,
   "fv-pin": FVPin,
-  "fv-pins": FVPins
+  "fv-pins": FVPins,
+  "fv-label": FVLabel
 };
 
 /**

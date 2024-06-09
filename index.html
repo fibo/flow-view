@@ -42,15 +42,39 @@
       <div class="container">
         <flow-view>
           <fv-canvas>
-            <fv-node x="60" y="70"
-              >Homer
+            <fv-node x="60" y="70">
+              <fv-pins></fv-pins>
+              <fv-label>Homer</fv-label>
               <fv-pins>
                 <fv-pin data-id="dad"></fv-pin>
               </fv-pins>
             </fv-node>
-            <fv-node x="160" y="70">Marge</fv-node>
-            <fv-node x="60" y="240">Bart</fv-node>
-            <fv-node x="220" y="220">Lisa</fv-node>
+
+            <fv-node x="160" y="70">
+              <fv-pins></fv-pins>
+              <fv-label>Marge</fv-label>
+              <fv-pins>
+                <fv-pin></fv-pin>
+              </fv-pins>
+            </fv-node>
+
+            <fv-node x="60" y="240">
+              <fv-pins>
+                <fv-pin></fv-pin>
+                <fv-pin></fv-pin>
+              </fv-pins>
+              <fv-label>Bart</fv-label>
+              <fv-pins></fv-pins>
+            </fv-node>
+
+            <fv-node x="220" y="220">
+              <fv-pins>
+                <fv-pin></fv-pin>
+                <fv-pin></fv-pin>
+              </fv-pins>
+              <fv-label>Lisa</fv-label>
+              <fv-pins></fv-pins>
+            </fv-node>
           </fv-canvas>
         </flow-view>
       </div>

@@ -1,4 +1,21 @@
-/** @internal */
+/**
+ * Creates an HTML template element from a string template.
+ *
+ * @example
+ *
+ * ```ts
+ * const myTemplate = html`
+ *   <style>
+ *     :host {
+ *       display: block;
+ *     }
+ *   </style>
+ *   <div><slot></slot></div>
+ * `;
+ * ```
+ *
+ * @internal
+ */
 const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
   const template = document.createElement("template");
   template.innerHTML = strings.reduce(
@@ -8,7 +25,24 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
   return template;
 };
 
-/** @internal */
+/**
+ * Util to initialize an element with a template.
+ *
+ * @example
+ *
+ * ```ts
+ * const myTemplate = html`<div><slot></slot></div>`;
+ *
+ * class MyElement extends HTMLElement {
+ *   constructor() {
+ *     super();
+ *     initElement(this, myTemplate);
+ *   }
+ * }
+ * ```
+ *
+ * @internal
+ */
 const initElement = (element: HTMLElement, template: HTMLTemplateElement) => {
   element.attachShadow({ mode: "open" });
   element.shadowRoot?.appendChild(template.content.cloneNode(true));
@@ -18,6 +52,7 @@ const initElement = (element: HTMLElement, template: HTMLTemplateElement) => {
 type FlowViewTagName =
   | "flow-view"
   | "fv-canvas"
+  | "fv-graph"
   | "fv-edge"
   | "fv-node"
   | "fv-pin";
@@ -25,6 +60,7 @@ type FlowViewTagName =
 /** @internal */
 const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "flow-view": html``,
+  "fv-graph": html``,
   "fv-canvas": html`
     <style>
       :host {
@@ -48,12 +84,23 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   `
 };
 
+/**
+ * The flow-view custom element.
+ *
+ * @internal
+ */
 class FlowView extends HTMLElement {
   constructor() {
     super();
+    initElement(this, template["flow-view"]);
   }
 }
 
+/**
+ * A canvas renders a graph.
+ *
+ * @internal
+ */
 class FVCanvas extends HTMLElement {
   constructor() {
     super();
@@ -61,6 +108,23 @@ class FVCanvas extends HTMLElement {
   }
 }
 
+/**
+ * A graph contains nodes and edges.
+ *
+ * @internal
+ */
+class FVGraph extends HTMLElement {
+  constructor() {
+    super();
+    initElement(this, template["fv-graph"]);
+  }
+}
+
+/**
+ * A pin is the start or the end of an edge.
+ *
+ * @internal
+ */
 class FVPin extends HTMLElement {
   constructor() {
     super();
@@ -68,6 +132,11 @@ class FVPin extends HTMLElement {
   }
 }
 
+/**
+ * A node can contain pins.
+ *
+ * @internal
+ */
 class FVNode extends HTMLElement {
   constructor() {
     super();
@@ -79,11 +148,31 @@ class FVNode extends HTMLElement {
   }
 }
 
-const customElementsMap = new Map<FlowViewTagName, typeof HTMLElement>()
-  .set("flow-view", FlowView)
-  .set("fv-canvas", FVCanvas)
-  .set("fv-node", FVNode)
-  .set("fv-pin", FVPin);
+/**
+ * An edge connects two pins.
+ *
+ * @internal
+ */
+class FVEdge extends HTMLElement {
+  constructor() {
+    super();
+    initElement(this, template["fv-edge"]);
+  }
+}
+
+/**
+ * All flow-view custom elements.
+ *
+ * @internal
+ */
+const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
+  "flow-view": FlowView,
+  "fv-canvas": FVCanvas,
+  "fv-edge": FVEdge,
+  "fv-graph": FVGraph,
+  "fv-node": FVNode,
+  "fv-pin": FVPin
+};
 
 /**
  * Define Web Components flow-view, fv-node, fv-edge, etc.
@@ -93,11 +182,15 @@ const customElementsMap = new Map<FlowViewTagName, typeof HTMLElement>()
  * ```ts
  * import { defineFlowViewCustomElements } from "flow-view";
  *
- * defineFlowViewCustomElements();
+ * window.addEventListener("load", () => {
+ *   defineFlowViewCustomElements();
+ * });
  * ```
  */
 export const defineFlowViewCustomElements = () => {
-  for (const [elementName, ElementClass] of customElementsMap)
+  for (const [elementName, ElementClass] of Object.entries(
+    flowViewCustomElements
+  ))
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass);
 };

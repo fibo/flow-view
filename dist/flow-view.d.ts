@@ -1,4 +1,10 @@
 /**
+ * All flow-view custom elements tag names.
+ *
+ * @internal
+ */
+type FlowViewTagName = "flow-view" | "fv-canvas" | "fv-graph" | "fv-edge" | "fv-node" | "fv-pin" | "fv-pins";
+/**
  * Define Web Components flow-view, fv-node, fv-edge, etc.
  *
  * @example
@@ -11,4 +17,8 @@
  * });
  * ```
  */
-export declare const defineFlowViewCustomElements: () => void;
+export declare const defineFlowViewCustomElements: (elements?: Record<FlowViewTagName, {
+    new (): HTMLElement;
+    prototype: HTMLElement;
+}>) => void;
+export {};

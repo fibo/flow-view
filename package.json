@@ -20,7 +20,7 @@
     "build": "tsc --project tsconfig.build.json --removeComments && tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
     "check_types": "tsc --noEmit",
     "lint-staged": "lint-staged",
-    "watch": "tsc --project tsconfig.build.json --watch"
+    "watch": "tsc --project tsconfig.build.json --removeComments --watch"
   },
   "repository": {
     "type": "git",

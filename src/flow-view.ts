@@ -3,14 +3,14 @@
  *
  * @internal
  */
-type Id = string;
+type Uid = string;
 
 /**
  * Generates an identifier.
  *
  * @internal
  */
-const generateId = (length = 4): Id =>
+const generateUid = (length = 4): Uid =>
   Math.random()
     .toString(36)
     .substring(2, 2 + length);
@@ -35,6 +35,19 @@ const isVector = (arg: unknown): arg is Vector => {
   const { x, y } = arg as Partial<Vector>;
   if (typeof x !== "number" || typeof y !== "number") return false;
   return Number.isInteger(x) && Number.isInteger(y);
+};
+
+/**
+ * Util to get the position of an element. An HTMLElement that has a position,
+ * stores it in the x and y attributes.
+ */
+const getPositionOfElement = (element: HTMLElement): Vector | undefined => {
+  const vector = {
+    x: parseInt(element.getAttribute("x") ?? ""),
+    y: parseInt(element.getAttribute("y") ?? "")
+  };
+  if (!isVector(vector)) return undefined;
+  return vector;
 };
 
 /**
@@ -98,7 +111,8 @@ type FlowViewTagName =
   | "fv-graph"
   | "fv-edge"
   | "fv-node"
-  | "fv-pin";
+  | "fv-pin"
+  | "fv-pins";
 
 /**
  * All flow-view custom elements observed attributes.
@@ -107,11 +121,12 @@ type FlowViewTagName =
  */
 const obervedAttributes: Record<FlowViewTagName, string[]> = {
   "flow-view": [],
-  "fv-canvas": [],
+  "fv-canvas": ["viewBox"],
   "fv-graph": [],
   "fv-edge": [],
   "fv-node": ["x", "y"],
-  "fv-pin": []
+  "fv-pin": [],
+  "fv-pins": []
 };
 
 /**
@@ -126,39 +141,68 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
         display: flex;
         flex-direction: column;
         height: 100%;
+        font-family: var(--fv-font-family, system-ui, Roboto, sans-serif);
+        font-size: var(--fv-font-size, 16px);
       }
     </style>
     <slot></slot>
   `,
-  "fv-graph": html` <style>
-      :host {
-        height: 100%;
-      }
-    </style>
-    <slot></slot>`,
   "fv-canvas": html`
     <style>
       :host {
-        position: relative;
-        display: block;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
         border: 0;
         margin: 0;
         flex-grow: 1;
-        background: var(--fv-canvas-background, #fefefe);
+        background: var(--fv-background, #fefefe);
+      }
+      fv-graph {
+        position: relative;
+        display: block;
+        flex-grow: 1;
       }
     </style>
-    <div><slot></slot></div>
+    <fv-graph>
+      <slot></slot>
+    </fv-graph>
   `,
-  "fv-edge": html``,
-  "fv-node": html` <div><slot></slot></div> `,
+  "fv-graph": html`<slot></slot>`,
+  "fv-edge": html`<div></div>`,
+  "fv-node": html`
+    <style>
+      :host {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        box-shadow: var(--fv-box-shadow, 0px 0px 7px 1px rgba(0, 0, 0, 0.1));
+        min-height: 2em;
+        min-width: 2em;
+      }
+    </style>
+    <slot></slot>
+  `,
   "fv-pin": html`
     <style>
-      div: {
-        border: 1px solid;
+      :host {
+        cursor: none;
+        display: block;
+        background: var(--fv-pin-background, #ccc);
+        width: var(--fv-pin-size, 10px);
+        height: var(--fv-pin-size, 10px);
       }
     </style>
-    <div><slot></slot></div>
+    <slot></slot>
+  `,
+  "fv-pins": html`
+    <style>
+      :host {
+        display: flex;
+      }
+    </style>
+    <slot></slot>
   `
 };
 
@@ -184,9 +228,7 @@ class FlowView extends HTMLElement {
  *
  * ```html
  * <fv-canvas>
- *   <fv-graph>
- *     <fv-node x="10" y="10">Hello</fv-node>
- *   </fv-graph>
+ *   <fv-node x="10" y="10">Hello</fv-node>
  * </fv-canvas>
  * ```
  *
@@ -197,6 +239,44 @@ class FVCanvas extends HTMLElement {
     super();
     initElement(this, template["fv-canvas"]);
   }
+
+  static get observedAttributes() {
+    return obervedAttributes["fv-canvas"];
+  }
+
+  attributeChangedCallback(
+    name: (typeof obervedAttributes)["fv-canvas"][number],
+    _oldValue: string | null,
+    _newValue: string | null
+  ) {
+    if (name === "viewBox") {
+      // TODO
+    }
+  }
+
+  /** The graph rendered in the canvas shadow DOM. */
+  get graph(): FVGraph {
+    return this.querySelector("fv-graph") as FVGraph;
+  }
+
+  get origin(): Vector {
+    const { viewBox } = this;
+    if (!viewBox) return { x: 0, y: 0 };
+    const [x, y] = viewBox.split(" ").map((v) => parseInt(v));
+    return { x, y };
+  }
+
+  /**
+   * The viewBox of the canvas.
+   *
+   * It should behave similar to
+   *
+   * @link{https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox|SVG
+   * viewBox}.
+   */
+  get viewBox() {
+    return this.getAttribute("viewBox");
+  }
 }
 
 /**
@@ -206,22 +286,22 @@ class FVCanvas extends HTMLElement {
  */
 class FVGraph extends HTMLElement {
   /** All pins of the graph are registered here. */
-  pins = new Map<Id, FVPin>();
+  private pins = new Map<Uid, FVPin>();
 
   constructor() {
     super();
     initElement(this, template["fv-graph"]);
   }
 
-  /** Assign an id to a pin. */
+  /** Assign an identifier to a pin. */
   registerPin(pin: FVPin) {
-    if (pin.pinId && !this.pins.has(pin.pinId)) {
-      // Pin has already an id and it is not taken.
-      this.pins.set(pin.pinId, pin);
+    if (pin.uid && !this.pins.has(pin.uid)) {
+      // Pin has already an indentifier and it is not taken.
+      this.pins.set(pin.uid, pin);
     } else {
-      // Assign a new id to the pin.
-      pin.pinId = generateId();
-      this.pins.set(pin.pinId, pin);
+      // Assign a new identifier to the pin.
+      pin.uid = generateUid();
+      this.pins.set(pin.uid, pin);
     }
   }
 }
@@ -237,21 +317,21 @@ class FVPin extends HTMLElement {
     initElement(this, template["fv-pin"]);
   }
 
-  /** A pin can have an id; it is used by edges that reference it. */
-  get pinId(): string | undefined {
+  /** A pin can have an identifier. It is stored in the data-id attribute. */
+  get uid(): string | undefined {
     return this.dataset.id;
   }
 
   /**
-   * Set the pin id.
+   * Set the pin identifier.
    *
    * @example
    *
    * ```ts
-   * pin.pinId = generateId();
+   * pin.uid = generateUid();
    * ```
    */
-  set pinId(value: string) {
+  set uid(value: string) {
     this.dataset.id = value;
   }
 }
@@ -280,8 +360,8 @@ class FVNode extends HTMLElement {
     if (["x", "y"].includes(name)) {
       // Let the attribute to be removed.
       if (newValue === null) return;
-      // Check the new value is an integer.
       const newNum = parseInt(newValue);
+      // Check the new value is an stringified integer.
       if (Number.isInteger(newNum)) {
         // If new value is a number but not exactly an integer, set the attribute with a correct value.
         if (String(newNum) !== newValue) {
@@ -297,17 +377,22 @@ class FVNode extends HTMLElement {
           this.setAttribute(name, "0");
         }
       }
+      // Here new value is a stringified integer.
+      const origin: Vector = this.canvas?.origin ?? { x: 0, y: 0 };
+      if (name === "x") this.style.left = `${newNum - origin.x}px`;
+      if (name === "y") this.style.top = `${newNum - origin.y}px`;
     }
+  }
+
+  /** Get the canvas where the node is rendered. */
+  get canvas(): FVCanvas | undefined {
+    const { parentElement: element } = this;
+    if (element instanceof FVCanvas) return element;
   }
 
   /** Get the node position in the canvas space. */
   get position(): Vector | undefined {
-    const vector = {
-      x: parseInt(this.getAttribute("x") ?? ""),
-      y: parseInt(this.getAttribute("y") ?? "")
-    };
-    if (!isVector(vector)) return undefined;
-    return vector;
+    return getPositionOfElement(this);
   }
 }
 
@@ -324,6 +409,18 @@ class FVEdge extends HTMLElement {
 }
 
 /**
+ * Group of pins.
+ *
+ * @internal
+ */
+class FVPins extends HTMLElement {
+  constructor() {
+    super();
+    initElement(this, template["fv-pins"]);
+  }
+}
+
+/**
  * All flow-view custom elements.
  *
  * @internal
@@ -334,7 +431,8 @@ const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
   "fv-edge": FVEdge,
   "fv-graph": FVGraph,
   "fv-node": FVNode,
-  "fv-pin": FVPin
+  "fv-pin": FVPin,
+  "fv-pins": FVPins
 };
 
 /**
@@ -350,10 +448,10 @@ const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
  * });
  * ```
  */
-export const defineFlowViewCustomElements = () => {
-  for (const [elementName, ElementClass] of Object.entries(
-    flowViewCustomElements
-  ))
+export const defineFlowViewCustomElements = (
+  elements = flowViewCustomElements
+) => {
+  for (const [elementName, ElementClass] of Object.entries(elements))
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass);
 };

@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "tsc --removeComments && tsc --declaration --emitDeclarationOnly",
-    "prettier": "prettier --write ."
+    "lint-staged": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -35,8 +35,18 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "devDependencies": {
+    "lint-staged": "^15.2.5",
+    "pre-commit": "^1.2.2",
     "prettier": "^3.3.1",
     "prettier-plugin-jsdoc": "^1.3.0",
     "typescript": "^5.4.5"
-  }
+  },
+  "lint-staged": {
+    "*.{html,json,md,ts}": [
+      "prettier --write"
+    ]
+  },
+  "pre-commit": [
+    "lint-staged"
+  ]
 }

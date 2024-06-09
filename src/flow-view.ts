@@ -252,13 +252,11 @@ class FVCanvas extends HTMLElement {
   }
 
   attributeChangedCallback(
-    name: (typeof obervedAttributes)["fv-canvas"][number],
+    _name: (typeof obervedAttributes)["fv-canvas"][number],
     _oldValue: string | null,
     _newValue: string | null
   ) {
-    if (name === "viewBox") {
-      // TODO
-    }
+    // TODO
   }
 
   /** The graph rendered in the canvas shadow DOM. */
@@ -268,18 +266,6 @@ class FVCanvas extends HTMLElement {
 
   get origin(): Vector {
     return { x: this.x, y: this.y };
-  }
-
-  /**
-   * The viewBox of the canvas.
-   *
-   * It should behave similar to
-   *
-   * @link{https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox|SVG
-   * viewBox}.
-   */
-  get viewBox() {
-    return this.getAttribute("viewBox");
   }
 }
 

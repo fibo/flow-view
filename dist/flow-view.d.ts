@@ -3,7 +3,7 @@
  *
  * @internal
  */
-type FlowViewTagName = "flow-view" | "fv-canvas" | "fv-graph" | "fv-edge" | "fv-node" | "fv-pin" | "fv-pins";
+type FlowViewTagName = "flow-view" | "fv-canvas" | "fv-graph" | "fv-edge" | "fv-node" | "fv-pin" | "fv-pins" | "fv-label";
 /**
  * Define Web Components flow-view, fv-node, fv-edge, etc.
  *

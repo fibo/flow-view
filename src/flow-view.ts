@@ -121,10 +121,21 @@ const obervedAttributes: Record<FlowViewTagName, string[]> = {
  */
 const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "flow-view": html`
-    <style></style>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+    </style>
     <slot></slot>
   `,
-  "fv-graph": html`<slot></slot>`,
+  "fv-graph": html` <style>
+      :host {
+        height: 100%;
+      }
+    </style>
+    <slot></slot>`,
   "fv-canvas": html`
     <style>
       :host {
@@ -133,6 +144,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
         overflow: hidden;
         border: 0;
         margin: 0;
+        flex-grow: 1;
         background: var(--fv-canvas-background, #fefefe);
       }
     </style>

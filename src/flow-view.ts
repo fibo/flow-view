@@ -65,11 +65,11 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
 };
 
 /**
- * All FlowView custom elements tag names.
+ * All custom elements tag names.
  *
  * @internal
  */
-type FlowViewTagName =
+type TagName =
   | "v-canvas"
   | "v-edge"
   | "v-node"
@@ -78,45 +78,73 @@ type FlowViewTagName =
   | "v-label";
 
 /**
- * All FlowView custom elements observed attributes.
+ * All custom elements observed attributes.
  *
  * @internal
  */
-const obervedAttributes: Record<FlowViewTagName, string[]> = {
+const obervedAttributes: Record<
+  Extract<TagName, "v-canvas" | "v-node">,
+  string[]
+> = {
   "v-canvas": [],
-  "v-edge": [],
-  "v-node": ["x", "y"],
-  "v-pin": [],
-  "v-pins": [],
-  "v-label": []
+  "v-node": ["x", "y"]
 };
 
 /**
- * All FlowView custom elements templates.
+ * CSS theme variables.
  *
  * @internal
  */
-const template: Record<FlowViewTagName, HTMLTemplateElement> = {
+const theme = {
+  "background-color": "#fefefe",
+  "background-color-pin": "#ccc",
+  "font-family": "system-ui, Roboto, sans-serif",
+  "text-color": "#121212"
+};
+
+/**
+ * Common CSS custom properties.
+ *
+ * @internal
+ */
+const cssProp = {
+  backgroundColor: `
+    --color: var(--flow-view-background-color, ${theme["background-color"]});
+    background-color: var(--color);
+  `,
+  color: `
+    --text: var(--flow-view-text-color, ${theme["text-color"]});
+    color: var(--text);
+  `,
+  fontFamily: `
+    font-family: var(--font, var(--flow-view-font-family, ${theme["font-family"]}));
+  `,
+  fontSize: `
+    font-size: var(--unit, var(--flow-view-unit, 10px));
+  `
+};
+
+/**
+ * All custom elements templates.
+ *
+ * @internal
+ */
+const template: Record<TagName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
-        --flow-view-unit: 10px;
-        --flow-view-font-family: system-ui, Roboto, sans-serif;
-        --flow-view-canvas-color: #fefefe;
-        --flow-view-text-color: #121212;
-        --flow-view-node-shadow: 0 0 0.7em 0.1em rgba(0, 0, 0, 0.1);
-        --flow-view-pin-color: #ccc;
+        ${cssProp.fontFamily}
+        ${cssProp.fontSize}
+        ${cssProp.backgroundColor}
+        ${cssProp.color}
 
         display: block;
         overflow: hidden;
         position: relative;
         height: 100%;
-        font-family: var(--flow-view-font-family);
-        font-size: var(--unit, var(--flow-view-unit));
         border: 0;
         margin: 0;
-        background-color: var(--flow-view-canvas-color);
-        color: var(--text);
+
       }
     </style>
     <slot></slot>
@@ -125,10 +153,19 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-node": html`
     <style>
       :host {
-        --shadow: var(--flow-view-node-shadow);
+        ${cssProp.fontSize}
+        ${cssProp.backgroundColor}
+        ${cssProp.color}
+
+
         position: absolute;
-        box-shadow: var(--shadow);
         border-radius: 0.5em;
+
+        --shadow: var(
+          --flow-view-node-shadow,
+          0 0 0.7em 0.1em rgba(0, 0, 0, 0.1)
+        );
+        box-shadow: var(--shadow);
       }
     </style>
     <slot></slot>
@@ -136,11 +173,12 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-pin": html`
     <style>
       :host {
-        --color: var(--flow-view-pin-color);
+        --color: var(--flow-view-pin-color, ${theme["background-color-pin"]});
+        background-color: var(--color);
+
         display: block;
         width: 1em;
         height: 1em;
-        background-color: var(--color);
         border-radius: 0.5em;
       }
     </style>
@@ -177,9 +215,9 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
  * @example
  *
  * ```html
- * <fv-canvas>
- *   <fv-node x="10" y="10">Hello</fv-node>
- * </fv-canvas>
+ * <v-canvas>
+ *   <v-node x="10" y="10">Hello</v-node>
+ * </v-canvas>
  * ```
  *
  * @internal
@@ -196,10 +234,6 @@ class VCanvas extends HTMLElement {
     this.shadowRoot?.appendChild(template["v-canvas"].content.cloneNode(true));
   }
 
-  static get observedAttributes() {
-    return obervedAttributes["v-canvas"];
-  }
-
   attributeChangedCallback(
     _name: (typeof obervedAttributes)["v-canvas"][number],
     _oldValue: string | null,
@@ -208,8 +242,17 @@ class VCanvas extends HTMLElement {
     // TODO
   }
 
+  connectedCallback() {
+    this.addEventListener("pointerdown", this);
+  }
+
   get origin(): Vector {
     return { x: this.x, y: this.y };
+  }
+
+  handleEvent(event: Event) {
+    if (event.type == "pointerdown" && event.target == this) {
+    }
   }
 }
 
@@ -328,7 +371,7 @@ class VEdge extends HTMLElement {
  *
  * @internal
  */
-class FlowViewPins extends HTMLElement {
+class VPins extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -350,16 +393,16 @@ class VLabel extends HTMLElement {
 }
 
 /**
- * All FlowView HTML elements.
+ * All HTML elements.
  *
  * @internal
  */
-const flowViewElements: Record<FlowViewTagName, typeof HTMLElement> = {
+const htmlElements: Record<TagName, typeof HTMLElement> = {
   "v-canvas": VCanvas,
   "v-edge": VEdge,
   "v-node": VNode,
   "v-pin": VPin,
-  "v-pins": FlowViewPins,
+  "v-pins": VPins,
   "v-label": VLabel
 };
 
@@ -377,7 +420,7 @@ const flowViewElements: Record<FlowViewTagName, typeof HTMLElement> = {
  * ```
  */
 export const defineFlowViewCustomElements = () => {
-  for (const [elementName, ElementClass] of Object.entries(flowViewElements))
+  for (const [elementName, ElementClass] of Object.entries(htmlElements))
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass);
 };

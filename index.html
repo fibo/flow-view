@@ -5,7 +5,7 @@
     <link rel="icon" href="data:image/x-icon;base64,AA" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>flow-view</title>
+    <title>Flow View</title>
     <meta
       name="description"
       content="is a visual editor for Dataflow programming"
@@ -15,7 +15,7 @@
   </head>
   <body>
     <main>
-      <h1>flow-view</h1>
+      <h1>Flow View</h1>
 
       <blockquote>
         is a visual editor for <em>dataflow programming</em>
@@ -38,6 +38,16 @@
           node.
         </li>
       </ul>
+
+      <div style="position: relative; height: 100px">
+        <v-node draggable="true">
+          <v-pins></v-pins>
+          <v-label>Homer</v-label>
+          <v-pins>
+            <v-pin></v-pin>
+          </v-pins>
+        </v-node>
+      </div>
 
       <div class="container">
         <v-canvas>

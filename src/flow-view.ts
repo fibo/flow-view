@@ -71,7 +71,6 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
  */
 type FlowViewTagName =
   | "v-canvas"
-  | "v-graph"
   | "v-edge"
   | "v-node"
   | "v-pin"
@@ -85,7 +84,6 @@ type FlowViewTagName =
  */
 const obervedAttributes: Record<FlowViewTagName, string[]> = {
   "v-canvas": [],
-  "v-graph": [],
   "v-edge": [],
   "v-node": ["x", "y"],
   "v-pin": [],
@@ -109,29 +107,20 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
         --flow-view-node-shadow: 0 0 0.7em 0.1em rgba(0, 0, 0, 0.1);
         --flow-view-pin-color: #ccc;
 
-        display: flex;
-        flex-direction: column;
+        display: block;
         overflow: hidden;
+        position: relative;
         height: 100%;
         font-family: var(--flow-view-font-family);
         font-size: var(--unit, var(--flow-view-unit));
         border: 0;
         margin: 0;
-        flex-grow: 1;
         background-color: var(--flow-view-canvas-color);
-        color: var(--flow-view-text-color);
-      }
-      fv-graph {
-        position: relative;
-        display: block;
-        flex-grow: 1;
+        color: var(--text);
       }
     </style>
-    <fv-graph>
-      <slot></slot>
-    </fv-graph>
+    <slot></slot>
   `,
-  "v-graph": html`<slot></slot>`,
   "v-edge": html`<div></div>`,
   "v-node": html`
     <style>
@@ -219,41 +208,8 @@ class VCanvas extends HTMLElement {
     // TODO
   }
 
-  /** The graph rendered in the canvas shadow DOM. */
-  get graph(): VGraph {
-    return this.shadowRoot!.querySelector("v-graph") as VGraph;
-  }
-
   get origin(): Vector {
     return { x: this.x, y: this.y };
-  }
-}
-
-/**
- * A graph contains nodes and edges.
- *
- * @internal
- */
-class VGraph extends HTMLElement {
-  /** All pins of the graph are registered here. */
-  private pins = new Map<Uid, VPin>();
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-graph"].content.cloneNode(true));
-  }
-
-  /** Assign an identifier to a pin. */
-  registerPin(pin: VPin) {
-    if (pin.uid && !this.pins.has(pin.uid)) {
-      // Pin has already an indentifier and it is not taken.
-      this.pins.set(pin.uid, pin);
-    } else {
-      // Assign a new identifier to the pin.
-      pin.uid = generateUid();
-      this.pins.set(pin.uid, pin);
-    }
   }
 }
 
@@ -401,7 +357,6 @@ class VLabel extends HTMLElement {
 const flowViewElements: Record<FlowViewTagName, typeof HTMLElement> = {
   "v-canvas": VCanvas,
   "v-edge": VEdge,
-  "v-graph": VGraph,
   "v-node": VNode,
   "v-pin": VPin,
   "v-pins": FlowViewPins,

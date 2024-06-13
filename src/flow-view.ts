@@ -125,16 +125,24 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
+        --flow-view-unit: 10px;
+        --flow-view-font-family: system-ui, Roboto, sans-serif;
+        --flow-view-canvas-color: #fefefe;
+        --flow-view-text-color: #121212;
+        --flow-view-node-shadow: 0 0 0.7em 0.1em rgba(0, 0, 0, 0.1);
+        --flow-view-pin-color: #ccc;
+
         display: flex;
         flex-direction: column;
         overflow: hidden;
         height: 100%;
-        font-family: var(--fv-font-family, system-ui, Roboto, sans-serif);
-        font-size: var(--fv-font-size, 16px);
+        font-family: var(--flow-view-font-family);
+        font-size: var(--unit, var(--flow-view-unit));
         border: 0;
         margin: 0;
         flex-grow: 1;
-        background: var(--fv-background, #fefefe);
+        background-color: var(--flow-view-canvas-color);
+        color: var(--flow-view-text-color);
       }
       fv-graph {
         position: relative;
@@ -151,15 +159,10 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-node": html`
     <style>
       :host {
+        --shadow: var(--flow-view-node-shadow);
         position: absolute;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        width: fit-content;
-        box-shadow: var(--fv-box-shadow, 0px 0px 7px 1px rgba(0, 0, 0, 0.1));
-        border-radius: var(--fv-border-radius, 5px);
-        min-height: 2em;
-        min-width: 2em;
+        box-shadow: var(--shadow);
+        border-radius: 0.5em;
       }
     </style>
     <slot></slot>
@@ -167,11 +170,12 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-pin": html`
     <style>
       :host {
+        --color: var(--flow-view-pin-color);
         display: block;
-        background: var(--fv-pin-background, #ccc);
-        width: var(--fv-pin-size, 10px);
-        height: var(--fv-pin-size, 10px);
-        border-radius: var(--fv-border-radius, 5px);
+        width: 1em;
+        height: 1em;
+        background-color: var(--color);
+        border-radius: 0.5em;
       }
     </style>
     <slot></slot>
@@ -181,7 +185,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
       :host {
         display: flex;
         justify-content: space-between;
-        min-height: var(--fv-pin-size, 10px);
+        min-height: 1em;
       }
     </style>
     <slot></slot>
@@ -189,6 +193,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
   "v-label": html`
     <style>
       :host {
+        font-size: 1.5em;
         padding-inline: 0.5em;
         user-select: none;
       }
@@ -346,8 +351,8 @@ class VNode extends HTMLElement {
       }
       // Here new value is a stringified integer.
       const origin: Vector = this.canvas?.origin ?? { x: 0, y: 0 };
-      if (name === "x") this.style.left = `${newNum - origin.x}px`;
-      if (name === "y") this.style.top = `${newNum - origin.y}px`;
+      if (name === "x") this.style.left = `${newNum - origin.x}em`;
+      if (name === "y") this.style.top = `${newNum - origin.y}em`;
     }
   }
 

@@ -88,60 +88,49 @@ const initElement = (element: HTMLElement, template: HTMLTemplateElement) => {
 };
 
 /**
- * All flow-view custom elements tag names.
+ * All FlowView custom elements tag names.
  *
  * @internal
  */
 type FlowViewTagName =
-  | "flow-view"
-  | "fv-canvas"
-  | "fv-graph"
-  | "fv-edge"
-  | "fv-node"
-  | "fv-pin"
-  | "fv-pins"
-  | "fv-label";
+  | "v-canvas"
+  | "v-graph"
+  | "v-edge"
+  | "v-node"
+  | "v-pin"
+  | "v-pins"
+  | "v-label";
 
 /**
- * All flow-view custom elements observed attributes.
+ * All FlowView custom elements observed attributes.
  *
  * @internal
  */
 const obervedAttributes: Record<FlowViewTagName, string[]> = {
-  "flow-view": [],
-  "fv-canvas": [],
-  "fv-graph": [],
-  "fv-edge": [],
-  "fv-node": ["x", "y"],
-  "fv-pin": [],
-  "fv-pins": [],
-  "fv-label": []
+  "v-canvas": [],
+  "v-graph": [],
+  "v-edge": [],
+  "v-node": ["x", "y"],
+  "v-pin": [],
+  "v-pins": [],
+  "v-label": []
 };
 
 /**
- * All flow-view custom elements templates.
+ * All FlowView custom elements templates.
  *
  * @internal
  */
 const template: Record<FlowViewTagName, HTMLTemplateElement> = {
-  "flow-view": html`
-    <style>
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        font-family: var(--fv-font-family, system-ui, Roboto, sans-serif);
-        font-size: var(--fv-font-size, 16px);
-      }
-    </style>
-    <slot></slot>
-  `,
-  "fv-canvas": html`
+  "v-canvas": html`
     <style>
       :host {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        height: 100%;
+        font-family: var(--fv-font-family, system-ui, Roboto, sans-serif);
+        font-size: var(--fv-font-size, 16px);
         border: 0;
         margin: 0;
         flex-grow: 1;
@@ -157,9 +146,9 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
       <slot></slot>
     </fv-graph>
   `,
-  "fv-graph": html`<slot></slot>`,
-  "fv-edge": html`<div></div>`,
-  "fv-node": html`
+  "v-graph": html`<slot></slot>`,
+  "v-edge": html`<div></div>`,
+  "v-node": html`
     <style>
       :host {
         position: absolute;
@@ -175,7 +164,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `,
-  "fv-pin": html`
+  "v-pin": html`
     <style>
       :host {
         display: block;
@@ -187,7 +176,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `,
-  "fv-pins": html`
+  "v-pins": html`
     <style>
       :host {
         display: flex;
@@ -197,7 +186,7 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `,
-  "fv-label": html`
+  "v-label": html`
     <style>
       :host {
         padding-inline: 0.5em;
@@ -207,18 +196,6 @@ const template: Record<FlowViewTagName, HTMLTemplateElement> = {
     <slot></slot>
   `
 };
-
-/**
- * The flow-view custom element.
- *
- * @internal
- */
-class FlowView extends HTMLElement {
-  constructor() {
-    super();
-    initElement(this, template["flow-view"]);
-  }
-}
 
 /**
  * A canvas renders a graph.
@@ -236,7 +213,7 @@ class FlowView extends HTMLElement {
  *
  * @internal
  */
-class FVCanvas extends HTMLElement {
+class VCanvas extends HTMLElement {
   /** Coordinate of the origin. */
   x = 0;
   /** Coordinate of the origin. */
@@ -244,15 +221,15 @@ class FVCanvas extends HTMLElement {
 
   constructor() {
     super();
-    initElement(this, template["fv-canvas"]);
+    initElement(this, template["v-canvas"]);
   }
 
   static get observedAttributes() {
-    return obervedAttributes["fv-canvas"];
+    return obervedAttributes["v-canvas"];
   }
 
   attributeChangedCallback(
-    _name: (typeof obervedAttributes)["fv-canvas"][number],
+    _name: (typeof obervedAttributes)["v-canvas"][number],
     _oldValue: string | null,
     _newValue: string | null
   ) {
@@ -260,8 +237,8 @@ class FVCanvas extends HTMLElement {
   }
 
   /** The graph rendered in the canvas shadow DOM. */
-  get graph(): FVGraph {
-    return this.querySelector("fv-graph") as FVGraph;
+  get graph(): VGraph {
+    return this.shadowRoot!.querySelector("v-graph") as VGraph;
   }
 
   get origin(): Vector {
@@ -274,17 +251,17 @@ class FVCanvas extends HTMLElement {
  *
  * @internal
  */
-class FVGraph extends HTMLElement {
+class VGraph extends HTMLElement {
   /** All pins of the graph are registered here. */
-  private pins = new Map<Uid, FVPin>();
+  private pins = new Map<Uid, VPin>();
 
   constructor() {
     super();
-    initElement(this, template["fv-graph"]);
+    initElement(this, template["v-graph"]);
   }
 
   /** Assign an identifier to a pin. */
-  registerPin(pin: FVPin) {
+  registerPin(pin: VPin) {
     if (pin.uid && !this.pins.has(pin.uid)) {
       // Pin has already an indentifier and it is not taken.
       this.pins.set(pin.uid, pin);
@@ -301,10 +278,10 @@ class FVGraph extends HTMLElement {
  *
  * @internal
  */
-class FVPin extends HTMLElement {
+class VPin extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["fv-pin"]);
+    initElement(this, template["v-pin"]);
   }
 
   /** A pin can have an identifier. It is stored in the data-id attribute. */
@@ -331,18 +308,18 @@ class FVPin extends HTMLElement {
  *
  * @internal
  */
-class FVNode extends HTMLElement {
+class VNode extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["fv-node"]);
+    initElement(this, template["v-node"]);
   }
 
   static get observedAttributes() {
-    return obervedAttributes["fv-node"];
+    return obervedAttributes["v-node"];
   }
 
   attributeChangedCallback(
-    name: (typeof obervedAttributes)["fv-node"][number],
+    name: (typeof obervedAttributes)["v-node"][number],
     oldValue: string | null,
     newValue: string | null
   ) {
@@ -375,9 +352,9 @@ class FVNode extends HTMLElement {
   }
 
   /** Get the canvas where the node is rendered. */
-  get canvas(): FVCanvas | undefined {
+  get canvas(): VCanvas | undefined {
     const { parentElement: element } = this;
-    if (element instanceof FVCanvas) return element;
+    if (element instanceof VCanvas) return element;
   }
 
   /** Get the node position in the canvas space. */
@@ -396,10 +373,10 @@ class FVNode extends HTMLElement {
  *
  * @internal
  */
-class FVEdge extends HTMLElement {
+class VEdge extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["fv-edge"]);
+    initElement(this, template["v-edge"]);
   }
 }
 
@@ -408,10 +385,10 @@ class FVEdge extends HTMLElement {
  *
  * @internal
  */
-class FVPins extends HTMLElement {
+class FlowViewPins extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["fv-pins"]);
+    initElement(this, template["v-pins"]);
   }
 }
 
@@ -420,31 +397,30 @@ class FVPins extends HTMLElement {
  *
  * @internal
  */
-class FVLabel extends HTMLElement {
+class VLabel extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["fv-label"]);
+    initElement(this, template["v-label"]);
   }
 }
 
 /**
- * All flow-view custom elements.
+ * All FlowView HTML elements.
  *
  * @internal
  */
-const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
-  "flow-view": FlowView,
-  "fv-canvas": FVCanvas,
-  "fv-edge": FVEdge,
-  "fv-graph": FVGraph,
-  "fv-node": FVNode,
-  "fv-pin": FVPin,
-  "fv-pins": FVPins,
-  "fv-label": FVLabel
+const flowViewElements: Record<FlowViewTagName, typeof HTMLElement> = {
+  "v-canvas": VCanvas,
+  "v-edge": VEdge,
+  "v-graph": VGraph,
+  "v-node": VNode,
+  "v-pin": VPin,
+  "v-pins": FlowViewPins,
+  "v-label": VLabel
 };
 
 /**
- * Define Web Components flow-view, fv-node, fv-edge, etc.
+ * Define HTML custom elements v-canvas, v-node, v-edge, etc.
  *
  * @example
  *
@@ -456,10 +432,8 @@ const flowViewCustomElements: Record<FlowViewTagName, typeof HTMLElement> = {
  * });
  * ```
  */
-export const defineFlowViewCustomElements = (
-  elements = flowViewCustomElements
-) => {
-  for (const [elementName, ElementClass] of Object.entries(elements))
+export const defineFlowViewCustomElements = () => {
+  for (const [elementName, ElementClass] of Object.entries(flowViewElements))
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass);
 };

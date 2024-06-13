@@ -40,43 +40,41 @@
       </ul>
 
       <div class="container">
-        <flow-view>
-          <fv-canvas>
-            <fv-node x="60" y="70">
-              <fv-pins></fv-pins>
-              <fv-label>Homer</fv-label>
-              <fv-pins>
-                <fv-pin data-id="dad"></fv-pin>
-              </fv-pins>
-            </fv-node>
+        <v-canvas>
+          <v-node x="60" y="70">
+            <v-pins></v-pins>
+            <v-label>Homer</v-label>
+            <v-pins>
+              <v-pin data-id="dad"></v-pin>
+            </v-pins>
+          </v-node>
 
-            <fv-node x="160" y="70">
-              <fv-pins></fv-pins>
-              <fv-label>Marge</fv-label>
-              <fv-pins>
-                <fv-pin></fv-pin>
-              </fv-pins>
-            </fv-node>
+          <v-node x="160" y="70">
+            <v-pins></v-pins>
+            <v-label>Marge</v-label>
+            <v-pins>
+              <v-pin></v-pin>
+            </v-pins>
+          </v-node>
 
-            <fv-node x="60" y="240">
-              <fv-pins>
-                <fv-pin></fv-pin>
-                <fv-pin></fv-pin>
-              </fv-pins>
-              <fv-label>Bart</fv-label>
-              <fv-pins></fv-pins>
-            </fv-node>
+          <v-node x="60" y="240">
+            <v-pins>
+              <v-pin></v-pin>
+              <v-pin></v-pin>
+            </v-pins>
+            <v-label>Bart</v-label>
+            <v-pins></v-pins>
+          </v-node>
 
-            <fv-node x="220" y="220">
-              <fv-pins>
-                <fv-pin></fv-pin>
-                <fv-pin></fv-pin>
-              </fv-pins>
-              <fv-label>Lisa</fv-label>
-              <fv-pins></fv-pins>
-            </fv-node>
-          </fv-canvas>
-        </flow-view>
+          <v-node x="220" y="220">
+            <v-pins>
+              <v-pin></v-pin>
+              <v-pin></v-pin>
+            </v-pins>
+            <v-label>Lisa</v-label>
+            <v-pins></v-pins>
+          </v-node>
+        </v-canvas>
       </div>
 
       <div class="controls">
@@ -111,7 +109,9 @@
     <script type="module">
       import { defineFlowViewCustomElements } from "flow-view";
 
-      defineFlowViewCustomElements();
+      window.addEventListener("load", () => {
+        defineFlowViewCustomElements();
+      });
 
       // import { FlowView } from 'https://unpkg.com/flow-view';
       // import { FlowView, FlowViewNode } from "./index.js"

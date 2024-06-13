@@ -65,29 +65,6 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
 };
 
 /**
- * Util to initialize an element with a template.
- *
- * @example
- *
- * ```ts
- * const myTemplate = html`<div><slot></slot></div>`;
- *
- * class MyElement extends HTMLElement {
- *   constructor() {
- *     super();
- *     initElement(this, myTemplate);
- *   }
- * }
- * ```
- *
- * @internal
- */
-const initElement = (element: HTMLElement, template: HTMLTemplateElement) => {
-  element.attachShadow({ mode: "open" });
-  element.shadowRoot?.appendChild(template.content.cloneNode(true));
-};
-
-/**
  * All FlowView custom elements tag names.
  *
  * @internal
@@ -226,7 +203,8 @@ class VCanvas extends HTMLElement {
 
   constructor() {
     super();
-    initElement(this, template["v-canvas"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-canvas"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -262,7 +240,8 @@ class VGraph extends HTMLElement {
 
   constructor() {
     super();
-    initElement(this, template["v-graph"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-graph"].content.cloneNode(true));
   }
 
   /** Assign an identifier to a pin. */
@@ -286,7 +265,8 @@ class VGraph extends HTMLElement {
 class VPin extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["v-pin"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-pin"].content.cloneNode(true));
   }
 
   /** A pin can have an identifier. It is stored in the data-id attribute. */
@@ -316,7 +296,8 @@ class VPin extends HTMLElement {
 class VNode extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["v-node"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-node"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -381,7 +362,8 @@ class VNode extends HTMLElement {
 class VEdge extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["v-edge"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-edge"].content.cloneNode(true));
   }
 }
 
@@ -393,7 +375,8 @@ class VEdge extends HTMLElement {
 class FlowViewPins extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["v-pins"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-pins"].content.cloneNode(true));
   }
 }
 
@@ -405,7 +388,8 @@ class FlowViewPins extends HTMLElement {
 class VLabel extends HTMLElement {
   constructor() {
     super();
-    initElement(this, template["v-label"]);
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot?.appendChild(template["v-label"].content.cloneNode(true));
   }
 }
 

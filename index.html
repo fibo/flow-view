@@ -39,14 +39,16 @@
         </li>
       </ul>
 
-      <div style="position: relative; height: 100px">
-        <v-node draggable="true">
-          <v-pins></v-pins>
-          <v-label>Homer</v-label>
-          <v-pins>
-            <v-pin></v-pin>
-          </v-pins>
-        </v-node>
+      <div style="position: relative; height: 100px; margin-bottom: 1em">
+        <v-canvas>
+          <v-node draggable="true" x="2" y="2">
+            <v-pins></v-pins>
+            <v-label>Homer</v-label>
+            <v-pins>
+              <v-pin></v-pin>
+            </v-pins>
+          </v-node>
+        </v-canvas>
       </div>
 
       <div class="container">

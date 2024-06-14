@@ -91,40 +91,6 @@ const obervedAttributes: Record<
 };
 
 /**
- * CSS theme variables.
- *
- * @internal
- */
-const theme = {
-  "background-color": "#fefefe",
-  "background-color-pin": "#ccc",
-  "font-family": "system-ui, Roboto, sans-serif",
-  "text-color": "#121212"
-};
-
-/**
- * Common CSS custom properties.
- *
- * @internal
- */
-const cssProp = {
-  backgroundColor: `
-    --color: var(--flow-view-background-color, ${theme["background-color"]});
-    background-color: var(--color);
-  `,
-  color: `
-    --text: var(--flow-view-text-color, ${theme["text-color"]});
-    color: var(--text);
-  `,
-  fontFamily: `
-    font-family: var(--font, var(--flow-view-font-family, ${theme["font-family"]}));
-  `,
-  fontSize: `
-    font-size: var(--unit, var(--flow-view-unit, 10px));
-  `
-};
-
-/**
  * All custom elements templates.
  *
  * @internal
@@ -133,10 +99,25 @@ const template: Record<TagName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
-        ${cssProp.fontFamily}
-        ${cssProp.fontSize}
-        ${cssProp.backgroundColor}
-        ${cssProp.color}
+        --unit: var(--flow-view-unit, 10px);
+
+        font-family: var(
+          --flow-view-font-family,
+          system-ui,
+          Roboto,
+          sans-serif
+        );
+        font-size: var(--unit);
+
+        --transition: var(--flow-view-transition, 200ms ease-in-out);
+
+        background-color: var(--flow-view-background-color, #fefefe);
+        color: var(--flow-view-text-color, #121212);
+
+        @media (prefers-color-scheme: dark) {
+          background-color: var(--flow-view-background-color, #555);
+          color: var(--flow-view-text-color, #ccc);
+        }
 
         display: block;
         overflow: hidden;
@@ -144,46 +125,44 @@ const template: Record<TagName, HTMLTemplateElement> = {
         height: 100%;
         border: 0;
         margin: 0;
-
       }
     </style>
     <slot></slot>
   `,
+
   "v-edge": html`<div></div>`,
+
   "v-node": html`
     <style>
       :host {
-        ${cssProp.fontSize}
-        ${cssProp.backgroundColor}
-        ${cssProp.color}
-
-
         position: absolute;
         border-radius: 0.5em;
-
-        --shadow: var(
-          --flow-view-node-shadow,
-          0 0 0.7em 0.1em rgba(0, 0, 0, 0.1)
-        );
-        box-shadow: var(--shadow);
+        padding: 2px;
+        border: 1px solid;
+        transition: all var(--transition);
       }
     </style>
     <slot></slot>
   `,
+
   "v-pin": html`
     <style>
       :host {
-        --color: var(--flow-view-pin-color, ${theme["background-color-pin"]});
-        background-color: var(--color);
-
         display: block;
         width: 1em;
         height: 1em;
-        border-radius: 0.5em;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: 0.8;
+        transition: all var(--transition);
+      }
+      :host(:hover) {
+        opacity: 1;
       }
     </style>
     <slot></slot>
   `,
+
   "v-pins": html`
     <style>
       :host {
@@ -194,6 +173,7 @@ const template: Record<TagName, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `,
+
   "v-label": html`
     <style>
       :host {

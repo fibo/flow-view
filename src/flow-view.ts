@@ -1,16 +1,22 @@
 /**
- * Item identifier.
+ * All custom elements tag names.
  *
  * @internal
  */
-type Uid = string;
+type TagName =
+  | "v-canvas"
+  | "v-edge"
+  | "v-node"
+  | "v-pin"
+  | "v-pins"
+  | "v-label";
 
 /**
  * Generates an identifier.
  *
  * @internal
  */
-const generateUid = (length = 4): Uid =>
+const generateUid = (length: number): string =>
   Math.random()
     .toString(36)
     .substring(2, 2 + length);
@@ -31,14 +37,28 @@ type Vector = {
  * @internal
  */
 const isVector = (arg: unknown): arg is Vector => {
-  if (!arg || typeof arg !== "object") return false;
+  if (!arg || typeof arg != "object") return false;
   const { x, y } = arg as Partial<Vector>;
-  if (typeof x !== "number" || typeof y !== "number") return false;
+  if (typeof x != "number" || typeof y != "number") return false;
   return Number.isInteger(x) && Number.isInteger(y);
 };
 
+/** An element of a v-canvas. */
+type IVCanvasElement = {
+  get canvas(): VCanvas | undefined;
+};
+
+/** Look for the first v-canvas containing the given element. */
+const findCanvas = (initialElement: HTMLElement): VCanvas | undefined => {
+  let { parentElement: element } = initialElement;
+  while (element) {
+    if (element instanceof VCanvas) return element;
+    element = element.parentElement;
+  }
+};
+
 /**
- * Creates an HTML template element from a string template.
+ * Create an HTML template element from a string template.
  *
  * @example
  *
@@ -65,29 +85,18 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
 };
 
 /**
- * All custom elements tag names.
- *
- * @internal
- */
-type TagName =
-  | "v-canvas"
-  | "v-edge"
-  | "v-node"
-  | "v-pin"
-  | "v-pins"
-  | "v-label";
-
-/**
  * All custom elements observed attributes.
  *
  * @internal
  */
 const obervedAttributes: Record<
-  Extract<TagName, "v-canvas" | "v-node">,
+  Extract<TagName, "v-canvas" | "v-edge" | "v-node" | "v-pin">,
   string[]
 > = {
   "v-canvas": [],
-  "v-node": ["x", "y"]
+  "v-pin": ["uid"],
+  "v-node": ["x", "y"],
+  "v-edge": ["from", "to"]
 };
 
 /**
@@ -203,10 +212,7 @@ const template: Record<TagName, HTMLTemplateElement> = {
  * @internal
  */
 class VCanvas extends HTMLElement {
-  /** Coordinate of the origin. */
-  x = 0;
-  /** Coordinate of the origin. */
-  y = 0;
+  #pinMap = new Map<string, VPin>();
 
   constructor() {
     super();
@@ -219,20 +225,66 @@ class VCanvas extends HTMLElement {
     _oldValue: string | null,
     _newValue: string | null
   ) {
-    // TODO
+    // TODO check x, y (similar to VNode)
   }
 
   connectedCallback() {
     this.addEventListener("pointerdown", this);
   }
 
-  get origin(): Vector {
-    return { x: this.x, y: this.y };
-  }
-
   handleEvent(event: Event) {
     if (event.type == "pointerdown" && event.target == this) {
     }
+  }
+
+  get origin(): Vector {
+    return { x: 0, y: 0 };
+  }
+
+  /** Get pin by its uid, if any. */
+  getPinByUid(uid: string): VPin | undefined {
+    if (this.#pinMap.has(uid)) return this.#pinMap.get(uid);
+    const element = this.querySelector(`v-pin[uid=${uid}]`);
+    if (element instanceof VPin) {
+      this.#pinMap.set(uid, element);
+      return element;
+    }
+  }
+
+  /**
+   * Set the uid of a pin.
+   *
+   * @remark Returns true or false if pin is registered or not.
+   */
+  setPinUid(pin: VPin, uid: string): boolean {
+    if (uid == "") return false;
+    const foundPin = this.#pinMap.get(uid);
+    if (foundPin) {
+      if (foundPin === pin) {
+        if (pin.getAttribute("uid") !== uid) pin.setAttribute("uid", uid);
+        return true;
+      }
+      return false;
+    }
+    this.#pinMap.set(uid, pin);
+    pin.setAttribute("uid", uid);
+    return true;
+  }
+
+  /**
+   * Delete the uid of a pin.
+   *
+   * @remark Returns true or false if pin is registered or not.
+   */
+  deletePinUid(pin: VPin, uid: string): boolean {
+    if (uid == "") return false;
+    const foundPin = this.#pinMap.get(uid);
+    if (foundPin === pin) {
+      pin.removeAttribute("uid");
+    }
+    this.#pinMap.set(uid, pin);
+    pin.setAttribute("uid", uid);
+    return true;
   }
 }
 
@@ -241,29 +293,67 @@ class VCanvas extends HTMLElement {
  *
  * @internal
  */
-class VPin extends HTMLElement {
+class VPin extends HTMLElement implements IVCanvasElement {
+  #node: VNode | undefined;
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot?.appendChild(template["v-pin"].content.cloneNode(true));
   }
 
-  /** A pin can have an identifier. It is stored in the data-id attribute. */
-  get uid(): string | undefined {
-    return this.dataset.id;
+  static get observedAttributes() {
+    return obervedAttributes["v-pin"];
   }
 
-  /**
-   * Set the pin identifier.
-   *
-   * @example
-   *
-   * ```ts
-   * pin.uid = generateUid();
-   * ```
-   */
-  set uid(value: string) {
-    this.dataset.id = value;
+  attributeChangedCallback(
+    name: (typeof obervedAttributes)["v-pin"][number],
+    _oldValue: string | null,
+    newValue: string | null
+  ) {
+    if (name == "uid") {
+      const { canvas } = this;
+      if (canvas) {
+        if (newValue) canvas?.setPinUid(this, newValue);
+      }
+    }
+  }
+
+  connectedCallback() {
+    // Register pin into the canvas with a uid.
+    if (this.canvas) {
+      let uidLength = 3;
+      let uid = this.getAttribute("uid") ?? generateUid(uidLength);
+      let success = false;
+      while (!success) {
+        success = this.canvas.setPinUid(this, uid);
+        uid = generateUid(uidLength++);
+      }
+    }
+  }
+
+  /** Get the canvas where the pin is rendered. */
+  get canvas(): VCanvas | undefined {
+    return this.node?.canvas;
+  }
+
+  /** Get the node where the pin is contained. */
+  get node(): VNode | undefined {
+    if (this.#node) return this.#node;
+    // Look for the first v-node containing the pin.
+    let { parentElement: element } = this;
+    while (element) {
+      if (element instanceof VNode) {
+        this.#node = element;
+        return element;
+      }
+      element = element.parentElement;
+    }
+  }
+
+  /** A pin has an identifier that is unique in the v-canvas that contains it. */
+  get uid(): string {
+    return this.getAttribute("uid") ?? "";
   }
 }
 
@@ -272,7 +362,9 @@ class VPin extends HTMLElement {
  *
  * @internal
  */
-class VNode extends HTMLElement {
+class VNode extends HTMLElement implements IVCanvasElement {
+  #canvas: VCanvas | undefined;
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -311,15 +403,15 @@ class VNode extends HTMLElement {
       }
       // Here new value is a stringified integer.
       const origin: Vector = this.canvas?.origin ?? { x: 0, y: 0 };
-      if (name === "x") this.style.left = `${newNum - origin.x}em`;
-      if (name === "y") this.style.top = `${newNum - origin.y}em`;
+      if (name == "x") this.style.left = `${newNum - origin.x}em`;
+      if (name == "y") this.style.top = `${newNum - origin.y}em`;
     }
   }
 
   /** Get the canvas where the node is rendered. */
   get canvas(): VCanvas | undefined {
-    const { parentElement: element } = this;
-    if (element instanceof VCanvas) return element;
+    if (this.#canvas) return this.#canvas;
+    return (this.#canvas = findCanvas(this));
   }
 
   /** Get the node position in the canvas space. */
@@ -338,11 +430,34 @@ class VNode extends HTMLElement {
  *
  * @internal
  */
-class VEdge extends HTMLElement {
+class VEdge extends HTMLElement implements IVCanvasElement {
+  #canvas: VCanvas | undefined;
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot?.appendChild(template["v-edge"].content.cloneNode(true));
+  }
+
+  static get observedAttributes() {
+    return obervedAttributes["v-edge"];
+  }
+
+  attributeChangedCallback(
+    name: (typeof obervedAttributes)["v-edge"][number],
+    _oldValue: string | null,
+    newValue: string | null
+  ) {
+    if (["from", "to"].includes(name) && newValue) {
+      const pin = this.canvas?.getPinByUid(newValue);
+      if (!pin) this.removeAttribute(name);
+    }
+  }
+
+  /** Get the canvas where the edge is rendered. */
+  get canvas(): VCanvas | undefined {
+    if (this.#canvas) return this.#canvas;
+    return (this.#canvas = findCanvas(this));
   }
 }
 

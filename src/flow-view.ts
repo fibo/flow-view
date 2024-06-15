@@ -48,6 +48,11 @@ type IVCanvasElement = {
   get canvas(): VCanvas | undefined;
 };
 
+const createElementSvg = document.createElementNS.bind(
+  document,
+  "http://www.w3.org/2000/svg"
+);
+
 /** Look for the first v-canvas containing the given element. */
 const findCanvas = (initialElement: HTMLElement): VCanvas | undefined => {
   let { parentElement: element } = initialElement;
@@ -213,11 +218,14 @@ const template: Record<TagName, HTMLTemplateElement> = {
  */
 class VCanvas extends HTMLElement {
   #pinMap = new Map<string, VPin>();
+  readonly svg = createElementSvg("svg");
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-canvas"].content.cloneNode(true));
+    const root = template["v-canvas"].content.cloneNode(true);
+    root.appendChild(this.svg);
+    this.shadowRoot!.appendChild(root);
   }
 
   attributeChangedCallback(
@@ -229,12 +237,33 @@ class VCanvas extends HTMLElement {
   }
 
   connectedCallback() {
+    new ResizeObserver(this.resizeObserverCallback).observe(this);
+
+    this.addEventListener("resize", this);
     this.addEventListener("pointerdown", this);
   }
 
   handleEvent(event: Event) {
     if (event.type == "pointerdown" && event.target == this) {
     }
+  }
+
+  get resizeObserverCallback(): ResizeObserverCallback {
+    return (entries) => {
+      for (let entry of entries) {
+        if (entry.target !== this) continue;
+        const { inlineSize, blockSize } = entry.contentBoxSize[0];
+        // TODO create helper like coerceToCoordinate to be reused also inside v-node
+        this.resizeSvg({ x: Math.floor(inlineSize), y: Math.floor(blockSize) });
+      }
+    };
+  }
+
+  resizeSvg({ x, y }: Vector) {
+    const { svg } = this;
+    svg.setAttribute("width", `${x}`);
+    svg.setAttribute("height", `${y}`);
+    svg.setAttribute("viewBox", `0 0 ${x} ${y}`);
   }
 
   get origin(): Vector {
@@ -299,7 +328,7 @@ class VPin extends HTMLElement implements IVCanvasElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-pin"].content.cloneNode(true));
+    this.shadowRoot!.appendChild(template["v-pin"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -368,7 +397,7 @@ class VNode extends HTMLElement implements IVCanvasElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-node"].content.cloneNode(true));
+    this.shadowRoot!.appendChild(template["v-node"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -436,7 +465,7 @@ class VEdge extends HTMLElement implements IVCanvasElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-edge"].content.cloneNode(true));
+    this.shadowRoot!.appendChild(template["v-edge"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -470,7 +499,7 @@ class VPins extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-pins"].content.cloneNode(true));
+    this.shadowRoot!.appendChild(template["v-pins"].content.cloneNode(true));
   }
 }
 
@@ -483,7 +512,7 @@ class VLabel extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot?.appendChild(template["v-label"].content.cloneNode(true));
+    this.shadowRoot!.appendChild(template["v-label"].content.cloneNode(true));
   }
 }
 

@@ -12,17 +12,6 @@ type TagName =
   | "v-label";
 
 /**
- * Generates an identifier.
- *
- * @internal
- */
-// TODO remove this
-const generateUid = (length: number): string =>
-  Math.random()
-    .toString(36)
-    .substring(2, 2 + length);
-
-/**
  * A vector with integer coordinates. To be used in the canvas space.
  *
  * @internal
@@ -44,17 +33,26 @@ const isVector = (arg: unknown): arg is Vector => {
   return Number.isInteger(x) && Number.isInteger(y);
 };
 
-/** An element of a v-canvas. */
+/**
+ * An element of a v-canvas.
+ *
+ * @internal
+ */
 type IVCanvasElement = {
-  get canvas(): VCanvas | undefined;
+  get canvas(): VCanvas;
 };
 
+/** @internal */
 const createElementSvg = document.createElementNS.bind(
   document,
   "http://www.w3.org/2000/svg"
 );
 
-/** Look for the first v-canvas containing the given element. */
+/**
+ * Look for the first v-canvas containing the given element.
+ *
+ * @internal
+ */
 const findCanvas = (initialElement: HTMLElement): VCanvas | undefined => {
   let { parentElement: element } = initialElement;
   while (element) {
@@ -62,6 +60,13 @@ const findCanvas = (initialElement: HTMLElement): VCanvas | undefined => {
     element = element.parentElement;
   }
 };
+
+/** @internal */
+class ErrorCanvasNotFound extends Error {
+  constructor() {
+    super("v-canvas not found");
+  }
+}
 
 /**
  * Create an HTML template element from a string template.
@@ -102,7 +107,7 @@ const obervedAttributes: Record<
   "v-canvas": [],
   "v-pin": ["uid"],
   "v-node": ["x", "y"],
-  "v-edge": ["from", "to"]
+  "v-edge": ["pins"]
 };
 
 /**
@@ -110,7 +115,7 @@ const obervedAttributes: Record<
  *
  * @internal
  */
-const template: Record<TagName, HTMLTemplateElement> = {
+const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
@@ -144,8 +149,6 @@ const template: Record<TagName, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `,
-
-  "v-edge": html`<div></div>`,
 
   "v-node": html`
     <style>
@@ -250,17 +253,13 @@ class VCanvas extends HTMLElement {
     }
   }
 
-  #randomUid(len: number): string {
-    return Math.random()
-      .toString(36)
-      .substring(2, 2 + len);
-  }
-
   #newUid(len = 2) {
     let uid = "";
     let alreadyExists = true;
     while (alreadyExists) {
-      uid = this.#randomUid(len);
+      uid = Math.random()
+        .toString(36)
+        .substring(2, 2 + len);
       alreadyExists = this.#uidSet.has(uid);
       len++;
     }
@@ -272,7 +271,11 @@ class VCanvas extends HTMLElement {
     return this.#uidSet.has(uid);
   }
 
-  /** Add a uid or generate a new one. Return the actual uid registered. */
+  /**
+   * Add a uid or generate a new one. Return the actual uid registered.
+   *
+   * @internal
+   */
   registerUid(wantedUid = this.#newUid()) {
     if (this.#uidSet.has(wantedUid)) {
       const uid = this.#newUid();
@@ -284,6 +287,7 @@ class VCanvas extends HTMLElement {
     }
   }
 
+  /** @internal */
   createLine(start: Vector, end: Vector) {
     const r = "2",
       x1 = `${start.x}`,
@@ -311,6 +315,7 @@ class VCanvas extends HTMLElement {
     this.svg.appendChild(group);
   }
 
+  /** @internal */
   get resizeObserverCallback(): ResizeObserverCallback {
     return (entries) => {
       entries
@@ -327,14 +332,19 @@ class VCanvas extends HTMLElement {
     };
   }
 
+  /** @internal */
   get origin(): Vector {
     return { x: 0, y: 0 };
   }
 
-  /** Get pin by its uid, if any. */
+  /**
+   * Get pin by its uid, if any.
+   *
+   * @internal
+   */
   getPinByUid(uid: string): VPin | undefined {
-    const element = this.querySelector(`v-pin[uid=${uid}]`);
-    if (element instanceof VPin) return element;
+    const element = this.querySelector(`v-pin[uid="${uid}"]`);
+    if (element) return element as VPin;
   }
 }
 
@@ -362,6 +372,7 @@ class VPin extends HTMLElement implements IVCanvasElement {
     newValue: string | null
   ) {
     const { canvas } = this;
+
     if (name == "uid" && canvas) {
       if (newValue) {
         const uid = canvas.registerUid(newValue);
@@ -372,21 +383,25 @@ class VPin extends HTMLElement implements IVCanvasElement {
     }
   }
 
-  connectedCallback() {
-    const { canvas } = this;
-    // Register pin into the canvas with a uid.
-    if (canvas) {
-      const uid = canvas.registerUid(this.uid);
-      if (uid !== this.uid) this.setAttribute("uid", uid);
+  /**
+   * Get the canvas where the pin is rendered.
+   *
+   * @internal
+   */
+  get canvas(): VCanvas {
+    const canvas = this.node?.canvas;
+    if (!canvas) {
+      this.remove();
+      throw new ErrorCanvasNotFound();
     }
+    return canvas;
   }
 
-  /** Get the canvas where the pin is rendered. */
-  get canvas(): VCanvas | undefined {
-    return this.node?.canvas;
-  }
-
-  /** Get the node where the pin is contained. */
+  /**
+   * Get the node where the pin is contained.
+   *
+   * @internal
+   */
   get node(): VNode | undefined {
     if (this.#node) return this.#node;
     // Look for the first v-node containing the pin.
@@ -400,7 +415,11 @@ class VPin extends HTMLElement implements IVCanvasElement {
     }
   }
 
-  /** A pin has an identifier that is unique in the v-canvas that contains it. */
+  /**
+   * A pin has an identifier that is unique in the v-canvas that contains it.
+   *
+   * @internal
+   */
   get uid(): string {
     return this.getAttribute("uid") ?? "";
   }
@@ -429,6 +448,8 @@ class VNode extends HTMLElement implements IVCanvasElement {
     oldValue: string | null,
     newValue: string | null
   ) {
+    const { canvas } = this;
+
     // Handle a position change.
     if (["x", "y"].includes(name)) {
       // Let the attribute to be removed.
@@ -451,19 +472,32 @@ class VNode extends HTMLElement implements IVCanvasElement {
         }
       }
       // Here new value is a stringified integer.
-      const origin: Vector = this.canvas?.origin ?? { x: 0, y: 0 };
+      const origin: Vector = canvas.origin ?? { x: 0, y: 0 };
       if (name == "x") this.style.left = `${newNum - origin.x}em`;
       if (name == "y") this.style.top = `${newNum - origin.y}em`;
     }
   }
 
-  /** Get the canvas where the node is rendered. */
-  get canvas(): VCanvas | undefined {
+  /**
+   * Get the canvas where the node is rendered.
+   *
+   * @internal
+   */
+  get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
-    return (this.#canvas = findCanvas(this));
+    const canvas = findCanvas(this);
+    if (!canvas) {
+      this.remove();
+      throw new ErrorCanvasNotFound();
+    }
+    return (this.#canvas = canvas);
   }
 
-  /** Get the node position in the canvas space. */
+  /**
+   * Get the node position in the canvas space.
+   *
+   * @internal
+   */
   get position(): Vector | undefined {
     const vector = {
       x: parseInt(this.getAttribute("x") ?? ""),
@@ -475,7 +509,9 @@ class VNode extends HTMLElement implements IVCanvasElement {
 }
 
 /**
- * An edge connects two pins.
+ * An edge connects a list of two or more pins.
+ *
+ * @remark A v-edge must be placed in the DOM after the pins it references.
  *
  * @internal
  */
@@ -484,8 +520,6 @@ class VEdge extends HTMLElement implements IVCanvasElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template["v-edge"].content.cloneNode(true));
   }
 
   static get observedAttributes() {
@@ -498,16 +532,29 @@ class VEdge extends HTMLElement implements IVCanvasElement {
     newValue: string | null
   ) {
     const { canvas } = this;
-    if (["from", "to"].includes(name) && canvas && newValue) {
-      const pin = canvas.getPinByUid(newValue);
-      if (!pin) this.removeAttribute(name);
+
+    if (name && canvas && newValue) {
+      const pinUids = newValue
+        .split(",")
+        .map((uid) => uid.trim())
+        .filter((uid) => canvas.getPinByUid(uid));
+      if (pinUids.length < 2) this.removeAttribute("pins");
     }
   }
 
-  /** Get the canvas where the edge is rendered. */
-  get canvas(): VCanvas | undefined {
+  /**
+   * Get the canvas where the edge is rendered.
+   *
+   * @internal
+   */
+  get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
-    return (this.#canvas = findCanvas(this));
+    const canvas = findCanvas(this);
+    if (!canvas) {
+      this.remove();
+      throw new ErrorCanvasNotFound();
+    }
+    return (this.#canvas = canvas);
   }
 }
 

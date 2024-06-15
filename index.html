@@ -39,25 +39,13 @@
         </li>
       </ul>
 
-      <div style="position: relative; height: 100px; margin-bottom: 1em">
-        <v-canvas>
-          <v-node draggable="true" x="2" y="2">
-            <v-pins></v-pins>
-            <v-label>Homer</v-label>
-            <v-pins>
-              <v-pin uid="xxx"></v-pin>
-            </v-pins>
-          </v-node>
-        </v-canvas>
-      </div>
-
       <div class="container">
         <v-canvas>
           <v-node x="6" y="7">
             <v-pins></v-pins>
             <v-label>Homer</v-label>
             <v-pins>
-              <v-pin data-id="dad"></v-pin>
+              <v-pin uid="dad"></v-pin>
             </v-pins>
           </v-node>
 
@@ -65,14 +53,14 @@
             <v-pins></v-pins>
             <v-label>Marge</v-label>
             <v-pins>
-              <v-pin></v-pin>
+              <v-pin uid="mom"></v-pin>
             </v-pins>
           </v-node>
 
           <v-node x="6" y="24">
             <v-pins>
-              <v-pin></v-pin>
-              <v-pin></v-pin>
+              <v-pin uid="bart_parent1"></v-pin>
+              <v-pin uid="bart_parent2"></v-pin>
             </v-pins>
             <v-label>Bart</v-label>
             <v-pins></v-pins>
@@ -80,12 +68,17 @@
 
           <v-node x="22" y="22">
             <v-pins>
-              <v-pin></v-pin>
-              <v-pin></v-pin>
+              <v-pin uid="lisa_parent1"></v-pin>
+              <v-pin uid="lisa_parent2"></v-pin>
             </v-pins>
             <v-label>Lisa</v-label>
             <v-pins></v-pins>
           </v-node>
+
+          <v-edge pins="dad,bart_parent1"></v-edge>
+          <v-edge pins="mom,bart_parent2"></v-edge>
+          <v-edge pins="dad,lisa_parent1"></v-edge>
+          <v-edge pins="mom,lisa_parent2"></v-edge>
         </v-canvas>
       </div>
 

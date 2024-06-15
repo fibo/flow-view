@@ -16,6 +16,7 @@ type TagName =
  *
  * @internal
  */
+// TODO remove this
 const generateUid = (length: number): string =>
   Math.random()
     .toString(36)
@@ -217,7 +218,7 @@ const template: Record<TagName, HTMLTemplateElement> = {
  * @internal
  */
 class VCanvas extends HTMLElement {
-  #pinMap = new Map<string, VPin>();
+  #uidSet = new Set<string>();
   readonly svg = createElementSvg("svg");
 
   constructor() {
@@ -239,7 +240,8 @@ class VCanvas extends HTMLElement {
   connectedCallback() {
     new ResizeObserver(this.resizeObserverCallback).observe(this);
 
-    this.addEventListener("resize", this);
+    this.createLine({ x: 10, y: 10 }, { x: 100, y: 100 });
+
     this.addEventListener("pointerdown", this);
   }
 
@@ -248,22 +250,81 @@ class VCanvas extends HTMLElement {
     }
   }
 
-  get resizeObserverCallback(): ResizeObserverCallback {
-    return (entries) => {
-      for (let entry of entries) {
-        if (entry.target !== this) continue;
-        const { inlineSize, blockSize } = entry.contentBoxSize[0];
-        // TODO create helper like coerceToCoordinate to be reused also inside v-node
-        this.resizeSvg({ x: Math.floor(inlineSize), y: Math.floor(blockSize) });
-      }
-    };
+  #randomUid(len: number): string {
+    return Math.random()
+      .toString(36)
+      .substring(2, 2 + len);
   }
 
-  resizeSvg({ x, y }: Vector) {
-    const { svg } = this;
-    svg.setAttribute("width", `${x}`);
-    svg.setAttribute("height", `${y}`);
-    svg.setAttribute("viewBox", `0 0 ${x} ${y}`);
+  #newUid(len = 2) {
+    let uid = "";
+    let alreadyExists = true;
+    while (alreadyExists) {
+      uid = this.#randomUid(len);
+      alreadyExists = this.#uidSet.has(uid);
+      len++;
+    }
+    this.#uidSet.add(uid);
+    return uid;
+  }
+
+  uidAlreadyExists(uid: string) {
+    return this.#uidSet.has(uid);
+  }
+
+  /** Add a uid or generate a new one. Return the actual uid registered. */
+  registerUid(wantedUid = this.#newUid()) {
+    if (this.#uidSet.has(wantedUid)) {
+      const uid = this.#newUid();
+      this.#uidSet.add(uid);
+      return uid;
+    } else {
+      this.#uidSet.add(wantedUid);
+      return wantedUid;
+    }
+  }
+
+  createLine(start: Vector, end: Vector) {
+    const r = "2",
+      x1 = `${start.x}`,
+      y1 = `${start.y}`,
+      x2 = `${end.x}`,
+      y2 = `${end.y}`;
+    const group = createElementSvg("g");
+    const circle1 = createElementSvg("circle");
+    circle1.setAttribute("r", r);
+    circle1.setAttribute("cx", x1);
+    circle1.setAttribute("cy", y1);
+    group.appendChild(circle1);
+    const line = createElementSvg("line");
+    line.setAttribute("stroke", "currentColor");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    group.appendChild(line);
+    const circle2 = createElementSvg("circle");
+    circle2.setAttribute("r", r);
+    circle2.setAttribute("cx", x2);
+    circle2.setAttribute("cy", y2);
+    group.appendChild(circle2);
+    this.svg.appendChild(group);
+  }
+
+  get resizeObserverCallback(): ResizeObserverCallback {
+    return (entries) => {
+      entries
+        .filter((entry) => entry.target === this)
+        .forEach(({ contentBoxSize: [boxSize] }) => {
+          const { origin, svg } = this;
+          // TODO create helper like coerceToCoordinate to be reused also inside v-node
+          const x = Math.floor(boxSize.inlineSize),
+            y = Math.floor(boxSize.blockSize);
+          svg.setAttribute("width", `${x}`);
+          svg.setAttribute("height", `${y}`);
+          svg.setAttribute("viewBox", `${origin.x} ${origin.y} ${x} ${y}`);
+        });
+    };
   }
 
   get origin(): Vector {
@@ -272,48 +333,8 @@ class VCanvas extends HTMLElement {
 
   /** Get pin by its uid, if any. */
   getPinByUid(uid: string): VPin | undefined {
-    if (this.#pinMap.has(uid)) return this.#pinMap.get(uid);
     const element = this.querySelector(`v-pin[uid=${uid}]`);
-    if (element instanceof VPin) {
-      this.#pinMap.set(uid, element);
-      return element;
-    }
-  }
-
-  /**
-   * Set the uid of a pin.
-   *
-   * @remark Returns true or false if pin is registered or not.
-   */
-  setPinUid(pin: VPin, uid: string): boolean {
-    if (uid == "") return false;
-    const foundPin = this.#pinMap.get(uid);
-    if (foundPin) {
-      if (foundPin === pin) {
-        if (pin.getAttribute("uid") !== uid) pin.setAttribute("uid", uid);
-        return true;
-      }
-      return false;
-    }
-    this.#pinMap.set(uid, pin);
-    pin.setAttribute("uid", uid);
-    return true;
-  }
-
-  /**
-   * Delete the uid of a pin.
-   *
-   * @remark Returns true or false if pin is registered or not.
-   */
-  deletePinUid(pin: VPin, uid: string): boolean {
-    if (uid == "") return false;
-    const foundPin = this.#pinMap.get(uid);
-    if (foundPin === pin) {
-      pin.removeAttribute("uid");
-    }
-    this.#pinMap.set(uid, pin);
-    pin.setAttribute("uid", uid);
-    return true;
+    if (element instanceof VPin) return element;
   }
 }
 
@@ -340,24 +361,23 @@ class VPin extends HTMLElement implements IVCanvasElement {
     _oldValue: string | null,
     newValue: string | null
   ) {
-    if (name == "uid") {
-      const { canvas } = this;
-      if (canvas) {
-        if (newValue) canvas?.setPinUid(this, newValue);
+    const { canvas } = this;
+    if (name == "uid" && canvas) {
+      if (newValue) {
+        const uid = canvas.registerUid(newValue);
+        if (uid !== newValue) this.removeAttribute("uid");
+      } else {
+        this.setAttribute("uid", canvas.registerUid());
       }
     }
   }
 
   connectedCallback() {
+    const { canvas } = this;
     // Register pin into the canvas with a uid.
-    if (this.canvas) {
-      let uidLength = 3;
-      let uid = this.getAttribute("uid") ?? generateUid(uidLength);
-      let success = false;
-      while (!success) {
-        success = this.canvas.setPinUid(this, uid);
-        uid = generateUid(uidLength++);
-      }
+    if (canvas) {
+      const uid = canvas.registerUid(this.uid);
+      if (uid !== this.uid) this.setAttribute("uid", uid);
     }
   }
 
@@ -477,8 +497,9 @@ class VEdge extends HTMLElement implements IVCanvasElement {
     _oldValue: string | null,
     newValue: string | null
   ) {
-    if (["from", "to"].includes(name) && newValue) {
-      const pin = this.canvas?.getPinByUid(newValue);
+    const { canvas } = this;
+    if (["from", "to"].includes(name) && canvas && newValue) {
+      const pin = canvas.getPinByUid(newValue);
       if (!pin) this.removeAttribute(name);
     }
   }

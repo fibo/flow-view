@@ -12,34 +12,13 @@ type TagName =
   | "v-label";
 
 /**
- * A vector with integer coordinates. To be used in the canvas space.
+ * A vector with integer coordinates.
  *
  * @internal
  */
 type Vector = {
   x: number;
   y: number;
-};
-
-/**
- * A type guard to check if a value is a vector.
- *
- * @internal
- */
-const isVector = (arg: unknown): arg is Vector => {
-  if (!arg || typeof arg != "object") return false;
-  const { x, y } = arg as Partial<Vector>;
-  if (typeof x != "number" || typeof y != "number") return false;
-  return Number.isInteger(x) && Number.isInteger(y);
-};
-
-/**
- * An element of a v-canvas.
- *
- * @internal
- */
-type IVCanvasElement = {
-  get canvas(): VCanvas;
 };
 
 /** @internal */
@@ -53,10 +32,23 @@ const createElementSvg = document.createElementNS.bind(
  *
  * @internal
  */
-const findCanvas = (initialElement: HTMLElement): VCanvas | undefined => {
+const findCanvas = (initialElement: Element): VCanvas | undefined => {
   let { parentElement: element } = initialElement;
   while (element) {
-    if (element instanceof VCanvas) return element;
+    if (element.tagName == "V-CANVAS") return element as VCanvas;
+    element = element.parentElement;
+  }
+};
+
+/**
+ * Look for the first parent element with given tagName.
+ *
+ * @internal
+ */
+const findNode = (initialElement: Element): VNode | undefined => {
+  let { parentElement: element } = initialElement;
+  while (element) {
+    if (element.tagName == "V-NODE") return element as VNode;
     element = element.parentElement;
   }
 };
@@ -221,6 +213,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
  * @internal
  */
 class VCanvas extends HTMLElement {
+  #pinElementMap = new Map<string, Element>();
   #uidSet = new Set<string>();
   readonly svg = createElementSvg("svg");
 
@@ -242,8 +235,6 @@ class VCanvas extends HTMLElement {
 
   connectedCallback() {
     new ResizeObserver(this.resizeObserverCallback).observe(this);
-
-    this.createLine({ x: 10, y: 10 }, { x: 100, y: 100 });
 
     this.addEventListener("pointerdown", this);
   }
@@ -267,24 +258,27 @@ class VCanvas extends HTMLElement {
     return uid;
   }
 
-  uidAlreadyExists(uid: string) {
-    return this.#uidSet.has(uid);
-  }
-
   /**
-   * Add a uid or generate a new one. Return the actual uid registered.
+   * Create a uid and register it. Return the created uid.
    *
    * @internal
    */
-  registerUid(wantedUid = this.#newUid()) {
-    if (this.#uidSet.has(wantedUid)) {
-      const uid = this.#newUid();
-      this.#uidSet.add(uid);
-      return uid;
-    } else {
-      this.#uidSet.add(wantedUid);
-      return wantedUid;
-    }
+  createUid() {
+    const uid = this.#newUid();
+    this.#uidSet.add(uid);
+    return uid;
+  }
+  /**
+   * Register given uid.
+   *
+   * @remark Return a boolean according if the operation was successfull.
+   *
+   * @internal
+   */
+  registerUid(uid: string): boolean {
+    if (this.#uidSet.has(uid)) return false;
+    this.#uidSet.add(uid);
+    return true;
   }
 
   /** @internal */
@@ -315,7 +309,11 @@ class VCanvas extends HTMLElement {
     this.svg.appendChild(group);
   }
 
-  /** @internal */
+  /**
+   * A ResizeObserver callback implementation.
+   *
+   * @internal
+   */
   get resizeObserverCallback(): ResizeObserverCallback {
     return (entries) => {
       entries
@@ -342,9 +340,16 @@ class VCanvas extends HTMLElement {
    *
    * @internal
    */
-  getPinByUid(uid: string): VPin | undefined {
-    const element = this.querySelector(`v-pin[uid="${uid}"]`);
-    if (element) return element as VPin;
+  getPinElementByUid(uid: string): Element | undefined {
+    if (this.#pinElementMap.has(uid)) {
+      return this.#pinElementMap.get(uid);
+    } else {
+      const element = this.querySelector(`v-pin[uid="${uid}"]`);
+      if (element) {
+        this.#pinElementMap.set(uid, element);
+        return element;
+      }
+    }
   }
 }
 
@@ -353,7 +358,7 @@ class VCanvas extends HTMLElement {
  *
  * @internal
  */
-class VPin extends HTMLElement implements IVCanvasElement {
+class VPin extends HTMLElement {
   #node: VNode | undefined;
 
   constructor() {
@@ -373,12 +378,12 @@ class VPin extends HTMLElement implements IVCanvasElement {
   ) {
     const { canvas } = this;
 
-    if (name == "uid" && canvas) {
+    if (name == "uid") {
       if (newValue) {
-        const uid = canvas.registerUid(newValue);
-        if (uid !== newValue) this.removeAttribute("uid");
+        const success = canvas.registerUid(newValue);
+        if (!success) this.removeAttribute("uid");
       } else {
-        this.setAttribute("uid", canvas.registerUid());
+        this.setAttribute("uid", canvas.createUid());
       }
     }
   }
@@ -404,15 +409,8 @@ class VPin extends HTMLElement implements IVCanvasElement {
    */
   get node(): VNode | undefined {
     if (this.#node) return this.#node;
-    // Look for the first v-node containing the pin.
-    let { parentElement: element } = this;
-    while (element) {
-      if (element instanceof VNode) {
-        this.#node = element;
-        return element;
-      }
-      element = element.parentElement;
-    }
+    const node = findNode(this);
+    if (node) return (this.#node = node);
   }
 
   /**
@@ -430,7 +428,7 @@ class VPin extends HTMLElement implements IVCanvasElement {
  *
  * @internal
  */
-class VNode extends HTMLElement implements IVCanvasElement {
+class VNode extends HTMLElement {
   #canvas: VCanvas | undefined;
 
   constructor() {
@@ -448,18 +446,20 @@ class VNode extends HTMLElement implements IVCanvasElement {
     oldValue: string | null,
     newValue: string | null
   ) {
-    const { canvas } = this;
-
     // Handle a position change.
-    if (["x", "y"].includes(name)) {
+    if (name == "x" || name == "y") {
       // Let the attribute to be removed.
       if (newValue === null) return;
       const newNum = parseInt(newValue);
       // Check the new value is an stringified integer.
       if (Number.isInteger(newNum)) {
-        // If new value is a number but not exactly an integer, set the attribute with a correct value.
+        // If new value is a number but not exactly an integer,
+        // set the attribute with a correct value.
         if (String(newNum) !== newValue) {
           this.setAttribute(name, String(newNum));
+        } else {
+          // Update node geometry.
+          this.updateGeometry(name);
         }
       } else {
         // If new value cannot be coerced to integer, try to replace it with the old value.
@@ -471,10 +471,6 @@ class VNode extends HTMLElement implements IVCanvasElement {
           this.setAttribute(name, "0");
         }
       }
-      // Here new value is a stringified integer.
-      const origin: Vector = canvas.origin ?? { x: 0, y: 0 };
-      if (name == "x") this.style.left = `${newNum - origin.x}em`;
-      if (name == "y") this.style.top = `${newNum - origin.y}em`;
     }
   }
 
@@ -493,18 +489,12 @@ class VNode extends HTMLElement implements IVCanvasElement {
     return (this.#canvas = canvas);
   }
 
-  /**
-   * Get the node position in the canvas space.
-   *
-   * @internal
-   */
-  get position(): Vector | undefined {
-    const vector = {
-      x: parseInt(this.getAttribute("x") ?? ""),
-      y: parseInt(this.getAttribute("y") ?? "")
-    };
-    if (!isVector(vector)) return undefined;
-    return vector;
+  /** @internal */
+  updateGeometry(name: "x" | "y") {
+    const { origin } = this.canvas;
+    const value = this.getAttribute(name);
+    if (name == "x") this.style.left = `${Number(value) - origin.x}em`;
+    if (name == "y") this.style.top = `${Number(value) - origin.y}em`;
   }
 }
 
@@ -515,7 +505,7 @@ class VNode extends HTMLElement implements IVCanvasElement {
  *
  * @internal
  */
-class VEdge extends HTMLElement implements IVCanvasElement {
+class VEdge extends HTMLElement {
   #canvas: VCanvas | undefined;
 
   constructor() {
@@ -531,14 +521,24 @@ class VEdge extends HTMLElement implements IVCanvasElement {
     _oldValue: string | null,
     newValue: string | null
   ) {
-    const { canvas } = this;
-
-    if (name && canvas && newValue) {
+    if (name === "pins") {
+      if (!newValue) return;
+      // Get only the pin uids that reference a pin.
       const pinUids = newValue
         .split(",")
         .map((uid) => uid.trim())
-        .filter((uid) => canvas.getPinByUid(uid));
-      if (pinUids.length < 2) this.removeAttribute("pins");
+        .filter((uid) => this.canvas.getPinElementByUid(uid));
+      // An edge connects at least two pins.
+      if (pinUids.length < 2) {
+        this.removeAttribute("pins");
+      } else {
+        const normalizedValue = pinUids.join();
+        if (newValue === normalizedValue) {
+          this.updateGeometry(pinUids);
+        } else {
+          this.setAttribute(name, normalizedValue);
+        }
+      }
     }
   }
 
@@ -555,6 +555,31 @@ class VEdge extends HTMLElement implements IVCanvasElement {
       throw new ErrorCanvasNotFound();
     }
     return (this.#canvas = canvas);
+  }
+
+  /**
+   * Draw the segments that compose the edge.
+   *
+   * @internal
+   */
+  updateGeometry(pinUids: string[]) {
+    const { canvas } = this;
+    const { top, left } = canvas.getBoundingClientRect();
+    for (let i = 0; i < pinUids.length - 1; i++) {
+      const start = canvas.getPinElementByUid(pinUids[i]);
+      const end = canvas.getPinElementByUid(pinUids[i + 1]);
+      console.log(start, end);
+      if (!start || !end) continue;
+      const position1 = start.getBoundingClientRect();
+      const position2 = end.getBoundingClientRect();
+      console.log(position1, position2);
+      /*
+      canvas.createLine(
+        { x: position1.left - left, y: position1.top - top },
+        { x: position2.left - left, y: position2.top - top }
+      );
+      */
+    }
   }
 }
 

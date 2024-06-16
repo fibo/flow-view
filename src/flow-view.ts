@@ -213,7 +213,9 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
  * @internal
  */
 class VCanvas extends HTMLElement {
-  #pinElementMap = new Map<string, Element>();
+  #edgeMap = new Map<Set<string>, VEdge>();
+  #pinMap = new Map<string, VPin>();
+  #segmentsMap = new Map<string, string>();
   #uidSet = new Set<string>();
   readonly svg = createElementSvg("svg");
 
@@ -263,11 +265,30 @@ class VCanvas extends HTMLElement {
    *
    * @internal
    */
-  createUid() {
+  createUid(pin: VPin) {
     const uid = this.#newUid();
     this.#uidSet.add(uid);
+    this.#pinMap.set(uid, pin);
     return uid;
   }
+
+  /** Set the given edge. @internal */
+  setEdge(edge: VEdge) {
+    const pins = edge.pins.split(",");
+    pins.forEach((value, index, array) => {
+      if (index == array.length - 1) return;
+      this.#segmentsMap.set(value, array[index]);
+      console.log(value, this.#pinMap.get(value));
+    });
+    this.#edgeMap.set(new Set(pins), edge);
+    console.log(this.#edgeMap);
+  }
+
+  /** Set the given pin. @internal */
+  setPin(pin: VPin) {
+    this.#pinMap.set(pin.uid, pin);
+  }
+
   /**
    * Register given uid.
    *
@@ -340,16 +361,8 @@ class VCanvas extends HTMLElement {
    *
    * @internal
    */
-  getPinElementByUid(uid: string): Element | undefined {
-    if (this.#pinElementMap.has(uid)) {
-      return this.#pinElementMap.get(uid);
-    } else {
-      const element = this.querySelector(`v-pin[uid="${uid}"]`);
-      if (element) {
-        this.#pinElementMap.set(uid, element);
-        return element;
-      }
-    }
+  getPinElementByUid(uid: string): VPin | undefined {
+    if (this.#pinMap.has(uid)) return this.#pinMap.get(uid);
   }
 }
 
@@ -373,17 +386,31 @@ class VPin extends HTMLElement {
 
   attributeChangedCallback(
     name: (typeof obervedAttributes)["v-pin"][number],
-    _oldValue: string | null,
+    oldValue: string | null,
     newValue: string | null
   ) {
     const { canvas } = this;
 
     if (name == "uid") {
       if (newValue) {
+        const normalizedValue = newValue.trim();
+        if (newValue != normalizedValue) {
+          this.setAttribute(name, normalizedValue);
+          return;
+        }
         const success = canvas.registerUid(newValue);
-        if (!success) this.removeAttribute("uid");
+        if (success) {
+          canvas.setPin(this);
+        } else {
+          this.removeAttribute("uid");
+        }
       } else {
-        this.setAttribute("uid", canvas.createUid());
+        if (oldValue) {
+          this.setAttribute(name, oldValue);
+        } else {
+          this.setAttribute("uid", canvas.createUid(this));
+          canvas.setPin(this);
+        }
       }
     }
   }
@@ -439,6 +466,12 @@ class VNode extends HTMLElement {
 
   static get observedAttributes() {
     return obervedAttributes["v-node"];
+  }
+
+  connectedCallback() {
+    const { canvas } = this;
+    console.log(canvas);
+    console.log(this.getAttribute("x"));
   }
 
   attributeChangedCallback(
@@ -524,21 +557,13 @@ class VEdge extends HTMLElement {
     if (name === "pins") {
       if (!newValue) return;
       // Get only the pin uids that reference a pin.
-      const pinUids = newValue
-        .split(",")
-        .map((uid) => uid.trim())
-        .filter((uid) => this.canvas.getPinElementByUid(uid));
+      const pinUids = newValue.split(",").map((uid) => uid.trim());
       // An edge connects at least two pins.
       if (pinUids.length < 2) {
         this.removeAttribute("pins");
-      } else {
-        const normalizedValue = pinUids.join();
-        if (newValue === normalizedValue) {
-          this.updateGeometry(pinUids);
-        } else {
-          this.setAttribute(name, normalizedValue);
-        }
+        return;
       }
+      this.canvas.setEdge(this);
     }
   }
 
@@ -558,28 +583,13 @@ class VEdge extends HTMLElement {
   }
 
   /**
-   * Draw the segments that compose the edge.
+   * An edge is identified by its pin ids that are a comma separated value in
+   * the pins attribute.
    *
    * @internal
    */
-  updateGeometry(pinUids: string[]) {
-    const { canvas } = this;
-    const { top, left } = canvas.getBoundingClientRect();
-    for (let i = 0; i < pinUids.length - 1; i++) {
-      const start = canvas.getPinElementByUid(pinUids[i]);
-      const end = canvas.getPinElementByUid(pinUids[i + 1]);
-      console.log(start, end);
-      if (!start || !end) continue;
-      const position1 = start.getBoundingClientRect();
-      const position2 = end.getBoundingClientRect();
-      console.log(position1, position2);
-      /*
-      canvas.createLine(
-        { x: position1.left - left, y: position1.top - top },
-        { x: position2.left - left, y: position2.top - top }
-      );
-      */
-    }
+  get pins(): string {
+    return this.getAttribute("pins") ?? "";
   }
 }
 
@@ -612,16 +622,18 @@ class VLabel extends HTMLElement {
 /**
  * All HTML elements.
  *
+ * @remark Order matters, an element could depend on another element to be defined.
+ *
  * @internal
  */
-const htmlElements: Record<TagName, typeof HTMLElement> = {
-  "v-canvas": VCanvas,
-  "v-edge": VEdge,
-  "v-node": VNode,
-  "v-pin": VPin,
-  "v-pins": VPins,
-  "v-label": VLabel
-};
+const htmlElements: Array<[TagName, typeof HTMLElement]> = [
+  ["v-canvas", VCanvas],
+  ["v-node", VNode],
+  ["v-pins", VPins],
+  ["v-pin", VPin],
+  ["v-edge", VEdge],
+  ["v-label", VLabel]
+];
 
 /**
  * Define HTML custom elements v-canvas, v-node, v-edge, etc.
@@ -637,7 +649,7 @@ const htmlElements: Record<TagName, typeof HTMLElement> = {
  * ```
  */
 export const defineFlowViewCustomElements = () => {
-  for (const [elementName, ElementClass] of Object.entries(htmlElements))
+  for (const [elementName, ElementClass] of htmlElements)
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass);
 };

@@ -103,7 +103,7 @@ const obervedAttributes: Record<
   Extract<TagName, "v-canvas" | "v-edge" | "v-node" | "v-pin">,
   string[]
 > = {
-  "v-canvas": [],
+  "v-canvas": ["unit"],
   "v-pin": ["uid"],
   "v-node": ["x", "y"],
   "v-edge": ["pins"]
@@ -238,6 +238,7 @@ const centerOfPin = (pin: VPin): Vector => {
  * @internal
  */
 class VCanvas extends HTMLElement {
+  #isDragging = false;
   #edgeMap = new Map<Set<string>, VEdge>();
   #pinMap = new Map<string, VPin>();
   #segmentsMap = new Map<string, string>();
@@ -252,23 +253,60 @@ class VCanvas extends HTMLElement {
     this.shadowRoot!.appendChild(root);
   }
 
+  static get observedAttributes() {
+    return obervedAttributes["v-canvas"];
+  }
+
   attributeChangedCallback(
-    _name: (typeof obervedAttributes)["v-canvas"][number],
+    name: (typeof obervedAttributes)["v-canvas"][number],
     _oldValue: string | null,
-    _newValue: string | null
+    newValue: string | null
   ) {
     // TODO check x, y (similar to VNode)
+    if (name == "unit") {
+      if (!newValue) return;
+      const num = Number(newValue);
+      if (isNaN(num)) return;
+      this.style.setProperty("--unit", `${num}px`);
+    }
   }
 
   connectedCallback() {
     new ResizeObserver(this.resizeObserverCallback).observe(this);
 
     this.addEventListener("pointerdown", this);
+    this.addEventListener("pointerleave", this);
+    this.addEventListener("pointermove", this);
   }
 
   handleEvent(event: Event) {
     if (event.type == "pointerdown" && event.target == this) {
+      if (this.#isDragging) {
+        this.#startDrag(event);
+      } else {
+        this.#stopDrag(event);
+      }
+      console.log("clc");
     }
+
+    if (event.type == "pointerleave" && event.target == this) {
+      console.log("leave");
+      this.#stopDrag(event);
+    }
+
+    if (event.type == "pointermove" && event.target == this) {
+      console.log("move");
+    }
+  }
+
+  #startDrag(event: Event) {
+    console.log(event);
+    this.#isDragging = true;
+  }
+
+  #stopDrag(event: Event) {
+    console.log(event);
+    this.#isDragging = false;
   }
 
   #newUid(len = 2) {

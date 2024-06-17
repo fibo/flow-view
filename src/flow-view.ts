@@ -60,6 +60,13 @@ class ErrorCanvasNotFound extends Error {
   }
 }
 
+/** @internal */
+class ErrorNodeNotFound extends Error {
+  constructor() {
+    super("v-node not found");
+  }
+}
+
 /**
  * Create an HTML template element from a string template.
  *
@@ -276,13 +283,30 @@ class VCanvas extends HTMLElement {
 
   /** Set the given edge. @internal */
   setEdge(edge: VEdge) {
-    const pins = edge.pins.split(",");
-    pins.forEach((value, index, array) => {
-      if (index == array.length - 1) return;
-      this.#segmentsMap.set(value, array[index]);
-      console.log(value, this.#pinMap.get(value));
-    });
-    this.#edgeMap.set(new Set(pins), edge);
+    // TODO improve this
+    // TODO assuming offsetParent of pin is its node
+    // if (pin.offsetParent!==node) return {x:0,y:0}
+    // TODO should also check that offsetParent of node is canvas
+    // somehow, maybe on connect
+    const centerOfPin = (pin: VPin): Vector => {
+      const { node } = pin;
+
+      return {
+        x: node.offsetLeft + pin.offsetLeft,
+        y: node.offsetTop + pin.offsetTop
+      };
+    };
+
+    const pins = edge.pins
+      .split(",")
+      .map((uid) => this.#pinMap.get(uid))
+      .filter((pin) => !!pin) as VPin[];
+    for (let i = 0; i < pins.length - 1; i++) {
+      const start = pins[i];
+      const end = pins[i + 1];
+      this.createLine(centerOfPin(start), centerOfPin(end));
+    }
+    // this.#edgeMap.set(new Set(pins), edge);
   }
 
   /** Set the given pin. @internal */
@@ -424,7 +448,7 @@ class VPin extends HTMLElement {
    * @internal
    */
   get canvas(): VCanvas {
-    const canvas = this.node?.canvas;
+    const canvas = this.node.canvas;
     if (!canvas) {
       this.remove();
       throw new ErrorCanvasNotFound();
@@ -437,10 +461,14 @@ class VPin extends HTMLElement {
    *
    * @internal
    */
-  get node(): VNode | undefined {
+  get node(): VNode {
     if (this.#node) return this.#node;
     const node = findNode(this);
-    if (node) return (this.#node = node);
+    if (!node) {
+      this.remove();
+      throw new ErrorNodeNotFound();
+    }
+    return (this.#node = node);
   }
 
   /**

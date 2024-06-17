@@ -119,18 +119,20 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
           Roboto,
           sans-serif
         );
-        font-size: var(--unit);
+        --font-size: calc(var(--unit) * 1.6);
+        font-size: var(--font-size);
 
         --transition: var(--flow-view-transition, 200ms ease-in-out);
 
-        background-color: var(--flow-view-background-color, #fefefe);
+        --background-color: var(--flow-view-background-color, #fefefe);
         color: var(--flow-view-text-color, #121212);
 
         @media (prefers-color-scheme: dark) {
-          background-color: var(--flow-view-background-color, #555);
+          --background-color: var(--flow-view-background-color, #555);
           color: var(--flow-view-text-color, #ccc);
         }
 
+        background-color: var(--background-color);
         display: block;
         overflow: hidden;
         position: relative;
@@ -146,8 +148,9 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     <style>
       :host {
         position: absolute;
-        border-radius: 0.5em;
-        padding: 2px;
+        background-color: var(--background-color);
+        border-radius: calc(var(--unit) * 0.5);
+        padding: calc(var(--unit) * 0.2);
         border: 1px solid;
         transition: all var(--transition);
       }
@@ -159,11 +162,11 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     <style>
       :host {
         display: block;
-        width: 1em;
-        height: 1em;
+        width: var(--unit);
+        height: var(--unit);
         border-radius: 50%;
         background-color: currentColor;
-        opacity: 0.8;
+        opacity: 0.7;
         transition: all var(--transition);
       }
       :host(:hover) {
@@ -178,7 +181,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
       :host {
         display: flex;
         justify-content: space-between;
-        min-height: 1em;
+        min-height: var(--unit);
       }
     </style>
     <slot></slot>
@@ -187,8 +190,8 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
   "v-label": html`
     <style>
       :host {
-        font-size: 1.5em;
-        padding-inline: 0.5em;
+        font-size: var(--font-size);
+        padding-inline: var(--unit);
         user-select: none;
       }
     </style>
@@ -265,10 +268,9 @@ class VCanvas extends HTMLElement {
    *
    * @internal
    */
-  createUid(pin: VPin) {
+  createUid() {
     const uid = this.#newUid();
     this.#uidSet.add(uid);
-    this.#pinMap.set(uid, pin);
     return uid;
   }
 
@@ -281,7 +283,6 @@ class VCanvas extends HTMLElement {
       console.log(value, this.#pinMap.get(value));
     });
     this.#edgeMap.set(new Set(pins), edge);
-    console.log(this.#edgeMap);
   }
 
   /** Set the given pin. @internal */
@@ -373,6 +374,7 @@ class VCanvas extends HTMLElement {
  */
 class VPin extends HTMLElement {
   #node: VNode | undefined;
+  #uid = "";
 
   constructor() {
     super();
@@ -385,32 +387,33 @@ class VPin extends HTMLElement {
   }
 
   attributeChangedCallback(
-    name: (typeof obervedAttributes)["v-pin"][number],
-    oldValue: string | null,
+    name: (typeof obervedAttributes)["v-node"][number],
+    _oldValue: string | null,
     newValue: string | null
   ) {
-    const { canvas } = this;
-
+    // Once the uid is registered on connect, it is a readonly value.
     if (name == "uid") {
-      if (newValue) {
-        const normalizedValue = newValue.trim();
-        if (newValue != normalizedValue) {
-          this.setAttribute(name, normalizedValue);
-          return;
-        }
-        const success = canvas.registerUid(newValue);
-        if (success) {
-          canvas.setPin(this);
-        } else {
-          this.removeAttribute("uid");
-        }
+      const uid = this.#uid;
+      if (uid && newValue != uid) this.setAttribute("uid", uid);
+    }
+  }
+
+  connectedCallback() {
+    const { canvas } = this;
+    // Use given uid or create a new one to register the pin.
+    const uidValue = this.getAttribute("uid");
+    if (uidValue) {
+      const normalizedUid = uidValue.trim();
+      const success = canvas.registerUid(normalizedUid);
+      if (success) {
+        this.#uid = normalizedUid;
+        canvas.setPin(this);
+        if (normalizedUid != uidValue) this.setAttribute("uid", normalizedUid);
       } else {
-        if (oldValue) {
-          this.setAttribute(name, oldValue);
-        } else {
-          this.setAttribute("uid", canvas.createUid(this));
-          canvas.setPin(this);
-        }
+        const newUid = canvas.createUid();
+        this.#uid = newUid;
+        this.setAttribute("uid", newUid);
+        canvas.setPin(this);
       }
     }
   }
@@ -446,7 +449,7 @@ class VPin extends HTMLElement {
    * @internal
    */
   get uid(): string {
-    return this.getAttribute("uid") ?? "";
+    return this.#uid;
   }
 }
 
@@ -466,12 +469,6 @@ class VNode extends HTMLElement {
 
   static get observedAttributes() {
     return obervedAttributes["v-node"];
-  }
-
-  connectedCallback() {
-    const { canvas } = this;
-    console.log(canvas);
-    console.log(this.getAttribute("x"));
   }
 
   attributeChangedCallback(
@@ -507,6 +504,19 @@ class VNode extends HTMLElement {
     }
   }
 
+  connectedCallback() {
+    this.addEventListener("pointerdown", this);
+  }
+
+  handleEvent(event: Event) {
+    if (event.type == "pointerdown") {
+      // Move the node on top.
+      // Notice that appendChild will not clone the node, it will move it at the end of the list.
+      // Also, here the parentElement could be the v-canvas: in any case there is at least a v-canvas containing the node.
+      this.parentElement!.appendChild(this);
+    }
+  }
+
   /**
    * Get the canvas where the node is rendered.
    *
@@ -526,8 +536,10 @@ class VNode extends HTMLElement {
   updateGeometry(name: "x" | "y") {
     const { origin } = this.canvas;
     const value = this.getAttribute(name);
-    if (name == "x") this.style.left = `${Number(value) - origin.x}em`;
-    if (name == "y") this.style.top = `${Number(value) - origin.y}em`;
+    if (name == "x")
+      this.style.left = `calc(var(--unit) * ${Number(value) - origin.x})`;
+    if (name == "y")
+      this.style.top = `calc(var(--unit) * ${Number(value) - origin.y})`;
   }
 }
 

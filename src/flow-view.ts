@@ -156,7 +156,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
       :host {
         position: absolute;
         background-color: var(--background-color);
-        border-radius: calc(var(--unit) * 0.5);
+        border-radius: calc(var(--unit) * 0.85);
         padding: calc(var(--unit) * 0.2);
         border: 1px solid;
         transition: all var(--transition);
@@ -204,6 +204,21 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     </style>
     <slot></slot>
   `
+};
+
+// TODO improve this
+// TODO assuming offsetParent of pin is its node
+// if (pin.offsetParent!==node) return {x:0,y:0}
+// TODO should also check that offsetParent of node is canvas
+// somehow, maybe on connect
+const centerOfPin = (pin: VPin): Vector => {
+  const { halfSize, node } = pin;
+  console.log(node.offsetLeft, pin.offsetLeft, pin);
+
+  return {
+    x: node.offsetLeft + pin.offsetLeft + halfSize,
+    y: node.offsetTop + pin.offsetTop + halfSize
+  };
 };
 
 /**
@@ -283,20 +298,6 @@ class VCanvas extends HTMLElement {
 
   /** Set the given edge. @internal */
   setEdge(edge: VEdge) {
-    // TODO improve this
-    // TODO assuming offsetParent of pin is its node
-    // if (pin.offsetParent!==node) return {x:0,y:0}
-    // TODO should also check that offsetParent of node is canvas
-    // somehow, maybe on connect
-    const centerOfPin = (pin: VPin): Vector => {
-      const { node } = pin;
-
-      return {
-        x: node.offsetLeft + pin.offsetLeft,
-        y: node.offsetTop + pin.offsetTop
-      };
-    };
-
     const pins = edge.pins
       .split(",")
       .map((uid) => this.#pinMap.get(uid))
@@ -304,7 +305,11 @@ class VCanvas extends HTMLElement {
     for (let i = 0; i < pins.length - 1; i++) {
       const start = pins[i];
       const end = pins[i + 1];
-      this.createLine(centerOfPin(start), centerOfPin(end));
+      // TODO improve this
+      // is setEdge is called on connect, pins may not get the right data from the DOM
+      setTimeout(() => {
+        this.createLine(centerOfPin(start), centerOfPin(end));
+      }, 1000);
     }
     // this.#edgeMap.set(new Set(pins), edge);
   }
@@ -325,6 +330,10 @@ class VCanvas extends HTMLElement {
     if (this.#uidSet.has(uid)) return false;
     this.#uidSet.add(uid);
     return true;
+  }
+
+  get unit() {
+    return getComputedStyle(this).getPropertyValue("--unit");
   }
 
   /** @internal */
@@ -469,6 +478,15 @@ class VPin extends HTMLElement {
       throw new ErrorNodeNotFound();
     }
     return (this.#node = node);
+  }
+
+  /**
+   * Get half of the pin size in pixels.
+   *
+   * @internal
+   */
+  get halfSize(): number {
+    return Number(parseFloat(this.canvas.unit) / 2);
   }
 
   /**

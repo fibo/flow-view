@@ -3,13 +3,7 @@
  *
  * @internal
  */
-type TagName =
-  | "v-canvas"
-  | "v-edge"
-  | "v-node"
-  | "v-pin"
-  | "v-pins"
-  | "v-label";
+type TagName = "v-canvas" | "v-edge" | "v-node" | "v-pin" | "v-label";
 
 /**
  * A vector with integer coordinates.
@@ -99,12 +93,10 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
  *
  * @internal
  */
-const obervedAttributes: Record<
-  Extract<TagName, "v-canvas" | "v-edge" | "v-node" | "v-pin">,
-  string[]
-> = {
+const obervedAttributes: Record<TagName, string[]> = {
   "v-canvas": ["unit"],
   "v-pin": ["uid"],
+  "v-label": ["text"],
   "v-node": ["x", "y"],
   "v-edge": ["pins"]
 };
@@ -160,9 +152,28 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         padding: calc(var(--unit) * 0.2);
         border: 1px solid;
         transition: all var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      ::slotted(div[slot="ins"]) {
+        display: flex;
+        justify-content: space-between;
+      }
+      ::slotted(div[slot="outs"]) {
+        display: flex;
+        justify-content: space-between;
+      }
+      .pins {
+        min-height: var(--unit);
       }
     </style>
+    <div class="pins">
+      <slot name="ins"></slot>
+    </div>
     <slot></slot>
+    <div class="pins">
+      <slot name="outs"></slot>
+    </div>
   `,
 
   "v-pin": html`
@@ -180,18 +191,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         opacity: 1;
       }
     </style>
-    <slot></slot>
-  `,
-
-  "v-pins": html`
-    <style>
-      :host {
-        display: flex;
-        justify-content: space-between;
-        min-height: var(--unit);
-      }
-    </style>
-    <slot></slot>
   `,
 
   "v-label": html`
@@ -202,7 +201,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         user-select: none;
       }
     </style>
-    <slot></slot>
   `
 };
 
@@ -213,7 +211,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
 // somehow, maybe on connect
 const centerOfPin = (pin: VPin): Vector => {
   const { halfSize, node } = pin;
-  console.log(node.offsetLeft, pin.offsetLeft, pin);
 
   return {
     x: node.offsetLeft + pin.offsetLeft + halfSize,
@@ -282,9 +279,9 @@ class VCanvas extends HTMLElement {
   handleEvent(event: Event) {
     if (event.type == "pointerdown" && event.target == this) {
       if (this.#isDragging) {
-        this.#startDrag(event);
-      } else {
         this.#stopDrag(event);
+      } else {
+        this.#startDrag(event);
       }
       console.log("clc");
     }
@@ -295,17 +292,17 @@ class VCanvas extends HTMLElement {
     }
 
     if (event.type == "pointermove" && event.target == this) {
-      console.log("move");
+      if (this.#isDragging) console.log("move");
     }
   }
 
   #startDrag(event: Event) {
-    console.log(event);
+    console.log("start", event);
     this.#isDragging = true;
   }
 
   #stopDrag(event: Event) {
-    console.log(event);
+    console.log("end", event);
     this.#isDragging = false;
   }
 
@@ -690,28 +687,32 @@ class VEdge extends HTMLElement {
 }
 
 /**
- * Group of pins.
- *
- * @internal
- */
-class VPins extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template["v-pins"].content.cloneNode(true));
-  }
-}
-
-/**
  * Display inline text.
  *
  * @internal
  */
 class VLabel extends HTMLElement {
+  readonly textNode = document.createTextNode("");
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template["v-label"].content.cloneNode(true));
+    const root = template["v-label"].content.cloneNode(true);
+    root.appendChild(this.textNode);
+    this.shadowRoot!.appendChild(root);
+  }
+
+  static get observedAttributes() {
+    return obervedAttributes["v-label"];
+  }
+
+  attributeChangedCallback(
+    name: (typeof obervedAttributes)["v-label"][number],
+    _oldValue: string | null,
+    newValue: string | null
+  ) {
+    if (name == "text") {
+      this.textNode.textContent = newValue;
+    }
   }
 }
 
@@ -725,7 +726,6 @@ class VLabel extends HTMLElement {
 const htmlElements: Array<[TagName, typeof HTMLElement]> = [
   ["v-canvas", VCanvas],
   ["v-node", VNode],
-  ["v-pins", VPins],
   ["v-pin", VPin],
   ["v-edge", VEdge],
   ["v-label", VLabel]

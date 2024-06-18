@@ -42,37 +42,33 @@
       <div class="container">
         <v-canvas>
           <v-node x="6" y="7">
-            <v-pins></v-pins>
-            <v-label>Homer</v-label>
-            <v-pins>
+            <v-label text="Homer"></v-label>
+            <div slot="outs">
               <v-pin uid="dad"></v-pin>
-            </v-pins>
+            </div>
           </v-node>
 
           <v-node x="16" y="7">
-            <v-pins></v-pins>
-            <v-label>Marge</v-label>
-            <v-pins>
+            <v-label text="Marge"></v-label>
+            <div slot="outs">
               <v-pin uid="mom"></v-pin>
-            </v-pins>
+            </div>
           </v-node>
 
           <v-node x="6" y="24">
-            <v-pins>
+            <div slot="ins">
               <v-pin uid="bart_parent1"></v-pin>
               <v-pin uid="bart_parent2"></v-pin>
-            </v-pins>
-            <v-label>Bart</v-label>
-            <v-pins></v-pins>
+            </div>
+            <v-label text="Bart"></v-label>
           </v-node>
 
           <v-node x="22" y="22">
-            <v-pins>
+            <div slot="ins">
               <v-pin uid="lisa_parent1"></v-pin>
               <v-pin uid="lisa_parent2"></v-pin>
-            </v-pins>
-            <v-label>Lisa</v-label>
-            <v-pins></v-pins>
+            </div>
+            <v-label text="Lisa"></v-label>
           </v-node>
 
           <v-edge pins="mom,bart_parent2"></v-edge>

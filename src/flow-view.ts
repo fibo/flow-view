@@ -88,6 +88,13 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
   return template;
 };
 
+const pointerCoordinates = (
+  { clientX, clientY }: PointerEvent,
+  { left, top }: DOMRect
+): Vector => {
+  return { x: Math.round(clientX - left), y: Math.round(clientY - top) };
+};
+
 /**
  * All custom elements observed attributes.
  *
@@ -131,6 +138,8 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
           color: var(--flow-view-text-color, #ccc);
         }
 
+        --origin-x: 0;
+
         background-color: var(--background-color);
         display: block;
         overflow: hidden;
@@ -149,7 +158,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         position: absolute;
         --x: 0;
         --y: 0;
-        left: calc(var(--unit) * var(--x));
+        left: calc(var(--unit) * var(--x) - var(--unit) * var(--origin-x));
         top: calc(var(--unit) * var(--y));
         background-color: var(--background-color);
         border-radius: calc(var(--unit) * 0.85);
@@ -222,6 +231,8 @@ class VCanvas extends HTMLElement {
   #edgeMap = new Map<Set<string>, VEdge>();
   #pinMap = new Map<string, VPin>();
   #segmentsMap = new Map<string, string>();
+  #origin: Vector = { x: 0, y: 0 };
+  #startDragPoint: Vector = { x: 0, y: 0 };
   #uidSet = new Set<string>();
   readonly svg = createElementSvg("svg");
 
@@ -275,17 +286,41 @@ class VCanvas extends HTMLElement {
     }
 
     if (event.type == "pointermove" && event.target == this) {
-      if (this.#isDragging) console.log("move");
+      // if (this.#isDragging) console.log("move");
+      if (this.#isDragging) {
+        const currentX = Number(this.getAttribute("x")) ?? 0;
+        const { x, y } = pointerCoordinates(
+          event as PointerEvent,
+          this.getBoundingClientRect()
+        );
+        console.log("currentX", currentX);
+        console.log(this.#startDragPoint.x - x);
+        this.origin = {
+          x: Math.floor(this.origin.x + (this.#startDragPoint.x - x) / 10),
+          y: this.origin.y
+        };
+        this.setAttribute("x", `${this.#startDragPoint.x - x}`);
+        this.style.setProperty("--x", `${this.#startDragPoint.x - x}`);
+      }
     }
   }
 
   #startDrag(event: Event) {
-    console.log("start", event);
+    const { x, y } = pointerCoordinates(
+      event as PointerEvent,
+      this.getBoundingClientRect()
+    );
+    this.#startDragPoint = { x, y };
+    console.log("start drag", x, y);
     this.#isDragging = true;
   }
 
   #stopDrag(event: Event) {
-    console.log("end", event);
+    const { x, y } = pointerCoordinates(
+      event as PointerEvent,
+      this.getBoundingClientRect()
+    );
+    console.log("stop drag", x, y);
     this.#isDragging = false;
   }
 
@@ -405,7 +440,13 @@ class VCanvas extends HTMLElement {
 
   /** @internal */
   get origin(): Vector {
-    return { x: 0, y: 0 };
+    return { x: this.#origin.x, y: this.#origin.y };
+  }
+
+  /** @internal */
+  set origin({ x, y }: Vector) {
+    if (x == this.#origin.x && y == this.#origin.y) return;
+    if (x != this.#origin.x) this.style.setProperty("--origin-x", `${x}`);
   }
 
   /**

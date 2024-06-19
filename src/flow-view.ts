@@ -6,7 +6,7 @@
 type TagName = "v-canvas" | "v-edge" | "v-node" | "v-pin" | "v-label";
 
 /**
- * A vector with integer coordinates.
+ * A vector in 2d space.
  *
  * @internal
  */
@@ -73,7 +73,7 @@ class ErrorNodeNotFound extends Error {
  *       display: block;
  *     }
  *   </style>
- *   <div><slot></slot></div>
+ *   <slot></slot>
  * `;
  * ```
  *
@@ -147,6 +147,10 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     <style>
       :host {
         position: absolute;
+        --x: 0;
+        --y: 0;
+        left: calc(var(--unit) * var(--x));
+        top: calc(var(--unit) * var(--y));
         background-color: var(--background-color);
         border-radius: calc(var(--unit) * 0.85);
         padding: calc(var(--unit) * 0.2);
@@ -155,25 +159,18 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         display: flex;
         flex-direction: column;
       }
-      ::slotted(div[slot="ins"]) {
-        display: flex;
-        justify-content: space-between;
-      }
-      ::slotted(div[slot="outs"]) {
-        display: flex;
-        justify-content: space-between;
-      }
       .pins {
         min-height: var(--unit);
       }
+      ::slotted(div:is([slot="ins"], [slot="outs"])) {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--unit);
+      }
     </style>
-    <div class="pins">
-      <slot name="ins"></slot>
-    </div>
+    <div class="pins"><slot name="ins"></slot></div>
     <slot></slot>
-    <div class="pins">
-      <slot name="outs"></slot>
-    </div>
+    <div class="pins"><slot name="outs"></slot></div>
   `,
 
   "v-pin": html`
@@ -202,20 +199,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
       }
     </style>
   `
-};
-
-// TODO improve this
-// TODO assuming offsetParent of pin is its node
-// if (pin.offsetParent!==node) return {x:0,y:0}
-// TODO should also check that offsetParent of node is canvas
-// somehow, maybe on connect
-const centerOfPin = (pin: VPin): Vector => {
-  const { halfSize, node } = pin;
-
-  return {
-    x: node.offsetLeft + pin.offsetLeft + halfSize,
-    y: node.offsetTop + pin.offsetTop + halfSize
-  };
 };
 
 /**
@@ -343,7 +326,7 @@ class VCanvas extends HTMLElement {
       // TODO improve this
       // is setEdge is called on connect, pins may not get the right data from the DOM
       setTimeout(() => {
-        this.createLine(centerOfPin(start), centerOfPin(end));
+        this.createLine(start.center, end.center);
       }, 1000);
     }
     // this.#edgeMap.set(new Set(pins), edge);
@@ -501,6 +484,18 @@ class VPin extends HTMLElement {
   }
 
   /**
+   * The coordinates of the pin center in pixels.
+   *
+   * @internal
+   */
+  get center(): Vector {
+    return {
+      x: this.node.offsetLeft + this.offsetLeft + this.halfSize,
+      y: this.node.offsetTop + this.offsetTop + this.halfSize
+    };
+  }
+
+  /**
    * Get the node where the pin is contained.
    *
    * @internal
@@ -559,10 +554,10 @@ class VNode extends HTMLElement {
   ) {
     // Handle a position change.
     if (name == "x" || name == "y") {
-      // Let the attribute to be removed.
+      // Let the attribute to be removed. TODO handle better, should default to 0
       if (newValue === null) return;
       const newNum = parseInt(newValue);
-      // Check the new value is an stringified integer.
+      // Check the new value is a stringified integer.
       if (Number.isInteger(newNum)) {
         // If new value is a number but not exactly an integer,
         // set the attribute with a correct value.
@@ -570,7 +565,8 @@ class VNode extends HTMLElement {
           this.setAttribute(name, String(newNum));
         } else {
           // Update node geometry.
-          this.updateGeometry(name);
+          if (name === "x") this.style.setProperty("--x", newValue);
+          if (name === "y") this.style.setProperty("--y", newValue);
         }
       } else {
         // If new value cannot be coerced to integer, try to replace it with the old value.
@@ -611,16 +607,6 @@ class VNode extends HTMLElement {
       throw new ErrorCanvasNotFound();
     }
     return (this.#canvas = canvas);
-  }
-
-  /** @internal */
-  updateGeometry(name: "x" | "y") {
-    const { origin } = this.canvas;
-    const value = this.getAttribute(name);
-    if (name == "x")
-      this.style.left = `calc(var(--unit) * ${Number(value) - origin.x})`;
-    if (name == "y")
-      this.style.top = `calc(var(--unit) * ${Number(value) - origin.y})`;
   }
 }
 

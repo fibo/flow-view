@@ -117,8 +117,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
-        --unit: var(--flow-view-unit, 10px);
-
         font-family: var(
           --flow-view-font-family,
           system-ui,
@@ -138,8 +136,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
           color: var(--flow-view-text-color, #ccc);
         }
 
-        --origin-x: 0;
-
         background-color: var(--background-color);
         display: block;
         overflow: hidden;
@@ -157,7 +153,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
       :host {
         position: absolute;
         left: calc(var(--unit) * var(--x) - var(--unit) * var(--origin-x));
-        top: calc(var(--unit) * var(--y));
+        top: calc(var(--unit) * var(--y) - var(--unit) * var(--origin-y));
         background-color: var(--background-color);
         border-radius: calc(var(--unit) * 0.85);
         padding: calc(var(--unit) * 0.2);
@@ -225,7 +221,9 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
  * @internal
  */
 class VCanvas extends HTMLElement {
+  #cssProps = document.createElement("style");
   #isDragging = false;
+  #unit = 10;
   #edgeMap = new Map<Set<string>, VEdge>();
   #pinMap = new Map<string, VPin>();
   #segmentsMap = new Map<string, string>();
@@ -238,6 +236,8 @@ class VCanvas extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     const root = template["v-canvas"].content.cloneNode(true);
+    this.#setCssProps();
+    root.insertBefore(this.#cssProps, root.firstChild);
     root.appendChild(this.svg);
     this.shadowRoot!.appendChild(root);
   }
@@ -251,7 +251,7 @@ class VCanvas extends HTMLElement {
     _oldValue: string | null,
     newValue: string | null
   ) {
-    // TODO check x, y (similar to VNode)
+    // TODO check origin (similar to VNode's xy)
     if (name == "unit") {
       if (!newValue) return;
       const num = Number(newValue);
@@ -301,6 +301,15 @@ class VCanvas extends HTMLElement {
         this.style.setProperty("--x", `${this.#startDragPoint.x - x}`);
       }
     }
+  }
+
+  #setCssProps() {
+    this.#cssProps.innerHTML = `
+      :host {
+        --origin-x: ${this.#origin.x};
+        --origin-y: ${this.#origin.y};
+        --unit: ${this.#unit}px;
+      }`;
   }
 
   #startDrag(event: Event) {
@@ -383,10 +392,6 @@ class VCanvas extends HTMLElement {
     return true;
   }
 
-  get unit() {
-    return getComputedStyle(this).getPropertyValue("--unit");
-  }
-
   /** @internal */
   createLine(start: Vector, end: Vector) {
     const r = "2",
@@ -436,15 +441,44 @@ class VCanvas extends HTMLElement {
     };
   }
 
-  /** @internal */
+  /**
+   * Get current origin.
+   *
+   * @internal
+   */
   get origin(): Vector {
     return { x: this.#origin.x, y: this.#origin.y };
   }
 
-  /** @internal */
+  /**
+   * Update origin and related CSS props.
+   *
+   * @internal
+   */
   set origin({ x, y }: Vector) {
     if (x == this.#origin.x && y == this.#origin.y) return;
-    if (x != this.#origin.x) this.style.setProperty("--origin-x", `${x}`);
+    this.#origin = { x, y };
+    this.#setCssProps();
+  }
+
+  /**
+   * Get current unit.
+   *
+   * @internal
+   */
+  get unit() {
+    return this.#unit;
+  }
+
+  /**
+   * Set unit and update related CSS prop.
+   *
+   * @internal
+   */
+  set unit(value: number) {
+    if (value == this.#unit) return;
+    this.#unit = value;
+    this.#setCssProps();
   }
 
   /**
@@ -555,7 +589,7 @@ class VPin extends HTMLElement {
    * @internal
    */
   get halfSize(): number {
-    return Number(parseFloat(this.canvas.unit) / 2);
+    return this.canvas.unit / 2;
   }
 
   /**
@@ -576,11 +610,13 @@ class VPin extends HTMLElement {
 class VNode extends HTMLElement {
   #canvas: VCanvas | undefined;
   #cssProps = document.createElement("style");
+  #position: Vector = { x: 0, y: 0 };
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     const root = template["v-node"].content.cloneNode(true);
+    this.#setCssProps();
     root.insertBefore(this.#cssProps, root.firstChild);
     this.shadowRoot!.appendChild(root);
   }
@@ -596,10 +632,16 @@ class VNode extends HTMLElement {
   ) {
     // Handle a position change.
     if (name == "xy") {
-      if (newValue === null) return this.#resetXY();
+      if (newValue === null) {
+        this.position = { x: 0, y: 0 };
+        return;
+      }
       const [x, y] = newValue.split(",").map((value) => parseInt(value));
-      if (isNaN(x) || isNaN(y)) return this.#resetXY();
-      this.#setCssProps({ x, y });
+      if (isNaN(x) || isNaN(y)) {
+        this.setAttribute(name, "0,0");
+        return;
+      }
+      this.position = { x, y };
     }
   }
 
@@ -616,17 +658,14 @@ class VNode extends HTMLElement {
     }
   }
 
-  #resetXY() {
-    this.setAttribute("xy", "0,0");
-  }
-
-  #setCssProps(position: Vector) {
+  #setCssProps() {
     this.#cssProps.innerHTML = `
       :host {
-        --x: ${position.x};
-        --y: ${position.y};
+        --x: ${this.position.x};
+        --y: ${this.position.y};
       }`;
   }
+
   /**
    * Get the canvas where the node is rendered.
    *
@@ -640,6 +679,26 @@ class VNode extends HTMLElement {
       throw new ErrorCanvasNotFound();
     }
     return (this.#canvas = canvas);
+  }
+
+  /**
+   * Get current position.
+   *
+   * @internal
+   */
+  get position() {
+    return this.#position;
+  }
+
+  /**
+   * Set position and update related CSS props.
+   *
+   * @internal
+   */
+  set position({ x, y }: Vector) {
+    if (x == this.#position.x && y == this.#position.y) return;
+    this.#position = { x, y };
+    this.#setCssProps();
   }
 }
 

@@ -104,7 +104,7 @@ const obervedAttributes: Record<TagName, string[]> = {
   "v-canvas": ["unit"],
   "v-pin": ["uid"],
   "v-label": ["text"],
-  "v-node": ["x", "y"],
+  "v-node": ["xy"],
   "v-edge": ["pins"]
 };
 
@@ -156,8 +156,6 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     <style>
       :host {
         position: absolute;
-        --x: 0;
-        --y: 0;
         left: calc(var(--unit) * var(--x) - var(--unit) * var(--origin-x));
         top: calc(var(--unit) * var(--y));
         background-color: var(--background-color);
@@ -577,11 +575,14 @@ class VPin extends HTMLElement {
  */
 class VNode extends HTMLElement {
   #canvas: VCanvas | undefined;
+  #cssProps = document.createElement("style");
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template["v-node"].content.cloneNode(true));
+    const root = template["v-node"].content.cloneNode(true);
+    root.insertBefore(this.#cssProps, root.firstChild);
+    this.shadowRoot!.appendChild(root);
   }
 
   static get observedAttributes() {
@@ -590,35 +591,15 @@ class VNode extends HTMLElement {
 
   attributeChangedCallback(
     name: (typeof obervedAttributes)["v-node"][number],
-    oldValue: string | null,
+    _oldValue: string | null,
     newValue: string | null
   ) {
     // Handle a position change.
-    if (name == "x" || name == "y") {
-      // Let the attribute to be removed. TODO handle better, should default to 0
-      if (newValue === null) return;
-      const newNum = parseInt(newValue);
-      // Check the new value is a stringified integer.
-      if (Number.isInteger(newNum)) {
-        // If new value is a number but not exactly an integer,
-        // set the attribute with a correct value.
-        if (String(newNum) !== newValue) {
-          this.setAttribute(name, String(newNum));
-        } else {
-          // Update node geometry.
-          if (name === "x") this.style.setProperty("--x", newValue);
-          if (name === "y") this.style.setProperty("--y", newValue);
-        }
-      } else {
-        // If new value cannot be coerced to integer, try to replace it with the old value.
-        const oldNum = parseInt(oldValue ?? "");
-        if (Number.isInteger(oldNum)) {
-          this.setAttribute(name, String(oldNum));
-        } else {
-          // If old value is not an integer, fallback to zero.
-          this.setAttribute(name, "0");
-        }
-      }
+    if (name == "xy") {
+      if (newValue === null) return this.#resetXY();
+      const [x, y] = newValue.split(",").map((value) => parseInt(value));
+      if (isNaN(x) || isNaN(y)) return this.#resetXY();
+      this.#setCssProps({ x, y });
     }
   }
 
@@ -635,6 +616,17 @@ class VNode extends HTMLElement {
     }
   }
 
+  #resetXY() {
+    this.setAttribute("xy", "0,0");
+  }
+
+  #setCssProps(position: Vector) {
+    this.#cssProps.innerHTML = `
+      :host {
+        --x: ${position.x};
+        --y: ${position.y};
+      }`;
+  }
   /**
    * Get the canvas where the node is rendered.
    *

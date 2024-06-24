@@ -2,10 +2,19 @@
  * Common styles for flow-view documentation and demos.
  */
 
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
+:root {
+  --background-color: #eee;
+  --text-color: #1c1c1c;
+  --heading-font-family: Georgia, serif;
+  --title-margin: 0.5rem;
+  --title-line-height: 3rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #40464a;
+    --text-color: #cbd0c7;
+  }
 }
 
 body {
@@ -13,64 +22,89 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  color: #1c1c1c;
-  background: #eee;
+  padding-inline: min(max(0.5em, 3vw), 5em);
+  color: var(--text-color);
+  background-color: var(--background-color);
   font-family: Verdana, sans-serif;
   font-size: 18px;
   display: flex;
   flex-direction: column;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #40464a;
-    color: #cbd0c7;
+body.layout {
+  display: grid;
+  grid-template-areas: "header" "navigation" "content" "footer";
+  gap: 0.5em;
+}
+
+@media (min-width: 800px) {
+  body.layout {
+    grid-template-columns: 1fr 3fr;
+    grid-template-areas:
+      "header header"
+      "navigation content"
+      "footer footer";
   }
 }
 
-main {
-  padding: 1em;
+header {
+  grid-area: header;
+}
+
+header h1 {
+  font-size: 3em;
+  font-family: var(--heading-font-family);
+  margin: 1rem;
+}
+
+header blockquote {
+  font-size: 1.2em;
+  margin: .5rem;
+  font-family: var(--heading-font-family);
+
+  &::before {
+    content: open-quote;
+    font-size: 1.7em;
+  }
+}
+
+nav.navigation {
+  grid-area: navigation;
+}
+
+.navigation h3 {
+  margin: var(--title-margin);
+  line-height: var(--title-line-height);
+}
+
+.navigation ul {
+  margin: 0;
+  padding: 0;
+  padding-inline: 1.5em;
+  list-style-type: none;
+  line-height: 1.8em;
+}
+
+.navigation ul li a {
+  white-space: nowrap;
+}
+
+main.content {
+  grid-area: content;
   flex-grow: 1;
   max-width: 80ch;
 }
 
-main,
-footer {
-  padding-left: min(max(0.17em, 7vw), 10em);
-}
-
-h1 {
-  font-size: 3em;
-  font-family: Georgia, serif;
-}
-
-blockquote {
-  font-size: 1.2em;
-  margin: 2rem;
-  font-family: Georgia, serif;
-}
-blockquote::before {
-  content: open-quote;
-  font-size: 1.7em;
-}
-
-ul {
-  padding-left: 2em;
-  padding-right: 1em;
-  margin-top: 2em;
-  margin-bottom: 2em;
-  list-style-type: circle;
-  line-height: 1.4em;
-  word-break: break-word;
-}
-
-section {
-  margin-top: 2em;
+.content article h2 {
+  font-family: var(--heading-font-family);
+  font-size: 2em;
+  margin: var(--title-margin);
+  line-height: var(--title-line-height);
 }
 
 footer {
-  margin-top: 2em;
-  margin-bottom: 1em;
+  grid-area: footer;
+  margin-block: 2em;
 }
 
 a:visited,
@@ -78,8 +112,28 @@ a:active,
 a:link,
 a:hover,
 a:focus {
-  color: #d66c37;
+  color: var(--text-color);
   text-decoration: none;
+}
+
+footer {
+  a:visited,
+  a:active,
+  a:link,
+  a:hover,
+  a:focus {
+    color: #d66c37;
+  }
+}
+
+ul {
+  list-style-type: circle;
+  line-height: 1.6em;
+
+  /*
+   * TODO display checkmark if instruction was done
+   * list-style-type: "\2714";
+   */
 }
 
 button {
@@ -89,20 +143,6 @@ button {
   border-color: #ccc;
   background-color: transparent;
   color: inherit;
-}
-
-.container {
-  max-width: 800px;
-  height: 500px;
-}
-
-.container--small {
-  max-width: 400px;
-  height: 250px;
-}
-
-.controls {
-  margin-top: 1em;
 }
 
 code {
@@ -126,3 +166,18 @@ pre {
 pre code {
   color: #ddd;
 }
+
+.v-canvas-container {
+  max-width: 100%;
+  height: 500px;
+}
+
+.container--small {
+  max-width: 400px;
+  height: 250px;
+}
+
+.controls {
+  margin-top: 1em;
+}
+

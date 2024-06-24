@@ -1,0 +1,58 @@
+<article>
+  <style>
+    .containers {
+      display: flex;
+      flex-direction: row;
+      gap: 1em;
+    }
+
+    .v-canvas-container {
+      max-width: 300px;
+      height: 250px;
+    }
+
+    @media (max-width: 700px) {
+      .containers {
+        flex-direction: column;
+      }
+      .v-canvas-container {
+        max-width: 100%;
+      }
+    }
+
+    /* These variables are copied from v-canvas defaults. */
+
+    .light-theme {
+      --flow-view-text-color: #121212;
+      --flow-view-background-color: #fefefe;
+    }
+
+    .dark-theme {
+      --flow-view-text-color: #ccc;
+      --flow-view-background-color: #555;
+    }
+  </style>
+
+  <h2>Color schemes</h2>
+  <p>Flow View supports light and dark themes.</p>
+
+  <div class="containers">
+    <div class="v-canvas-container light-theme">
+      <v-canvas>
+        <v-node xy="10,10"><v-label text="Node"></v-label></v-node>
+      </v-canvas>
+    </div>
+
+    <div class="v-canvas-container dark-theme">
+      <v-canvas>
+        <v-node xy="10,10"><v-label text="Node"></v-label></v-node>
+      </v-canvas>
+    </div>
+  </div>
+
+  <script type="module">
+    import { defineFlowViewCustomElements } from "flow-view";
+
+    defineFlowViewCustomElements();
+  </script>
+</article>

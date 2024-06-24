@@ -1,7 +1,7 @@
 .prettierignore
 .prettierrc.json
-examples/
 index.html
+server.js
+tsconfig*.json
+docs/
 src/
-style.css
-tsconfig.json

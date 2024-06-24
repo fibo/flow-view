@@ -17,8 +17,8 @@
       <p>Nodes and edges are created via API. See code below.</p>
 
       <p>
-        The GHOST button set the <code>ghost</code> attribute to few items, it makes them semi transparent. The NORMAL
-        button reset them.
+        The GHOST button set the <code>ghost</code> attribute to few items, it
+        makes them semi transparent. The NORMAL button reset them.
       </p>
 
       <div class="container">
@@ -59,9 +59,9 @@ const edge2 = flowView.newEdge({
 
     <script type="module">
       // import { FlowView } from 'https://unpkg.com/flow-view';
-      import { FlowView } from "../../index.js"
+      import { FlowView } from "../../index.js";
 
-      const flowView = new FlowView(document.getElementById("element"))
+      const flowView = new FlowView(document.getElementById("element"));
 
       const node1 = flowView.newNode({
         text: "Hello",
@@ -69,52 +69,56 @@ const edge2 = flowView.newEdge({
         outs: [{ id: "output1" }],
         x: 100,
         y: 100
-      })
+      });
 
       const node2 = flowView.newNode({
         text: "World",
         ins: [{ id: "input1" }, { id: "ghost" }],
         x: 250,
         y: 400
-      })
+      });
       const node3 = flowView.newNode({
         text: "ciao",
         outs: [{ id: "saluto" }],
         x: 400,
         y: 280
-      })
+      });
       const edge1 = flowView.newEdge({
         from: [node1.id, "output1"],
         to: [node2.id, "input1"]
-      })
+      });
       const edge2 = flowView.newEdge({
         from: [node3.id, "saluto"],
         to: [node2.id, "ghost"]
-      })
+      });
 
       flowView.onChange(({ action, data }) => {
-        console.log(action, data)
-      })
+        console.log(action, data);
+      });
 
       // Controls
 
-      const ghostButton = document.querySelector("button#ghost")
+      const ghostButton = document.querySelector("button#ghost");
       ghostButton.addEventListener("click", () => {
-        node1.ghost = true
-        node2.input("ghost").ghost = true
-        edge2.ghost = true
-      })
+        node1.ghost = true;
+        node2.input("ghost").ghost = true;
+        edge2.ghost = true;
+      });
 
-      const normalButton = document.querySelector("button#normal")
+      const normalButton = document.querySelector("button#normal");
       normalButton.addEventListener("click", () => {
-        node1.ghost = false
-        node2.input("ghost").ghost = false
-        edge2.ghost = false
-      })
+        node1.ghost = false;
+        node2.input("ghost").ghost = false;
+        edge2.ghost = false;
+      });
     </script>
 
     <footer>
-      Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/programmatic/demo.html">here</a>.
+      Source code
+      <a
+        href="https://github.com/fibo/flow-view/blob/main/examples/programmatic/demo.html"
+        >here</a
+      >.
     </footer>
   </body>
 </html>

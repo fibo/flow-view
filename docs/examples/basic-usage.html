@@ -1,0 +1,102 @@
+<article>
+  <style>
+    .v-canvas-container {
+      max-width: 100%;
+      height: 500px;
+    }
+
+    .controls {
+      margin-top: 1em;
+    }
+
+    ul {
+      list-style-type: circle;
+      line-height: 1.6em;
+    }
+
+    /*
+   * TODO display checkmark if instruction was done
+   * list-style-type: "\2714";
+   */
+
+    button {
+      padding: 0.5em 0.7em;
+      text-transform: uppercase;
+      border-radius: 0.4em;
+      border-color: #ccc;
+      background-color: transparent;
+      color: inherit;
+    }
+  </style>
+
+  <h2>Basic usage</h2>
+
+  <ul>
+    <li>Drag on canvas to translate all items.</li>
+    <li>Click on item to select it.</li>
+    <li>
+      Click while pressing <kbd>SHIFT</kbd> to enable <b>multi</b> selection.
+    </li>
+    <li>Drag from a node output to a node input to create an edge.</li>
+    <li>Drag selected items to translate them.</li>
+    <li>Press <kbd>BACKSPACE</kbd> to delete selected items.</li>
+    <li>Double click on edge to delete it.</li>
+    <li>Double click on canvas to open the <b>selector</b>.</li>
+    <li>
+      Type into the selector then press <kbd>ENTER</kbd> to create a new node.
+    </li>
+  </ul>
+
+  <div class="v-canvas-container">
+    <v-canvas>
+      <v-node xy="6,7">
+        <v-label text="Homer"></v-label>
+        <div slot="outs">
+          <v-pin uid="dad"></v-pin>
+        </div>
+      </v-node>
+
+      <v-node xy="16,7">
+        <v-label text="Marge"></v-label>
+        <div slot="outs">
+          <v-pin uid="mom"></v-pin>
+        </div>
+      </v-node>
+
+      <v-node xy="6,24">
+        <div slot="ins">
+          <v-pin uid="bart_parent1"></v-pin>
+          <v-pin uid="bart_parent2"></v-pin>
+        </div>
+        <v-label text="Bart"></v-label>
+      </v-node>
+
+      <v-node xy="22,22">
+        <div slot="ins">
+          <v-pin uid="lisa_parent1"></v-pin>
+          <v-pin uid="lisa_parent2"></v-pin>
+        </div>
+        <v-label text="Lisa"></v-label>
+      </v-node>
+
+      <v-edge pins="mom,bart_parent2"></v-edge>
+      <v-edge pins="dad,bart_parent1"></v-edge>
+      <v-edge pins="dad,lisa_parent1"></v-edge>
+      <v-edge pins="mom,lisa_parent2"></v-edge>
+    </v-canvas>
+  </div>
+
+  <div class="controls">
+    <button id="reset">Reset</button>
+    <button id="clear">Clear</button>
+    <button id="save">Save</button>
+  </div>
+
+  <a hidden href="" id="download" download="graph.json"></a>
+
+  <script type="module">
+    import { defineFlowViewCustomElements } from "flow-view";
+
+    defineFlowViewCustomElements();
+  </script>
+</article>

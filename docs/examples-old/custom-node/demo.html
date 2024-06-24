@@ -21,21 +21,21 @@
 
     <script type="module">
       // import { FlowView } from 'https://unpkg.com/flow-view';
-      import { FlowView } from "../../index.js"
-      import { FlowViewNodeInfo } from "./info.js"
+      import { FlowView } from "../../index.js";
+      import { FlowViewNodeInfo } from "./info.js";
 
-      const flowView = new FlowView(document.querySelector(".container"))
+      const flowView = new FlowView(document.querySelector(".container"));
 
-      flowView.addNodeClass("info", FlowViewNodeInfo)
+      flowView.addNodeClass("info", FlowViewNodeInfo);
 
       flowView.onChange(({ action, data }) => {
-        console.info(action, data)
-      })
+        console.info(action, data);
+      });
 
       flowView.nodeTextToType((text) => {
-        if (text.indexOf("\n") >= 0) return "info"
-        if (text.indexOf(" ") >= 0) return "info"
-      })
+        if (text.indexOf("\n") >= 0) return "info";
+        if (text.indexOf(" ") >= 0) return "info";
+      });
 
       flowView.loadGraph({
         nodes: [
@@ -53,11 +53,15 @@
             y: 400
           }
         ]
-      })
+      });
     </script>
 
     <footer>
-      Source code <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-node/demo.html">here</a>.
+      Source code
+      <a
+        href="https://github.com/fibo/flow-view/blob/main/examples/custom-node/demo.html"
+        >here</a
+      >.
     </footer>
   </body>
 </html>

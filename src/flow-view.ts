@@ -511,7 +511,7 @@ class VPin extends HTMLElement {
   }
 
   attributeChangedCallback(
-    name: (typeof obervedAttributes)["v-node"][number],
+    name: (typeof obervedAttributes)["v-pin"][number],
     _oldValue: string | null,
     newValue: string | null
   ) {

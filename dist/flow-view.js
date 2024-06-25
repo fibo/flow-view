@@ -74,6 +74,30 @@ const template = {
     </style>
     <slot></slot>
   `,
+    "v-col": html `
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--unit);
+        min-width: var(--unit);
+      }
+    </style>
+    <slot></slot>
+  `,
+    "v-row": html `
+    <style>
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--unit);
+        min-height: var(--unit);
+      }
+    </style>
+    <slot></slot>
+  `,
     "v-node": html `
     <style>
       :host {
@@ -88,18 +112,8 @@ const template = {
         display: flex;
         flex-direction: column;
       }
-      .pins {
-        min-height: var(--unit);
-      }
-      ::slotted(div:is([slot="ins"], [slot="outs"])) {
-        display: flex;
-        justify-content: space-between;
-        gap: var(--unit);
-      }
     </style>
-    <div class="pins"><slot name="ins"></slot></div>
     <slot></slot>
-    <div class="pins"><slot name="outs"></slot></div>
   `,
     "v-pin": html `
     <style>
@@ -127,6 +141,20 @@ const template = {
     </style>
   `
 };
+class VCol extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.appendChild(template["v-col"].content.cloneNode(true));
+    }
+}
+class VRow extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.appendChild(template["v-row"].content.cloneNode(true));
+    }
+}
 class VCanvas extends HTMLElement {
     #cssProps = document.createElement("style");
     #isDragging = false;
@@ -502,7 +530,9 @@ const htmlElements = [
     ["v-node", VNode],
     ["v-pin", VPin],
     ["v-edge", VEdge],
-    ["v-label", VLabel]
+    ["v-label", VLabel],
+    ["v-row", VRow],
+    ["v-col", VCol]
 ];
 export const defineFlowViewCustomElements = () => {
     for (const [elementName, ElementClass] of htmlElements)

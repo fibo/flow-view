@@ -38,6 +38,14 @@
           <li>
             <a href="./docs/examples/color-schemes.html">Color schemes</a>
           </li>
+
+          <li>
+            <a
+              href="./docs/examples/horizontal-layout.html"
+              data-script="./docs/examples/horizontal-layout.js"
+              >Horizontal layout</a
+            >
+          </li>
         </ul>
       </nav>
 
@@ -48,52 +56,14 @@
       </footer>
     </div>
 
-    <script>
-      const contentElement = document.querySelector("main.content");
-      const contentMap = new Map();
-      const anchorSelector = ".navigation a";
-      const selectedClass = "selected";
-
-      const updateNavigation = (anchor) => {
-        document
-          .querySelector(`${anchorSelector}.${selectedClass}`)
-          ?.classList.remove(selectedClass);
-        anchor.classList.add(selectedClass);
-      };
-
-      const updateContent = async (url) => {
-        try {
-          if (contentMap.has(url)) {
-            contentElement.innerHTML = contentMap.get(url);
-          } else {
-            const response = await fetch(url);
-            const content = await response.text();
-            contentMap.set(url, content);
-            contentElement.innerHTML = content;
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      const updateDOM = (anchor) => {
-        updateNavigation(anchor);
-        updateContent(anchor.href);
-      };
+    <script type="module">
+      import { defineFlowViewCustomElements } from "flow-view";
 
       addEventListener("load", () => {
-        for (const anchor of document.querySelectorAll(anchorSelector))
-          anchor.addEventListener("click", (event) => {
-            event.preventDefault();
-            if (event.target.classList.contains(selectedClass)) return;
-            if (!document.startViewTransition) return updateDOM(anchor);
-            document.startViewTransition(() => {
-              updateDOM(anchor);
-            });
-          });
-
-        document.querySelector(anchorSelector).click();
+        defineFlowViewCustomElements();
       });
     </script>
+
+    <script src="./docs/navigation.js"></script>
   </body>
 </html>

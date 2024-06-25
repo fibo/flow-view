@@ -39,6 +39,15 @@ a:focus {
   outline-color: var(--accent-color);
 }
 
+    button {
+      padding: 0.5em 0.7em;
+      text-transform: uppercase;
+      border-radius: 0.4em;
+      border-color: #ccc;
+      background-color: transparent;
+      color: inherit;
+    }
+
 .layout {
   display: grid;
   grid-template-areas: "header" "navigation" "content" "footer";

@@ -1,0 +1,36 @@
+<article>
+  <style>
+    .v-canvas-container {
+      max-width: 100%;
+      height: 500px;
+    }
+  </style>
+
+  <h2>Horizontal layout</h2>
+
+  <div class="v-canvas-container">
+    <v-canvas>
+      <v-node xy="2,10">
+        <v-row>
+          <v-col></v-col>
+          <v-label text="Node1"></v-label>
+          <v-col>
+            <v-pin uid="id1"></v-pin>
+          </v-col>
+        </v-row>
+      </v-node>
+
+      <v-node xy="20,10">
+        <v-row>
+          <v-col>
+            <v-pin uid="id2"></v-pin>
+          </v-col>
+          <v-label text="Node2"></v-label>
+          <v-col></v-col>
+        </v-row>
+      </v-node>
+
+      <v-edge pins="id1,id2"></v-edge>
+    </v-canvas>
+  </div>
+</article>

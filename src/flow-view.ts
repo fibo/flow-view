@@ -3,7 +3,14 @@
  *
  * @internal
  */
-type TagName = "v-canvas" | "v-edge" | "v-node" | "v-pin" | "v-label";
+type TagName =
+  | "v-canvas"
+  | "v-edge"
+  | "v-node"
+  | "v-pin"
+  | "v-label"
+  | "v-row"
+  | "v-col";
 
 /**
  * A vector in 2d space.
@@ -100,7 +107,10 @@ const pointerCoordinates = (
  *
  * @internal
  */
-const obervedAttributes: Record<TagName, string[]> = {
+const obervedAttributes: Record<
+  Exclude<TagName, "v-col" | "v-row">,
+  string[]
+> = {
   "v-canvas": ["unit"],
   "v-pin": ["uid"],
   "v-label": ["text"],
@@ -148,6 +158,32 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     <slot></slot>
   `,
 
+  "v-col": html`
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--unit);
+        min-width: var(--unit);
+      }
+    </style>
+    <slot></slot>
+  `,
+
+  "v-row": html`
+    <style>
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--unit);
+        min-height: var(--unit);
+      }
+    </style>
+    <slot></slot>
+  `,
+
   "v-node": html`
     <style>
       :host {
@@ -162,18 +198,8 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         display: flex;
         flex-direction: column;
       }
-      .pins {
-        min-height: var(--unit);
-      }
-      ::slotted(div:is([slot="ins"], [slot="outs"])) {
-        display: flex;
-        justify-content: space-between;
-        gap: var(--unit);
-      }
     </style>
-    <div class="pins"><slot name="ins"></slot></div>
     <slot></slot>
-    <div class="pins"><slot name="outs"></slot></div>
   `,
 
   "v-pin": html`
@@ -203,6 +229,24 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
     </style>
   `
 };
+
+/** A stack of elements displayed in a column. */
+class VCol extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot!.appendChild(template["v-col"].content.cloneNode(true));
+  }
+}
+
+/** A stack of elements displayed in a row. */
+class VRow extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot!.appendChild(template["v-row"].content.cloneNode(true));
+  }
+}
 
 /**
  * A canvas renders a graph.
@@ -806,7 +850,9 @@ const htmlElements: Array<[TagName, typeof HTMLElement]> = [
   ["v-node", VNode],
   ["v-pin", VPin],
   ["v-edge", VEdge],
-  ["v-label", VLabel]
+  ["v-label", VLabel],
+  ["v-row", VRow],
+  ["v-col", VCol]
 ];
 
 /**

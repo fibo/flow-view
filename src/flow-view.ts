@@ -101,18 +101,20 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
  * @internal
  */
 const pointerCoordinates = (
-  { clientX, clientY }: PointerEvent,
+  { clientX, clientY }: MouseEvent,
   { left, top }: DOMRect
 ): Vector => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) });
 
 /**
- * Coerce the value to a number.
+ * Coerce a value to a positive integer.
  *
  * @internal
  */
-const coerceToNumber = (value: unknown): number | undefined => {
+const coerceToNatural = (value: unknown): number | undefined => {
   const num = Number(value);
-  if (!isNaN(num)) return num;
+  if (isNaN(num)) return;
+  if (num < 1) return;
+  return Math.round(num);
 };
 
 /**
@@ -278,6 +280,15 @@ class VRow extends HTMLElement {
  * @internal
  */
 class VCanvas extends HTMLElement {
+  static eventTypes = [
+    "pointercancel",
+    "pointerdown",
+    "pointerleave",
+    "pointermove",
+    "pointerup",
+    "wheel"
+  ] satisfies Array<keyof GlobalEventHandlersEventMap>;
+  static maxUnit = 25;
   #cssProps = document.createElement("style");
   #unit = 10;
   #edgeMap = new Map<Set<string>, VEdge>();
@@ -313,56 +324,48 @@ class VCanvas extends HTMLElement {
   ) {
     // TODO check origin (similar to VNode's xy)
     if (name == "unit") {
-      const num = coerceToNumber(newValue);
-      if (!num) return;
-      this.unit = num;
+      const value = coerceToNatural(newValue);
+      if (!value || value < 1 || value > VCanvas.maxUnit || value == this.#unit)
+        return;
+      this.#unit = value;
+      this.#setCssProps();
     }
   }
 
   connectedCallback() {
     new ResizeObserver(this.resizeObserverCallback).observe(this);
 
-    this.addEventListener("pointercancel", this);
-    this.addEventListener("pointerdown", this);
-    this.addEventListener("pointerleave", this);
-    this.addEventListener("pointermove", this);
-    this.addEventListener("pointerup", this);
-    this.addEventListener("wheel", this);
+    VCanvas.eventTypes.forEach((eventType) => {
+      this.addEventListener(eventType, this);
+    });
   }
 
   handleEvent(
-    event: GlobalEventHandlersEventMap[
-      | "pointercancel"
-      | "pointerdown"
-      | "pointerleave"
-      | "pointermove"
-      | "pointerup"
-      | "wheel"]
+    event: GlobalEventHandlersEventMap[(typeof VCanvas.eventTypes)[number]]
   ) {
     if (event instanceof PointerEvent && event.target == this) {
       const { type } = event;
-      if (type == "pointercancel" || type == "pointerleave")
+      if (["pointercancel", "pointerleave"].includes(type))
         this.#stopTranslation();
 
       if (type == "pointerdown")
         this.#startTranslation(
-          pointerCoordinates(
-            event as PointerEvent,
-            this.getBoundingClientRect()
-          )
+          pointerCoordinates(event, this.getBoundingClientRect())
         );
 
       if (type == "pointermove" && this.#translation.isActive) {
-        const { unit } = this;
-        const { origin, start } = this.#translation;
-        const { x, y } = pointerCoordinates(
-          event as PointerEvent,
-          this.getBoundingClientRect()
-        );
-        this.origin = {
-          x: Math.floor(origin.x + (start.x - x) / unit),
-          y: Math.floor(origin.y + (start.y - y) / unit)
-        };
+        // TODO change cursor to 'grab' when translating
+        const pointer = pointerCoordinates(event, this.getBoundingClientRect());
+        const x =
+          this.#translation.origin.x +
+          Math.round((this.#translation.start.x - pointer.x) / this.#unit);
+        const y =
+          this.#translation.origin.y +
+          Math.round((this.#translation.start.y - pointer.y) / this.#unit);
+        if (x != this.#origin.x || y != this.#origin.y) {
+          this.#origin = { x, y };
+          this.#setCssProps();
+        }
       }
 
       if (type == "pointerup") this.#stopTranslation();
@@ -370,8 +373,23 @@ class VCanvas extends HTMLElement {
 
     if (event instanceof WheelEvent && event.target != this) {
       event.preventDefault();
-      const delta = Math.floor(event.deltaY / 4);
-      this.unit -= delta;
+      const { origin, unit: currentUnit } = this;
+      const unit = currentUnit - Math.round(event.deltaY / currentUnit);
+      if (unit < 1 || unit > VCanvas.maxUnit || unit == this.#unit) return;
+      const pointer = pointerCoordinates(event, this.getBoundingClientRect());
+      this.#origin = {
+        x:
+          origin.x -
+          Math.round(pointer.x / unit) +
+          Math.round(pointer.x / currentUnit),
+        y:
+          origin.y -
+          Math.round(pointer.y / unit) +
+          Math.round(pointer.y / currentUnit)
+      };
+      this.#unit = unit;
+      // TODO this.setAttribute('unit', `${unit}`)
+      this.#setCssProps();
     }
   }
 
@@ -414,18 +432,7 @@ class VCanvas extends HTMLElement {
    * @internal
    */
   get origin(): Vector {
-    return { x: this.#origin.x, y: this.#origin.y };
-  }
-
-  /**
-   * Update origin and related CSS props.
-   *
-   * @internal
-   */
-  set origin({ x, y }: Vector) {
-    if (x == this.#origin.x && y == this.#origin.y) return;
-    this.#origin = { x, y };
-    this.#setCssProps();
+    return this.#origin;
   }
 
   /**
@@ -435,17 +442,6 @@ class VCanvas extends HTMLElement {
    */
   get unit() {
     return this.#unit;
-  }
-
-  /**
-   * Set unit and update related CSS prop.
-   *
-   * @internal
-   */
-  set unit(value: number) {
-    if (value < 1 || value > 25 || value == this.#unit) return;
-    this.#unit = value;
-    this.#setCssProps();
   }
 
   /**
@@ -674,6 +670,9 @@ class VPin extends HTMLElement {
  * @internal
  */
 class VNode extends HTMLElement {
+  static eventTypes = ["pointerdown"] satisfies Array<
+    keyof GlobalEventHandlersEventMap
+  >;
   #canvas: VCanvas | undefined;
   #cssProps = document.createElement("style");
   #position: Vector = { x: 0, y: 0 };
@@ -712,10 +711,14 @@ class VNode extends HTMLElement {
   }
 
   connectedCallback() {
-    this.addEventListener("pointerdown", this);
+    VNode.eventTypes.forEach((eventType) => {
+      this.addEventListener(eventType, this);
+    });
   }
 
-  handleEvent(event: Event) {
+  handleEvent(
+    event: GlobalEventHandlersEventMap[(typeof VNode.eventTypes)[number]]
+  ) {
     if (event.type == "pointerdown") {
       // Move the node on top.
       // Notice that appendChild will not clone the node, it will move it at the end of the list.

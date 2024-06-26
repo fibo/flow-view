@@ -55,16 +55,9 @@ const findNode = (initialElement: Element): VNode | undefined => {
 };
 
 /** @internal */
-class ErrorCanvasNotFound extends Error {
-  constructor() {
-    super("v-canvas not found");
-  }
-}
-
-/** @internal */
-class ErrorNodeNotFound extends Error {
-  constructor() {
-    super("v-node not found");
+class ErrorItemNotFound extends Error {
+  constructor(tagName: Extract<TagName, "v-canvas" | "v-node">) {
+    super(`${tagName} not found`);
   }
 }
 
@@ -614,6 +607,15 @@ class VPin extends HTMLElement {
   }
 
   /**
+   * The pin size.
+   *
+   * @internal
+   */
+  get size() {
+    return this.canvas.unit;
+  }
+
+  /**
    * Get the canvas where the pin is rendered.
    *
    * @internal
@@ -622,9 +624,21 @@ class VPin extends HTMLElement {
     const canvas = this.node.canvas;
     if (!canvas) {
       this.remove();
-      throw new ErrorCanvasNotFound();
+      throw new ErrorItemNotFound("v-canvas");
     }
     return canvas;
+  }
+
+  /**
+   * The top left coordinates.
+   *
+   * @internal
+   */
+  get position(): Vector {
+    return {
+      x: this.node.offsetLeft + this.offsetLeft,
+      y: this.node.offsetTop + this.offsetTop
+    };
   }
 
   /**
@@ -633,9 +647,10 @@ class VPin extends HTMLElement {
    * @internal
    */
   get center(): Vector {
+    const { position, size } = this;
     return {
-      x: this.node.offsetLeft + this.offsetLeft + this.halfSize,
-      y: this.node.offsetTop + this.offsetTop + this.halfSize
+      x: position.x + size / 2,
+      y: position.y + size / 2
     };
   }
 
@@ -649,18 +664,9 @@ class VPin extends HTMLElement {
     const node = findNode(this);
     if (!node) {
       this.remove();
-      throw new ErrorNodeNotFound();
+      throw new ErrorItemNotFound("v-node");
     }
     return (this.#node = node);
-  }
-
-  /**
-   * Get half of the pin size in pixels.
-   *
-   * @internal
-   */
-  get halfSize(): number {
-    return this.canvas.unit / 2;
   }
 
   /**
@@ -754,7 +760,7 @@ class VNode extends HTMLElement {
     const canvas = findCanvas(this);
     if (!canvas) {
       this.remove();
-      throw new ErrorCanvasNotFound();
+      throw new ErrorItemNotFound("v-node");
     }
     return (this.#canvas = canvas);
   }
@@ -828,7 +834,7 @@ class VEdge extends HTMLElement {
     const canvas = findCanvas(this);
     if (!canvas) {
       this.remove();
-      throw new ErrorCanvasNotFound();
+      throw new ErrorItemNotFound("v-canvas");
     }
     return (this.#canvas = canvas);
   }

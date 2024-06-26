@@ -3,8 +3,8 @@
  */
 
 :root {
-  --background-color: #eee;
-  --text-color: #1c1c1c;
+  --background-color: #edf4f2;
+  --text-color: #170900;
   --accent-color: #d66c37;
   --heading-font-family: Georgia, serif;
   --title-margin: 0.5rem;
@@ -39,14 +39,27 @@ a:focus {
   outline-color: var(--accent-color);
 }
 
-    button {
-      padding: 0.5em 0.7em;
-      text-transform: uppercase;
-      border-radius: 0.4em;
-      border-color: #ccc;
-      background-color: transparent;
-      color: inherit;
+ul {
+  margin-top: 1em;
+  margin-bottom: 2.5em;
+}
+
+pre {
+  background: #222;
+  padding: 0.5em;
+  overflow-x: auto;
+
+  code {
+    font-family: monospace;
+    word-break: break-all;
+    color: #ccc;
+
+    &::selection {
+      background-color: rgba(0, 240, 0, 0.2);
+      color: lightgreen;
     }
+  }
+}
 
 .layout {
   display: grid;
@@ -68,20 +81,22 @@ header {
   grid-area: header;
 }
 
-header h1 {
-  font-size: 3em;
-  font-family: var(--heading-font-family);
-  margin: 1rem;
-}
+header {
+  h1 {
+    font-size: 3em;
+    font-family: var(--heading-font-family);
+    margin: 1rem;
+  }
 
-header blockquote {
-  font-size: 1.2em;
-  margin: 0.5rem;
-  font-family: var(--heading-font-family);
+  blockquote {
+    font-size: 1.2em;
+    margin: 0.5rem;
+    font-family: var(--heading-font-family);
 
-  &::before {
-    content: open-quote;
-    font-size: 1.7em;
+    &::before {
+      content: open-quote;
+      font-size: 1.7em;
+    }
   }
 }
 
@@ -94,8 +109,6 @@ nav.navigation {
   }
 
   ul {
-    margin: 0;
-    padding: 0;
     padding-inline: 1.5em;
     list-style-type: none;
     line-height: 1.8em;
@@ -178,27 +191,3 @@ footer {
     210ms ease-in-out 90ms both fade-in,
     300ms ease-in-out both slide;
 }
-
-/* TODO use this code in programmatic example or remove it
-code {
-  padding: 2px 4px;
-  border-radius: $border-radius;
-  font-family: monospace;
-  word-break: break-all;
-}
-
-code::selection {
-  background-color: rgba(0, 240, 0, 0.2);
-  color: lightgreen;
-}
-
-pre {
-  background: #222;
-  padding: 0.5em;
-  overflow-x: auto;
-}
-
-pre code {
-  color: #ddd;
-}
-*/

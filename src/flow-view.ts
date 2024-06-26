@@ -138,7 +138,7 @@ const observedAttributes: Record<
  *
  * @internal
  */
-const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
+const template: Record<TagName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
@@ -151,7 +151,7 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
         --font-size: calc(var(--unit) * 1.6);
         font-size: var(--font-size);
 
-        --transition: var(--flow-view-transition, 200ms ease-in-out);
+        --transition: 200ms ease-in-out;
 
         --background-color: var(--flow-view-background-color, #fefefe);
         color: var(--flow-view-text-color, #121212);
@@ -215,6 +215,19 @@ const template: Record<Exclude<TagName, "v-edge">, HTMLTemplateElement> = {
       }
     </style>
     <slot></slot>
+  `,
+
+  "v-edge": html`
+    <style>
+      :host {
+        position: absolute;
+        left: var(--left);
+        top: var(--top);
+        width: var(--width, 10px);
+        height: var(--height, 10px);
+        border: 1px solid;
+      }
+    </style>
   `,
 
   "v-pin": html`
@@ -301,7 +314,23 @@ class VCanvas extends HTMLElement {
     start: { x: 0, y: 0 }
   };
   #uidSet = new Set<string>();
-  readonly svg = createElementSvg("svg");
+  #svg = createElementSvg("svg");
+  #resizeObserver = new ResizeObserver((entries) => {
+    for (const {
+      contentBoxSize: [{ blockSize, inlineSize }]
+    } of entries.filter((entry) => entry.target === this)) {
+      const width = Math.round(inlineSize);
+      const height = Math.round(blockSize);
+      const {
+        origin: { x, y },
+        unit
+      } = this;
+      const svg = this.#svg;
+      svg.setAttribute("width", `${width}`);
+      svg.setAttribute("height", `${height}`);
+      svg.setAttribute("viewBox", `${x * unit} ${y * unit} ${width} ${height}`);
+    }
+  });
 
   constructor() {
     super();
@@ -309,7 +338,7 @@ class VCanvas extends HTMLElement {
     const root = template["v-canvas"].content.cloneNode(true);
     this.#setCssProps();
     root.insertBefore(this.#cssProps, root.firstChild);
-    root.appendChild(this.svg);
+    root.appendChild(this.#svg);
     this.shadowRoot!.appendChild(root);
   }
 
@@ -333,11 +362,15 @@ class VCanvas extends HTMLElement {
   }
 
   connectedCallback() {
-    new ResizeObserver(this.resizeObserverCallback).observe(this);
+    this.#resizeObserver.observe(this);
 
     VCanvas.eventTypes.forEach((eventType) => {
       this.addEventListener(eventType, this);
     });
+  }
+
+  disconnectedCallback() {
+    this.#resizeObserver.unobserve(this);
   }
 
   handleEvent(
@@ -516,31 +549,7 @@ class VCanvas extends HTMLElement {
     circle2.setAttribute("cx", x2);
     circle2.setAttribute("cy", y2);
     group.appendChild(circle2);
-    this.svg.appendChild(group);
-  }
-
-  /**
-   * A ResizeObserver callback implementation.
-   *
-   * @internal
-   */
-  get resizeObserverCallback(): ResizeObserverCallback {
-    return (entries) => {
-      entries
-        .filter((entry) => entry.target === this)
-        .forEach(({ contentBoxSize: [boxSize] }) => {
-          const { origin, svg, unit } = this;
-          // TODO create helper like coerceToCoordinate to be reused also inside v-node
-          const width = Math.floor(boxSize.inlineSize),
-            height = Math.floor(boxSize.blockSize);
-          svg.setAttribute("width", `${width}`);
-          svg.setAttribute("height", `${height}`);
-          svg.setAttribute(
-            "viewBox",
-            `${origin.x * unit} ${origin.y * unit} ${width} ${height}`
-          );
-        });
-    };
+    this.#svg.appendChild(group);
   }
 
   /**
@@ -783,6 +792,8 @@ class VEdge extends HTMLElement {
 
   constructor() {
     super();
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot!.appendChild(template["v-edge"].content.cloneNode(true));
   }
 
   static get observedAttributes() {

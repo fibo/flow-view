@@ -30,10 +30,16 @@ const html = (strings, ...expressions) => {
     template.innerHTML = strings.reduce((result, string, index) => result + string + (expressions[index] ?? ""), "");
     return template;
 };
-const pointerCoordinates = ({ clientX, clientY }, { left, top }) => {
-    return { x: Math.round(clientX - left), y: Math.round(clientY - top) };
+const pointerCoordinates = ({ clientX, clientY }, { left, top }) => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) });
+const coerceToNatural = (value) => {
+    const num = Number(value);
+    if (isNaN(num))
+        return;
+    if (num < 1)
+        return;
+    return Math.round(num);
 };
-const obervedAttributes = {
+const observedAttributes = {
     "v-canvas": ["unit"],
     "v-pin": ["uid"],
     "v-label": ["text"],
@@ -53,7 +59,7 @@ const template = {
         --font-size: calc(var(--unit) * 1.6);
         font-size: var(--font-size);
 
-        --transition: var(--flow-view-transition, 200ms ease-in-out);
+        --transition: 200ms ease-in-out;
 
         --background-color: var(--flow-view-background-color, #fefefe);
         color: var(--flow-view-text-color, #121212);
@@ -115,6 +121,18 @@ const template = {
     </style>
     <slot></slot>
   `,
+    "v-edge": html `
+    <style>
+:host {
+        position: absolute;
+        left: var(--left);
+        top: var(--top);
+        width: var(--width, 10px);
+        height: var(--height, 10px);
+        border: 1px solid;
+}
+    </style>
+  `,
     "v-pin": html `
     <style>
       :host {
@@ -156,71 +174,107 @@ class VRow extends HTMLElement {
     }
 }
 class VCanvas extends HTMLElement {
+    static eventTypes = [
+        "pointercancel",
+        "pointerdown",
+        "pointerleave",
+        "pointermove",
+        "pointerup",
+        "wheel"
+    ];
+    static maxUnit = 25;
     #cssProps = document.createElement("style");
-    #isDragging = false;
     #unit = 10;
     #edgeMap = new Map();
     #pinMap = new Map();
     #segmentsMap = new Map();
     #origin = { x: 0, y: 0 };
-    #startDragPoint = { x: 0, y: 0 };
+    #translation = {
+        isActive: false,
+        origin: { x: 0, y: 0 },
+        start: { x: 0, y: 0 }
+    };
     #uidSet = new Set();
-    svg = createElementSvg("svg");
+    #svg = createElementSvg("svg");
+    #resizeObserver = new ResizeObserver((entries) => {
+        for (const { contentBoxSize: [{ blockSize, inlineSize }] } of entries.filter((entry) => entry.target === this)) {
+            const width = Math.round(inlineSize);
+            const height = Math.round(blockSize);
+            const { origin: { x, y }, unit } = this;
+            const svg = this.#svg;
+            svg.setAttribute("width", `${width}`);
+            svg.setAttribute("height", `${height}`);
+            svg.setAttribute("viewBox", `${x * unit} ${y * unit} ${width} ${height}`);
+        }
+    });
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
         const root = template["v-canvas"].content.cloneNode(true);
         this.#setCssProps();
         root.insertBefore(this.#cssProps, root.firstChild);
-        root.appendChild(this.svg);
+        root.appendChild(this.#svg);
         this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return obervedAttributes["v-canvas"];
+        return observedAttributes["v-canvas"];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
         if (name == "unit") {
-            if (!newValue)
+            const value = coerceToNatural(newValue);
+            if (!value || value < 1 || value > VCanvas.maxUnit || value == this.#unit)
                 return;
-            const num = Number(newValue);
-            if (isNaN(num))
-                return;
-            this.style.setProperty("--unit", `${num}px`);
+            this.#unit = value;
+            this.#setCssProps();
         }
     }
     connectedCallback() {
-        new ResizeObserver(this.resizeObserverCallback).observe(this);
-        this.addEventListener("pointerdown", this);
-        this.addEventListener("pointerleave", this);
-        this.addEventListener("pointermove", this);
+        this.#resizeObserver.observe(this);
+        VCanvas.eventTypes.forEach((eventType) => {
+            this.addEventListener(eventType, this);
+        });
+    }
+    disconnectedCallback() {
+        this.#resizeObserver.unobserve(this);
     }
     handleEvent(event) {
-        if (event.type == "pointerdown" && event.target == this) {
-            if (this.#isDragging) {
-                this.#stopDrag(event);
+        if (event instanceof PointerEvent && event.target == this) {
+            const { type } = event;
+            if (["pointercancel", "pointerleave"].includes(type))
+                this.#stopTranslation();
+            if (type == "pointerdown")
+                this.#startTranslation(pointerCoordinates(event, this.getBoundingClientRect()));
+            if (type == "pointermove" && this.#translation.isActive) {
+                const pointer = pointerCoordinates(event, this.getBoundingClientRect());
+                const x = this.#translation.origin.x +
+                    Math.round((this.#translation.start.x - pointer.x) / this.#unit);
+                const y = this.#translation.origin.y +
+                    Math.round((this.#translation.start.y - pointer.y) / this.#unit);
+                if (x != this.#origin.x || y != this.#origin.y) {
+                    this.#origin = { x, y };
+                    this.#setCssProps();
+                }
             }
-            else {
-                this.#startDrag(event);
-            }
-            console.log("clc");
+            if (type == "pointerup")
+                this.#stopTranslation();
         }
-        if (event.type == "pointerleave" && event.target == this) {
-            console.log("leave");
-            this.#stopDrag(event);
-        }
-        if (event.type == "pointermove" && event.target == this) {
-            if (this.#isDragging) {
-                const currentX = Number(this.getAttribute("x")) ?? 0;
-                const { x, y } = pointerCoordinates(event, this.getBoundingClientRect());
-                console.log("currentX", currentX);
-                console.log(this.#startDragPoint.x - x);
-                this.origin = {
-                    x: Math.floor(this.origin.x + (this.#startDragPoint.x - x) / 10),
-                    y: this.origin.y
-                };
-                this.setAttribute("x", `${this.#startDragPoint.x - x}`);
-                this.style.setProperty("--x", `${this.#startDragPoint.x - x}`);
-            }
+        if (event instanceof WheelEvent && event.target != this) {
+            event.preventDefault();
+            const { origin, unit: currentUnit } = this;
+            const unit = currentUnit - Math.round(event.deltaY / currentUnit);
+            if (unit < 1 || unit > VCanvas.maxUnit || unit == this.#unit)
+                return;
+            const pointer = pointerCoordinates(event, this.getBoundingClientRect());
+            this.#origin = {
+                x: origin.x -
+                    Math.round(pointer.x / unit) +
+                    Math.round(pointer.x / currentUnit),
+                y: origin.y -
+                    Math.round(pointer.y / unit) +
+                    Math.round(pointer.y / currentUnit)
+            };
+            this.#unit = unit;
+            this.#setCssProps();
         }
     }
     #setCssProps() {
@@ -231,16 +285,13 @@ class VCanvas extends HTMLElement {
         --unit: ${this.#unit}px;
       }`;
     }
-    #startDrag(event) {
-        const { x, y } = pointerCoordinates(event, this.getBoundingClientRect());
-        this.#startDragPoint = { x, y };
-        console.log("start drag", x, y);
-        this.#isDragging = true;
+    #startTranslation(start) {
+        this.#translation.start = start;
+        this.#translation.origin = this.#origin;
+        this.#translation.isActive = true;
     }
-    #stopDrag(event) {
-        const { x, y } = pointerCoordinates(event, this.getBoundingClientRect());
-        console.log("stop drag", x, y);
-        this.#isDragging = false;
+    #stopTranslation() {
+        this.#translation.isActive = false;
     }
     #newUid(len = 2) {
         let uid = "";
@@ -254,6 +305,12 @@ class VCanvas extends HTMLElement {
         }
         this.#uidSet.add(uid);
         return uid;
+    }
+    get origin() {
+        return this.#origin;
+    }
+    get unit() {
+        return this.#unit;
     }
     createUid() {
         const uid = this.#newUid();
@@ -302,38 +359,7 @@ class VCanvas extends HTMLElement {
         circle2.setAttribute("cx", x2);
         circle2.setAttribute("cy", y2);
         group.appendChild(circle2);
-        this.svg.appendChild(group);
-    }
-    get resizeObserverCallback() {
-        return (entries) => {
-            entries
-                .filter((entry) => entry.target === this)
-                .forEach(({ contentBoxSize: [boxSize] }) => {
-                const { origin, svg } = this;
-                const x = Math.floor(boxSize.inlineSize), y = Math.floor(boxSize.blockSize);
-                svg.setAttribute("width", `${x}`);
-                svg.setAttribute("height", `${y}`);
-                svg.setAttribute("viewBox", `${origin.x} ${origin.y} ${x} ${y}`);
-            });
-        };
-    }
-    get origin() {
-        return { x: this.#origin.x, y: this.#origin.y };
-    }
-    set origin({ x, y }) {
-        if (x == this.#origin.x && y == this.#origin.y)
-            return;
-        this.#origin = { x, y };
-        this.#setCssProps();
-    }
-    get unit() {
-        return this.#unit;
-    }
-    set unit(value) {
-        if (value == this.#unit)
-            return;
-        this.#unit = value;
-        this.#setCssProps();
+        this.#svg.appendChild(group);
     }
     getPinElementByUid(uid) {
         if (this.#pinMap.has(uid))
@@ -349,7 +375,7 @@ class VPin extends HTMLElement {
         this.shadowRoot.appendChild(template["v-pin"].content.cloneNode(true));
     }
     static get observedAttributes() {
-        return obervedAttributes["v-pin"];
+        return observedAttributes["v-pin"];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
         if (name == "uid") {
@@ -410,6 +436,7 @@ class VPin extends HTMLElement {
     }
 }
 class VNode extends HTMLElement {
+    static eventTypes = ["pointerdown"];
     #canvas;
     #cssProps = document.createElement("style");
     #position = { x: 0, y: 0 };
@@ -422,7 +449,7 @@ class VNode extends HTMLElement {
         this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return obervedAttributes["v-node"];
+        return observedAttributes["v-node"];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
         if (name == "xy") {
@@ -439,7 +466,9 @@ class VNode extends HTMLElement {
         }
     }
     connectedCallback() {
-        this.addEventListener("pointerdown", this);
+        VNode.eventTypes.forEach((eventType) => {
+            this.addEventListener(eventType, this);
+        });
     }
     handleEvent(event) {
         if (event.type == "pointerdown") {
@@ -477,9 +506,11 @@ class VEdge extends HTMLElement {
     #canvas;
     constructor() {
         super();
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.appendChild(template["v-edge"].content.cloneNode(true));
     }
     static get observedAttributes() {
-        return obervedAttributes["v-edge"];
+        return observedAttributes["v-edge"];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
         if (name === "pins") {
@@ -517,7 +548,7 @@ class VLabel extends HTMLElement {
         this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return obervedAttributes["v-label"];
+        return observedAttributes["v-label"];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
         if (name == "text") {

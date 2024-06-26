@@ -22,7 +22,11 @@ type Vector = {
   y: number;
 };
 
-/** @internal */
+/**
+ * Util to create an SVG element.
+ *
+ * @internal
+ */
 const createElementSvg = document.createElementNS.bind(
   document,
   "http://www.w3.org/2000/svg"
@@ -127,6 +131,26 @@ const observedAttributes: Record<
 };
 
 /**
+ * All custom elements event types.
+ *
+ * @internal
+ */
+const eventTypes = {
+  "v-canvas": [
+    "pointercancel",
+    "pointerdown",
+    "pointerleave",
+    "pointermove",
+    "pointerup",
+    "wheel"
+  ],
+  "v-node": ["pointerdown"]
+} satisfies Record<
+  Extract<TagName, "v-canvas" | "v-node">,
+  Array<keyof GlobalEventHandlersEventMap>
+>;
+
+/**
  * All custom elements templates.
  *
  * @internal
@@ -214,6 +238,7 @@ const template: Record<TagName, HTMLTemplateElement> = {
     <style>
       :host {
         position: absolute;
+        display: var(--display-edges);
         left: var(--left);
         top: var(--top);
         width: var(--width, 10px);
@@ -286,28 +311,83 @@ class VRow extends HTMLElement {
  * @internal
  */
 class VCanvas extends HTMLElement {
-  static eventTypes = [
-    "pointercancel",
-    "pointerdown",
-    "pointerleave",
-    "pointermove",
-    "pointerup",
-    "wheel"
-  ] satisfies Array<keyof GlobalEventHandlersEventMap>;
-  static maxUnit = 25;
   #cssProps = document.createElement("style");
+
+  /**
+   * The canvas unit expressed in pixels.
+   *
+   * @internal
+   */
   #unit = 10;
+
+  /**
+   * Check if a value is a valid unit.
+   *
+   * @internal
+   */
+  #isValidUnit(value: number): value is number {
+    return value > 1 && value < 25;
+  }
+
+  #allPinsAreRegistered = false;
+
   #edgeMap = new Map<Set<string>, VEdge>();
   #pinMap = new Map<string, VPin>();
   #segmentsMap = new Map<string, string>();
   #origin: Vector = { x: 0, y: 0 };
+
+  /**
+   * Edges need to wait all pins are registered before rendering.
+   *
+   * @remarks
+   * It modifies the --display-edges CSS prop.
+   * @internal
+   */
+  #showEdges = false;
+
+  /**
+   * It holds the info needed for translating the canvas items.
+   *
+   * @internal.
+   */
   #translation = {
     isActive: false,
     origin: { x: 0, y: 0 },
     start: { x: 0, y: 0 }
   };
+
+  /**
+   * It keeps the uids unique.
+   *
+   * @internal.
+   */
   #uidSet = new Set<string>();
+
+  /**
+   * An SVG layer which size is same as the canvas DOM content.
+   *
+   * @internal
+   */
   #svg = createElementSvg("svg");
+
+  #mutationObserver = new MutationObserver((mutationList) => {
+    for (const mutation of mutationList) {
+      if (mutation.type === "childList") {
+        console.log("TODO A child node has been added or removed.");
+      }
+      if (mutation.type === "attributes") {
+        console.log(
+          `TODO The ${mutation.attributeName} attribute was modified.`
+        );
+      }
+    }
+  });
+
+  /**
+   * Sync the SVG layer size with the canvas size.
+   *
+   * @internal
+   */
   #resizeObserver = new ResizeObserver((entries) => {
     for (const {
       contentBoxSize: [{ blockSize, inlineSize }]
@@ -347,27 +427,33 @@ class VCanvas extends HTMLElement {
     // TODO check origin (similar to VNode's xy)
     if (name == "unit") {
       const value = coerceToNatural(newValue);
-      if (!value || value < 1 || value > VCanvas.maxUnit || value == this.#unit)
-        return;
+      if (!value || !this.#isValidUnit(value) || value == this.#unit) return;
       this.#unit = value;
       this.#setCssProps();
     }
   }
 
   connectedCallback() {
+    this.#mutationObserver.observe(this, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+
     this.#resizeObserver.observe(this);
 
-    VCanvas.eventTypes.forEach((eventType) => {
+    eventTypes["v-canvas"].forEach((eventType) => {
       this.addEventListener(eventType, this);
     });
   }
 
   disconnectedCallback() {
+    this.#mutationObserver.disconnect();
     this.#resizeObserver.unobserve(this);
   }
 
   handleEvent(
-    event: GlobalEventHandlersEventMap[(typeof VCanvas.eventTypes)[number]]
+    event: GlobalEventHandlersEventMap[(typeof eventTypes)["v-canvas"][number]]
   ) {
     if (event instanceof PointerEvent && event.target == this) {
       const { type } = event;
@@ -401,7 +487,7 @@ class VCanvas extends HTMLElement {
       event.preventDefault();
       const { origin, unit: currentUnit } = this;
       const unit = currentUnit - Math.round(event.deltaY / currentUnit);
-      if (unit < 1 || unit > VCanvas.maxUnit || unit == this.#unit) return;
+      if (!unit || !this.#isValidUnit(unit) || unit == this.#unit) return;
       const pointer = pointerCoordinates(event, this.getBoundingClientRect());
       this.#origin = {
         x:
@@ -425,6 +511,7 @@ class VCanvas extends HTMLElement {
         --origin-x: ${this.#origin.x};
         --origin-y: ${this.#origin.y};
         --unit: ${this.#unit}px;
+        --display-edges: ${this.#showEdges ? "block" : "none"};
       }`;
   }
 
@@ -502,6 +589,17 @@ class VCanvas extends HTMLElement {
   /** Set the given pin. @internal */
   setPin(pin: VPin) {
     this.#pinMap.set(pin.uid, pin);
+    if (this.#allPinsAreRegistered) return;
+    for (const pinElement of this.querySelectorAll("v-pin")) {
+      const uid = pinElement.getAttribute("uid");
+      if (!uid) continue;
+      if (!this.#pinMap.has(uid)) return;
+    }
+    console.log("all pins are registered");
+    this.#allPinsAreRegistered = true;
+    // All pins are registered here, edges can render.
+    this.#showEdges = true;
+    this.#setCssProps();
   }
 
   /**
@@ -726,13 +824,13 @@ class VNode extends HTMLElement {
   }
 
   connectedCallback() {
-    VNode.eventTypes.forEach((eventType) => {
+    eventTypes["v-node"].forEach((eventType) => {
       this.addEventListener(eventType, this);
     });
   }
 
   handleEvent(
-    event: GlobalEventHandlersEventMap[(typeof VNode.eventTypes)[number]]
+    event: GlobalEventHandlersEventMap[(typeof eventTypes)["v-node"][number]]
   ) {
     if (event.type == "pointerdown") {
       // Move the node on top.

@@ -92,7 +92,7 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
  */
 const pointerCoordinates = (
   { clientX, clientY }: MouseEvent,
-  { left, top }: DOMRect
+  { left, top }: Pick<DOMRect, "left" | "top">
 ): Vector => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) });
 
 /**
@@ -116,7 +116,7 @@ const observedAttributes: Record<
   Exclude<VElementName, "v-col" | "v-row">,
   string[]
 > = {
-  "v-canvas": ["unit"],
+  "v-canvas": [],
   "v-pin": ["uid"],
   "v-label": ["text"],
   "v-node": ["xy"],
@@ -232,11 +232,10 @@ const template: Record<VElementName, HTMLTemplateElement> = {
     <style>
       :host {
         position: absolute;
-        display: var(--display-edges);
         left: var(--left);
         top: var(--top);
-        width: var(--width, 10px);
-        height: var(--height, 10px);
+        width: var(--width);
+        height: var(--height);
         border: 1px solid;
       }
     </style>
@@ -323,22 +322,11 @@ class VCanvas extends HTMLElement {
     return value > 1 && value < 25;
   }
 
-  #allPinsAreRegistered = false;
-
   #edgeMap = new Map<string, VEdge>();
 
   #pinMap = new Map<string, VPin>();
 
   #origin: Vector = { x: 0, y: 0 };
-
-  /**
-   * Edges need to wait all pins are registered before rendering.
-   *
-   * @remarks
-   * It modifies the --display-edges CSS prop.
-   * @internal
-   */
-  #showEdges = false;
 
   /**
    * It holds the info needed for translating the canvas items.
@@ -411,24 +399,6 @@ class VCanvas extends HTMLElement {
     this.shadowRoot!.appendChild(root);
   }
 
-  static get observedAttributes() {
-    return observedAttributes["v-canvas"];
-  }
-
-  attributeChangedCallback(
-    name: (typeof observedAttributes)["v-canvas"][number],
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
-    // TODO check origin (similar to VNode's xy)
-    if (name == "unit") {
-      const value = coerceToNatural(newValue);
-      if (!value || !this.#isValidUnit(value) || value == this.#unit) return;
-      this.#unit = value;
-      this.#setCssProps();
-    }
-  }
-
   connectedCallback() {
     this.#mutationObserver.observe(this, {
       attributes: true,
@@ -476,6 +446,7 @@ class VCanvas extends HTMLElement {
         if (x != this.#origin.x || y != this.#origin.y) {
           this.#origin = { x, y };
           this.#setCssProps();
+          for (const edge of this.#edgeMap.values()) edge.updateRect();
         }
       }
 
@@ -499,8 +470,8 @@ class VCanvas extends HTMLElement {
           Math.round(pointer.y / currentUnit)
       };
       this.#unit = unit;
-      // TODO this.setAttribute('unit', `${unit}`)
       this.#setCssProps();
+      for (const edge of this.#edgeMap.values()) edge.updateRect();
     }
   }
 
@@ -510,7 +481,6 @@ class VCanvas extends HTMLElement {
         --origin-x: ${this.#origin.x};
         --origin-y: ${this.#origin.y};
         --unit: ${this.#unit}px;
-        --display-edges: ${this.#showEdges ? "block" : "none"};
         --cursor: ${this.#translation.isActive ? "grab" : "default"};
       }`;
   }
@@ -529,6 +499,7 @@ class VCanvas extends HTMLElement {
       y: Math.round(this.#origin.y)
     };
     this.#setCssProps();
+    for (const edge of this.#edgeMap.values()) edge.updateRect();
   }
 
   #newUid(len = 2) {
@@ -580,10 +551,7 @@ class VCanvas extends HTMLElement {
    * @internal
    */
   registerEdge(edge: VEdge) {
-    console.log("register", edge);
     this.#edgeMap.set(edge.uid, edge);
-    if (!this.#showEdges) return;
-    edge.updateGeometry();
   }
 
   /**
@@ -602,18 +570,6 @@ class VCanvas extends HTMLElement {
    */
   registerPin(pin: VPin) {
     this.#pinMap.set(pin.uid, pin);
-    if (this.#allPinsAreRegistered) return;
-    for (const pinElement of this.querySelectorAll("v-pin")) {
-      const uid = pinElement.getAttribute("uid");
-      if (!uid) continue;
-      if (!this.#pinMap.has(uid)) return;
-    }
-    this.#allPinsAreRegistered = true;
-    console.log("xx", this.#edgeMap);
-    // All pins are registered here, edges can render.
-    this.#showEdges = true;
-    this.#setCssProps();
-    for (const edge of this.#edgeMap.values()) edge.updateGeometry();
   }
 
   /**
@@ -789,7 +745,6 @@ class VPin extends HTMLElement {
    *
    * @remarks
    * The uid value is synced with the corresponding DOM attribute.
-   * @internal
    */
   get uid(): string {
     return this.#uid;
@@ -797,7 +752,17 @@ class VPin extends HTMLElement {
 }
 
 /**
- * A node can contain pins.
+ * A node can contain pins. It must be inside a canvas.
+ *
+ * @example
+ *
+ * ```html
+ * <v-canvas>
+ *   <v-node>
+ *     <v-label text="Node"></v-label>
+ *   </v-node>
+ * </v-canvas>
+ * ```
  *
  * @internal
  */
@@ -916,7 +881,16 @@ class VEdge extends HTMLElement {
    */
   #uid = "";
 
+  #cssProps = document.createElement("style");
+
   #canvas: VCanvas | undefined;
+
+  #rect: Pick<DOMRect, "left" | "top" | "width" | "height"> = {
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0
+  };
 
   /**
    * A list of uids to connect.
@@ -927,10 +901,40 @@ class VEdge extends HTMLElement {
    */
   #path: string[] = [];
 
+  #svg = {
+    element: createElementSvg("svg"),
+    width: 0,
+    height: 0
+  };
+
+  #setCssProps() {
+    this.#cssProps.innerHTML = `
+      :host {
+        --left: ${this.#rect.left}px;
+        --top: ${this.#rect.top}px;
+        --width: ${this.#rect.width}px;
+        --height: ${this.#rect.height}px;
+      }`;
+  }
+
+  #updateSvgDimension(width: number, height: number) {
+    if (width == this.#svg.width && height == this.#svg.height) return;
+    this.#svg.width = width;
+    this.#svg.height = height;
+    const svg = this.#svg.element;
+    svg.setAttribute("width", `${width}`);
+    svg.setAttribute("height", `${height}`);
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.appendChild(template["v-edge"].content.cloneNode(true));
+    const root = template["v-edge"].content.cloneNode(true);
+    this.#setCssProps();
+    root.insertBefore(this.#cssProps, root.firstChild);
+    root.appendChild(this.#svg.element);
+    this.shadowRoot!.appendChild(root);
   }
 
   static get observedAttributes() {
@@ -967,6 +971,7 @@ class VEdge extends HTMLElement {
     // Create a new uid and register the edge.
     this.#uid = canvas.createUid();
     canvas.registerEdge(this);
+    this.updateRect();
   }
 
   disconnectedCallback() {
@@ -988,20 +993,40 @@ class VEdge extends HTMLElement {
     }
   }
 
-  /**
-   * An edge has an identifier that is unique in the canvas that contains it.
-   *
-   * @internal
-   */
+  /** An edge has an identifier that is unique in the canvas that contains it. */
   get uid(): string {
     return this.#uid;
   }
 
-  updateGeometry() {
+  /** Compute bounds given by edge pins. */
+  updateRect() {
+    let x1 = Infinity,
+      y1 = Infinity,
+      x2 = -Infinity,
+      y2 = -Infinity;
     const { canvas } = this;
     for (const uid of this.#path) {
-      console.log(canvas.getPinElementByUid(uid));
+      const pin = canvas.getPinElementByUid(uid);
+      if (!pin) return;
+      const {
+        position: { x, y },
+        size
+      } = pin;
+      x1 = Math.min(x1, x);
+      y1 = Math.min(y1, y);
+      x2 = Math.max(x2, x + size);
+      y2 = Math.max(y2, y + size);
     }
+    const width = x2 - x1;
+    const height = y2 - y1;
+    this.#rect = {
+      top: y1,
+      left: x1,
+      width,
+      height
+    };
+    this.#setCssProps();
+    this.#updateSvgDimension(width, height);
   }
 }
 

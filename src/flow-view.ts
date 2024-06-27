@@ -172,6 +172,8 @@ const template: Record<VElementName, HTMLTemplateElement> = {
         }
 
         background-color: var(--background-color);
+        cursor: var(--cursor);
+
         display: block;
         overflow: hidden;
         position: relative;
@@ -219,7 +221,6 @@ const template: Record<VElementName, HTMLTemplateElement> = {
         border-radius: calc(var(--unit) * 0.85);
         padding: calc(var(--unit) * 0.2);
         border: 1px solid;
-        transition: all var(--transition);
         display: flex;
         flex-direction: column;
       }
@@ -250,7 +251,7 @@ const template: Record<VElementName, HTMLTemplateElement> = {
         border-radius: 50%;
         background-color: currentColor;
         opacity: 0.7;
-        transition: all var(--transition);
+        transition: opacity var(--transition);
       }
       :host(:hover) {
         opacity: 1;
@@ -461,14 +462,17 @@ class VCanvas extends HTMLElement {
         );
 
       if (type == "pointermove" && this.#translation.isActive) {
-        // TODO change cursor to 'grab' when translating
         const pointer = pointerCoordinates(event, this.getBoundingClientRect());
         const x =
           this.#translation.origin.x +
-          Math.round((this.#translation.start.x - pointer.x) / this.#unit);
+          parseFloat(
+            ((this.#translation.start.x - pointer.x) / this.#unit).toFixed(2)
+          );
         const y =
           this.#translation.origin.y +
-          Math.round((this.#translation.start.y - pointer.y) / this.#unit);
+          parseFloat(
+            ((this.#translation.start.y - pointer.y) / this.#unit).toFixed(2)
+          );
         if (x != this.#origin.x || y != this.#origin.y) {
           this.#origin = { x, y };
           this.#setCssProps();
@@ -507,6 +511,7 @@ class VCanvas extends HTMLElement {
         --origin-y: ${this.#origin.y};
         --unit: ${this.#unit}px;
         --display-edges: ${this.#showEdges ? "block" : "none"};
+        --cursor: ${this.#translation.isActive ? "grab" : "default"};
       }`;
   }
 
@@ -518,6 +523,12 @@ class VCanvas extends HTMLElement {
 
   #stopTranslation() {
     this.#translation.isActive = false;
+    // Snap to unit grid.
+    this.#origin = {
+      x: Math.round(this.#origin.x),
+      y: Math.round(this.#origin.y)
+    };
+    this.#setCssProps();
   }
 
   #newUid(len = 2) {

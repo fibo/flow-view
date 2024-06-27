@@ -48,7 +48,7 @@
         <v-row></v-row>
         <v-label text="Marge"></v-label>
         <v-row>
-          <v-pin uid="mom"></v-pin>
+          <v-pin id="mom"></v-pin>
         </v-row>
       </v-node>
 
@@ -70,10 +70,10 @@
         <v-row></v-row>
       </v-node>
 
-      <v-edge pins="mom,bart_parent2"></v-edge>
-      <v-edge pins="dad,bart_parent1"></v-edge>
-      <v-edge pins="dad,lisa_parent1"></v-edge>
-      <v-edge pins="mom,lisa_parent2"></v-edge>
+      <v-edge path="mom,bart_parent2"></v-edge>
+      <v-edge path="dad,bart_parent1"></v-edge>
+      <v-edge path="dad,lisa_parent1"></v-edge>
+      <v-edge path="mom,lisa_parent2"></v-edge>
     </v-canvas>
   </div>
 </article>

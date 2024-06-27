@@ -3,7 +3,7 @@
  *
  * @internal
  */
-type TagName =
+type VElementName =
   | "v-canvas"
   | "v-edge"
   | "v-node"
@@ -33,37 +33,23 @@ const createElementSvg = document.createElementNS.bind(
 );
 
 /**
- * Look for the first v-canvas containing the given element.
+ * Look for the first parent element with the given name containing the element.
  *
  * @internal
  */
-const findCanvas = (initialElement: Element): VCanvas | undefined => {
+const findParentElement = <ParentElement extends VCanvas | VNode>(
+  parentElementName: VElementName,
+  initialElement: Element
+) => {
   let { parentElement: element } = initialElement;
   while (element) {
-    if (element.tagName == "V-CANVAS") return element as VCanvas;
+    if (element.localName == parentElementName) return element as ParentElement;
     element = element.parentElement;
   }
+  throw new Error(
+    `Parent element ${parentElementName} not found for element ${initialElement}`
+  );
 };
-
-/**
- * Look for the first parent element with given tagName.
- *
- * @internal
- */
-const findNode = (initialElement: Element): VNode | undefined => {
-  let { parentElement: element } = initialElement;
-  while (element) {
-    if (element.tagName == "V-NODE") return element as VNode;
-    element = element.parentElement;
-  }
-};
-
-/** @internal */
-class ErrorItemNotFound extends Error {
-  constructor(tagName: Extract<TagName, "v-canvas" | "v-node">) {
-    super(`${tagName} not found`);
-  }
-}
 
 /**
  * Create an HTML template element from a string template.
@@ -120,7 +106,7 @@ const coerceToNatural = (value: unknown): number | undefined => {
  * @internal
  */
 const observedAttributes: Record<
-  Exclude<TagName, "v-col" | "v-row">,
+  Exclude<VElementName, "v-col" | "v-row">,
   string[]
 > = {
   "v-canvas": ["unit"],
@@ -146,7 +132,7 @@ const eventTypes = {
   ],
   "v-node": ["pointerdown"]
 } satisfies Record<
-  Extract<TagName, "v-canvas" | "v-node">,
+  Extract<VElementName, "v-canvas" | "v-node">,
   Array<keyof GlobalEventHandlersEventMap>
 >;
 
@@ -155,7 +141,7 @@ const eventTypes = {
  *
  * @internal
  */
-const template: Record<TagName, HTMLTemplateElement> = {
+const template: Record<VElementName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
       :host {
@@ -685,7 +671,7 @@ class VPin extends HTMLElement {
   }
 
   connectedCallback() {
-    const { canvas } = this;
+    const canvas = this.node.canvas;
     // Use given uid or create a new one to register the pin.
     const uidValue = this.getAttribute("uid");
     if (uidValue) {
@@ -710,21 +696,7 @@ class VPin extends HTMLElement {
    * @internal
    */
   get size() {
-    return this.canvas.unit;
-  }
-
-  /**
-   * Get the canvas where the pin is rendered.
-   *
-   * @internal
-   */
-  get canvas(): VCanvas {
-    const canvas = this.node.canvas;
-    if (!canvas) {
-      this.remove();
-      throw new ErrorItemNotFound("v-canvas");
-    }
-    return canvas;
+    return this.node.canvas.unit;
   }
 
   /**
@@ -757,14 +729,14 @@ class VPin extends HTMLElement {
    *
    * @internal
    */
-  get node(): VNode {
+  private get node(): VNode {
     if (this.#node) return this.#node;
-    const node = findNode(this);
-    if (!node) {
+    try {
+      return (this.#node = findParentElement<VNode>("v-node", this));
+    } catch (error) {
       this.remove();
-      throw new ErrorItemNotFound("v-node");
+      throw error;
     }
-    return (this.#node = node);
   }
 
   /**
@@ -855,12 +827,12 @@ class VNode extends HTMLElement {
    */
   get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
-    const canvas = findCanvas(this);
-    if (!canvas) {
+    try {
+      return (this.#canvas = findParentElement<VCanvas>("v-canvas", this));
+    } catch (error) {
       this.remove();
-      throw new ErrorItemNotFound("v-node");
+      throw error;
     }
-    return (this.#canvas = canvas);
   }
 
   /**
@@ -929,12 +901,12 @@ class VEdge extends HTMLElement {
    */
   get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
-    const canvas = findCanvas(this);
-    if (!canvas) {
+    try {
+      return (this.#canvas = findParentElement<VCanvas>("v-canvas", this));
+    } catch (error) {
       this.remove();
-      throw new ErrorItemNotFound("v-canvas");
+      throw error;
     }
-    return (this.#canvas = canvas);
   }
 
   /**
@@ -985,7 +957,7 @@ class VLabel extends HTMLElement {
  *
  * @internal
  */
-const htmlElements: Array<[TagName, typeof HTMLElement]> = [
+const htmlElements: Array<[VElementName, typeof HTMLElement]> = [
   ["v-canvas", VCanvas],
   ["v-node", VNode],
   ["v-pin", VPin],

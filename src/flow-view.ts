@@ -1,8 +1,4 @@
-/**
- * All custom elements tag names.
- *
- * @internal
- */
+/** All custom elements tag names. */
 type VElementName =
   | "v-canvas"
   | "v-edge"
@@ -12,31 +8,19 @@ type VElementName =
   | "v-row"
   | "v-col";
 
-/**
- * A vector in 2d space.
- *
- * @internal
- */
+/** A vector in 2d space. */
 type Vector = {
   x: number;
   y: number;
 };
 
-/**
- * Util to create an SVG element.
- *
- * @internal
- */
+/** Util to create an SVG element. */
 const createElementSvg = document.createElementNS.bind(
   document,
   "http://www.w3.org/2000/svg"
 );
 
-/**
- * Look for the first parent element with the given name containing the element.
- *
- * @internal
- */
+/** Look for the first parent element with the given name containing the element. */
 const findParentElement = <ParentElement extends VCanvas | VNode>(
   parentElementName: VElementName,
   initialElement: Element
@@ -51,11 +35,7 @@ const findParentElement = <ParentElement extends VCanvas | VNode>(
   );
 };
 
-/**
- * Normalize uid value.
- *
- * @internal
- */
+/** Normalize uid value. */
 const normalizeUid = (uid: string) => uid.trim();
 
 /**
@@ -73,8 +53,6 @@ const normalizeUid = (uid: string) => uid.trim();
  *   <slot></slot>
  * `;
  * ```
- *
- * @internal
  */
 const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
   const template = document.createElement("template");
@@ -85,21 +63,13 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
   return template;
 };
 
-/**
- * Calculates the coordinates of a pointer event, relative to a DOM element.
- *
- * @internal
- */
+/** Calculates the coordinates of a pointer event, relative to a DOM element. */
 const pointerCoordinates = (
   { clientX, clientY }: MouseEvent,
   { left, top }: Pick<DOMRect, "left" | "top">
 ): Vector => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) });
 
-/**
- * Coerce a value to a positive integer.
- *
- * @internal
- */
+/** Coerce a value to a positive integer. */
 const coerceToNatural = (value: unknown): number | undefined => {
   const num = Number(value);
   if (isNaN(num)) return;
@@ -107,11 +77,7 @@ const coerceToNatural = (value: unknown): number | undefined => {
   return Math.round(num);
 };
 
-/**
- * All custom elements observed attributes.
- *
- * @internal
- */
+/** All custom elements observed attributes. */
 const observedAttributes: Record<
   Exclude<VElementName, "v-col" | "v-row">,
   string[]
@@ -123,11 +89,7 @@ const observedAttributes: Record<
   "v-edge": ["path"]
 };
 
-/**
- * All custom elements event types.
- *
- * @internal
- */
+/** All custom elements event types. */
 const eventTypes = {
   "v-canvas": [
     "pointercancel",
@@ -143,11 +105,7 @@ const eventTypes = {
   Array<keyof GlobalEventHandlersEventMap>
 >;
 
-/**
- * All custom elements templates.
- *
- * @internal
- */
+/** All custom elements templates. */
 const template: Record<VElementName, HTMLTemplateElement> = {
   "v-canvas": html`
     <style>
@@ -300,57 +258,35 @@ class VRow extends HTMLElement {
  *   <v-node x="10" y="10">Hello</v-node>
  * </v-canvas>
  * ```
- *
- * @internal
  */
 class VCanvas extends HTMLElement {
   #cssProps = document.createElement("style");
 
-  /**
-   * The canvas unit expressed in pixels.
-   *
-   * @internal
-   */
+  /** The canvas unit expressed in pixels. */
   #unit = 10;
 
-  /**
-   * Check if a value is a valid unit.
-   *
-   * @internal
-   */
+  /** Check if a value is a valid unit. */
   #isValidUnit(value: number): value is number {
     return value > 1 && value < 25;
   }
 
-  #edgeMap = new Map<string, VEdge>();
+  #edgeSet = new Set<VEdge>();
 
   #pinMap = new Map<string, VPin>();
 
   #origin: Vector = { x: 0, y: 0 };
 
-  /**
-   * It holds the info needed for translating the canvas items.
-   *
-   * @internal.
-   */
+  /** It holds the info needed for translating the canvas items. */
   #translation = {
     isActive: false,
     origin: { x: 0, y: 0 },
     start: { x: 0, y: 0 }
   };
 
-  /**
-   * It keeps the uids unique.
-   *
-   * @internal.
-   */
+  /** It keeps the uids unique. */
   #uidSet = new Set<string>();
 
-  /**
-   * An SVG layer which size is same as the canvas DOM content.
-   *
-   * @internal
-   */
+  /** An SVG layer which size is same as the canvas DOM content. */
   #svg = createElementSvg("svg");
 
   #mutationObserver = new MutationObserver((mutationList) => {
@@ -367,11 +303,7 @@ class VCanvas extends HTMLElement {
     }
   });
 
-  /**
-   * Sync the SVG layer size with the canvas size.
-   *
-   * @internal
-   */
+  /** Sync the SVG layer size with the canvas size. */
   #resizeObserver = new ResizeObserver((entries) => {
     for (const {
       contentBoxSize: [{ blockSize, inlineSize }]
@@ -446,7 +378,7 @@ class VCanvas extends HTMLElement {
         if (x != this.#origin.x || y != this.#origin.y) {
           this.#origin = { x, y };
           this.#setCssProps();
-          for (const edge of this.#edgeMap.values()) edge.updateRect();
+          for (const edge of this.#edgeSet.values()) edge.updateRect();
         }
       }
 
@@ -471,7 +403,7 @@ class VCanvas extends HTMLElement {
       };
       this.#unit = unit;
       this.#setCssProps();
-      for (const edge of this.#edgeMap.values()) edge.updateRect();
+      for (const edge of this.#edgeSet.values()) edge.updateRect();
     }
   }
 
@@ -499,7 +431,7 @@ class VCanvas extends HTMLElement {
       y: Math.round(this.#origin.y)
     };
     this.#setCssProps();
-    for (const edge of this.#edgeMap.values()) edge.updateRect();
+    for (const edge of this.#edgeSet.values()) edge.updateRect();
   }
 
   #newUid(len = 2) {
@@ -516,67 +448,40 @@ class VCanvas extends HTMLElement {
     return uid;
   }
 
-  /**
-   * Get current origin in canvas coordinates.
-   *
-   * @internal
-   */
+  /** Get current origin in canvas coordinates. */
   get origin(): Vector {
     return this.#origin;
   }
 
-  /**
-   * Get current unit.
-   *
-   * @internal
-   */
+  /** Get current unit. */
   get unit() {
     return this.#unit;
   }
 
-  /**
-   * Create a uid and register it. Return the created uid.
-   *
-   * @internal
-   */
+  /** Create a uid and register it. Return the created uid. */
   createUid() {
     const uid = this.#newUid();
     this.#uidSet.add(uid);
     return uid;
   }
 
-  /**
-   * Register the given edge.
-   *
-   * @internal
-   */
+  /** Register the given edge. */
   registerEdge(edge: VEdge) {
-    this.#edgeMap.set(edge.uid, edge);
+    // TODO register and unregister edge could be done via mutation observer
+    this.#edgeSet.add(edge);
   }
 
-  /**
-   * Unregister the given edge.
-   *
-   * @internal
-   */
+  /** Unregister the given edge. */
   unregisterEdge(edge: VEdge) {
-    this.#edgeMap.delete(edge.uid);
+    this.#edgeSet.delete(edge);
   }
 
-  /**
-   * Register the given pin.
-   *
-   * @internal
-   */
+  /** Register the given pin. */
   registerPin(pin: VPin) {
     this.#pinMap.set(pin.uid, pin);
   }
 
-  /**
-   * Unregister the given pin.
-   *
-   * @internal
-   */
+  /** Unregister the given pin. */
   unregisterPin(pin: VPin) {
     this.#pinMap.delete(pin.uid);
   }
@@ -585,8 +490,6 @@ class VCanvas extends HTMLElement {
    * Register given uid.
    *
    * @remark Return a boolean according if the operation was successfull.
-   *
-   * @internal
    */
   registerUid(uid: string): boolean {
     if (this.#uidSet.has(uid)) return false;
@@ -622,27 +525,15 @@ class VCanvas extends HTMLElement {
     this.#svg.appendChild(group);
   }
 
-  /**
-   * Get pin by its uid, if any.
-   *
-   * @internal
-   */
+  /** Get pin by its uid, if any. */
   getPinElementByUid(uid: string): VPin | undefined {
     if (this.#pinMap.has(uid)) return this.#pinMap.get(uid);
   }
 }
 
-/**
- * A pin is the start or the end of an edge.
- *
- * @internal
- */
+/** A pin is the start or the end of an edge. */
 class VPin extends HTMLElement {
-  /**
-   * Unique identifier
-   *
-   * @internal
-   */
+  /** Unique identifier */
   #uid = "";
 
   #node: VNode | undefined;
@@ -691,20 +582,12 @@ class VPin extends HTMLElement {
     this.node.canvas.unregisterPin(this);
   }
 
-  /**
-   * The pin size.
-   *
-   * @internal
-   */
+  /** The pin size. */
   get size() {
     return this.node.canvas.unit;
   }
 
-  /**
-   * The top left coordinates.
-   *
-   * @internal
-   */
+  /** The top left coordinates. */
   get position(): Vector {
     return {
       x: this.node.offsetLeft + this.offsetLeft,
@@ -712,11 +595,7 @@ class VPin extends HTMLElement {
     };
   }
 
-  /**
-   * The coordinates of the pin center in pixels.
-   *
-   * @internal
-   */
+  /** The coordinates of the pin center in pixels. */
   get center(): Vector {
     const { position, size } = this;
     return {
@@ -725,11 +604,7 @@ class VPin extends HTMLElement {
     };
   }
 
-  /**
-   * Get the node where the pin is contained.
-   *
-   * @internal
-   */
+  /** Get the node where the pin is contained. */
   private get node(): VNode {
     if (this.#node) return this.#node;
     try {
@@ -763,8 +638,6 @@ class VPin extends HTMLElement {
  *   </v-node>
  * </v-canvas>
  * ```
- *
- * @internal
  */
 class VNode extends HTMLElement {
   static eventTypes = ["pointerdown"] satisfies Array<
@@ -832,11 +705,7 @@ class VNode extends HTMLElement {
       }`;
   }
 
-  /**
-   * Get the canvas where the node is rendered.
-   *
-   * @internal
-   */
+  /** Get the canvas where the node is rendered. */
   get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
     try {
@@ -847,20 +716,12 @@ class VNode extends HTMLElement {
     }
   }
 
-  /**
-   * Get current position.
-   *
-   * @internal
-   */
+  /** Get current position. */
   get position() {
     return this.#position;
   }
 
-  /**
-   * Set position and update related CSS props.
-   *
-   * @internal
-   */
+  /** Set position and update related CSS props. */
   set position({ x, y }: Vector) {
     if (x == this.#position.x && y == this.#position.y) return;
     this.#position = { x, y };
@@ -868,17 +729,9 @@ class VNode extends HTMLElement {
   }
 }
 
-/**
- * An edge connects a list of two or more pins.
- *
- * @internal
- */
+/** An edge connects a list of two or more pins. */
 class VEdge extends HTMLElement {
-  /**
-   * Unique identifier
-   *
-   * @internal
-   */
+  /** Unique identifier. */
   #uid = "";
 
   #cssProps = document.createElement("style");
@@ -897,15 +750,16 @@ class VEdge extends HTMLElement {
    *
    * @remarks
    * It is synced with path DOM attribute.
-   * @internal
    */
-  #path: string[] = [];
+  #pinUids: string[] = [];
 
   #svg = {
     element: createElementSvg("svg"),
     width: 0,
     height: 0
   };
+
+  #path = createElementSvg("path");
 
   #setCssProps() {
     this.#cssProps.innerHTML = `
@@ -933,6 +787,7 @@ class VEdge extends HTMLElement {
     const root = template["v-edge"].content.cloneNode(true);
     this.#setCssProps();
     root.insertBefore(this.#cssProps, root.firstChild);
+    this.#svg.element.appendChild(this.#path);
     root.appendChild(this.#svg.element);
     this.shadowRoot!.appendChild(root);
   }
@@ -962,15 +817,12 @@ class VEdge extends HTMLElement {
         return;
       }
       // Update path.
-      this.#path = uids;
+      this.#pinUids = uids;
     }
   }
 
   connectedCallback() {
-    const { canvas } = this;
-    // Create a new uid and register the edge.
-    this.#uid = canvas.createUid();
-    canvas.registerEdge(this);
+    this.canvas.registerEdge(this);
     this.updateRect();
   }
 
@@ -978,11 +830,7 @@ class VEdge extends HTMLElement {
     this.canvas.unregisterEdge(this);
   }
 
-  /**
-   * Get the canvas where the edge is rendered.
-   *
-   * @internal
-   */
+  /** Get the canvas where the edge is rendered. */
   get canvas(): VCanvas {
     if (this.#canvas) return this.#canvas;
     try {
@@ -993,11 +841,6 @@ class VEdge extends HTMLElement {
     }
   }
 
-  /** An edge has an identifier that is unique in the canvas that contains it. */
-  get uid(): string {
-    return this.#uid;
-  }
-
   /** Compute bounds given by edge pins. */
   updateRect() {
     let x1 = Infinity,
@@ -1005,7 +848,7 @@ class VEdge extends HTMLElement {
       x2 = -Infinity,
       y2 = -Infinity;
     const { canvas } = this;
-    for (const uid of this.#path) {
+    for (const uid of this.#pinUids) {
       const pin = canvas.getPinElementByUid(uid);
       if (!pin) return;
       const {
@@ -1030,11 +873,7 @@ class VEdge extends HTMLElement {
   }
 }
 
-/**
- * Display inline text.
- *
- * @internal
- */
+/** Display inline text. */
 class VLabel extends HTMLElement {
   readonly textNode = document.createTextNode("");
   constructor() {
@@ -1064,8 +903,6 @@ class VLabel extends HTMLElement {
  * All HTML elements.
  *
  * @remark Order matters, an element could depend on another element to be defined.
- *
- * @internal
  */
 const htmlElements: Array<[VElementName, typeof HTMLElement]> = [
   ["v-canvas", VCanvas],

@@ -215,7 +215,6 @@ const template: Record<VElementName, HTMLTemplateElement> = {
   "v-pin": html`
     <style>
       :host {
-        display: block;
         width: var(--unit);
         height: var(--unit);
         border-radius: 50%;
@@ -268,12 +267,19 @@ class UidRegister {
   /**
    * Register given uid.
    *
-   * @remark Return a boolean according if the operation was successfull.
+   * @remarks
+   * Return a boolean according if the operation was successfull.
    */
   registerUid(uid: string): boolean {
+    if (!uid) return false;
     if (this.#uidSet.has(uid)) return false;
     this.#uidSet.add(uid);
     return true;
+  }
+
+  /** Dispose uid. */
+  unregisterUid(uid: string) {
+    this.#uidSet.delete(uid);
   }
 }
 
@@ -452,7 +458,7 @@ class VCanvas extends HTMLElement {
       };
       this.#unit = unit;
       this.#setCssProps();
-      this.#updateEdgesBoundingRect();
+      this.#updateEdgesBoundingRectAndPath();
     }
   }
 
@@ -485,6 +491,13 @@ class VCanvas extends HTMLElement {
 
   #updateEdgesBoundingRect() {
     for (const edge of this.#edgeSet.values()) edge.updateBoundingRect();
+  }
+
+  #updateEdgesBoundingRectAndPath() {
+    for (const edge of this.#edgeSet.values()) {
+      edge.updateBoundingRect();
+      edge.updatePath();
+    }
   }
 
   /** Get current origin in canvas coordinates. */
@@ -573,6 +586,7 @@ class VPin extends HTMLElement {
 
   disconnectedCallback() {
     this.node.canvas.unregisterPin(this);
+    this.node.canvas.uidRegister.unregisterUid(this.#uid);
   }
 
   /** The pin size. */
@@ -582,9 +596,12 @@ class VPin extends HTMLElement {
 
   /** The top left coordinates. */
   get position(): Vector {
+    const nodeStyle = getComputedStyle(this.node);
+    const paddingLeft = parseFloat(nodeStyle.paddingLeft);
+    const paddingTop = parseFloat(nodeStyle.paddingTop);
     return {
-      x: this.node.offsetLeft + this.offsetLeft,
-      y: this.node.offsetTop + this.offsetTop
+      x: this.node.offsetLeft + this.offsetLeft + paddingLeft,
+      y: this.node.offsetTop + this.offsetTop + paddingTop
     };
   }
 
@@ -627,7 +644,11 @@ class VPin extends HTMLElement {
  * ```html
  * <v-canvas>
  *   <v-node>
+ *     <v-row></v-row>
  *     <v-label text="Node"></v-label>
+ *     <v-row>
+ *       <v-pin></v-pin>
+ *     </v-row>
  *   </v-node>
  * </v-canvas>
  * ```
@@ -728,7 +749,7 @@ class VEdge extends HTMLElement {
 
   #canvas: VCanvas | undefined;
 
-  #rect: Pick<DOMRect, "left" | "top" | "width" | "height"> = {
+  #boundingRect: Pick<DOMRect, "left" | "top" | "width" | "height"> = {
     left: 0,
     top: 0,
     width: 0,
@@ -805,10 +826,10 @@ class VEdge extends HTMLElement {
   #setCssProps() {
     this.#cssProps.innerHTML = `
       :host {
-        --left: ${this.#rect.left}px;
-        --top: ${this.#rect.top}px;
-        --width: ${this.#rect.width}px;
-        --height: ${this.#rect.height}px;
+        --left: ${this.#boundingRect.left}px;
+        --top: ${this.#boundingRect.top}px;
+        --width: ${this.#boundingRect.width}px;
+        --height: ${this.#boundingRect.height}px;
       }`;
   }
 
@@ -816,14 +837,25 @@ class VEdge extends HTMLElement {
     if (width == this.#svg.width && height == this.#svg.height) return;
     this.#svg.width = width;
     this.#svg.height = height;
-    const svg = this.#svg.container;
-    svg.setAttribute("width", `${width}`);
-    svg.setAttribute("height", `${height}`);
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    this.#svg.container
+      .set("width", `${width}`)
+      .set("height", `${height}`)
+      .set("viewBox", `0 0 ${width} ${height}`);
   }
 
   updatePath() {
-    this.#svg.path.setAttribute("d", "M 5 5 V 20 H 20");
+    const { canvas } = this;
+    let pathDraw = "";
+    const { top, left } = this.#boundingRect;
+    for (const uid of this.#pinUids) {
+      const pin = canvas.getPinElementByUid(uid);
+      if (!pin) continue;
+      const {
+        center: { x, y }
+      } = pin;
+      pathDraw += `${pathDraw == "" ? "M" : "L"} ${x - left} ${y - top}`;
+    }
+    this.#svg.path.set("d", pathDraw);
   }
 
   /** Get the canvas where the edge is rendered. */
@@ -846,7 +878,7 @@ class VEdge extends HTMLElement {
     const { canvas } = this;
     for (const uid of this.#pinUids) {
       const pin = canvas.getPinElementByUid(uid);
-      if (!pin) return;
+      if (!pin) continue;
       const {
         position: { x, y },
         size
@@ -858,7 +890,7 @@ class VEdge extends HTMLElement {
     }
     const width = x2 - x1;
     const height = y2 - y1;
-    this.#rect = {
+    this.#boundingRect = {
       top: y1,
       left: x1,
       width,
@@ -869,7 +901,15 @@ class VEdge extends HTMLElement {
   }
 }
 
-/** Display inline text. */
+/**
+ * Display inline text.
+ *
+ * @example
+ *
+ * ```html
+ * <v-label text="Label"></v-label>
+ * ```
+ */
 class VLabel extends HTMLElement {
   readonly textNode = document.createTextNode("");
   constructor() {

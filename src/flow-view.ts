@@ -227,6 +227,43 @@ const template: Record<VElementName, HTMLTemplateElement> = {
   `
 };
 
+class UidRegister {
+  /** It keeps the uids unique. */
+  #uidSet = new Set<string>();
+
+  #newUid(len = 2) {
+    let uid = "";
+    let alreadyExists = true;
+    while (alreadyExists) {
+      uid = Math.random()
+        .toString(36)
+        .substring(2, 2 + len);
+      alreadyExists = this.#uidSet.has(uid);
+      len++;
+    }
+    this.#uidSet.add(uid);
+    return uid;
+  }
+
+  /** Create a uid and register it. Return the created uid. */
+  createUid() {
+    const uid = this.#newUid();
+    this.#uidSet.add(uid);
+    return uid;
+  }
+
+  /**
+   * Register given uid.
+   *
+   * @remark Return a boolean according if the operation was successfull.
+   */
+  registerUid(uid: string): boolean {
+    if (this.#uidSet.has(uid)) return false;
+    this.#uidSet.add(uid);
+    return true;
+  }
+}
+
 /** A stack of elements displayed in a column. */
 class VCol extends HTMLElement {
   constructor() {
@@ -283,9 +320,6 @@ class VCanvas extends HTMLElement {
     start: { x: 0, y: 0 }
   };
 
-  /** It keeps the uids unique. */
-  #uidSet = new Set<string>();
-
   /** An SVG layer which size is same as the canvas DOM content. */
   #svg = createElementSvg("svg");
 
@@ -320,6 +354,8 @@ class VCanvas extends HTMLElement {
       svg.setAttribute("viewBox", `${x * unit} ${y * unit} ${width} ${height}`);
     }
   });
+
+  uidRegister = new UidRegister();
 
   constructor() {
     super();
@@ -434,20 +470,6 @@ class VCanvas extends HTMLElement {
     for (const edge of this.#edgeSet.values()) edge.updateRect();
   }
 
-  #newUid(len = 2) {
-    let uid = "";
-    let alreadyExists = true;
-    while (alreadyExists) {
-      uid = Math.random()
-        .toString(36)
-        .substring(2, 2 + len);
-      alreadyExists = this.#uidSet.has(uid);
-      len++;
-    }
-    this.#uidSet.add(uid);
-    return uid;
-  }
-
   /** Get current origin in canvas coordinates. */
   get origin(): Vector {
     return this.#origin;
@@ -456,13 +478,6 @@ class VCanvas extends HTMLElement {
   /** Get current unit. */
   get unit() {
     return this.#unit;
-  }
-
-  /** Create a uid and register it. Return the created uid. */
-  createUid() {
-    const uid = this.#newUid();
-    this.#uidSet.add(uid);
-    return uid;
   }
 
   /** Register the given edge. */
@@ -484,17 +499,6 @@ class VCanvas extends HTMLElement {
   /** Unregister the given pin. */
   unregisterPin(pin: VPin) {
     this.#pinMap.delete(pin.uid);
-  }
-
-  /**
-   * Register given uid.
-   *
-   * @remark Return a boolean according if the operation was successfull.
-   */
-  registerUid(uid: string): boolean {
-    if (this.#uidSet.has(uid)) return false;
-    this.#uidSet.add(uid);
-    return true;
   }
 
   // TODO remove
@@ -563,15 +567,15 @@ class VPin extends HTMLElement {
   connectedCallback() {
     const canvas = this.node.canvas;
     // Use given uid or create a new one to register the pin.
-    const uidValue = this.getAttribute("uid") ?? canvas.createUid();
+    const uidValue = this.getAttribute("uid") ?? canvas.uidRegister.createUid();
     const normalizedUid = normalizeUid(uidValue);
-    const success = canvas.registerUid(normalizedUid);
+    const success = canvas.uidRegister.registerUid(normalizedUid);
     if (success) {
       this.#uid = normalizedUid;
       canvas.registerPin(this);
       if (normalizedUid != uidValue) this.setAttribute("uid", normalizedUid);
     } else {
-      const newUid = canvas.createUid();
+      const newUid = canvas.uidRegister.createUid();
       this.#uid = newUid;
       canvas.registerPin(this);
       this.setAttribute("uid", newUid);

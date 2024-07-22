@@ -4,7 +4,7 @@
 
 <a href="http://fibo.github.io/flow-view/">
 <div>Demo</div>
-<img width="517" height="490" src="docs/screenshot.png" alt="flow view Simpsons example">
+<img width="517" height="490" src="docs/assets/screenshot.png" alt="flow view Simpsons example">
 </a>
 
 ## Installation

@@ -3,7 +3,7 @@
   "description": "is a visual editor for dataflow programming",
   "version": "7.0.0",
   "license": "MIT",
-  "homepage": "http://fibo.github.io/flow-view",
+  "homepage": "https://fibo.github.io/flow-view",
   "author": {
     "name": "Gianluca Casati",
     "url": "http://fibo.github.io"

@@ -11,15 +11,14 @@
   "type": "module",
   "types": "dist/flow-view.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/flow-view.js",
-      "types": "./dist/flow-view.d.ts"
-    }
+    "import": "./dist/flow-view.js",
+    "types": "./dist/flow-view.d.ts"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json --removeComments && tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
     "check_types": "tsc --noEmit",
     "lint-staged": "lint-staged",
+    "start": "github-pages-router",
     "watch": "tsc --project tsconfig.build.json --removeComments --watch"
   },
   "repository": {
@@ -37,6 +36,7 @@
     "url": "https://github.com/fibo/flow-view/issues"
   },
   "devDependencies": {
+    "github-pages-router": "^1.0.2",
     "lint-staged": "^15.2.5",
     "pre-commit": "^1.2.2",
     "prettier": "^3.3.1",

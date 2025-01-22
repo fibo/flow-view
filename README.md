@@ -27,11 +27,11 @@ Try this in your HTML page
 </script>
 
 <script type="module">
-  import { defineFlowViewCustomElements } from "flow-view";
+  import { defineFlowViewCustomElements } from 'flow-view'
 
-  addEventListener("load", () => {
-    defineFlowViewCustomElements();
-  });
+  addEventListener('load', () => {
+    defineFlowViewCustomElements()
+  })
 </script>
 ```
 
@@ -43,4 +43,4 @@ See [documentation and examples page](http://fibo.github.io/flow-view/).
 
 [MIT](http://fibo.github.io/mit-license)
 
-[dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming "Dataflow programming"
+[dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming 'Dataflow programming'

@@ -3,5 +3,6 @@
 index.html
 server.js
 tsconfig*.json
-docs/
+assets/
+examples/
 src/

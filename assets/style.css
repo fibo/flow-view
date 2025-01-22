@@ -63,7 +63,7 @@ pre {
 
 .layout {
   display: grid;
-  grid-template-areas: "header" "navigation" "content" "footer";
+  grid-template-areas: 'header' 'navigation' 'content' 'footer';
   gap: 0.5em;
 }
 
@@ -71,9 +71,9 @@ pre {
   .layout {
     grid-template-columns: 1fr 3fr;
     grid-template-areas:
-      "header header"
-      "navigation content"
-      "footer footer";
+      'header header'
+      'navigation content'
+      'footer footer';
   }
 }
 
@@ -119,7 +119,7 @@ nav.navigation {
     }
 
     li a::before {
-      content: "\2022";
+      content: '\2022';
       margin-right: 0.6em;
     }
 
@@ -131,7 +131,7 @@ nav.navigation {
     }
 
     li a.selected::before {
-      content: "\2022\2192";
+      content: '\2022\2192';
       margin-right: 0.6em;
     }
   }

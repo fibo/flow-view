@@ -18,6 +18,7 @@
     "build": "tsc --project tsconfig.build.json --removeComments && tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
     "check_types": "tsc --noEmit",
     "lint-staged": "lint-staged",
+    "postinstall": "cp ./node_modules/github-pages-router/dist/github-pages-router.js assets/",
     "start": "github-pages-router",
     "watch": "tsc --project tsconfig.build.json --removeComments --watch"
   },
@@ -51,10 +52,5 @@
   "pre-commit": [
     "check_types",
     "lint-staged"
-  ],
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "none"
-  }
+  ]
 }

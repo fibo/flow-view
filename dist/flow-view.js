@@ -1,53 +1,48 @@
-const createElementSvg = document.createElementNS.bind(document, "http://www.w3.org/2000/svg");
-const findCanvas = (initialElement) => {
+const createElementSvg = (qualifiedName) => {
+    const element = document.createElementNS('http://www.w3.org/2000/svg', qualifiedName);
+    return Object.assign(element, {
+        set: (attributeName, value) => {
+            element.setAttribute(attributeName, value);
+            return element;
+        }
+    });
+};
+const findParentElement = (parentElementName, initialElement) => {
     let { parentElement: element } = initialElement;
     while (element) {
-        if (element.tagName == "V-CANVAS")
+        if (element.localName == parentElementName)
             return element;
         element = element.parentElement;
     }
+    throw new Error(`Parent element ${parentElementName} not found for element ${initialElement}`);
 };
-const findNode = (initialElement) => {
-    let { parentElement: element } = initialElement;
-    while (element) {
-        if (element.tagName == "V-NODE")
-            return element;
-        element = element.parentElement;
-    }
-};
-class ErrorCanvasNotFound extends Error {
-    constructor() {
-        super("v-canvas not found");
-    }
-}
-class ErrorNodeNotFound extends Error {
-    constructor() {
-        super("v-node not found");
-    }
-}
+const normalizeUid = (uid) => uid.trim();
 const html = (strings, ...expressions) => {
-    const template = document.createElement("template");
-    template.innerHTML = strings.reduce((result, string, index) => result + string + (expressions[index] ?? ""), "");
+    const template = document.createElement('template');
+    template.innerHTML = strings.reduce((result, string, index) => result + string + (expressions[index] ?? ''), '');
     return template;
 };
 const pointerCoordinates = ({ clientX, clientY }, { left, top }) => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) });
-const coerceToNatural = (value) => {
-    const num = Number(value);
-    if (isNaN(num))
-        return;
-    if (num < 1)
-        return;
-    return Math.round(num);
-};
 const observedAttributes = {
-    "v-canvas": ["unit"],
-    "v-pin": ["uid"],
-    "v-label": ["text"],
-    "v-node": ["xy"],
-    "v-edge": ["pins"]
+    'v-canvas': [],
+    'v-pin': ['uid'],
+    'v-label': ['text'],
+    'v-node': ['xy'],
+    'v-edge': ['path']
+};
+const eventTypes = {
+    'v-canvas': [
+        'pointercancel',
+        'pointerdown',
+        'pointerleave',
+        'pointermove',
+        'pointerup',
+        'wheel'
+    ],
+    'v-node': ['pointerdown']
 };
 const template = {
-    "v-canvas": html `
+    'v-canvas': html `
     <style>
       :host {
         font-family: var(
@@ -70,6 +65,8 @@ const template = {
         }
 
         background-color: var(--background-color);
+        cursor: var(--cursor);
+
         display: block;
         overflow: hidden;
         position: relative;
@@ -80,7 +77,7 @@ const template = {
     </style>
     <slot></slot>
   `,
-    "v-col": html `
+    'v-col': html `
     <style>
       :host {
         display: flex;
@@ -92,7 +89,7 @@ const template = {
     </style>
     <slot></slot>
   `,
-    "v-row": html `
+    'v-row': html `
     <style>
       :host {
         display: flex;
@@ -104,7 +101,7 @@ const template = {
     </style>
     <slot></slot>
   `,
-    "v-node": html `
+    'v-node': html `
     <style>
       :host {
         position: absolute;
@@ -114,42 +111,39 @@ const template = {
         border-radius: calc(var(--unit) * 0.85);
         padding: calc(var(--unit) * 0.2);
         border: 1px solid;
-        transition: all var(--transition);
         display: flex;
         flex-direction: column;
       }
     </style>
     <slot></slot>
   `,
-    "v-edge": html `
+    'v-edge': html `
     <style>
-:host {
+      :host {
         position: absolute;
         left: var(--left);
         top: var(--top);
-        width: var(--width, 10px);
-        height: var(--height, 10px);
-        border: 1px solid;
-}
+        width: var(--width);
+        height: var(--height);
+      }
     </style>
   `,
-    "v-pin": html `
+    'v-pin': html `
     <style>
       :host {
-        display: block;
         width: var(--unit);
         height: var(--unit);
         border-radius: 50%;
         background-color: currentColor;
         opacity: 0.7;
-        transition: all var(--transition);
+        transition: opacity var(--transition);
       }
       :host(:hover) {
         opacity: 1;
       }
     </style>
   `,
-    "v-label": html `
+    'v-label': html `
     <style>
       :host {
         font-size: var(--font-size);
@@ -159,110 +153,141 @@ const template = {
     </style>
   `
 };
+class UidRegister {
+    #uidSet = new Set();
+    #newUid(len = 2) {
+        let uid = '';
+        let alreadyExists = true;
+        while (alreadyExists) {
+            uid = Math.random()
+                .toString(36)
+                .substring(2, 2 + len);
+            alreadyExists = this.#uidSet.has(uid);
+            len++;
+        }
+        this.#uidSet.add(uid);
+        return uid;
+    }
+    createUid() {
+        const uid = this.#newUid();
+        this.#uidSet.add(uid);
+        return uid;
+    }
+    registerUid(uid) {
+        if (!uid)
+            return false;
+        if (this.#uidSet.has(uid))
+            return false;
+        this.#uidSet.add(uid);
+        return true;
+    }
+    unregisterUid(uid) {
+        this.#uidSet.delete(uid);
+    }
+}
 class VCol extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.appendChild(template["v-col"].content.cloneNode(true));
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.appendChild(template['v-col'].content.cloneNode(true));
     }
 }
 class VRow extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.appendChild(template["v-row"].content.cloneNode(true));
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.appendChild(template['v-row'].content.cloneNode(true));
     }
 }
 class VCanvas extends HTMLElement {
-    static eventTypes = [
-        "pointercancel",
-        "pointerdown",
-        "pointerleave",
-        "pointermove",
-        "pointerup",
-        "wheel"
-    ];
-    static maxUnit = 25;
-    #cssProps = document.createElement("style");
+    #cssProps = document.createElement('style');
     #unit = 10;
-    #edgeMap = new Map();
+    #isValidUnit(value) {
+        return value > 1 && value < 25;
+    }
+    #edgeSet = new Set();
     #pinMap = new Map();
-    #segmentsMap = new Map();
     #origin = { x: 0, y: 0 };
     #translation = {
         isActive: false,
         origin: { x: 0, y: 0 },
         start: { x: 0, y: 0 }
     };
-    #uidSet = new Set();
-    #svg = createElementSvg("svg");
+    #svg = createElementSvg('svg');
+    #mutationObserver = new MutationObserver((mutationList) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                console.log('TODO A child node has been added or removed.');
+                console.log(mutation);
+            }
+            if (mutation.type === 'attributes') {
+                console.log(`TODO The ${mutation.attributeName} attribute was modified.`);
+            }
+        }
+    });
     #resizeObserver = new ResizeObserver((entries) => {
         for (const { contentBoxSize: [{ blockSize, inlineSize }] } of entries.filter((entry) => entry.target === this)) {
             const width = Math.round(inlineSize);
             const height = Math.round(blockSize);
             const { origin: { x, y }, unit } = this;
-            const svg = this.#svg;
-            svg.setAttribute("width", `${width}`);
-            svg.setAttribute("height", `${height}`);
-            svg.setAttribute("viewBox", `${x * unit} ${y * unit} ${width} ${height}`);
+            this.#svg
+                .set('width', `${width}`)
+                .set('height', `${height}`)
+                .set('viewBox', `${x * unit} ${y * unit} ${width} ${height}`);
         }
     });
+    uidRegister = new UidRegister();
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        const root = template["v-canvas"].content.cloneNode(true);
+        this.attachShadow({ mode: 'open' });
+        const root = template['v-canvas'].content.cloneNode(true);
         this.#setCssProps();
         root.insertBefore(this.#cssProps, root.firstChild);
         root.appendChild(this.#svg);
         this.shadowRoot.appendChild(root);
     }
-    static get observedAttributes() {
-        return observedAttributes["v-canvas"];
-    }
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name == "unit") {
-            const value = coerceToNatural(newValue);
-            if (!value || value < 1 || value > VCanvas.maxUnit || value == this.#unit)
-                return;
-            this.#unit = value;
-            this.#setCssProps();
-        }
-    }
     connectedCallback() {
+        this.#mutationObserver.observe(this, {
+            attributes: true,
+            childList: true,
+            subtree: true
+        });
         this.#resizeObserver.observe(this);
-        VCanvas.eventTypes.forEach((eventType) => {
+        eventTypes['v-canvas'].forEach((eventType) => {
             this.addEventListener(eventType, this);
         });
     }
     disconnectedCallback() {
+        this.#mutationObserver.disconnect();
         this.#resizeObserver.unobserve(this);
     }
     handleEvent(event) {
         if (event instanceof PointerEvent && event.target == this) {
             const { type } = event;
-            if (["pointercancel", "pointerleave"].includes(type))
+            if (['pointercancel', 'pointerleave'].includes(type))
                 this.#stopTranslation();
-            if (type == "pointerdown")
+            if (type == 'pointerdown')
                 this.#startTranslation(pointerCoordinates(event, this.getBoundingClientRect()));
-            if (type == "pointermove" && this.#translation.isActive) {
+            if (type == 'pointermove' && this.#translation.isActive) {
                 const pointer = pointerCoordinates(event, this.getBoundingClientRect());
                 const x = this.#translation.origin.x +
-                    Math.round((this.#translation.start.x - pointer.x) / this.#unit);
+                    parseFloat(((this.#translation.start.x - pointer.x) / this.#unit).toFixed(2));
                 const y = this.#translation.origin.y +
-                    Math.round((this.#translation.start.y - pointer.y) / this.#unit);
+                    parseFloat(((this.#translation.start.y - pointer.y) / this.#unit).toFixed(2));
                 if (x != this.#origin.x || y != this.#origin.y) {
                     this.#origin = { x, y };
                     this.#setCssProps();
+                    this.#updateEdgesBoundingRect();
                 }
             }
-            if (type == "pointerup")
+            if (type == 'pointerup')
                 this.#stopTranslation();
         }
         if (event instanceof WheelEvent && event.target != this) {
             event.preventDefault();
             const { origin, unit: currentUnit } = this;
             const unit = currentUnit - Math.round(event.deltaY / currentUnit);
-            if (unit < 1 || unit > VCanvas.maxUnit || unit == this.#unit)
+            if (!unit || !this.#isValidUnit(unit) || unit == this.#unit)
                 return;
             const pointer = pointerCoordinates(event, this.getBoundingClientRect());
             this.#origin = {
@@ -275,6 +300,7 @@ class VCanvas extends HTMLElement {
             };
             this.#unit = unit;
             this.#setCssProps();
+            this.#updateEdgesBoundingRectAndPath();
         }
     }
     #setCssProps() {
@@ -283,6 +309,7 @@ class VCanvas extends HTMLElement {
         --origin-x: ${this.#origin.x};
         --origin-y: ${this.#origin.y};
         --unit: ${this.#unit}px;
+        --cursor: ${this.#translation.isActive ? 'grab' : 'default'};
       }`;
     }
     #startTranslation(start) {
@@ -292,19 +319,22 @@ class VCanvas extends HTMLElement {
     }
     #stopTranslation() {
         this.#translation.isActive = false;
+        this.#origin = {
+            x: Math.round(this.#origin.x),
+            y: Math.round(this.#origin.y)
+        };
+        this.#setCssProps();
+        this.#updateEdgesBoundingRect();
     }
-    #newUid(len = 2) {
-        let uid = "";
-        let alreadyExists = true;
-        while (alreadyExists) {
-            uid = Math.random()
-                .toString(36)
-                .substring(2, 2 + len);
-            alreadyExists = this.#uidSet.has(uid);
-            len++;
+    #updateEdgesBoundingRect() {
+        for (const edge of this.#edgeSet.values())
+            edge.updateBoundingRect();
+    }
+    #updateEdgesBoundingRectAndPath() {
+        for (const edge of this.#edgeSet.values()) {
+            edge.updateBoundingRect();
+            edge.updatePath();
         }
-        this.#uidSet.add(uid);
-        return uid;
     }
     get origin() {
         return this.#origin;
@@ -312,54 +342,17 @@ class VCanvas extends HTMLElement {
     get unit() {
         return this.#unit;
     }
-    createUid() {
-        const uid = this.#newUid();
-        this.#uidSet.add(uid);
-        return uid;
+    registerEdge(edge) {
+        this.#edgeSet.add(edge);
     }
-    setEdge(edge) {
-        const pins = edge.pins
-            .split(",")
-            .map((uid) => this.#pinMap.get(uid))
-            .filter((pin) => !!pin);
-        for (let i = 0; i < pins.length - 1; i++) {
-            const start = pins[i];
-            const end = pins[i + 1];
-            setTimeout(() => {
-                this.createLine(start.center, end.center);
-            }, 1000);
-        }
+    unregisterEdge(edge) {
+        this.#edgeSet.delete(edge);
     }
-    setPin(pin) {
+    registerPin(pin) {
         this.#pinMap.set(pin.uid, pin);
     }
-    registerUid(uid) {
-        if (this.#uidSet.has(uid))
-            return false;
-        this.#uidSet.add(uid);
-        return true;
-    }
-    createLine(start, end) {
-        const r = "2", x1 = `${start.x}`, y1 = `${start.y}`, x2 = `${end.x}`, y2 = `${end.y}`;
-        const group = createElementSvg("g");
-        const circle1 = createElementSvg("circle");
-        circle1.setAttribute("r", r);
-        circle1.setAttribute("cx", x1);
-        circle1.setAttribute("cy", y1);
-        group.appendChild(circle1);
-        const line = createElementSvg("line");
-        line.setAttribute("stroke", "currentColor");
-        line.setAttribute("x1", x1);
-        line.setAttribute("y1", y1);
-        line.setAttribute("x2", x2);
-        line.setAttribute("y2", y2);
-        group.appendChild(line);
-        const circle2 = createElementSvg("circle");
-        circle2.setAttribute("r", r);
-        circle2.setAttribute("cx", x2);
-        circle2.setAttribute("cy", y2);
-        group.appendChild(circle2);
-        this.#svg.appendChild(group);
+    unregisterPin(pin) {
+        this.#pinMap.delete(pin.uid);
     }
     getPinElementByUid(uid) {
         if (this.#pinMap.has(uid))
@@ -367,111 +360,116 @@ class VCanvas extends HTMLElement {
     }
 }
 class VPin extends HTMLElement {
+    #uid = '';
     #node;
-    #uid = "";
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.appendChild(template["v-pin"].content.cloneNode(true));
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.appendChild(template['v-pin'].content.cloneNode(true));
     }
     static get observedAttributes() {
-        return observedAttributes["v-pin"];
+        return observedAttributes['v-pin'];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
-        if (name == "uid") {
+        if (name == 'uid') {
             const uid = this.#uid;
             if (uid && newValue != uid)
-                this.setAttribute("uid", uid);
+                this.setAttribute('uid', uid);
         }
     }
     connectedCallback() {
-        const { canvas } = this;
-        const uidValue = this.getAttribute("uid");
-        if (uidValue) {
-            const normalizedUid = uidValue.trim();
-            const success = canvas.registerUid(normalizedUid);
-            if (success) {
-                this.#uid = normalizedUid;
-                canvas.setPin(this);
-                if (normalizedUid != uidValue)
-                    this.setAttribute("uid", normalizedUid);
-            }
-            else {
-                const newUid = canvas.createUid();
-                this.#uid = newUid;
-                this.setAttribute("uid", newUid);
-                canvas.setPin(this);
-            }
+        const canvas = this.node.canvas;
+        const uidValue = this.getAttribute('uid') ?? canvas.uidRegister.createUid();
+        const normalizedUid = normalizeUid(uidValue);
+        const success = canvas.uidRegister.registerUid(normalizedUid);
+        if (success) {
+            this.#uid = normalizedUid;
+            canvas.registerPin(this);
+            if (normalizedUid != uidValue)
+                this.setAttribute('uid', normalizedUid);
+        }
+        else {
+            const newUid = canvas.uidRegister.createUid();
+            this.#uid = newUid;
+            canvas.registerPin(this);
+            this.setAttribute('uid', newUid);
         }
     }
-    get canvas() {
-        const canvas = this.node.canvas;
-        if (!canvas) {
-            this.remove();
-            throw new ErrorCanvasNotFound();
-        }
-        return canvas;
+    disconnectedCallback() {
+        this.node.canvas.unregisterPin(this);
+        this.node.canvas.uidRegister.unregisterUid(this.#uid);
+    }
+    get size() {
+        return this.node.canvas.unit;
+    }
+    get position() {
+        const nodeStyle = getComputedStyle(this.node);
+        const paddingLeft = parseFloat(nodeStyle.paddingLeft);
+        const paddingTop = parseFloat(nodeStyle.paddingTop);
+        return {
+            x: this.node.offsetLeft + this.offsetLeft + paddingLeft,
+            y: this.node.offsetTop + this.offsetTop + paddingTop
+        };
     }
     get center() {
+        const { position, size } = this;
         return {
-            x: this.node.offsetLeft + this.offsetLeft + this.halfSize,
-            y: this.node.offsetTop + this.offsetTop + this.halfSize
+            x: position.x + size / 2,
+            y: position.y + size / 2
         };
     }
     get node() {
         if (this.#node)
             return this.#node;
-        const node = findNode(this);
-        if (!node) {
-            this.remove();
-            throw new ErrorNodeNotFound();
+        try {
+            return (this.#node = findParentElement('v-node', this));
         }
-        return (this.#node = node);
-    }
-    get halfSize() {
-        return this.canvas.unit / 2;
+        catch (error) {
+            this.remove();
+            throw error;
+        }
     }
     get uid() {
         return this.#uid;
     }
 }
 class VNode extends HTMLElement {
-    static eventTypes = ["pointerdown"];
+    static eventTypes = ['pointerdown'];
     #canvas;
-    #cssProps = document.createElement("style");
+    #cssProps = document.createElement('style');
     #position = { x: 0, y: 0 };
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        const root = template["v-node"].content.cloneNode(true);
+        this.attachShadow({ mode: 'open' });
+        const root = template['v-node'].content.cloneNode(true);
         this.#setCssProps();
         root.insertBefore(this.#cssProps, root.firstChild);
         this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return observedAttributes["v-node"];
+        return observedAttributes['v-node'];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
-        if (name == "xy") {
+        if (name == 'xy') {
             if (newValue === null) {
                 this.position = { x: 0, y: 0 };
                 return;
             }
-            const [x, y] = newValue.split(",").map((value) => parseInt(value));
+            const [x, y] = newValue.split(',').map((value) => parseInt(value));
             if (isNaN(x) || isNaN(y)) {
-                this.setAttribute(name, "0,0");
+                this.setAttribute(name, '0,0');
                 return;
             }
             this.position = { x, y };
         }
     }
     connectedCallback() {
-        VNode.eventTypes.forEach((eventType) => {
+        eventTypes['v-node'].forEach((eventType) => {
             this.addEventListener(eventType, this);
         });
     }
     handleEvent(event) {
-        if (event.type == "pointerdown") {
+        if (event.type == 'pointerdown') {
             this.parentElement.appendChild(this);
         }
     }
@@ -485,12 +483,13 @@ class VNode extends HTMLElement {
     get canvas() {
         if (this.#canvas)
             return this.#canvas;
-        const canvas = findCanvas(this);
-        if (!canvas) {
-            this.remove();
-            throw new ErrorCanvasNotFound();
+        try {
+            return (this.#canvas = findParentElement('v-canvas', this));
         }
-        return (this.#canvas = canvas);
+        catch (error) {
+            this.remove();
+            throw error;
+        }
     }
     get position() {
         return this.#position;
@@ -503,67 +502,155 @@ class VNode extends HTMLElement {
     }
 }
 class VEdge extends HTMLElement {
+    #cssProps = document.createElement('style');
     #canvas;
+    #boundingRect = {
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0
+    };
+    #pinUids = [];
+    #svg = {
+        container: createElementSvg('svg'),
+        path: createElementSvg('path')
+            .set('fill', 'transparent')
+            .set('stroke', 'currentColor'),
+        width: 0,
+        height: 0
+    };
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.appendChild(template["v-edge"].content.cloneNode(true));
+        this.attachShadow({ mode: 'open' });
+        const root = template['v-edge'].content.cloneNode(true);
+        this.#setCssProps();
+        root.insertBefore(this.#cssProps, root.firstChild);
+        this.#svg.container.appendChild(this.#svg.path);
+        root.appendChild(this.#svg.container);
+        this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return observedAttributes["v-edge"];
+        return observedAttributes['v-edge'];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === "pins") {
+        if (name === 'path') {
             if (!newValue)
                 return;
-            const pinUids = newValue.split(",").map((uid) => uid.trim());
-            if (pinUids.length < 2) {
-                this.removeAttribute("pins");
+            const uids = newValue.split(',').map(normalizeUid);
+            const normalizePath = uids.join();
+            if (normalizePath != newValue) {
+                this.setAttribute('path', normalizePath);
                 return;
             }
-            this.canvas.setEdge(this);
+            if (uids.length < 2) {
+                this.removeAttribute('path');
+                return;
+            }
+            this.#pinUids = uids;
         }
+    }
+    connectedCallback() {
+        this.canvas.registerEdge(this);
+        this.updateBoundingRect();
+        this.updatePath();
+    }
+    disconnectedCallback() {
+        this.canvas.unregisterEdge(this);
+    }
+    #setCssProps() {
+        this.#cssProps.innerHTML = `
+      :host {
+        --left: ${this.#boundingRect.left}px;
+        --top: ${this.#boundingRect.top}px;
+        --width: ${this.#boundingRect.width}px;
+        --height: ${this.#boundingRect.height}px;
+      }`;
+    }
+    #updateSvgDimension(width, height) {
+        if (width == this.#svg.width && height == this.#svg.height)
+            return;
+        this.#svg.width = width;
+        this.#svg.height = height;
+        this.#svg.container
+            .set('width', `${width}`)
+            .set('height', `${height}`)
+            .set('viewBox', `0 0 ${width} ${height}`);
+    }
+    updatePath() {
+        const { canvas } = this;
+        let pathDraw = '';
+        const { top, left } = this.#boundingRect;
+        for (const uid of this.#pinUids) {
+            const pin = canvas.getPinElementByUid(uid);
+            if (!pin)
+                continue;
+            const { center: { x, y } } = pin;
+            pathDraw += `${pathDraw == '' ? 'M' : 'L'} ${x - left} ${y - top}`;
+        }
+        this.#svg.path.set('d', pathDraw);
     }
     get canvas() {
         if (this.#canvas)
             return this.#canvas;
-        const canvas = findCanvas(this);
-        if (!canvas) {
-            this.remove();
-            throw new ErrorCanvasNotFound();
+        try {
+            return (this.#canvas = findParentElement('v-canvas', this));
         }
-        return (this.#canvas = canvas);
+        catch (error) {
+            this.remove();
+            throw error;
+        }
     }
-    get pins() {
-        return this.getAttribute("pins") ?? "";
+    updateBoundingRect() {
+        let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+        const { canvas } = this;
+        for (const uid of this.#pinUids) {
+            const pin = canvas.getPinElementByUid(uid);
+            if (!pin)
+                continue;
+            const { position: { x, y }, size } = pin;
+            x1 = Math.min(x1, x);
+            y1 = Math.min(y1, y);
+            x2 = Math.max(x2, x + size);
+            y2 = Math.max(y2, y + size);
+        }
+        const width = x2 - x1;
+        const height = y2 - y1;
+        this.#boundingRect = {
+            top: y1,
+            left: x1,
+            width,
+            height
+        };
+        this.#setCssProps();
+        this.#updateSvgDimension(width, height);
     }
 }
 class VLabel extends HTMLElement {
-    textNode = document.createTextNode("");
+    textNode = document.createTextNode('');
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        const root = template["v-label"].content.cloneNode(true);
+        this.attachShadow({ mode: 'open' });
+        const root = template['v-label'].content.cloneNode(true);
         root.appendChild(this.textNode);
         this.shadowRoot.appendChild(root);
     }
     static get observedAttributes() {
-        return observedAttributes["v-label"];
+        return observedAttributes['v-label'];
     }
     attributeChangedCallback(name, _oldValue, newValue) {
-        if (name == "text") {
+        if (name == 'text') {
             this.textNode.textContent = newValue;
         }
     }
 }
 const htmlElements = [
-    ["v-canvas", VCanvas],
-    ["v-node", VNode],
-    ["v-pin", VPin],
-    ["v-edge", VEdge],
-    ["v-label", VLabel],
-    ["v-row", VRow],
-    ["v-col", VCol]
+    ['v-canvas', VCanvas],
+    ['v-node', VNode],
+    ['v-pin', VPin],
+    ['v-edge', VEdge],
+    ['v-label', VLabel],
+    ['v-row', VRow],
+    ['v-col', VCol]
 ];
 export const defineFlowViewCustomElements = () => {
     for (const [elementName, ElementClass] of htmlElements)

@@ -4,11 +4,11 @@
  * @example
  *
  * ```ts
- * import { defineFlowViewCustomElements } from "flow-view";
+ * import { defineFlowViewCustomElements } from 'flow-view'
  *
- * window.addEventListener("load", () => {
- *   defineFlowViewCustomElements();
- * });
+ * addEventListener('load', () => {
+ *   defineFlowViewCustomElements()
+ * })
  * ```
  */
 export declare const defineFlowViewCustomElements: () => void;

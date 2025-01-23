@@ -4,7 +4,7 @@
 
 <a href="http://fibo.github.io/flow-view/">
 <div>Demo</div>
-<img width="517" height="490" src="docs/assets/screenshot.png" alt="flow view Simpsons example">
+<img width="517" height="490" src="assets/screenshot.png" alt="flow view Simpsons example">
 </a>
 
 ## Installation
@@ -23,15 +23,15 @@ Try this in your HTML page
 
 ```html
 <script type="importmap">
-  { "imports": { "flow-view": "https://unpkg.com/flow-view" } }
+	{ "imports": { "flow-view": "https://unpkg.com/flow-view" } }
 </script>
 
 <script type="module">
-  import { defineFlowViewCustomElements } from 'flow-view'
+	import { defineFlowViewCustomElements } from 'flow-view';
 
-  addEventListener('load', () => {
-    defineFlowViewCustomElements()
-  })
+	addEventListener('load', () => {
+		defineFlowViewCustomElements();
+	});
 </script>
 ```
 

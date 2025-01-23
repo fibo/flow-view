@@ -1,23 +1,3 @@
-/** All custom elements tag names. */
-type VElementName =
-  | 'v-canvas'
-  | 'v-edge'
-  | 'v-node'
-  | 'v-pin'
-  | 'v-label'
-  | 'v-row'
-  | 'v-col'
-
-/** A vector in 2d space. */
-type Vector = {
-  x: number
-  y: number
-}
-
-type VSVGElement = SVGElement & {
-  set(attributeName: string, value: string): VSVGElement
-}
-
 /**
  * Util to create an SVG element.
  *
@@ -29,27 +9,24 @@ type VSVGElement = SVGElement & {
  *   .set('height', '100')
  * ```
  */
-function createElementSvg(qualifiedName: string): VSVGElement {
+function createElementSvg(qualifiedName) {
   const element = document.createElementNS(
     'http://www.w3.org/2000/svg',
     qualifiedName
   )
   return Object.assign(element, {
-    set: (attributeName: string, value: string) => {
+    set: (attributeName, value) => {
       element.setAttribute(attributeName, value)
       return element
     }
-  }) as VSVGElement
+  })
 }
 
 /** Look for the first parent element with the given name containing the element. */
-function findParentElement<ParentElement extends VCanvas | VNode>(
-  parentElementName: VElementName,
-  initialElement: Element
-) {
+function findParentElement( parentElementName, initialElement) {
   let { parentElement: element } = initialElement
   while (element) {
-    if (element.localName == parentElementName) return element as ParentElement
+    if (element.localName == parentElementName) return element
     element = element.parentElement
   }
   throw new Error(
@@ -58,7 +35,7 @@ function findParentElement<ParentElement extends VCanvas | VNode>(
 }
 
 /** Normalize uid value. */
-function normalizeUid(uid: string) {
+function normalizeUid(uid) {
   return uid.trim()
 }
 
@@ -78,7 +55,7 @@ function normalizeUid(uid: string) {
  * `
  * ```
  */
-function html(strings: TemplateStringsArray, ...expressions: string[]) {
+function html(strings, ...expressions) {
   const template = document.createElement('template')
   template.innerHTML = strings.reduce(
     (result, string, index) => result + string + (expressions[index] ?? ''),
@@ -89,17 +66,14 @@ function html(strings: TemplateStringsArray, ...expressions: string[]) {
 
 /** Calculates the coordinates of a pointer event, relative to a DOM element. */
 function pointerCoordinates(
-  { clientX, clientY }: MouseEvent,
-  { left, top }: Pick<DOMRect, 'left' | 'top'>
-): Vector {
+  { clientX, clientY },
+  { left, top }
+) {
   return { x: Math.round(clientX - left), y: Math.round(clientY - top) }
 }
 
 /** All custom elements observed attributes. */
-const observedAttributes: Record<
-  Exclude<VElementName, 'v-col' | 'v-row'>,
-  string[]
-> = {
+const observedAttributes = {
   'v-canvas': [],
   'v-pin': ['uid'],
   'v-label': ['text'],
@@ -118,13 +92,10 @@ const eventTypes = {
     'wheel'
   ],
   'v-node': ['pointerdown']
-} satisfies Record<
-  Extract<VElementName, 'v-canvas' | 'v-node'>,
-  Array<keyof GlobalEventHandlersEventMap>
->
+}
 
 /** All custom elements templates. */
-const template: Record<VElementName, HTMLTemplateElement> = {
+const template = {
   'v-canvas': html`
     <style>
       :host {
@@ -245,7 +216,7 @@ const template: Record<VElementName, HTMLTemplateElement> = {
 
 class UidRegister {
   /** It keeps the uids unique. */
-  #uidSet = new Set<string>()
+  #uidSet = new Set()
 
   #newUid(len = 2) {
     let uid = ''
@@ -274,7 +245,7 @@ class UidRegister {
    * @remarks
    * Return a boolean according if the operation was successfull.
    */
-  registerUid(uid: string): boolean {
+  registerUid(uid) {
     if (!uid) return false
     if (this.#uidSet.has(uid)) return false
     this.#uidSet.add(uid)
@@ -282,7 +253,7 @@ class UidRegister {
   }
 
   /** Dispose uid. */
-  unregisterUid(uid: string) {
+  unregisterUid(uid) {
     this.#uidSet.delete(uid)
   }
 }
@@ -292,7 +263,7 @@ class VCol extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot!.appendChild(template['v-col'].content.cloneNode(true))
+    this.shadowRoot.appendChild(template['v-col'].content.cloneNode(true))
   }
 }
 
@@ -301,7 +272,7 @@ class VRow extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot!.appendChild(template['v-row'].content.cloneNode(true))
+    this.shadowRoot.appendChild(template['v-row'].content.cloneNode(true))
   }
 }
 
@@ -325,16 +296,15 @@ class VCanvas extends HTMLElement {
   /** The canvas unit expressed in pixels. */
   #unit = 10
 
-  /** Check if a value is a valid unit. */
-  #isValidUnit(value: number): value is number {
+  #isValidUnit(value) {
     return value > 1 && value < 25
   }
 
-  #edgeSet = new Set<VEdge>()
+  #edgeSet = new Set()
 
-  #pinMap = new Map<string, VPin>()
+  #pinMap = new Map()
 
-  #origin: Vector = { x: 0, y: 0 }
+  #origin = { x: 0, y: 0 }
 
   /** It holds the info needed for translating the canvas items. */
   #translation = {
@@ -387,7 +357,7 @@ class VCanvas extends HTMLElement {
     this.#setCssProps()
     root.insertBefore(this.#cssProps, root.firstChild)
     root.appendChild(this.#svg)
-    this.shadowRoot!.appendChild(root)
+    this.shadowRoot.appendChild(root)
   }
 
   connectedCallback() {
@@ -409,9 +379,7 @@ class VCanvas extends HTMLElement {
     this.#resizeObserver.unobserve(this)
   }
 
-  handleEvent(
-    event: GlobalEventHandlersEventMap[(typeof eventTypes)['v-canvas'][number]]
-  ) {
+  handleEvent( event) {
     if (event instanceof PointerEvent && event.target == this) {
       const { type } = event
       if (['pointercancel', 'pointerleave'].includes(type))
@@ -476,7 +444,7 @@ class VCanvas extends HTMLElement {
       }`
   }
 
-  #startTranslation(start: Vector) {
+  #startTranslation(start ) {
     this.#translation.start = start
     this.#translation.origin = this.#origin
     this.#translation.isActive = true
@@ -505,7 +473,7 @@ class VCanvas extends HTMLElement {
   }
 
   /** Get current origin in canvas coordinates. */
-  get origin(): Vector {
+  get origin() {
     return this.#origin
   }
 
@@ -515,28 +483,28 @@ class VCanvas extends HTMLElement {
   }
 
   /** Register the given edge. */
-  registerEdge(edge: VEdge) {
+  registerEdge(edge) {
     // TODO register and unregister edge could be done via mutation observer
     this.#edgeSet.add(edge)
   }
 
   /** Unregister the given edge. */
-  unregisterEdge(edge: VEdge) {
+  unregisterEdge(edge) {
     this.#edgeSet.delete(edge)
   }
 
   /** Register the given pin. */
-  registerPin(pin: VPin) {
+  registerPin(pin) {
     this.#pinMap.set(pin.uid, pin)
   }
 
   /** Unregister the given pin. */
-  unregisterPin(pin: VPin) {
+  unregisterPin(pin) {
     this.#pinMap.delete(pin.uid)
   }
 
   /** Get pin by its uid, if any. */
-  getPinElementByUid(uid: string): VPin | undefined {
+  getPinElementByUid(uid){
     if (this.#pinMap.has(uid)) return this.#pinMap.get(uid)
   }
 }
@@ -546,23 +514,19 @@ class VPin extends HTMLElement {
   /** Unique identifier */
   #uid = ''
 
-  #node: VNode | undefined
+  #node
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot!.appendChild(template['v-pin'].content.cloneNode(true))
+    this.shadowRoot.appendChild(template['v-pin'].content.cloneNode(true))
   }
 
   static get observedAttributes() {
     return observedAttributes['v-pin']
   }
 
-  attributeChangedCallback(
-    name: (typeof observedAttributes)['v-pin'][number],
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
+  attributeChangedCallback( name, _oldValue, newValue) {
     // Once the uid is registered on connect, it is a readonly value.
     if (name == 'uid') {
       const uid = this.#uid
@@ -599,7 +563,7 @@ class VPin extends HTMLElement {
   }
 
   /** The top left coordinates. */
-  get position(): Vector {
+  get position() {
     const nodeStyle = getComputedStyle(this.node)
     const paddingLeft = parseFloat(nodeStyle.paddingLeft)
     const paddingTop = parseFloat(nodeStyle.paddingTop)
@@ -610,7 +574,7 @@ class VPin extends HTMLElement {
   }
 
   /** The coordinates of the pin center in pixels. */
-  get center(): Vector {
+  get center() {
     const { position, size } = this
     return {
       x: position.x + size / 2,
@@ -619,10 +583,10 @@ class VPin extends HTMLElement {
   }
 
   /** Get the node where the pin is contained. */
-  private get node(): VNode {
+  get node() {
     if (this.#node) return this.#node
     try {
-      return (this.#node = findParentElement<VNode>('v-node', this))
+      return (this.#node = findParentElement('v-node', this))
     } catch (error) {
       this.remove()
       throw error
@@ -635,7 +599,7 @@ class VPin extends HTMLElement {
    * @remarks
    * The uid value is synced with the corresponding DOM attribute.
    */
-  get uid(): string {
+  get uid() {
     return this.#uid
   }
 }
@@ -658,12 +622,9 @@ class VPin extends HTMLElement {
  * ```
  */
 class VNode extends HTMLElement {
-  static eventTypes = ['pointerdown'] satisfies Array<
-    keyof GlobalEventHandlersEventMap
-  >
-  #canvas: VCanvas | undefined
+  #canvas
   #cssProps = document.createElement('style')
-  #position: Vector = { x: 0, y: 0 }
+  #position = { x: 0, y: 0 }
 
   constructor() {
     super()
@@ -671,18 +632,14 @@ class VNode extends HTMLElement {
     const root = template['v-node'].content.cloneNode(true)
     this.#setCssProps()
     root.insertBefore(this.#cssProps, root.firstChild)
-    this.shadowRoot!.appendChild(root)
+    this.shadowRoot.appendChild(root)
   }
 
   static get observedAttributes() {
     return observedAttributes['v-node']
   }
 
-  attributeChangedCallback(
-    name: (typeof observedAttributes)['v-node'][number],
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
+  attributeChangedCallback( name, _oldValue, newValue,) {
     // Handle a position change.
     if (name == 'xy') {
       if (newValue === null) {
@@ -704,14 +661,12 @@ class VNode extends HTMLElement {
     })
   }
 
-  handleEvent(
-    event: GlobalEventHandlersEventMap[(typeof eventTypes)['v-node'][number]]
-  ) {
+  handleEvent( event) {
     if (event.type == 'pointerdown') {
       // Move the node on top.
       // Notice that appendChild will not clone the node, it will move it at the end of the list.
       // Also, here the parentElement could be the v-canvas: in any case there is at least a v-canvas containing the node.
-      this.parentElement!.appendChild(this)
+      this.parentElement.appendChild(this)
     }
   }
 
@@ -724,10 +679,10 @@ class VNode extends HTMLElement {
   }
 
   /** Get the canvas where the node is rendered. */
-  get canvas(): VCanvas {
+  get canvas() {
     if (this.#canvas) return this.#canvas
     try {
-      return (this.#canvas = findParentElement<VCanvas>('v-canvas', this))
+      return (this.#canvas = findParentElement('v-canvas', this))
     } catch (error) {
       this.remove()
       throw error
@@ -740,7 +695,7 @@ class VNode extends HTMLElement {
   }
 
   /** Set position and update related CSS props. */
-  set position({ x, y }: Vector) {
+  set position({ x, y }) {
     if (x == this.#position.x && y == this.#position.y) return
     this.#position = { x, y }
     this.#setCssProps()
@@ -751,9 +706,9 @@ class VNode extends HTMLElement {
 class VEdge extends HTMLElement {
   #cssProps = document.createElement('style')
 
-  #canvas: VCanvas | undefined
+  #canvas
 
-  #boundingRect: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'> = {
+  #boundingRect = {
     left: 0,
     top: 0,
     width: 0,
@@ -766,7 +721,7 @@ class VEdge extends HTMLElement {
    * @remarks
    * It is synced with path DOM attribute.
    */
-  #pinUids: string[] = []
+  #pinUids
 
   #svg = {
     container: createElementSvg('svg'),
@@ -785,18 +740,14 @@ class VEdge extends HTMLElement {
     root.insertBefore(this.#cssProps, root.firstChild)
     this.#svg.container.appendChild(this.#svg.path)
     root.appendChild(this.#svg.container)
-    this.shadowRoot!.appendChild(root)
+    this.shadowRoot.appendChild(root)
   }
 
   static get observedAttributes() {
     return observedAttributes['v-edge']
   }
 
-  attributeChangedCallback(
-    name: (typeof observedAttributes)['v-edge'][number],
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
+  attributeChangedCallback( name, _oldValue, newValue) {
     if (name === 'path') {
       if (!newValue) return
       // Get only the pin uids that reference a pin.
@@ -837,7 +788,7 @@ class VEdge extends HTMLElement {
       }`
   }
 
-  #updateSvgDimension(width: number, height: number) {
+  #updateSvgDimension(width , height) {
     if (width == this.#svg.width && height == this.#svg.height) return
     this.#svg.width = width
     this.#svg.height = height
@@ -863,10 +814,10 @@ class VEdge extends HTMLElement {
   }
 
   /** Get the canvas where the edge is rendered. */
-  get canvas(): VCanvas {
+  get canvas() {
     if (this.#canvas) return this.#canvas
     try {
-      return (this.#canvas = findParentElement<VCanvas>('v-canvas', this))
+      return (this.#canvas = findParentElement('v-canvas', this))
     } catch (error) {
       this.remove()
       throw error
@@ -915,36 +866,29 @@ class VEdge extends HTMLElement {
  * ```
  */
 class VLabel extends HTMLElement {
-  readonly textNode = document.createTextNode('')
+  textNode = document.createTextNode('')
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
     const root = template['v-label'].content.cloneNode(true)
     root.appendChild(this.textNode)
-    this.shadowRoot!.appendChild(root)
+    this.shadowRoot.appendChild(root)
   }
 
   static get observedAttributes() {
     return observedAttributes['v-label']
   }
 
-  attributeChangedCallback(
-    name: (typeof observedAttributes)['v-label'][number],
-    _oldValue: string | null,
-    newValue: string | null
-  ) {
+  attributeChangedCallback( name, _oldValue, newValue) {
     if (name == 'text') {
       this.textNode.textContent = newValue
     }
   }
 }
 
-/**
- * All HTML elements.
- *
- * @remark Order matters, an element could depend on another element to be defined.
- */
-const htmlElements: Array<[VElementName, typeof HTMLElement]> = [
+export function defineFlowViewCustomElements() {
+  for (const [elementName, ElementClass] of [
+    // Order matters, an element could depend on another element to be defined.
   ['v-canvas', VCanvas],
   ['v-node', VNode],
   ['v-pin', VPin],
@@ -952,23 +896,7 @@ const htmlElements: Array<[VElementName, typeof HTMLElement]> = [
   ['v-label', VLabel],
   ['v-row', VRow],
   ['v-col', VCol]
-]
-
-/**
- * Define HTML custom elements v-canvas, v-node, v-edge, etc.
- *
- * @example
- *
- * ```ts
- * import { defineFlowViewCustomElements } from 'flow-view'
- *
- * addEventListener('load', () => {
- *   defineFlowViewCustomElements()
- * })
- * ```
- */
-export function defineFlowViewCustomElements() {
-  for (const [elementName, ElementClass] of htmlElements)
+  ])
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass)
 }

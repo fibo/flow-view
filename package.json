@@ -9,18 +9,16 @@
     "url": "http://fibo.github.io"
   },
   "type": "module",
-  "types": "dist/flow-view.d.ts",
+  "types": "src/flow-view.d.ts",
   "exports": {
-    "import": "./dist/flow-view.js",
-    "types": "./dist/flow-view.d.ts"
+    "import": "./src/flow-view.js",
+    "types": "./src/flow-view.d.ts"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json --removeComments && tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
     "check_types": "tsc --noEmit",
     "lint-staged": "lint-staged",
     "postinstall": "cp ./node_modules/github-pages-router/dist/github-pages-router.js assets/",
-    "start": "github-pages-router",
-    "watch": "tsc --project tsconfig.build.json --removeComments --watch"
+    "start": "github-pages-router"
   },
   "repository": {
     "type": "git",
@@ -41,7 +39,6 @@
     "lint-staged": "^15.2.5",
     "pre-commit": "^1.2.2",
     "prettier": "^3.4.2",
-    "prettier-plugin-jsdoc": "^1.3.2",
     "typescript": "^5.4.5"
   },
   "lint-staged": {

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="./assets/style.css" />
 
     <script type="importmap">
-      { "imports": { "flow-view": "./dist/flow-view.js" } }
+      { "imports": { "flow-view": "./src/flow-view.js" } }
     </script>
   </head>
 
@@ -64,11 +64,11 @@
     </div>
 
     <script type="module">
-      import { defineFlowViewCustomElements } from 'flow-view'
+      import { defineFlowViewCustomElements } from 'flow-view';
 
       addEventListener('load', () => {
-        defineFlowViewCustomElements()
-      })
+        defineFlowViewCustomElements();
+      });
     </script>
 
     <script src="./assets/navigation.js"></script>

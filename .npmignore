@@ -1,8 +1,7 @@
 .prettierignore
 .prettierrc.json
 index.html
-server.js
 tsconfig*.json
 assets/
+!assets/screenshot.png
 examples/
-src/

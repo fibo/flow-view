@@ -1,12 +1,5 @@
 {
-  "semi": false,
   "singleQuote": true,
   "trailingComma": "none",
-  "plugins": ["prettier-plugin-jsdoc"],
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "options": { "tsdoc": true }
-    }
-  ]
+  "useTabs": false
 }

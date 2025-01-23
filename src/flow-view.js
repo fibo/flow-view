@@ -88,8 +88,7 @@ const eventTypes = {
     'pointerdown',
     'pointerleave',
     'pointermove',
-    'pointerup',
-    'wheel'
+    'pointerup'
   ],
   'v-node': ['pointerdown']
 }
@@ -410,27 +409,6 @@ class VCanvas extends HTMLElement {
       }
 
       if (type == 'pointerup') this.#stopTranslation()
-    }
-
-    if (event instanceof WheelEvent && event.target != this) {
-      event.preventDefault()
-      const { origin, unit: currentUnit } = this
-      const unit = currentUnit - Math.round(event.deltaY / currentUnit)
-      if (!unit || !this.#isValidUnit(unit) || unit == this.#unit) return
-      const pointer = pointerCoordinates(event, this.getBoundingClientRect())
-      this.#origin = {
-        x:
-          origin.x -
-          Math.round(pointer.x / unit) +
-          Math.round(pointer.x / currentUnit),
-        y:
-          origin.y -
-          Math.round(pointer.y / unit) +
-          Math.round(pointer.y / currentUnit)
-      }
-      this.#unit = unit
-      this.#setCssProps()
-      this.#updateEdgesBoundingRectAndPath()
     }
   }
 

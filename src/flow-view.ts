@@ -29,7 +29,7 @@ type VSVGElement = SVGElement & {
  *   .set('height', '100')
  * ```
  */
-const createElementSvg = (qualifiedName: string): VSVGElement => {
+function createElementSvg(qualifiedName: string): VSVGElement {
   const element = document.createElementNS(
     'http://www.w3.org/2000/svg',
     qualifiedName
@@ -43,10 +43,10 @@ const createElementSvg = (qualifiedName: string): VSVGElement => {
 }
 
 /** Look for the first parent element with the given name containing the element. */
-const findParentElement = <ParentElement extends VCanvas | VNode>(
+function findParentElement<ParentElement extends VCanvas | VNode>(
   parentElementName: VElementName,
   initialElement: Element
-) => {
+) {
   let { parentElement: element } = initialElement
   while (element) {
     if (element.localName == parentElementName) return element as ParentElement
@@ -58,7 +58,9 @@ const findParentElement = <ParentElement extends VCanvas | VNode>(
 }
 
 /** Normalize uid value. */
-const normalizeUid = (uid: string) => uid.trim()
+function normalizeUid(uid: string) {
+  return uid.trim()
+}
 
 /**
  * Create an HTML template element from a string template.
@@ -76,7 +78,7 @@ const normalizeUid = (uid: string) => uid.trim()
  * `
  * ```
  */
-const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
+function html(strings: TemplateStringsArray, ...expressions: string[]) {
   const template = document.createElement('template')
   template.innerHTML = strings.reduce(
     (result, string, index) => result + string + (expressions[index] ?? ''),
@@ -86,10 +88,12 @@ const html = (strings: TemplateStringsArray, ...expressions: string[]) => {
 }
 
 /** Calculates the coordinates of a pointer event, relative to a DOM element. */
-const pointerCoordinates = (
+function pointerCoordinates(
   { clientX, clientY }: MouseEvent,
   { left, top }: Pick<DOMRect, 'left' | 'top'>
-): Vector => ({ x: Math.round(clientX - left), y: Math.round(clientY - top) })
+): Vector {
+  return { x: Math.round(clientX - left), y: Math.round(clientY - top) }
+}
 
 /** All custom elements observed attributes. */
 const observedAttributes: Record<
@@ -963,7 +967,7 @@ const htmlElements: Array<[VElementName, typeof HTMLElement]> = [
  * })
  * ```
  */
-export const defineFlowViewCustomElements = () => {
+export function defineFlowViewCustomElements() {
   for (const [elementName, ElementClass] of htmlElements)
     if (!window.customElements.get(elementName))
       window.customElements.define(elementName, ElementClass)

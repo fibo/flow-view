@@ -1,5 +1,3 @@
-.prettierignore
-.prettierrc.json
 index.html
 tsconfig*.json
 assets/

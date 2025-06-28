@@ -16,7 +16,6 @@
   },
   "scripts": {
     "check_types": "tsc --noEmit",
-    "lint-staged": "lint-staged",
     "postinstall": "cp ./node_modules/github-pages-router/dist/github-pages-router.js assets/",
     "start": "github-pages-router"
   },
@@ -36,18 +35,6 @@
   },
   "devDependencies": {
     "github-pages-router": "^1.0.2",
-    "lint-staged": "^15.2.5",
-    "pre-commit": "^1.2.2",
-    "prettier": "^3.4.2",
     "typescript": "^5.4.5"
-  },
-  "lint-staged": {
-    "*.{css,html,json,md,ts}": [
-      "prettier --write"
-    ]
-  },
-  "pre-commit": [
-    "check_types",
-    "lint-staged"
-  ]
+  }
 }

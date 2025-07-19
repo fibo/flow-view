@@ -5,7 +5,7 @@
 With [npm](https://www.npmjs.com/) install the following packages **without saving**:
 
 ```sh
-npm install typescript github-pages-router --no-save
+npm install esbuild typescript github-pages-router --no-save
 ```
 
 ## Update assets dependencies

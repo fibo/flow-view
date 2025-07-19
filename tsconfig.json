@@ -1,9 +1,17 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
-		"checkJs": false,
+		"checkJs": true,
+		"declaration": true,
+    "emitDeclarationOnly": true,
+		"outDir": "dist",
+		"lib": ["dom", "es2022"],
 		"module": "esnext",
-		"noEmit": true,
-		"strict": true
-	}
+    "noEmit": true,
+    "removeComments": false,
+		"strict": true,
+		"target": "es2022",
+	},
+	"exclude": ["src/flow-view.js"],
+	"include": ["src"],
 }

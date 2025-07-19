@@ -10,13 +10,9 @@
   },
   "type": "module",
   "types": "src/flow-view.d.ts",
-  "exports": {
-    "import": "./src/flow-view.js",
-    "types": "./src/flow-view.d.ts"
-  },
+  "exports": "./src/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",
-    "postinstall": "cp ./node_modules/github-pages-router/dist/github-pages-router.js assets/",
     "start": "github-pages-router"
   },
   "repository": {
@@ -32,9 +28,5 @@
   ],
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
-  },
-  "devDependencies": {
-    "github-pages-router": "^1.0.2",
-    "typescript": "^5.4.5"
   }
 }

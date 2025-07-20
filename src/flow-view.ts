@@ -1,11 +1,10 @@
 type FVCustomElementName =
-	'v-canvas' |
-	'v-node' |
-	'v-pin' |
-	'v-edge' |
-	'v-label' |
-	'v-row' |
-	'v-col'
+	| 'v-canvas'
+	| 'v-node'
+	| 'v-pin'
+	| 'v-edge'
+	| 'v-label'
+	| 'v-row'
 
 type Vector = {
 	x: number
@@ -83,27 +82,6 @@ function pointerCoordinates({ clientX, clientY }: PointerEvent, { left, top }: D
 	}
 }
 
-/** All custom elements observed attributes. */
-const observedAttributes = {
-	'v-canvas': [],
-	'v-pin': ['uid'],
-	'v-label': ['text'],
-	'v-node': ['xy'],
-	'v-edge': ['path']
-}
-
-/** All custom elements event types. */
-const eventTypes = {
-	'v-canvas': [
-		'pointercancel',
-		'pointerdown',
-		'pointerleave',
-		'pointermove',
-		'pointerup'
-	],
-	'v-node': ['pointerdown']
-}
-
 const styleSheets: Record<FVCustomElementName, CSSStyleSheet[]> = {
 	'v-canvas': [
 		cssSheet(cssBlock(':host', [
@@ -132,86 +110,67 @@ const styleSheets: Record<FVCustomElementName, CSSStyleSheet[]> = {
 			])
 		])),
 	],
-	'v-node': [],
-	'v-edge': [],
-	'v-col': [],
-	'v-pin': [],
-	'v-row': [],
-	'v-label': [],
+	'v-edge': [
+		cssSheet(cssBlock(':host', [
+			'position: absolute',
+			'left: var(--left)',
+			'top: var(--top)',
+			'width: var(--width)',
+			'height: var(--height)',
+		]))
+	],
+	'v-label': [
+		cssSheet(cssBlock(':host', [
+			'font-size: var(--font-size)',
+			'padding-inline: var(--unit)',
+			'user-select: none',
+		]))
+	],
+	'v-node': [
+		cssSheet(cssBlock(':host', [
+			'position: absolute',
+			'left: calc(var(--unit) * var(--x) - var(--unit) * var(--origin-x))',
+			'top: calc(var(--unit) * var(--y) - var(--unit) * var(--origin-y))',
+			'background-color: var(--background-color)',
+			'border-radius: calc(var(--unit) * 0.85)',
+			'padding: calc(var(--unit) * 0.2)',
+			'border: 1px solid',
+			'display: flex',
+			'flex-direction: column',
+		]))
+	],
+	'v-pin': [
+		cssSheet(cssBlock(':host', [
+			'width: var(--unit)',
+			'height: var(--unit)',
+			'border-radius: 50%',
+			'background-color: currentColor',
+			'opacity: 0.7',
+			'transition: opacity var(--transition)',
+		])),
+		cssSheet(cssBlock(':host(:hover)', [
+			'opacity: 0.1',
+		]))
+	],
+	'v-row': [
+		cssSheet(cssBlock(':host', [
+			'display: flex',
+			'flex-direction: row',
+			'justify-content: space-between',
+			'gap: var(--unit)',
+			'min-height: var(--unit)',
+		]))
+	],
 }
 
 /** All custom elements templates. */
 const template: Record<FVCustomElementName, HTMLTemplateElement> = {
 	'v-canvas': html`<slot></slot>`,
-
-	'v-col': html`<style>
-:host {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	gap: var(--unit);
-	min-width: var(--unit);
-}
-</style>
-<slot></slot>`,
-
-	'v-row': html`<style>
-:host {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	gap: var(--unit);
-	min-height: var(--unit);
-}
-</style>
-<slot></slot>`,
-
-	'v-node': html`<style>
-:host {
-	position: absolute;
-	left: calc(var(--unit) * var(--x) - var(--unit) * var(--origin-x));
-	top: calc(var(--unit) * var(--y) - var(--unit) * var(--origin-y));
-	background-color: var(--background-color);
-	border-radius: calc(var(--unit) * 0.85);
-	padding: calc(var(--unit) * 0.2);
-	border: 1px solid;
-	display: flex;
-	flex-direction: column;
-}
-</style>
-<slot></slot>`,
-
-	'v-edge': html`<style>
-:host {
-	position: absolute;
-	left: var(--left);
-	top: var(--top);
-	width: var(--width);
-	height: var(--height);
-}
-</style>`,
-
-	'v-pin': html`<style>
-:host {
-	width: var(--unit);
-	height: var(--unit);
-	border-radius: 50%;
-	background-color: currentColor;
-	opacity: 0.7;
-	transition: opacity var(--transition);
-}
-:host(:hover) {
-opacity: 1;
-}
-</style>`,
-
-	'v-label': html`<style>
-:host {
-	font-size: var(--font-size);
-	padding-inline: var(--unit);
-	user-select: none;
-}
-</style>`
+	'v-row': html`<slot></slot>`,
+	'v-node': html`<slot></slot>`,
+	'v-edge': html``,
+	'v-pin': html``,
+	'v-label': html``
 }
 
 class UidRegister {
@@ -255,20 +214,12 @@ class UidRegister {
 	}
 }
 
-/** A stack of elements displayed in a column. */
-class VCol extends HTMLElement {
-	constructor() {
-		super()
-		this.attachShadow({ mode: 'open' })
-		this.shadowRoot!.appendChild(template['v-col'].content.cloneNode(true))
-	}
-}
-
 /** A stack of elements displayed in a row. */
 class VRow extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
+		this.shadowRoot!.adoptedStyleSheets = styleSheets['v-row']
 		this.shadowRoot!.appendChild(template['v-row'].content.cloneNode(true))
 	}
 }
@@ -354,8 +305,13 @@ class VCanvas extends HTMLElement {
 
 		this.#resizeObserver.observe(this)
 
-		eventTypes['v-canvas'].forEach(
-			(eventType) => { this.addEventListener(eventType, this) })
+		for (const eventType of [
+			'pointercancel',
+			'pointerdown',
+			'pointerleave',
+			'pointermove',
+			'pointerup',
+		]) this.addEventListener(eventType, this)
 	}
 
 	disconnectedCallback() {
@@ -473,11 +429,12 @@ class VPin extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
+		this.shadowRoot!.adoptedStyleSheets = styleSheets['v-pin']
 		this.shadowRoot!.appendChild(template['v-pin'].content.cloneNode(true))
 	}
 
 	static get observedAttributes() {
-		return observedAttributes['v-pin']
+		return ['uid']
 	}
 
 	attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
@@ -572,20 +529,19 @@ class VPin extends HTMLElement {
  */
 class VNode extends HTMLElement {
 	#canvas: VCanvas | undefined
-	#cssProps = document.createElement('style')
+	#cssPosition = new CSSStyleSheet()
 	#position = { x: 0, y: 0 }
 
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
 		const root = template['v-node'].content.cloneNode(true)
-		this.#setCssProps()
-		root.insertBefore(this.#cssProps, root.firstChild)
+		this.shadowRoot!.adoptedStyleSheets = [...styleSheets['v-node'], this.#cssPosition]
 		this.shadowRoot!.appendChild(root)
 	}
 
 	static get observedAttributes() {
-		return observedAttributes['v-node']
+		return ['xy']
 	}
 
 	attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
@@ -605,7 +561,9 @@ class VNode extends HTMLElement {
 	}
 
 	connectedCallback() {
-		eventTypes['v-node'].forEach((eventType) => { this.addEventListener(eventType, this) })
+		for (const eventType of [
+			'pointerdown'
+		]) this.addEventListener(eventType, this)
 	}
 
 	handleEvent(event: Event) {
@@ -615,14 +573,6 @@ class VNode extends HTMLElement {
 			// Also, here the parentElement could be the v-canvas: in any case there is at least a v-canvas containing the node.
 			this.parentElement?.appendChild(this)
 		}
-	}
-
-	#setCssProps() {
-		// TODO try adopted stylesheets
-		this.#cssProps.innerHTML = `:host {
-	--x: ${this.position.x};
-	--y: ${this.position.y};
-}`
 	}
 
 	/** Get the canvas where the node is rendered. */
@@ -643,7 +593,7 @@ class VNode extends HTMLElement {
 	set position({ x, y }) {
 		if (x == this.#position.x && y == this.#position.y) return
 		this.#position = { x, y }
-		this.#setCssProps()
+		this.#cssPosition.replaceSync(`:host{--x:${x};--y:${y}}`)
 	}
 }
 
@@ -680,11 +630,12 @@ class VEdge extends HTMLElement {
 		root.insertBefore(this.#cssProps, root.firstChild)
 		this.#svg.container.appendChild(this.#svg.path)
 		root.appendChild(this.#svg.container)
+		this.shadowRoot!.adoptedStyleSheets = styleSheets['v-edge']
 		this.shadowRoot!.appendChild(root)
 	}
 
 	static get observedAttributes() {
-		return observedAttributes['v-edge']
+		return ['path']
 	}
 
 	attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
@@ -799,11 +750,12 @@ class VLabel extends HTMLElement {
 		this.attachShadow({ mode: 'open' })
 		const root = template['v-label'].content.cloneNode(true)
 		root.appendChild(this.textNode)
+		this.shadowRoot!.adoptedStyleSheets = styleSheets['v-label']
 		this.shadowRoot!.appendChild(root)
 	}
 
 	static get observedAttributes() {
-		return observedAttributes['v-label']
+		return ['text']
 	}
 
 	attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
@@ -820,5 +772,4 @@ export function defineFlowViewCustomElements() {
 	customElements.define('v-edge', VEdge)
 	customElements.define('v-label', VLabel)
 	customElements.define('v-row', VRow)
-	customElements.define('v-col', VCol)
 }

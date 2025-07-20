@@ -1,3 +1,5 @@
+//! github.com/fibo/flow-view
+
 type FVCustomElementName =
 	| 'v-canvas'
 	| 'v-node'
@@ -174,7 +176,6 @@ const template: Record<FVCustomElementName, HTMLTemplateElement> = {
 }
 
 class UidRegister {
-	/** It keeps the uids unique. */
 	#uidSet = new Set()
 
 	#newUid(len = 2) {
@@ -189,8 +190,11 @@ class UidRegister {
 		return uid
 	}
 
-	/** Create a uid and register it. Return the created uid. */
-	createUid() {
+	/**
+	 * Create a uid and register it.
+	 * @returns {string} the created uid.
+	 */
+	create(): string {
 		const uid = this.#newUid()
 		this.#uidSet.add(uid)
 		return uid
@@ -198,18 +202,16 @@ class UidRegister {
 
 	/**
 	 * Register given uid.
-	 *
-	 * @remarks
-	 * Return a boolean according if the operation was successfull.
+	 * @returns {boolean} if the operation was successfull
 	 */
-	registerUid(uid: string) {
+	register(uid: string): boolean {
 		if (this.#uidSet.has(uid)) return false
 		this.#uidSet.add(uid)
 		return true
 	}
 
 	/** Dispose uid. */
-	unregisterUid(uid: string) {
+	unregister(uid: string) {
 		this.#uidSet.delete(uid)
 	}
 }
@@ -287,7 +289,7 @@ class VCanvas extends HTMLElement {
 		}
 	})
 
-	uidRegister = new UidRegister()
+	uid = new UidRegister()
 
 	constructor() {
 		super()
@@ -449,13 +451,13 @@ class VPin extends HTMLElement {
 	connectedCallback() {
 		const canvas = this.node.canvas
 		// Use given uid or create a new one to register the pin.
-		const uidValue = this.getAttribute('uid') ?? canvas.uidRegister.createUid()
-		const success = canvas.uidRegister.registerUid(uidValue)
+		const uidValue = this.getAttribute('uid') ?? canvas.uid.create()
+		const success = canvas.uid.register(uidValue)
 		if (success) {
 			this.#uid = uidValue
 			canvas.registerPin(this)
 		} else {
-			const newUid = canvas.uidRegister.createUid()
+			const newUid = canvas.uid.create()
 			this.#uid = newUid
 			canvas.registerPin(this)
 			this.setAttribute('uid', newUid)
@@ -464,7 +466,7 @@ class VPin extends HTMLElement {
 
 	disconnectedCallback() {
 		this.node.canvas.unregisterPin(this)
-		this.node.canvas.uidRegister.unregisterUid(this.#uid)
+		this.node.canvas.uid.unregister(this.#uid)
 	}
 
 	/** The pin size. */

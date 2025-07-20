@@ -13,8 +13,7 @@
   "exports": "./dist/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",
-    "esbuild": "esbuild src/flow-view.ts --bundle --minify --outfile=dist/flow-view.js",
-    "start": "github-pages-router"
+    "esbuild": "esbuild src/flow-view.ts --bundle --minify --outfile=dist/flow-view.js"
   },
   "repository": {
     "type": "git",

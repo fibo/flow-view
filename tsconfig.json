@@ -6,7 +6,7 @@
 		"module": "esnext",
     "noEmit": true,
 		"paths": {
-			"flow-view": ["src/index.js"],
+			"flow-view": ["./src/index.js"],
 		},
 		"strict": true,
 		"target": "es2022",

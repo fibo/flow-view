@@ -1,73 +1,57 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/x-icon;base64,AA" />
-    <meta name="viewport" content="width=device-width" />
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="data:image/x-icon;base64,AA" />
+		<meta name="viewport" content="width=device-width" />
 
-    <title>Flow View</title>
-    <meta
-      name="description"
-      content="is a visual editor for Dataflow programming"
-    />
+		<title>Flow View</title>
+		<meta name="description" content="is a visual editor for Dataflow programming" />
 
-    <base href="/flow-view/" />
+		<base href="/flow-view/" />
 
-    <link rel="stylesheet" href="./assets/style.css" />
+		<link rel="stylesheet" href="./assets/style.css" />
 
-    <script type="importmap">
-      { "imports": { "flow-view": "./src/flow-view.js" } }
-    </script>
-  </head>
+		<script type="importmap">
+			{ "imports": { "flow-view": "./src/index.js" } }
+		</script>
+	</head>
 
-  <body>
-    <div class="layout">
-      <header>
-        <h1>Flow View</h1>
+	<body>
+		<div class="layout">
+			<header>
+				<h1>Flow View</h1>
 
-        <blockquote>
-          is a visual editor for <em>dataflow programming</em>
-        </blockquote>
-      </header>
+				<blockquote>
+					is a visual editor for <em>dataflow programming</em>
+				</blockquote>
+			</header>
 
-      <nav class="navigation">
-        <h3>Examples</h3>
-        <ul>
-          <li>
-            <a href="./examples/user-interface.html">User interface</a>
-          </li>
+			<nav class="navigation">
+				<h3>Examples</h3>
+				<ul>
+					<li>
+						<a href="./examples/user-interface.html" data-script="./examples/user-interface.js">User interface</a>
+					</li>
 
-          <li>
-            <a href="./examples/color-schemes.html">Color schemes</a>
-          </li>
+					<li>
+						<a href="./examples/color-schemes.html" data-script="./examples/color-schemes.js">Color schemes</a>
+					</li>
 
-          <li>
-            <a
-              href="./examples/custom-theme.html"
-              data-script="./examples/custom-theme.js"
-            >
-              Custom theme
-            </a>
-          </li>
-        </ul>
-      </nav>
+					<li>
+						<a href="./examples/custom-theme.html" data-script="./examples/custom-theme.js">Custom theme</a>
+					</li>
+				</ul>
+			</nav>
 
-      <main class="content"></main>
+			<main class="content"></main>
 
-      <footer>
-        GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a>
-      </footer>
-    </div>
+			<footer>
+				GitHub: <a href="https://github.com/fibo/flow-view">fibo/flow-view</a>
+			</footer>
+		</div>
 
-    <script type="module">
-      import { defineFlowViewCustomElements } from 'flow-view';
-
-      addEventListener('load', () => {
-        defineFlowViewCustomElements();
-      });
-    </script>
-
-    <script src="./assets/navigation.js"></script>
-    <script src="./assets/github-pages-router.js"></script>
-  </body>
+		<script src="./assets/navigation.js"></script>
+		<script src="./assets/github-pages-router.js"></script>
+	</body>
 </html>

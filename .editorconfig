@@ -7,9 +7,10 @@ end_of_line = lf
 trim_trailing_whitespace = true
 charset = utf-8
 
-[*.{html,json}]
+[*.{json}]
+indent_style = space
 indent_size = 2
 
-[*.{js,ts}]
+[*.{html,js,ts}]
 indent_style = tab
 indent_size = 4

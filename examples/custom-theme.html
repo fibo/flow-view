@@ -1,35 +1,23 @@
-<article>
+<article id="custom-theme">
   <style>
-    .v-canvas-container {
+    article#custom-theme .container {
       max-width: 100%;
       height: 500px;
     }
   </style>
 
-  <!-- The content of `style#custom-theme` is added to the `code` tag below. -->
-  <style id="custom-theme">
-    .custom-theme {
-      --flow-view-font-family: 'Trebuchet MS', sans-serif;
-      --flow-view-text-color: #e00505;
-      --flow-view-background-color: #f4fba8;
-    }
-  </style>
+	<style id="container-css-props"></style>
 
   <h2>Custom theme</h2>
 
   <p>Flow View can be customized via CSS custom properties.</p>
 
-  <div class="v-canvas-container custom-theme">
-    <v-canvas>
-      <v-node xy="10,10">
-        <v-row>
-          <v-pin></v-pin>
-        </v-row>
-        <v-label text="Node"></v-label>
-        <v-row> </v-row>
-      </v-node>
-    </v-canvas>
-  </div>
+  <pre contenteditable="true"><code>/* Try edit this code */
 
-  <pre><code></code></pre>
+--fv-font-family: 'Trebuchet MS', sans-serif;
+--fv-text-color: #e00505;
+--fv-background-color: #f4fba8;
+	</code></pre>
+
+  <div class="container"></div>
 </article>

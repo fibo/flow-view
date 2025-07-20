@@ -1,4 +1,4 @@
-<article>
+<article id="color-schemes">
   <style>
     .containers {
       display: flex;
@@ -6,7 +6,7 @@
       gap: 1em;
     }
 
-    .v-canvas-container {
+    .container {
       max-width: 300px;
       height: 250px;
     }
@@ -15,21 +15,23 @@
       .containers {
         flex-direction: column;
       }
-      .v-canvas-container {
+      .container {
         max-width: 100%;
       }
     }
 
-    /* These variables are copied from v-canvas defaults. */
+    /* These variables are copied from defaults. */
 
     .light-theme {
-      --flow-view-text-color: #121212;
-      --flow-view-background-color: #fefefe;
+      --fv-text-color: #222;
+      --fv-background-color: #fefefe;
+      --fv-node-background-color: #fefefe;
     }
 
     .dark-theme {
-      --flow-view-text-color: #ccc;
-      --flow-view-background-color: #555;
+      --fv-text-color: #ccc;
+      --fv-background-color: #555;
+      --fv-node-background-color: #2b2b2b;
     }
   </style>
 
@@ -38,16 +40,10 @@
   <p>Flow View supports light and dark themes.</p>
 
   <div class="containers">
-    <div class="v-canvas-container light-theme">
-      <v-canvas>
-        <v-node xy="10,10"><v-label text="Node"></v-label></v-node>
-      </v-canvas>
+    <div class="container light-theme">
     </div>
 
-    <div class="v-canvas-container dark-theme">
-      <v-canvas>
-        <v-node xy="10,10"><v-label text="Node"></v-label></v-node>
-      </v-canvas>
+    <div class="container dark-theme">
     </div>
   </div>
 </article>

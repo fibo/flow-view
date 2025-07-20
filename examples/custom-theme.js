@@ -1,19 +1,34 @@
-function indent(code) {
-    const rows = code.split('\n').filter((row) => row != row.trim());
+import { FlowView } from 'flow-view';
 
-    const firstRow = rows[0];
-    let indentationLenght = 0;
+const containerSelector = 'article#custom-theme .container';
+const codeElement = document.querySelector('code');
+const styleElement = document.querySelector('style#container-css-props');
+const container = document.querySelector(containerSelector);
+if (!codeElement || !container || !styleElement)
+	throw new Error('Element not found');
 
-    for (let i = 0; i < firstRow.length; i++)
-        if (firstRow[i] === ' ') indentationLenght++;
-        else break;
-
-    return rows.map((row) => row.substring(indentationLenght)).join('\n');
+function applyCustomTheme() {
+	if (!styleElement || !codeElement) return;
+	styleElement.textContent = `
+	  ${containerSelector} {
+	    ${codeElement.textContent}
+	  }
+	`
 }
 
-// TODO put `indent` in some shared place
-// it could be inside a x-code web component
+applyCustomTheme();
 
-const customTheme = document.querySelector('style#custom-theme').innerHTML;
+const observer = new MutationObserver(() => { applyCustomTheme() });
+observer.observe(codeElement, {
+	characterData: true,
+	childList: true,
+	subtree: true
+});
 
-document.querySelector('code').innerHTML = indent(customTheme);
+const flowView = new FlowView(container);
+
+flowView.loadGraph({
+	nodes: [
+		{ text: 'Hello World', x: 60, y: 70 },
+	]
+})

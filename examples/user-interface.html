@@ -1,11 +1,11 @@
-<article>
+<article id="user-interface">
   <style>
-    .v-canvas-container {
+    article#user-interface .container {
       max-width: 100%;
       height: 400px;
     }
 
-    ul.check-list {
+    article#user-interface ul.check-list {
       list-style-type: circle;
       line-height: 1.6em;
     }
@@ -34,46 +34,5 @@
     </li>
   </ul>
 
-  <div class="v-canvas-container">
-    <v-canvas>
-      <v-node xy="6,7">
-        <v-row></v-row>
-        <v-label text="Homer"></v-label>
-        <v-row>
-          <v-pin uid="dad"></v-pin>
-        </v-row>
-      </v-node>
-
-      <v-node xy="16,7">
-        <v-row></v-row>
-        <v-label text="Marge"></v-label>
-        <v-row>
-          <v-pin uid="mom"></v-pin>
-        </v-row>
-      </v-node>
-
-      <v-node xy="6,24">
-        <v-row>
-          <v-pin uid="bart_parent1"></v-pin>
-          <v-pin uid="bart_parent2"></v-pin>
-        </v-row>
-        <v-label text="Bart"></v-label>
-        <v-row></v-row>
-      </v-node>
-
-      <v-node xy="22,22">
-        <v-row>
-          <v-pin uid="lisa_parent1"></v-pin>
-          <v-pin uid="lisa_parent2"></v-pin>
-        </v-row>
-        <v-label text="Lisa"></v-label>
-        <v-row></v-row>
-      </v-node>
-
-      <v-edge path="mom,bart_parent2"></v-edge>
-      <v-edge path="dad,bart_parent1"></v-edge>
-      <v-edge path="dad,lisa_parent1"></v-edge>
-      <v-edge path="mom,lisa_parent2"></v-edge>
-    </v-canvas>
-  </div>
+  <div class="container"></div>
 </article>

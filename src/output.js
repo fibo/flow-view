@@ -3,11 +3,14 @@ import { FlowViewPin } from "./pin.js"
 export class FlowViewOutput extends FlowViewPin {
 	get center() {
 		return {
+		// @ts-ignore
 			x: this.node.position.x + this.halfPinSize + this.node.borderWidth + this.offsetX,
+		// @ts-ignore
 			y: this.node.position.y + this.node.bounds.height - this.halfPinSize - this.node.borderWidth
 		}
 	}
 
+		// @ts-ignore
 	onPointerdown(event) {
 		if (this.view.isDraggingEdge) {
 			event.stopPropagation()
@@ -17,6 +20,7 @@ export class FlowViewOutput extends FlowViewPin {
 		}
 	}
 
+		// @ts-ignore
 	onPointerup(event) {
 		event.stopPropagation()
 	}

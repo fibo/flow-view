@@ -1,6 +1,9 @@
 import { FlowView } from "flow-view"
 
-const flowView = new FlowView(document.querySelector(".container"))
+const container = document.querySelector(".container")
+if (!container)
+  throw new Error("Container element not found");
+const flowView = new FlowView(container)
 
 flowView.addNodeDefinitions({
   nodes: [
@@ -19,8 +22,8 @@ flowView.addNodeDefinitions({
   ],
   types: {
     child: {
-      inputs: [{ name: "in1" }, { name: "in2" }],
-      outputs: []
+      ins: [{ name: "in1" }, { name: "in2" }],
+      outs: []
     }
   }
 })

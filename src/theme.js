@@ -1,9 +1,18 @@
+/** @param {string} cssName */
 export const cssModifierHighlighted = (cssName) => `${cssName}--highlighted`
+
+/** @param {string} cssName */
 export const cssModifierHasError = (cssName) => `${cssName}--error`
+
+/** @param {string} prop */
 export const cssTransition = (prop) => ({
 	transition: `${prop} 117ms ease-in-out`
 })
+
+/** @param {string} name */
 const fvCssDefaultVarName = (name) => `--fv-default-${name}`
+
+/** @param {string} name */
 const fvCssVar = (name) => `var(--fv-${name},var(${fvCssDefaultVarName(name)}))`
 export const cssVar = {
 	backgroundColor: fvCssVar("background-color"),
@@ -18,11 +27,13 @@ export const cssVar = {
 	nodeBackgroundColor: fvCssVar("node-background-color"),
 	textColor: fvCssVar("text-color")
 }
+
 const cssBase = {
 	"border-radius": "2px",
 	"font-family": "system-ui sans-serif",
 	"font-size": "16px"
 }
+
 export const cssDefault = {
 	light: {
 		...cssBase,
@@ -47,6 +58,8 @@ export const cssDefault = {
 		"text-color": "#ccc"
 	}
 }
+
+/** @param {"light" | "dark"} colorScheme */
 export const cssTheme = (colorScheme) =>
 	Object.entries(cssDefault[colorScheme]).reduce(
 		(theme, [key, value]) => ({

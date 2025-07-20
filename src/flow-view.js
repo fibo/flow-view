@@ -1,20 +1,39 @@
 import { FlowViewElement } from './element.js'
 
-/** @typedef {import('./types.js').FlowViewGraph} FlowViewGraph */
+/**
+ * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
+ * @typedef {import('./types').FlowViewOnChangeCallback} FlowViewOnChangeCallback
+ * @typedef {import('./types').FlowViewGraph} FlowViewGraph
+ * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
+ * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
+ * @typedef {import('./types').FlowViewNodeType} FlowViewNodeType
+ * @typedef {import('./types').FlowViewNodeDefinitions} FlowViewNodeDefinitions
+ */
 
 export class FlowView {
+	/** @type {FlowViewElement} */
+	view
+
+	/** @type {FlowViewOnChangeCallback | undefined} */
+	onViewChange
+
+	/** @type {Map<string, FlowViewNodeType>} */
+	nodeTypeDefinitionMap = new Map()
+
 	/** @param {Element} element */
 	constructor(element) {
-		if (!customElements.get(FlowViewElement.customElementName))
-			customElements.define(FlowViewElement.customElementName, FlowViewElement)
+		if (!customElements.get('flow-view'))
+			customElements.define('flow-view', FlowViewElement)
 
 		if (element instanceof FlowViewElement) {
 			element.host = this
 			this.view = element
 		} else if (element instanceof HTMLElement) {
-			const view = document.createElement(FlowViewElement.customElementName)
+			const view = document.createElement('flow-view')
+			// @ts-ignore
 			view.host = this
 			element.appendChild(view)
+			// @ts-ignore
 			this.view = view
 		} else {
 			throw new Error('flow-view was provided with no valid element nor container')
@@ -23,8 +42,6 @@ export class FlowView {
 		this.view.style.isolation = 'isolate'
 
 		this.nodeNameTypeMap = new Map()
-		this.nodeTypeDefinitionMap = new Map()
-		this.onViewChange = () => {}
 		this.textToType = () => {}
 	}
 
@@ -42,18 +59,21 @@ export class FlowView {
 		this.view.parentNode?.removeChild(this.view)
 	}
 
+	/** @param {string} id */
 	node(id) {
 		return this.view.node(id)
 	}
 
+	/** @param {string} id */
 	edge(id) {
 		return this.view.edge(id)
 	}
 
+	/** @param {FlowViewNodeDefinitions} */
 	addNodeDefinitions({ nodes = [], types = {} }) {
 		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type))
-		Object.entries(types).forEach(([type, { inputs, outputs }]) =>
-			this.nodeTypeDefinitionMap.set(type, { inputs, outputs })
+		Object.entries(types).forEach(([type, { ins, outs }]) =>
+			this.nodeTypeDefinitionMap.set(type, { inputs: ins, outputs: outs })
 		)
 	}
 
@@ -67,37 +87,43 @@ export class FlowView {
 		for (const edge of edges) this.newEdge(edge, { isLoadGraph: true })
 	}
 
-	onChange(value) {
-		this.onViewChange = value
+	/** @param {FlowViewOnChangeCallback} callback */
+	onChange(callback) {
+		this.onViewChange = callback
 	}
 
 	viewChange(
+		// @ts-ignore
 		{ createdNode, createdEdge, createdSemiEdge, deletedNode, deletedEdge, deletedSemiEdge, updatedNode },
 		viewChangeInfo = {}
 	) {
+		const { onViewChange } = this
+		if (!onViewChange) return
+
 		if (createdNode) {
-			this.onViewChange({ action: 'CREATE_NODE', data: createdNode }, viewChangeInfo)
+			onViewChange({ action: 'CREATE_NODE', data: createdNode }, viewChangeInfo)
 		}
 		if (createdEdge) {
-			this.onViewChange({ action: 'CREATE_EDGE', data: createdEdge }, viewChangeInfo)
+			onViewChange({ action: 'CREATE_EDGE', data: createdEdge }, viewChangeInfo)
 		}
 		if (createdSemiEdge) {
-			this.onViewChange({ action: 'CREATE_SEMI_EDGE', data: createdSemiEdge }, viewChangeInfo)
+			onViewChange({ action: 'CREATE_SEMI_EDGE', data: createdSemiEdge }, viewChangeInfo)
 		}
 		if (deletedNode) {
-			this.onViewChange({ action: 'DELETE_NODE', data: deletedNode }, viewChangeInfo)
+			onViewChange({ action: 'DELETE_NODE', data: deletedNode }, viewChangeInfo)
 		}
 		if (deletedEdge) {
-			this.onViewChange({ action: 'DELETE_EDGE', data: deletedEdge }, viewChangeInfo)
+			onViewChange({ action: 'DELETE_EDGE', data: deletedEdge }, viewChangeInfo)
 		}
 		if (deletedSemiEdge) {
-			this.onViewChange({ action: 'DELETE_SEMI_EDGE', data: deletedSemiEdge }, viewChangeInfo)
+			onViewChange({ action: 'DELETE_SEMI_EDGE', data: deletedSemiEdge }, viewChangeInfo)
 		}
 		if (updatedNode) {
-			this.onViewChange({ action: 'UPDATE_NODE', data: updatedNode }, viewChangeInfo)
+			onViewChange?.({ action: 'UPDATE_NODE', data: updatedNode }, viewChangeInfo)
 		}
 	}
 
+	/** @param {FlowViewEdgeObj} arg */
 	newEdge(
 		{ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
 		viewChangeInfo = { isProgrammatic: true }
@@ -110,6 +136,10 @@ export class FlowView {
 		return this.view.newEdge({ id, source, target }, viewChangeInfo)
 	}
 
+	/**
+	 * @param {FlowViewNodeObj} node
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	newNode(node, viewChangeInfo = { isProgrammatic: true }) {
 		return this.view.newNode(node, viewChangeInfo)
 	}

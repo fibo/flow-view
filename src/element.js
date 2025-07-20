@@ -1,12 +1,19 @@
-import { FlowViewBase } from "./base.js"
-import { FlowViewEdge } from "./edge.js"
-import { FlowViewNode } from "./node.js"
-import { FlowViewPin } from "./pin.js"
-import { FlowViewSelector } from "./selector.js"
-import { cssTheme, cssVar } from "./theme.js"
+import { FlowViewBase } from './base.js'
+import { FlowViewEdge } from './edge.js'
+import { FlowViewNode } from './node.js'
+import { FlowViewPin } from './pin.js'
+import { FlowViewSelector } from './selector.js'
+import { cssTheme, cssVar } from './theme.js'
+
+/**
+ * @typedef {import('./flow-view.js').FlowView} FlowView
+ * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
+ * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
+ * @typedef {import('./types').FlowViewSemiEdge} FlowViewSemiEdge
+ * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
+ */
 
 export class FlowViewElement extends HTMLElement {
-	static customElementName = "flow-view"
 	static minHeight = 200
 	static defaultItems = {
 		edge: FlowViewEdge,
@@ -14,18 +21,18 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	static style = {
-		":host([hidden])": { display: "none" },
-		":host": {
-			position: "relative",
-			display: "block",
-			overflow: "hidden",
+		':host([hidden])': { display: 'none' },
+		':host': {
+			position: 'relative',
+			display: 'block',
+			overflow: 'hidden',
 			border: 0,
 			margin: 0,
 			outline: 0,
-			"background-color": cssVar.backgroundColor,
-			"border-radius": cssVar.borderRadius,
-			"font-family": cssVar.fontFamily,
-			"font-size": cssVar.fontSize,
+			'background-color': cssVar.backgroundColor,
+			'border-radius': cssVar.borderRadius,
+			'font-family': cssVar.fontFamily,
+			'font-size': cssVar.fontSize,
 			color: cssVar.textColor
 		},
 		...FlowViewEdge.style,
@@ -34,6 +41,7 @@ export class FlowViewElement extends HTMLElement {
 		...FlowViewSelector.style
 	}
 
+	// @ts-ignore
 	static generateStylesheet(style) {
 		return Object.entries(style).reduce(
 			(stylesheet, [selector, rules]) =>
@@ -42,39 +50,44 @@ export class FlowViewElement extends HTMLElement {
 					`${selector}{`,
 					Object.entries(rules)
 						.map(([key, value]) => `${key}:${value};`)
-						.join(""),
-					"}"
-				].join(""),
-			""
+						.join(''),
+					'}'
+				].join(''),
+			''
 		)
 	}
 
+	/** @param {MouseEvent} event */
 	static pointerCoordinates(event) {
 		const { clientX, clientY, target } = event
+		// @ts-ignore
 		const { left, top } = target.getBoundingClientRect()
 		return { x: Math.round(clientX - left), y: Math.round(clientY - top) }
 	}
 
+	/** @type {FlowView | undefined} */
+	host
+
 	constructor() {
 		super()
 
-		const template = document.createElement("template")
+		const template = document.createElement('template')
 
-		const hasLight = this.hasAttribute("light")
-		const hasDark = this.hasAttribute("dark")
+		const hasLight = this.hasAttribute('light')
+		const hasDark = this.hasAttribute('dark')
 		const isLight = hasLight && !hasDark
 		const isDark = !hasLight && hasDark
 
 		const { generateStylesheet } = FlowViewElement
-		const lightStyle = generateStylesheet({ ":host": cssTheme("light") })
-		const darkStyle = generateStylesheet({ ":host": cssTheme("dark") })
+		const lightStyle = generateStylesheet({ ':host': cssTheme('light') })
+		const darkStyle = generateStylesheet({ ':host': cssTheme('dark') })
 
 		template.innerHTML = [
-			"<style>",
+			'<style>',
 			generateStylesheet(FlowViewElement.style),
 			generateStylesheet({
-				":host": {
-					"color-scheme": isLight ? "light" : isDark ? "dark" : "light dark"
+				':host': {
+					'color-scheme': isLight ? 'light' : isDark ? 'dark' : 'light dark'
 				}
 			}),
 			...(isLight
@@ -82,10 +95,10 @@ export class FlowViewElement extends HTMLElement {
 				: isDark
 				? darkStyle
 				: [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
-			"</style>"
-		].join("")
+			'</style>'
+		].join('')
 
-		this.attachShadow({ mode: "open" }).appendChild(template.content.cloneNode(true))
+		this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
 
 		this._origin = { x: 0, y: 0 }
 
@@ -101,40 +114,43 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		if ("ResizeObserver" in window) {
+		if ('ResizeObserver' in window) {
 			this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this))
+			// @ts-ignore
 			this.rootResizeObserver.observe(this.parentNode)
 		} else {
-			this.height = this.getAttribute("height") || FlowViewElement.minHeight
+			// @ts-ignore
+			this.height = this.getAttribute('height') || FlowViewElement.minHeight
 		}
 
-		if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", 0)
+		if (!this.getAttribute('tabindex')) this.setAttribute('tabindex', '0')
 
-		this.addEventListener("contextmenu", this.onContextmenu)
-		this.addEventListener("dblclick", this.onDblclick)
-		this.addEventListener("keydown", this.onKeydown)
-		this.addEventListener("pointerdown", this.onPointerdown)
-		this.addEventListener("pointermove", this.onPointermove)
-		this.addEventListener("pointerleave", this.onPointerleave)
-		this.addEventListener("pointerup", this.onPointerup)
-		this.addEventListener("touchmove", this.onTouchmove, {
+		this.addEventListener('contextmenu', this.onContextmenu)
+		this.addEventListener('dblclick', this.onDblclick)
+		this.addEventListener('keydown', this.onKeydown)
+		this.addEventListener('pointerdown', this.onPointerdown)
+		this.addEventListener('pointermove', this.onPointermove)
+		this.addEventListener('pointerleave', this.onPointerleave)
+		this.addEventListener('pointerup', this.onPointerup)
+		this.addEventListener('touchmove', this.onTouchmove, {
 			passive: false
 		})
 	}
 
 	disconnectedCallback() {
 		this.removeResizeObserver()
-		this.removeEventListener("contextmenu", this.onContextmenu)
-		this.removeEventListener("dblclick", this.onDblclick)
-		this.removeEventListener("keydown", this.onKeydown)
-		this.removeEventListener("pointerdown", this.onPointerdown)
-		this.removeEventListener("pointermove", this.onPointermove)
-		this.removeEventListener("pointerleave", this.onPointerleave)
-		this.removeEventListener("pointerup", this.onPointerup)
-		this.removeEventListener("touchmove", this.onTouchmove)
+		this.removeEventListener('contextmenu', this.onContextmenu)
+		this.removeEventListener('dblclick', this.onDblclick)
+		this.removeEventListener('keydown', this.onKeydown)
+		this.removeEventListener('pointerdown', this.onPointerdown)
+		this.removeEventListener('pointermove', this.onPointermove)
+		this.removeEventListener('pointerleave', this.onPointerleave)
+		this.removeEventListener('pointerup', this.onPointerup)
+		this.removeEventListener('touchmove', this.onTouchmove)
 	}
 
 	removeResizeObserver() {
+		// @ts-ignore
 		if (this.parentNode) this.rootResizeObserver?.unobserve(this.parentNode)
 		delete this.rootResizeObserver
 	}
@@ -194,14 +210,19 @@ export class FlowViewElement extends HTMLElement {
 		this.style.width = `${value}px`
 	}
 
+	/** @param {FlowViewChangeInfo} viewChangeInfo */
 	clear(viewChangeInfo) {
 		this.nodes.forEach((node) => {
 			this.deleteNode(node.id, viewChangeInfo)
 		})
 	}
 
+	/**
+	 * @param {FlowViewEdge} edge
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	newEdge({ id, source, target }, viewChangeInfo) {
-		const Class = this.itemClassMap.get("edge")
+		const Class = this.itemClassMap.get('edge')
 		const edge = new Class({
 			id,
 			view: this,
@@ -210,24 +231,31 @@ export class FlowViewElement extends HTMLElement {
 			target
 		})
 		this.edgesMap.set(edge.id, edge)
+		// @ts-ignore
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
 		return edge
 	}
 
+	/**
+	 * @param {FlowViewNodeObj} node
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
+		// @ts-ignore
 		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type
+		// @ts-ignore
 		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType)
 		const inputs =
-			nodeTypeDefinition?.inputs?.map((item, i) => ({
+			nodeTypeDefinition?.ins?.map((item, i) => ({
 				...item,
 				...(ins[i] ?? {})
 			})) ?? ins
 		const outputs =
-			nodeTypeDefinition?.outputs?.map((item, i) => ({
+			nodeTypeDefinition?.outs?.map((item, i) => ({
 				...item,
 				...(outs[i] ?? {})
 			})) ?? outs
-		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get("node")
+		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get('node')
 		const node = new Class({
 			id,
 			view: this,
@@ -241,17 +269,22 @@ export class FlowViewElement extends HTMLElement {
 		})
 		this.nodesMap.set(node.id, node)
 		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject()
+		// @ts-ignore
 		this.host.viewChange({ createdNode }, viewChangeInfo)
 		return node
 	}
 
+	/** @param {FlowViewEdge} edge */
 	selectEdge(edge) {
 		edge.highlight = true
 		edge.selected = true
+		// @ts-ignore
 		edge.source.highlight = true
+		// @ts-ignore
 		edge.target.highlight = true
 	}
 
+	/** @param {FlowViewNode} node */
 	selectNode(node) {
 		node.highlight = true
 		node.selected = true
@@ -264,13 +297,17 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
+	/** @param {FlowViewEdge} edge */
 	deselectEdge(edge) {
 		edge.highlight = false
 		edge.selected = false
+		// @ts-ignore
 		if (!edge.source.node.isSelected) edge.source.highlight = false
+		// @ts-ignore
 		if (!edge.target.node.isSelected) edge.target.highlight = false
 	}
 
+	/** @param {FlowViewNode} node */
 	deselectNode(node) {
 		node.highlight = false
 		node.selected = false
@@ -278,6 +315,10 @@ export class FlowViewElement extends HTMLElement {
 		for (const output of node.outputs) output.highlight = false
 	}
 
+	/**
+	 * @param {string} id
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	deleteEdge(id, viewChangeInfo) {
 		const edge = this.edgesMap.get(id)
 		if (!edge) return
@@ -290,10 +331,15 @@ export class FlowViewElement extends HTMLElement {
 		edge.remove()
 
 		const serializedEdge = edge.toObject()
+		// @ts-ignore
 		this.host.viewChange({ deletedEdge: serializedEdge }, viewChangeInfo)
 		return serializedEdge
 	}
 
+	/**
+	 * @param {string} id
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	deleteNode(id, viewChangeInfo) {
 		const node = this.nodesMap.get(id)
 		if (!node) return
@@ -310,27 +356,38 @@ export class FlowViewElement extends HTMLElement {
 		node.remove()
 
 		const serializedNode = node.toObject()
+		// @ts-ignore
 		this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo)
 		return serializedNode
 	}
 
+	/**
+	 * @param {string} id
+	 * @returns {FlowViewEdge}
+	 */
 	edge(id) {
 		if (!this.edgesMap.has(id))
 			throw new Error(`flow-view edge not found id=${id}`)
 		return this.edgesMap.get(id)
 	}
 
+	/**
+	 * @param {string} id
+	 * @returns {FlowViewNode}
+	 */
 	node(id) {
 		if (!this.nodesMap.has(id))
 			throw new Error(`flow-view node not found id=${id}`)
 		return this.nodesMap.get(id)
 	}
 
+	/** @param {MouseEvent} event */
 	startTranslation(event) {
 		this.startDraggingPoint = FlowViewElement.pointerCoordinates(event)
 		this.translateVector = { x: 0, y: 0 }
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {}
+			// @ts-ignore
 			for (const node of this.selectedNodes) selectedNodesStartPosition[node.id] = node.position
 			this.selectedNodesStartPosition = selectedNodesStartPosition
 		}
@@ -348,24 +405,33 @@ export class FlowViewElement extends HTMLElement {
 		delete this.selectedNodesStartPosition
 	}
 
+	/**
+	 * @param {{ position: { x: number, y: number } }} pointer
+	 */
 	createSelector({ position }) {
 		return (this.selector = new FlowViewSelector({
 			id: this.selectorId,
 			view: this,
 			cssClassName: FlowViewSelector.cssClassName,
+			// @ts-ignore
 			position,
+			// @ts-ignore
 			nodeNames: [...this.host.nodeNameTypeMap.keys()]
 		}))
 	}
 
+	/** @param {{ node: FlowViewNode }} arg */
 	updateNode({ node }) {
+		// @ts-ignore
 		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo)
 	}
 
+	/** @param {Event} event */
 	onContextmenu(event) {
 		event.preventDefault()
 	}
 
+	/** @param {MouseEvent} event */
 	onDblclick(event) {
 		this.clearSelection()
 		this.removeSelector()
@@ -381,16 +447,17 @@ export class FlowViewElement extends HTMLElement {
 		selector.focus()
 	}
 
+	/** @param {KeyboardEvent} event */
 	onKeydown(event) {
 		event.stopPropagation()
 
 		switch (true) {
 			case this.selector instanceof FlowViewSelector:
 				return
-			case event.code === "Backspace":
+			case event.code === 'Backspace':
 				this.deleteSelectedItems()
 				break
-			case event.code === "Escape":
+			case event.code === 'Escape':
 				this.clearSelection()
 				break
 			default:
@@ -398,14 +465,17 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
+	/** @param {MouseEvent} event */
 	onPointerdown(event) {
 		event.stopPropagation()
 		this.removeSelector()
+		// @ts-ignore
 		if (!event.isBubblingFromNode) this.clearSelection()
 		const isMultiSelection = event.shiftKey
 		if (!isMultiSelection) this.startTranslation(event)
 	}
 
+	/** @param {MouseEvent} event */
 	onPointermove(event) {
 		const { hasSelectedNodes, semiEdge, startDraggingPoint } = this
 
@@ -429,6 +499,7 @@ export class FlowViewElement extends HTMLElement {
 					const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this
 
 					for (const node of selectedNodes) {
+						// @ts-ignore
 						const { x: startX, y: startY } = selectedNodesStartPosition[node.id]
 						node.position = { x: startX - x, y: startY - y }
 					}
@@ -472,6 +543,7 @@ export class FlowViewElement extends HTMLElement {
 		this.removeSemiEdge()
 	}
 
+	// @ts-ignore
 	onRootResize(entries) {
 		// Only listen to parentNode
 		for (const entry of entries) {
@@ -494,27 +566,27 @@ export class FlowViewElement extends HTMLElement {
 		}
 	}
 
+	// @ts-ignore
 	onTouchmove(event) {
 		event.preventDefault()
 		event.stopPropagation()
 	}
 
-	createSemiEdge({ source, target }, viewChangeInfo) {
-		const Class = this.itemClassMap.get("edge")
+	/**
+	 * @param {FlowViewSemiEdge} arg
+	 */
+	createSemiEdge({ source, target }) {
+		const Class = this.itemClassMap.get('edge')
 		this.semiEdge = new Class({
 			view: this,
 			cssClassName: Class.cssClassName,
 			source,
 			target
 		})
-		this.host.viewChange(
-			{
-				createdSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
-				}
-			},
-			viewChangeInfo
+		this.host?.viewChange(
+	// @ts-ignore
+			{ createdSemiEdge: { from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined, to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined }
+			}
 		)
 	}
 
@@ -524,23 +596,21 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	deleteSelectedItems() {
-		for (const edge of this.selectedEdges) this.deleteEdge(edge.id)
-		for (const node of this.selectedNodes) this.deleteNode(node.id)
+		for (const edge of this.selectedEdges) this.deleteEdge(edge.id, {})
+		for (const node of this.selectedNodes) this.deleteNode(node.id, {})
 	}
 
-	removeSemiEdge(viewChangeInfo) {
+	removeSemiEdge() {
 		if (!this.semiEdge) return
 		const { source, target } = this.semiEdge
 		this.semiEdge.remove()
 		delete this.semiEdge
+		// @ts-ignore
 		this.host.viewChange(
-			{
-				deletedSemiEdge: {
-					from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined,
-					to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
+		// @ts-ignore
+			{ deletedSemiEdge: { from: source instanceof FlowViewPin ? [source.node.id, source.id] : undefined, to: target instanceof FlowViewPin ? [target.node.id, target.id] : undefined
 				}
-			},
-			viewChangeInfo
+			}
 		)
 	}
 

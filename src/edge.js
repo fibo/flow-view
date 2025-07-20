@@ -4,6 +4,10 @@ import { FlowViewPin } from "./pin.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
+/**
+ * @typedef {import('./types').FlowViewEdgeInitArg} FlowViewEdgeInitArg
+ */
+
 export class FlowViewEdge extends FlowViewBase {
 	static cssClassName = "fv-edge"
 	static lineWidth = 2
@@ -41,6 +45,7 @@ export class FlowViewEdge extends FlowViewBase {
 		return !this.hasTargetPin || !this.hasSourcePin
 	}
 
+	/** @param {FlowViewEdgeInitArg} */
 	init({ source, target }) {
 		const hasSourcePin = source instanceof FlowViewOutput
 		const hasTargetPin = target instanceof FlowViewInput

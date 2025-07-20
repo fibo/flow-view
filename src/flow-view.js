@@ -1,12 +1,12 @@
-import { FlowViewErrorCannotCreateWebComponent, FlowViewErrorCannotLoadStyle } from "./errors.js"
-import { FlowViewElement } from "./element.js"
+import { FlowViewElement } from './element.js'
+
+/** @typedef {import('./types.js').FlowViewGraph} FlowViewGraph */
 
 export class FlowView {
 	/** @param {Element} element */
 	constructor(element) {
-		if (!window.customElements.get(FlowViewElement.customElementName)) {
-			window.customElements.define(FlowViewElement.customElementName, FlowViewElement)
-		}
+		if (!customElements.get(FlowViewElement.customElementName))
+			customElements.define(FlowViewElement.customElementName, FlowViewElement)
 
 		if (element instanceof FlowViewElement) {
 			element.host = this
@@ -17,10 +17,10 @@ export class FlowView {
 			element.appendChild(view)
 			this.view = view
 		} else {
-			throw new FlowViewErrorCannotCreateWebComponent()
+			throw new Error('flow-view was provided with no valid element nor container')
 		}
 
-		this.view.style.isolation = "isolate"
+		this.view.style.isolation = 'isolate'
 
 		this.nodeNameTypeMap = new Map()
 		this.nodeTypeDefinitionMap = new Map()
@@ -61,6 +61,7 @@ export class FlowView {
 		this.view.clear({ isClearGraph: true })
 	}
 
+	/** @param {FlowViewGraph} graph */
 	loadGraph({ nodes = [], edges = [] }) {
 		for (const node of nodes) this.newNode(node, { isLoadGraph: true })
 		for (const edge of edges) this.newEdge(edge, { isLoadGraph: true })
@@ -75,25 +76,25 @@ export class FlowView {
 		viewChangeInfo = {}
 	) {
 		if (createdNode) {
-			this.onViewChange({ action: "CREATE_NODE", data: createdNode }, viewChangeInfo)
+			this.onViewChange({ action: 'CREATE_NODE', data: createdNode }, viewChangeInfo)
 		}
 		if (createdEdge) {
-			this.onViewChange({ action: "CREATE_EDGE", data: createdEdge }, viewChangeInfo)
+			this.onViewChange({ action: 'CREATE_EDGE', data: createdEdge }, viewChangeInfo)
 		}
 		if (createdSemiEdge) {
-			this.onViewChange({ action: "CREATE_SEMI_EDGE", data: createdSemiEdge }, viewChangeInfo)
+			this.onViewChange({ action: 'CREATE_SEMI_EDGE', data: createdSemiEdge }, viewChangeInfo)
 		}
 		if (deletedNode) {
-			this.onViewChange({ action: "DELETE_NODE", data: deletedNode }, viewChangeInfo)
+			this.onViewChange({ action: 'DELETE_NODE', data: deletedNode }, viewChangeInfo)
 		}
 		if (deletedEdge) {
-			this.onViewChange({ action: "DELETE_EDGE", data: deletedEdge }, viewChangeInfo)
+			this.onViewChange({ action: 'DELETE_EDGE', data: deletedEdge }, viewChangeInfo)
 		}
 		if (deletedSemiEdge) {
-			this.onViewChange({ action: "DELETE_SEMI_EDGE", data: deletedSemiEdge }, viewChangeInfo)
+			this.onViewChange({ action: 'DELETE_SEMI_EDGE', data: deletedSemiEdge }, viewChangeInfo)
 		}
 		if (updatedNode) {
-			this.onViewChange({ action: "UPDATE_NODE", data: updatedNode }, viewChangeInfo)
+			this.onViewChange({ action: 'UPDATE_NODE', data: updatedNode }, viewChangeInfo)
 		}
 	}
 
@@ -123,16 +124,10 @@ export class FlowView {
 
 	addNodeClass(key, NodeClass) {
 		this.view.itemClassMap.set(key, NodeClass)
-		if (NodeClass.style) {
-			try {
-				const style = document.createElement("style")
-				style.textContent = FlowViewElement.generateStylesheet(NodeClass.style)
-				this.view.shadowRoot.appendChild(style)
-			} catch (error) {
-				console.error(error)
-				throw new FlowViewErrorCannotLoadStyle()
-			}
-		}
+		if (!NodeClass.style) return
+		const style = document.createElement('style')
+		style.textContent = FlowViewElement.generateStylesheet(NodeClass.style)
+		this.view.shadowRoot.appendChild(style)
 	}
 
 	nodeTextToType(textToType) {

@@ -1,7 +1,6 @@
 export * from "./base.js"
 export * from "./edge.js"
 export * from "./element.js"
-export * from "./errors.js"
 export * from "./flow-view.js"
 export * from "./node.js"
 export * from "./pin.js"

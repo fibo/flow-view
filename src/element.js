@@ -1,4 +1,3 @@
-import { FlowViewErrorItemNotFound } from "./errors.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewEdge } from "./edge.js"
 import { FlowViewNode } from "./node.js"
@@ -316,14 +315,14 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	edge(id) {
-		if (!this.edgesMap.has(id)) throw new FlowViewErrorItemNotFound({ kind: "edge", id })
+		if (!this.edgesMap.has(id))
+			throw new Error(`flow-view edge not found id=${id}`)
 		return this.edgesMap.get(id)
 	}
 
 	node(id) {
-		if (!this.nodesMap.has(id)) {
-			throw new FlowViewErrorItemNotFound({ kind: "node", id })
-		}
+		if (!this.nodesMap.has(id))
+			throw new Error(`flow-view node not found id=${id}`)
 		return this.nodesMap.get(id)
 	}
 

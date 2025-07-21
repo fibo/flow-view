@@ -1,6 +1,7 @@
 <article id="color-schemes">
 	<style>
 		.containers {
+			max-width: 100%;
 			display: flex;
 			flex-direction: row;
 			gap: 1em;
@@ -8,16 +9,16 @@
 
 		.container {
 			max-width: 300px;
+			flex-grow: 1;
 			height: 250px;
 		}
 
-		@media (max-width: 700px) {
+		@media (max-width: 789px) {
 			.containers {
 				flex-direction: column;
 			}
 			.container {
 				max-width: 100%;
-				height: 250px;
 			}
 		}
 

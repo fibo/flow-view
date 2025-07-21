@@ -9,6 +9,33 @@ export const cssTransition = (prop) => ({
 	transition: `${prop} 117ms ease-in-out`
 })
 
+export const cssClass = {
+	edge: 'fv-edge',
+	node: 'fv-node',
+	pin: 'fv-pin',
+	selector: 'fv-selector',
+}
+
+export const cssEdge = {
+	lineWidth: 2,
+	zIndex: 0,
+};
+
+export const cssPin = {
+	size: 10,
+};
+
+export const cssSelector = {
+	padding: 9,
+	width: 170,
+}
+
+export const cssNode = {
+	borderWidth: 1,
+	minSize: cssPin.size * 4,
+	zIndex: cssEdge.zIndex + 1,
+};
+
 /** @param {string} name */
 const fvCssDefaultVarName = (name) => `--fv-default-${name}`
 

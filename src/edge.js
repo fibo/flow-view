@@ -1,5 +1,4 @@
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from './theme.js'
-import { FlowViewPin } from './pin.js'
+import { cssClass, cssEdge, cssModifierHasError, cssModifierHighlighted, cssPin, cssTransition, cssVar } from './theme.js'
 
 /**
  * @typedef {import('./types').FlowViewEdgeConstructorArg} FlowViewEdgeConstructorArg
@@ -10,8 +9,7 @@ import { FlowViewPin } from './pin.js'
 const createSvg = (tag) =>
 	document.createElementNS('http://www.w3.org/2000/svg', tag)
 
-const cssClass = 'fv-edge'
-const highlightedCssClass = cssModifierHighlighted(cssClass)
+const highlightedCssClass = cssModifierHighlighted(cssClass.edge)
 
 export class FlowViewEdge {
 	isSelected = false;
@@ -32,7 +30,7 @@ export class FlowViewEdge {
 		this.id = id
 		const element = this.element = document.createElement('div');
 		element.setAttribute('id', id);
-		element.classList.add(FlowViewEdge.cssClassName);
+		element.classList.add(cssClass.edge);
 		element.appendChild(this.svg)
 		this.svg.appendChild(this.line)
 		// @ts-ignore
@@ -51,26 +49,23 @@ export class FlowViewEdge {
 		this.line.addEventListener('pointerleave', this._onPointerleaveLine)
 	}
 
-	static cssClassName = cssClass
-	static lineWidth = 2
-	static zIndex = 0
 	static style = {
-		[`.${FlowViewEdge.cssClassName}`]: {
+		[`.${cssClass.edge}`]: {
 			display: 'flex',
 			position: 'absolute',
 			border: 0,
 			'pointer-events': 'none'
 		},
-		[`.${FlowViewEdge.cssClassName} line`]: {
+		[`.${cssClass.edge} line`]: {
 			'pointer-events': 'all',
 			stroke: cssVar.connectionColor,
-			'stroke-width': FlowViewEdge.lineWidth,
+			'stroke-width': cssEdge.lineWidth,
 			...cssTransition('stroke')
 		},
-		[`.${cssModifierHasError(FlowViewEdge.cssClassName)} line`]: {
+		[`.${cssModifierHasError(cssClass.edge)} line`]: {
 			stroke: cssVar.errorColor
 		},
-		[`.${cssModifierHighlighted(FlowViewEdge.cssClassName)} line`]: {
+		[`.${cssModifierHighlighted(cssClass.edge)} line`]: {
 			stroke: cssVar.connectionColorHighlighted
 		}
 	}
@@ -156,7 +151,7 @@ export class FlowViewEdge {
 		if (!sourceCenter || !targetCenter) return
 		const { x: sourceX, y: sourceY } = sourceCenter
 		const { x: targetX, y: targetY } = targetCenter
-		const { size: pinSize } = FlowViewPin
+		const pinSize = cssPin.size
 		const halfPinSize = pinSize / 2
 
 		const invertedX = targetX < sourceX
@@ -167,15 +162,13 @@ export class FlowViewEdge {
 		element.style.top = `${top}px`
 		element.style.left = `${left}px`
 
-		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize
+		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize;
 		element.style.width = `${width}px`
-		// @ts-ignore
-		svg.setAttribute('width', width)
+		svg.setAttribute('width', `${width}`)
 
-		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize
+		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize;
 		element.style.height = `${height}px`
-		// @ts-ignore
-		svg.setAttribute('height', height)
+		svg.setAttribute('height', `${height}`)
 
 		const startX = invertedX ? width - halfPinSize : halfPinSize
 		const startY = invertedY ? height - halfPinSize : halfPinSize
@@ -183,14 +176,10 @@ export class FlowViewEdge {
 		const endX = invertedX ? halfPinSize : width - halfPinSize
 		const endY = invertedY ? halfPinSize : height - halfPinSize
 
-		// @ts-ignore
-		line.setAttribute('x2', endX)
-		// @ts-ignore
-		line.setAttribute('y2', endY)
-		// @ts-ignore
-		line.setAttribute('x1', startX)
-		// @ts-ignore
-		line.setAttribute('y1', startY)
+		line.setAttribute('x2', `${endX}`)
+		line.setAttribute('y2', `${endY}`)
+		line.setAttribute('x1', `${startX}`)
+		line.setAttribute('y1', `${startY}`)
 	}
 
 	toObject() {

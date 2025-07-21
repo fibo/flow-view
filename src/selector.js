@@ -1,52 +1,47 @@
-import { cssTransition, cssVar } from "./theme.js"
+import { cssTransition, cssClass, cssSelector, cssVar, cssNode } from "./theme.js"
 import { FlowViewBase } from "./base.js"
-import { FlowViewNode } from "./node.js"
 
 /**
  * @typedef {import('./types').Vector} Vector
  */
 
 export class FlowViewSelector extends FlowViewBase {
-	static cssClassName = "fv-selector"
-	static zIndex = FlowViewNode.zIndex + 1
-	static width = 170
-	static padding = 9
 	static style = {
-		[`.${FlowViewSelector.cssClassName}`]: {
+		[`.${cssClass.selector}`]: {
 			position: "absolute",
 			"box-shadow": cssVar.boxShadow,
-			"z-index": FlowViewSelector.zIndex
+			"z-index": cssNode.zIndex + 1
 		},
-		[`.${FlowViewSelector.cssClassName} input`]: {
+		[`.${cssClass.selector} input`]: {
 			border: 0,
 			margin: 0,
 			outline: 0,
 			"border-radius": cssVar.borderRadius,
 			"font-family": cssVar.fontFamily,
 			"font-size": cssVar.fontSize,
-			padding: `${FlowViewSelector.padding}px`,
-			width: `${FlowViewSelector.width - 2 * FlowViewSelector.padding}px`
+			padding: `${cssSelector.padding}px`,
+			width: `${cssSelector.width - 2 * cssSelector.padding}px`
 		},
-		[`.${FlowViewSelector.cssClassName}__hint`]: {
+		[`.${cssClass.selector}__hint`]: {
 			position: "absolute",
 			left: "0",
 			background: "transparent",
 			"pointer-events": "none"
 		},
-		[`.${FlowViewSelector.cssClassName}__hint::placeholder`]: {
+		[`.${cssClass.selector}__hint::placeholder`]: {
 			opacity: "0.4"
 		},
-		[`.${FlowViewSelector.cssClassName}__options`]: {
+		[`.${cssClass.selector}__options`]: {
 			"background-color": cssVar.nodeBackgroundColor,
 			height: "fit-content"
 		},
-		[`.${FlowViewSelector.cssClassName}__option`]: {
+		[`.${cssClass.selector}__option`]: {
 			padding: "0.5em",
 			border: "1px solid transparent",
 			cursor: "default",
 			...cssTransition("border-color")
 		},
-		[`.${FlowViewSelector.cssClassName}__option--highlighted`]: {
+		[`.${cssClass.selector}__option--highlighted`]: {
 			"border-color": cssVar.borderColorHighlighted
 		}
 	}
@@ -56,12 +51,11 @@ export class FlowViewSelector extends FlowViewBase {
 		const { element } = this
 		element.setAttribute("tabindex", '0')
 
-		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`)
+		this.hint = this.createElement("input", `${cssClass.selector}__hint`)
 
 		const input = (this.input = this.createElement("input"))
-	// @ts-ignore
 
-		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`])
+		this.options = this.createElement("div", `${cssClass.selector}__options`)
 
 		this.nodeList = nodeList
 		this.position = position
@@ -130,8 +124,8 @@ export class FlowViewSelector extends FlowViewBase {
 
 		// Avoid overflow, using some heuristic values.
 		const overflowY = y - view.origin.y + 40 >= view.height
-		const overflowX = x - view.origin.x + FlowViewSelector.width >= view.width
-		const _x = overflowX ? view.width + view.origin.x - FlowViewSelector.width - 10 : x
+		const overflowX = x - view.origin.x + cssSelector.width >= view.width
+		const _x = overflowX ? view.width + view.origin.x - cssSelector.width - 10 : x
 		const _y = overflowY ? view.height + view.origin.y - 50 : y
 
 		element.style.top = `${_y - view.origin.y}px`
@@ -167,7 +161,7 @@ export class FlowViewSelector extends FlowViewBase {
 	/** @param {KeyboardEvent} event */
 	onKeyup(event) {
 		event.stopPropagation()
-		const highlightedClassName = `${FlowViewSelector.cssClassName}__option--highlighted`
+		const highlightedClassName = `${cssClass.selector}__option--highlighted`
 		const highlightOptions = () => {
 			// @ts-ignore
 			for (let i = 0; i < this.options.childElementCount; i++) {
@@ -198,7 +192,7 @@ export class FlowViewSelector extends FlowViewBase {
 			for (let i = 0; i < this.matchingNodes.length; i++) {
 				const name = this.matchingNodes[i]
 				const option = document.createElement("div")
-				option.classList.add(`${FlowViewSelector.cssClassName}__option`)
+				option.classList.add(`${cssClass.selector}__option`)
 				option.textContent = name
 				option.onclick = () => {
 			// @ts-ignore

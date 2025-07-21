@@ -1,9 +1,9 @@
-import { FlowViewBase } from './base.js'
-import { FlowViewEdge } from './edge.js'
-import { FlowViewNode } from './node.js'
-import { FlowViewPin } from './pin.js'
-import { FlowViewSelector } from './selector.js'
-import { cssTheme, cssVar } from './theme.js'
+import { FlowViewBase } from './base.js';
+import { FlowViewEdge } from './edge.js';
+import { FlowViewNode } from './node.js';
+import { FlowViewPin } from './pin.js';
+import { FlowViewSelector } from './selector.js';
+import { cssClass, cssTheme, cssVar } from './theme.js';
 
 /**
  * @typedef {import('./flow-view.js').FlowView} FlowView
@@ -25,7 +25,6 @@ const pointerCoordinates = ({ clientX, clientY, target }) => {
 }
 
 export class FlowViewElement extends HTMLElement {
-	static minHeight = 200
 	static defaultItems = {
 		node: FlowViewNode
 	}
@@ -121,8 +120,7 @@ export class FlowViewElement extends HTMLElement {
 			// @ts-ignore
 			this.rootResizeObserver.observe(this.parentNode)
 		} else {
-			// @ts-ignore
-			this.height = this.getAttribute('height') || FlowViewElement.minHeight
+			this.height = 200
 		}
 
 		if (!this.getAttribute('tabindex')) this.setAttribute('tabindex', '0')
@@ -355,7 +353,7 @@ export class FlowViewElement extends HTMLElement {
 		const node = new Class({
 			id,
 			view: this,
-			cssClassName: Class.cssClassName,
+			cssClassName: cssClass.node,
 			text,
 			inputs,
 			outputs,
@@ -508,8 +506,8 @@ export class FlowViewElement extends HTMLElement {
 	createSelector({ position }) {
 		return (this.selector = new FlowViewSelector({
 			id: this.selectorId,
+			cssClassName: cssClass.selector,
 			view: this,
-			cssClassName: FlowViewSelector.cssClassName,
 			// @ts-ignore
 			position,
 			nodeList: Array.from(this.host?.nodeList ?? [])

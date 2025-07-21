@@ -1,9 +1,7 @@
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
+import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar, cssNode, cssClass, cssPin } from "./theme.js"
 import { FlowViewBase } from "./base.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
-import { FlowViewEdge } from "./edge.js"
-import { FlowViewPin } from "./pin.js"
 
 /**
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
@@ -13,13 +11,8 @@ import { FlowViewPin } from "./pin.js"
  */
 
 export class FlowViewNode extends FlowViewBase {
-	static cssClassName = "fv-node"
-	static borderWidth = 1
-	static minSize = FlowViewPin.size * 4
-	// @ts-ignore
-	static zIndex = FlowViewEdge.zIndex + 1
 	static style = {
-		[`.${FlowViewNode.cssClassName}`]: {
+		[`.${cssClass.node}`]: {
 			position: "absolute",
 			"background-color": cssVar.nodeBackgroundColor,
 			"border-radius": cssVar.borderRadius,
@@ -27,31 +20,31 @@ export class FlowViewNode extends FlowViewBase {
 			display: "flex",
 			"flex-direction": "column",
 			"justify-content": "space-between",
-			border: `${FlowViewNode.borderWidth}px solid transparent`,
-			"min-height": `${FlowViewNode.minSize}px`,
-			"min-width": `${FlowViewNode.minSize}px`,
+			border: `${cssNode.borderWidth}px solid transparent`,
+			"min-height": `${cssNode.minSize}px`,
+			"min-width": `${cssNode.minSize}px`,
 			width: "fit-content",
-			"z-index": FlowViewNode.zIndex,
+			"z-index": cssNode.zIndex,
 			...cssTransition("border-color")
 		},
-		[`.${cssModifierHighlighted(FlowViewNode.cssClassName)}`]: {
+		[`.${cssModifierHighlighted(cssClass.node)}`]: {
 			"border-color": cssVar.borderColorHighlighted
 		},
-		[`.${cssModifierHasError(FlowViewNode.cssClassName)}`]: {
+		[`.${cssModifierHasError(cssClass.node)}`]: {
 			"border-color": cssVar.errorColor
 		},
-		[`.${FlowViewNode.cssClassName} .content`]: {
+		[`.${cssClass.node} .content`]: {
 			"user-select": "none",
 			"padding-left": "0.5em",
 			"padding-right": "0.5em",
 			"text-align": "center"
 		},
-		[`.${FlowViewNode.cssClassName} .pins`]: {
+		[`.${cssClass.node} .pins`]: {
 			display: "flex",
 			"flex-direction": "row",
-			gap: `${FlowViewPin.size}px`,
+			gap: `${cssPin.size}px`,
 			"justify-content": "space-between",
-			height: `${FlowViewPin.size}px`
+			height: `${cssPin.size}px`
 		}
 	}
 
@@ -63,11 +56,8 @@ export class FlowViewNode extends FlowViewBase {
 		this.text = text
 		this.type = type
 
-		this.borderWidth = FlowViewNode.borderWidth
-
 		this.inputsMap = new Map()
-		// @ts-ignore
-		this.inputsDiv = this.createElement("div", "pins")
+		this.inputsDiv = this.createElement('div', 'pins')
 		for (const pin of inputs) this.newInput(pin)
 
 		this.initContent(node)
@@ -79,16 +69,13 @@ export class FlowViewNode extends FlowViewBase {
 		this.position = { x, y }
 
 		this._onDblclick = this.onDblclick.bind(this)
-		// @ts-ignore
 		this.element.addEventListener("dblclick", this._onDblclick)
 		this._onPointerdown = this.onPointerdown.bind(this)
-		// @ts-ignore
 		this.element.addEventListener("pointerdown", this._onPointerdown)
 	}
 
 	/** @param {FlowViewNodeObj} node */
 	initContent(node) {
-		// @ts-ignore
 		const div = this.createElement("div", "content")
 		div.textContent = node.text
 		this.contentDiv = div
@@ -171,7 +158,7 @@ export class FlowViewNode extends FlowViewBase {
 			name,
 			node: this,
 			view: this.view,
-			cssClassName: FlowViewPin.cssClassName
+			cssClassName: cssClass.pin
 		})
 		// @ts-ignore
 		this.inputsMap.set(pin.id, pin)
@@ -188,7 +175,7 @@ export class FlowViewNode extends FlowViewBase {
 			name,
 			node: this,
 			view: this.view,
-			cssClassName: FlowViewPin.cssClassName
+			cssClassName: cssClass.pin
 		})
 		// @ts-ignore
 		this.outputsMap.set(pin.id, pin)

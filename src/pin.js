@@ -1,4 +1,4 @@
-import { cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
+import { cssClass, cssModifierHighlighted, cssPin, cssTransition, cssVar } from "./theme.js"
 import { FlowViewBase } from "./base.js"
 
 /**
@@ -6,31 +6,28 @@ import { FlowViewBase } from "./base.js"
  */
 
 export class FlowViewPin extends FlowViewBase {
-	static cssClassName = "fv-pin"
-	static size = 10
-
 	static style = {
-		[`.${FlowViewPin.cssClassName}`]: {
+		[`.${cssClass.pin}`]: {
 			"background-color": cssVar.connectionColor,
 			cursor: "none",
 			position: "relative",
 			display: "block",
-			width: `${FlowViewPin.size}px`,
-			height: `${FlowViewPin.size}px`,
+			width: `${cssPin.size}px`,
+			height: `${cssPin.size}px`,
 			...cssTransition("background-color")
 		},
-		[`.${FlowViewPin.cssClassName} .info`]: {
+		[`.${cssClass.pin} .info`]: {
 			visibility: "hidden",
 			position: "absolute",
 			"background-color": cssVar.nodeBackgroundColor
 		},
-		[`.${FlowViewPin.cssClassName} .info:not(:empty)`]: {
+		[`.${cssClass.pin} .info:not(:empty)`]: {
 			padding: "2px 5px"
 		},
-		[`.${FlowViewPin.cssClassName}:hover .info`]: {
+		[`.${cssClass.pin}:hover .info`]: {
 			visibility: "visible"
 		},
-		[`.${cssModifierHighlighted(FlowViewPin.cssClassName)}`]: {
+		[`.${cssModifierHighlighted(cssClass.pin)}`]: {
 			"background-color": cssVar.connectionColorHighlighted
 		}
 	}
@@ -68,7 +65,7 @@ export class FlowViewPin extends FlowViewBase {
 	}
 
 	get halfPinSize() {
-		return Math.round(FlowViewPin.size / 2)
+		return Math.round(cssPin.size / 2)
 	}
 
 	dispose() {

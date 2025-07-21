@@ -93,7 +93,7 @@ export class FlowViewBase {
 	 * @param {string} tag
 	 * @param {string} cssClassName
 	 */
-	createElement(tag, cssClassName) {
+	createElement(tag, cssClassName = '') {
 		const element = document.createElement(tag)
 		if (cssClassName) element.classList.add(cssClassName)
 		this.element.appendChild(element)

@@ -99,6 +99,9 @@ type FlowViewChange = {
 	action: 'DELETE_NODE'
 	data: unknown
 } | {
+	action: 'DELETE_EDGE'
+	data: unknown
+} | {
 	action: 'UPDATE_NODE'
 	data: unknown
 }

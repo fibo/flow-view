@@ -113,6 +113,7 @@ export class FlowViewNode extends FlowViewBase {
 
 	/** @returns {Vector} */
 	get position() {
+		// @ts-ignore
 		return { x: this.x, y: this.y }
 	}
 
@@ -137,8 +138,10 @@ export class FlowViewNode extends FlowViewBase {
 
 	/** @param {string} id */
 	deleteOutput(id) {
+		// @ts-ignore
 		const output = this.outputsMap.get(id)
 		output.remove()
+		// @ts-ignore
 		this.outputsMap.delete(id)
 	}
 
@@ -155,7 +158,7 @@ export class FlowViewNode extends FlowViewBase {
 	output(id) {
 		// @ts-ignore
 		if (!this.outputsMap.has(id))
-			throw new Error(`flow-view ${kind} not found id=${id}`)
+			throw new Error(`flow-view node not found id=${id}`)
 		// @ts-ignore
 		return this.outputsMap.get(id)
 	}

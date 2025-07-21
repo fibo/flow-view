@@ -5,13 +5,15 @@
 With [npm](https://www.npmjs.com/) install the following packages **without saving**:
 
 ```sh
-npm install esbuild typescript --no-save
+npm install typescript --no-save
 ```
 
-## Update assets dependencies
+## Contributing
 
-```shell
-cp ./node_modules/github-pages-router/dist/github-pages-router.js assets/
+If you want to push code to GitHub repo, please install the commit hook
+
+```sh
+npm run install_precommit_hook
 ```
 
 ## Start dev server

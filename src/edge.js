@@ -45,7 +45,7 @@ export class FlowViewEdge extends FlowViewBase {
 		return !this.hasTargetPin || !this.hasSourcePin
 	}
 
-	/** @param {FlowViewEdgeInitArg} */
+	/** @param {FlowViewEdgeInitArg} edge */
 	init({ source, target }) {
 		const hasSourcePin = source instanceof FlowViewOutput
 		const hasTargetPin = target instanceof FlowViewInput
@@ -72,17 +72,24 @@ export class FlowViewEdge extends FlowViewBase {
 	}
 
 	dispose() {
+		// @ts-ignore
 		this.line.removeEventListener("dblclick", this._onDblclickLine)
+		// @ts-ignore
 		this.line.removeEventListener("pointerdown", this._onPointerdownLine)
+		// @ts-ignore
 		this.line.removeEventListener("pointerenter", this._onPointerenterLine)
+		// @ts-ignore
 		this.line.removeEventListener("pointerleave", this._onPointerleaveLine)
 	}
 
+	/** @param {MouseEvent} event */
 	onDblclickLine(event) {
 		event.stopPropagation()
-		this.view.deleteEdge(this.id)
+		// @ts-ignore
+		this.view.deleteEdge(this.id, {})
 	}
 
+	/** @param {MouseEvent} event */
 	onPointerdownLine(event) {
 		event.stopPropagation()
 		if (this.isSemiEdge) return
@@ -96,20 +103,28 @@ export class FlowViewEdge extends FlowViewBase {
 		if (this.view.isDraggingEdge) return
 		if (!this.isSelected) {
 			this.highlight = true
+			// @ts-ignore
 			this.source.highlight = true
+			// @ts-ignore
 			this.target.highlight = true
 		}
 	}
 
 	onPointerleaveLine() {
+		const { source, target } = this
+		if (!source || !target) return
 		if (this.isSemiEdge) return
 		if (!this.isSelected) {
 			this.highlight = false
-			if (!this.source.node.isSelected) {
-				this.source.highlight = false
+			// @ts-ignore
+			if (!source.node.isSelected) {
+			    // @ts-ignore
+				source.highlight = false
 			}
-			if (!this.target.node.isSelected) {
-				this.target.highlight = false
+			// @ts-ignore
+			if (!target.node.isSelected) {
+			    // @ts-ignore
+				target.highlight = false
 			}
 		}
 	}
@@ -120,9 +135,11 @@ export class FlowViewEdge extends FlowViewBase {
 			line,
 			svg,
 			source: {
+				// @ts-ignore
 				center: { x: sourceX, y: sourceY }
 			},
 			target: {
+				// @ts-ignore
 				center: { x: targetX, y: targetY }
 			},
 			view: {
@@ -142,10 +159,12 @@ export class FlowViewEdge extends FlowViewBase {
 
 		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize
 		element.style.width = `${width}px`
+		// @ts-ignore
 		svg.setAttribute("width", width)
 
 		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize
 		element.style.height = `${height}px`
+		// @ts-ignore
 		svg.setAttribute("height", height)
 
 		const startX = invertedX ? width - halfPinSize : halfPinSize
@@ -154,17 +173,24 @@ export class FlowViewEdge extends FlowViewBase {
 		const endX = invertedX ? halfPinSize : width - halfPinSize
 		const endY = invertedY ? halfPinSize : height - halfPinSize
 
+		// @ts-ignore
 		line.setAttribute("x2", endX)
+		// @ts-ignore
 		line.setAttribute("y2", endY)
+		// @ts-ignore
 		line.setAttribute("x1", startX)
+		// @ts-ignore
 		line.setAttribute("y1", startY)
 	}
 
+		// @ts-ignore
 	toObject() {
 		if (this.isSemiEdge) return
 		return {
 			...super.toObject(),
+			// @ts-ignore
 			from: [this.source.node.id, this.source.id],
+			// @ts-ignore
 			to: [this.target.node.id, this.target.id]
 		}
 	}

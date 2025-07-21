@@ -1,6 +1,7 @@
 import { FlowViewElement } from './element.js'
 
 /**
+ * @typedef {import('./node').FlowViewNode} FlowViewNode
  * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
  * @typedef {import('./types').FlowViewOnChangeCallback} FlowViewOnChangeCallback
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
@@ -42,7 +43,7 @@ export class FlowView {
 		this.view.style.isolation = 'isolate'
 
 		this.nodeNameTypeMap = new Map()
-		this.textToType = () => {}
+		this.textToType = (/** @type {string} */ text) => text
 	}
 
 	get graph() {
@@ -69,11 +70,11 @@ export class FlowView {
 		return this.view.edge(id)
 	}
 
-	/** @param {FlowViewNodeDefinitions} */
+	/** @param {FlowViewNodeDefinitions} arg */
 	addNodeDefinitions({ nodes = [], types = {} }) {
 		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type))
 		Object.entries(types).forEach(([type, { ins, outs }]) =>
-			this.nodeTypeDefinitionMap.set(type, { inputs: ins, outputs: outs })
+			this.nodeTypeDefinitionMap.set(type, { ins, outs })
 		)
 	}
 
@@ -123,7 +124,10 @@ export class FlowView {
 		}
 	}
 
-	/** @param {FlowViewEdgeObj} arg */
+	/**
+	 * @param {FlowViewEdgeObj} edge
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	newEdge(
 		{ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
 		viewChangeInfo = { isProgrammatic: true }
@@ -133,6 +137,7 @@ export class FlowView {
 		const source = sourceNode.output(sourcePinId)
 		const target = targetNode.input(targetPinId)
 
+		// @ts-ignore
 		return this.view.newEdge({ id, source, target }, viewChangeInfo)
 	}
 
@@ -144,22 +149,38 @@ export class FlowView {
 		return this.view.newNode(node, viewChangeInfo)
 	}
 
+	/**
+	 * @param {string} id
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	deleteNode(id, viewChangeInfo = { isProgrammatic: true }) {
 		return this.view.deleteNode(id, viewChangeInfo)
 	}
 
+	/**
+	 * @param {string} id
+	 * @param {FlowViewChangeInfo} viewChangeInfo
+	 */
 	deleteEdge(id, viewChangeInfo = { isProgrammatic: true }) {
 		return this.view.deleteEdge(id, viewChangeInfo)
 	}
 
+	/**
+	 * @param {string} key
+	 * @param {FlowViewNode} NodeClass
+	 */
 	addNodeClass(key, NodeClass) {
 		this.view.itemClassMap.set(key, NodeClass)
+		// @ts-ignore
 		if (!NodeClass.style) return
 		const style = document.createElement('style')
+		// @ts-ignore
 		style.textContent = FlowViewElement.generateStylesheet(NodeClass.style)
+		// @ts-ignore
 		this.view.shadowRoot.appendChild(style)
 	}
 
+	/** @param {(text: string) => string} textToType */
 	nodeTextToType(textToType) {
 		this.textToType = textToType
 	}

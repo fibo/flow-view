@@ -54,7 +54,7 @@ export class FlowViewSelector extends FlowViewBase {
 	// @ts-ignore
 	init({ nodeNames, position }) {
 		const { element } = this
-		element.setAttribute("tabindex", 0)
+		element.setAttribute("tabindex", '0')
 
 		this.hint = this.createElement("input", `${FlowViewSelector.cssClassName}__hint`)
 
@@ -124,7 +124,7 @@ export class FlowViewSelector extends FlowViewBase {
 		)
 	}
 
-	/** @param {Vector} */
+	/** @param {Vector} position */
 	set position({ x, y }) {
 		const { element, view } = this
 
@@ -142,6 +142,7 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	get position() {
+		// @ts-ignore
 		return { x: this.x, y: this.y }
 	}
 
@@ -232,6 +233,7 @@ export class FlowViewSelector extends FlowViewBase {
 			// @ts-ignore
 						this.completion = this.input.value
 
+			// @ts-ignore
 						const shortestMatch = this.matchingNodes.reduce((shortest, match) =>
 							shortest.length < match.length ? shortest : match
 						)
@@ -239,6 +241,7 @@ export class FlowViewSelector extends FlowViewBase {
 			// @ts-ignore
 						for (let i = this.input.value.length; i < shortestMatch.length; i++) {
 							const currentChar = shortestMatch[i]
+			// @ts-ignore
 							if (this.matchingNodes.every((name) => name.startsWith(this.completion + currentChar))) {
 								this.completion += currentChar
 							}

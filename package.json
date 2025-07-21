@@ -13,7 +13,7 @@
   "exports": "./dist/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",
-    "esbuild": "esbuild src/flow-view.ts --bundle --minify --outfile=dist/flow-view.js"
+    "install_precommit_hook": "echo '#!/bin/sh\nnpm run check_types' > .git/hooks/pre-commit; chmod +x .git/hooks/pre-commit"
   },
   "repository": {
     "type": "git",

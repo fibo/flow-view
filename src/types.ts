@@ -59,18 +59,10 @@ export type FlowViewGraph = {
 	edges?: FlowViewEdgeObj[]
 }
 
-export type FlowViewNodeType = {
+export type FlowViewNodeSignature = Partial<{
 	ins: Array<{ name?: string }>
 	outs: Array<{ name?: string }>
-}
-
-export type FlowViewNodeDefinitions = {
-	nodes: Array<{
-		name: string
-		type?: string
-	}>
-	types?: Record<string, FlowViewNodeType>
-}
+}>
 
 export type FlowViewSemiEdge = {
 	source?: FlowViewOutput

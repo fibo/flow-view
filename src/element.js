@@ -240,22 +240,22 @@ export class FlowViewElement extends HTMLElement {
 	 * @param {FlowViewNodeObj} node
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newNode({ x = 0, y = 0, text, id, type, ins = [], outs = [] }, viewChangeInfo) {
-		// @ts-ignore
-		const nodeType = this.host.textToType(text) ?? this.host.nodeNameTypeMap.get(text) ?? type
-		// @ts-ignore
-		const nodeTypeDefinition = this.host.nodeTypeDefinitionMap.get(nodeType)
+	newNode({ x = 0, y = 0, text, id, ins = [], outs = [] }, viewChangeInfo) {
+		const { host } = this;
+		if (!host) return;
+		const nodeType = host.nodeTextToType?.(text) ?? '';
+		const nodeSignature = host.nodeTypeSignature.get(nodeType);
 		const inputs =
-			nodeTypeDefinition?.ins?.map((item, i) => ({
+			nodeSignature?.ins?.map((item, i) => ({
 				...item,
 				...(ins[i] ?? {})
-			})) ?? ins
+			})) ?? ins;
 		const outputs =
-			nodeTypeDefinition?.outs?.map((item, i) => ({
+			nodeSignature?.outs?.map((item, i) => ({
 				...item,
 				...(outs[i] ?? {})
-			})) ?? outs
-		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get('node')
+			})) ?? outs;
+		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get('node');
 		const node = new Class({
 			id,
 			view: this,
@@ -266,12 +266,12 @@ export class FlowViewElement extends HTMLElement {
 			x,
 			y,
 			type: nodeType
-		})
-		this.nodesMap.set(node.id, node)
-		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject()
+		});
+		this.nodesMap.set(node.id, node);
+		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
 		// @ts-ignore
-		this.host.viewChange({ createdNode }, viewChangeInfo)
-		return node
+		this.host.viewChange({ createdNode }, viewChangeInfo);
+		return node;
 	}
 
 	/** @param {FlowViewEdge} edge */
@@ -415,8 +415,7 @@ export class FlowViewElement extends HTMLElement {
 			cssClassName: FlowViewSelector.cssClassName,
 			// @ts-ignore
 			position,
-			// @ts-ignore
-			nodeNames: [...this.host.nodeNameTypeMap.keys()]
+			nodeList: Array.from(this.host?.nodeList ?? [])
 		}))
 	}
 

@@ -52,7 +52,7 @@ export class FlowViewSelector extends FlowViewBase {
 	}
 
 	// @ts-ignore
-	init({ nodeNames, position }) {
+	init({ nodeList, position }) {
 		const { element } = this
 		element.setAttribute("tabindex", '0')
 
@@ -63,7 +63,7 @@ export class FlowViewSelector extends FlowViewBase {
 
 		this.options = this.createElement("div", [`${FlowViewSelector.cssClassName}__options`])
 
-		this.nodeNames = nodeNames
+		this.nodeList = nodeList
 		this.position = position
 		this.highlightedOptionIndex = -1
 
@@ -113,7 +113,7 @@ export class FlowViewSelector extends FlowViewBase {
 		// @ts-ignore
 		const search = this.input.value.toLowerCase()
 		if (search.length === 0) return []
-		return this.nodeNames.filter(
+		return this.nodeList.filter(
 		// @ts-ignore
 			(name) =>
 				// input value fits into node name...
@@ -150,7 +150,7 @@ export class FlowViewSelector extends FlowViewBase {
 		// @ts-ignore
 		const nodeText = this.options?.children?.[this.highlightedOptionIndex]?.textContent ?? this.input.value
 		// @ts-ignore
-		const matchingNodeText = this.nodeNames.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
+		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
 		this.view.newNode({
 			x: this.position.x,
 			y: this.position.y,

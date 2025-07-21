@@ -7,8 +7,7 @@ import { FlowViewElement } from './element.js'
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
- * @typedef {import('./types').FlowViewNodeType} FlowViewNodeType
- * @typedef {import('./types').FlowViewNodeDefinitions} FlowViewNodeDefinitions
+ * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  */
 
 export class FlowView {
@@ -18,8 +17,14 @@ export class FlowView {
 	/** @type {FlowViewOnChangeCallback | undefined} */
 	onViewChange
 
-	/** @type {Map<string, FlowViewNodeType>} */
-	nodeTypeDefinitionMap = new Map()
+	/** @type {Set<string>} */
+	nodeList = new Set()
+
+	/** @type {Map<string, FlowViewNodeSignature>} */
+	nodeTypeSignature = new Map()
+
+	/** @type {((text: string) => string | undefined) | undefined} */
+	nodeTextToType
 
 	/** @param {Element} element */
 	constructor(element) {
@@ -43,7 +48,6 @@ export class FlowView {
 		this.view.style.isolation = 'isolate'
 
 		this.nodeNameTypeMap = new Map()
-		this.textToType = (/** @type {string} */ text) => text
 	}
 
 	get graph() {
@@ -68,14 +72,6 @@ export class FlowView {
 	/** @param {string} id */
 	edge(id) {
 		return this.view.edge(id)
-	}
-
-	/** @param {FlowViewNodeDefinitions} arg */
-	addNodeDefinitions({ nodes = [], types = {} }) {
-		nodes.forEach(({ name, type }) => this.nodeNameTypeMap.set(name, type))
-		Object.entries(types).forEach(([type, { ins, outs }]) =>
-			this.nodeTypeDefinitionMap.set(type, { ins, outs })
-		)
 	}
 
 	clearGraph() {
@@ -178,10 +174,5 @@ export class FlowView {
 		style.textContent = FlowViewElement.generateStylesheet(NodeClass.style)
 		// @ts-ignore
 		this.view.shadowRoot.appendChild(style)
-	}
-
-	/** @param {(text: string) => string} textToType */
-	nodeTextToType(textToType) {
-		this.textToType = textToType
 	}
 }

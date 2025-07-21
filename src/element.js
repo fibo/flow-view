@@ -11,7 +11,18 @@ import { cssTheme, cssVar } from './theme.js'
  * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
  * @typedef {import('./types').FlowViewSemiEdge} FlowViewSemiEdge
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
+ * @typedef {import('./types').Vector} Vector
  */
+
+/**
+ * @param {MouseEvent} event
+ * @returns {Vector}
+ */
+const pointerCoordinates = ({ clientX, clientY, target }) => {
+	if (!(target instanceof Element)) throw new TypeError('Invalid event target');
+	const { left, top } = target.getBoundingClientRect();
+	return { x: Math.round(clientX - left), y: Math.round(clientY - top) };
+}
 
 export class FlowViewElement extends HTMLElement {
 	static minHeight = 200
@@ -54,14 +65,6 @@ export class FlowViewElement extends HTMLElement {
 				].join(''),
 			''
 		)
-	}
-
-	/** @param {MouseEvent} event */
-	static pointerCoordinates(event) {
-		const { clientX, clientY, target } = event
-		// @ts-ignore
-		const { left, top } = target.getBoundingClientRect()
-		return { x: Math.round(clientX - left), y: Math.round(clientY - top) }
 	}
 
 	/** @type {FlowView | undefined} */
@@ -124,28 +127,123 @@ export class FlowViewElement extends HTMLElement {
 
 		if (!this.getAttribute('tabindex')) this.setAttribute('tabindex', '0')
 
-		this.addEventListener('contextmenu', this.onContextmenu)
-		this.addEventListener('dblclick', this.onDblclick)
-		this.addEventListener('keydown', this.onKeydown)
-		this.addEventListener('pointerdown', this.onPointerdown)
-		this.addEventListener('pointermove', this.onPointermove)
-		this.addEventListener('pointerleave', this.onPointerleave)
-		this.addEventListener('pointerup', this.onPointerup)
-		this.addEventListener('touchmove', this.onTouchmove, {
-			passive: false
-		})
+		this.addEventListener('dblclick', this);
+		this.addEventListener('keydown', this);
+		this.addEventListener('pointerdown', this);
+		this.addEventListener('pointermove', this);
+		this.addEventListener('pointerleave', this);
+		this.addEventListener('pointerup', this);
+		this.addEventListener('touchmove', this, { passive: false });
 	}
 
 	disconnectedCallback() {
-		this.removeResizeObserver()
-		this.removeEventListener('contextmenu', this.onContextmenu)
-		this.removeEventListener('dblclick', this.onDblclick)
-		this.removeEventListener('keydown', this.onKeydown)
-		this.removeEventListener('pointerdown', this.onPointerdown)
-		this.removeEventListener('pointermove', this.onPointermove)
-		this.removeEventListener('pointerleave', this.onPointerleave)
-		this.removeEventListener('pointerup', this.onPointerup)
-		this.removeEventListener('touchmove', this.onTouchmove)
+		this.removeResizeObserver();
+		this.removeEventListener('dblclick', this);
+		this.removeEventListener('keydown', this);
+		this.removeEventListener('pointerdown', this);
+		this.removeEventListener('pointermove', this);
+		this.removeEventListener('pointerleave', this);
+		this.removeEventListener('pointerup', this);
+		this.removeEventListener('touchmove', this);
+	}
+
+	/** @param {Event | MouseEvent} event */
+	handleEvent(event) {
+		if (event instanceof KeyboardEvent && event.type === 'keydown') {
+			event.stopPropagation()
+
+			if (!this.selector) {
+				switch (event.code) {
+					case 'Backspace':
+						this.deleteSelectedItems();
+						break;
+					case 'Escape':
+						this.clearSelection();
+						break;
+					default: break;
+				}
+			}
+		}
+		if (event.type === 'touchmove') {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		if (event instanceof MouseEvent && event.type === 'dblclick') {
+			this.clearSelection();
+			this.removeSelector();
+			const { x, y } = pointerCoordinates(event);
+			this.createSelector({
+				position: { x: x + this.origin.x, y: y + this.origin.y }
+			}).focus();
+		}
+		if (event instanceof MouseEvent && event.type === 'pointerdown') {
+			event.stopPropagation()
+			this.removeSelector()
+			// @ts-ignore
+			if (!event.isBubblingFromNode) this.clearSelection()
+			const isMultiSelection = event.shiftKey
+			if (!isMultiSelection) this.startTranslation(event)
+		}
+		if (event.type === 'pointerleave' || event.type === 'pointerup') {
+			this.stopTranslation();
+			this.removeSemiEdge();
+		}
+		if (event instanceof MouseEvent && event.type === 'pointermove') {
+			const { hasSelectedNodes, semiEdge, startDraggingPoint } = this
+
+			if (startDraggingPoint) {
+				const pointerPosition = pointerCoordinates(event)
+				const x = startDraggingPoint.x - pointerPosition.x
+				const y = startDraggingPoint.y - pointerPosition.y
+
+				switch (true) {
+					case !!semiEdge: {
+						semiEdge.end = {
+							x: pointerPosition.x + this.origin.x,
+							y: pointerPosition.y + this.origin.y
+						}
+						semiEdge.updateGeometry()
+						break
+					}
+
+					case hasSelectedNodes: {
+						this.translateVector = { x, y }
+						const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this
+
+						for (const node of selectedNodes) {
+							// @ts-ignore
+							const { x: startX, y: startY } = selectedNodesStartPosition[node.id]
+							node.position = { x: startX - x, y: startY - y }
+						}
+						for (const edge of edges) {
+							if (
+								selectedNodeIds.includes(edge.source.node.id) ||
+								selectedNodeIds.includes(edge.target.node.id)
+							) {
+								edge.updateGeometry()
+							}
+						}
+
+						break
+					}
+
+					default: {
+						this.translateVector = { x, y }
+						const { nodes, edges } = this
+
+						for (const node of nodes) {
+							// Just trigger position setter, since it reads view origin.
+							const { x, y } = node.position
+							node.position = { x, y }
+						}
+
+						for (const edge of edges) {
+							edge.updateGeometry()
+						}
+					}
+				}
+			}
+		}
 	}
 
 	removeResizeObserver() {
@@ -382,7 +480,7 @@ export class FlowViewElement extends HTMLElement {
 
 	/** @param {MouseEvent} event */
 	startTranslation(event) {
-		this.startDraggingPoint = FlowViewElement.pointerCoordinates(event)
+		this.startDraggingPoint = pointerCoordinates(event)
 		this.translateVector = { x: 0, y: 0 }
 		if (this.hasSelectedNodes) {
 			const selectedNodesStartPosition = {}
@@ -424,123 +522,6 @@ export class FlowViewElement extends HTMLElement {
 		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo)
 	}
 
-	/** @param {Event} event */
-	onContextmenu(event) {
-		event.preventDefault()
-	}
-
-	/** @param {MouseEvent} event */
-	onDblclick(event) {
-		this.clearSelection()
-		this.removeSelector()
-
-		const pointerPosition = FlowViewElement.pointerCoordinates(event)
-
-		const selector = this.createSelector({
-			position: {
-				x: pointerPosition.x + this.origin.x,
-				y: pointerPosition.y + this.origin.y
-			}
-		})
-		selector.focus()
-	}
-
-	/** @param {KeyboardEvent} event */
-	onKeydown(event) {
-		event.stopPropagation()
-
-		switch (true) {
-			case this.selector instanceof FlowViewSelector:
-				return
-			case event.code === 'Backspace':
-				this.deleteSelectedItems()
-				break
-			case event.code === 'Escape':
-				this.clearSelection()
-				break
-			default:
-				break
-		}
-	}
-
-	/** @param {MouseEvent} event */
-	onPointerdown(event) {
-		event.stopPropagation()
-		this.removeSelector()
-		// @ts-ignore
-		if (!event.isBubblingFromNode) this.clearSelection()
-		const isMultiSelection = event.shiftKey
-		if (!isMultiSelection) this.startTranslation(event)
-	}
-
-	/** @param {MouseEvent} event */
-	onPointermove(event) {
-		const { hasSelectedNodes, semiEdge, startDraggingPoint } = this
-
-		if (startDraggingPoint) {
-			const pointerPosition = FlowViewElement.pointerCoordinates(event)
-			const x = startDraggingPoint.x - pointerPosition.x
-			const y = startDraggingPoint.y - pointerPosition.y
-
-			switch (true) {
-				case !!semiEdge: {
-					semiEdge.end = {
-						x: pointerPosition.x + this.origin.x,
-						y: pointerPosition.y + this.origin.y
-					}
-					semiEdge.updateGeometry()
-					break
-				}
-
-				case hasSelectedNodes: {
-					this.translateVector = { x, y }
-					const { edges, selectedNodes, selectedNodeIds, selectedNodesStartPosition } = this
-
-					for (const node of selectedNodes) {
-						// @ts-ignore
-						const { x: startX, y: startY } = selectedNodesStartPosition[node.id]
-						node.position = { x: startX - x, y: startY - y }
-					}
-					for (const edge of edges) {
-						if (
-							selectedNodeIds.includes(edge.source.node.id) ||
-							selectedNodeIds.includes(edge.target.node.id)
-						) {
-							edge.updateGeometry()
-						}
-					}
-
-					break
-				}
-
-				default: {
-					this.translateVector = { x, y }
-					const { nodes, edges } = this
-
-					for (const node of nodes) {
-						// Just trigger position setter, since it reads view origin.
-						const { x, y } = node.position
-						node.position = { x, y }
-					}
-
-					for (const edge of edges) {
-						edge.updateGeometry()
-					}
-				}
-			}
-		}
-	}
-
-	onPointerleave() {
-		this.stopTranslation()
-		this.removeSemiEdge()
-	}
-
-	onPointerup() {
-		this.stopTranslation()
-		this.removeSemiEdge()
-	}
-
 	// @ts-ignore
 	onRootResize(entries) {
 		// Only listen to parentNode
@@ -562,12 +543,6 @@ export class FlowViewElement extends HTMLElement {
 				}
 			}
 		}
-	}
-
-	// @ts-ignore
-	onTouchmove(event) {
-		event.preventDefault()
-		event.stopPropagation()
 	}
 
 	/**

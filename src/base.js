@@ -50,11 +50,6 @@ export class FlowViewBase {
 		return this.element.getAttribute("id")
 	}
 
-	/** @param {boolean} value */
-	set ghost(value) {
-		this.element.style.opacity = value ? '0.17' : ""
-	}
-
 	set hasError(value) {
 		const cssClassName = cssModifierHasError(this.cssClassName)
 
@@ -98,11 +93,6 @@ export class FlowViewBase {
 		if (cssClassName) element.classList.add(cssClassName)
 		this.element.appendChild(element)
 		return element
-	}
-
-	/** @param {string} tag */
-	createSvg(tag) {
-		return document.createElementNS("http://www.w3.org/2000/svg", tag)
 	}
 
 	remove() {

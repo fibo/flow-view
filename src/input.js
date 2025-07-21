@@ -35,18 +35,21 @@ export class FlowViewInput extends FlowViewPin {
 
 	onPointerup() {
 		const { connectedEdge, view } = this
-		if (view.isDraggingEdge) {
-			const { semiEdge } = view
-			if (semiEdge.hasSourcePin) {
-				const { source } = semiEdge
-				// Delete previous edge, only one edge per input is allowed.
-				if (connectedEdge) view.deleteEdge(connectedEdge.id, {})
-				// Do not connect pins of same node.
-   // @ts-ignore
-				if (source.node.id === this.node.id) return
+		const source = view.semiEdge?.source
+		if (source) {
+			// Delete previous edge, only one edge per input is allowed.
+			if (connectedEdge) view.deleteEdge(connectedEdge.id, {})
+			// Do not connect pins of same node.
+			const sourceNode = source.node
+			const targetNode = this.node
+			if (!sourceNode || !targetNode) return
+			if (sourceNode.id === targetNode.id) return
+			view.newEdge({
 				// @ts-ignore
-				view.newEdge({ source, target: this }, {})
-			}
+				from: [sourceNode.id, source.id],
+				// @ts-ignore
+				to: [targetNode.id, this.id]
+			}, {})
 		}
 	}
 }

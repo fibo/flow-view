@@ -1,29 +1,71 @@
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from "./theme.js"
-import { FlowViewBase } from "./base.js"
-import { FlowViewPin } from "./pin.js"
-import { FlowViewInput } from "./input.js"
-import { FlowViewOutput } from "./output.js"
+import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar } from './theme.js'
+import { FlowViewPin } from './pin.js'
 
 /**
- * @typedef {import('./types').FlowViewEdgeInitArg} FlowViewEdgeInitArg
+ * @typedef {import('./types').FlowViewEdgeConstructorArg} FlowViewEdgeConstructorArg
+ * @typedef {import('./types').Vector} Vector
  */
 
-export class FlowViewEdge extends FlowViewBase {
-	static cssClassName = "fv-edge"
+/** @param {string} tag */
+const createSvg = (tag) =>
+	document.createElementNS('http://www.w3.org/2000/svg', tag)
+
+const cssClass = 'fv-edge'
+const highlightedCssClass = cssModifierHighlighted(cssClass)
+
+export class FlowViewEdge {
+	isSelected = false;
+
+	svg = createSvg('svg')
+	line = createSvg('line')
+
+	/** @type {Vector} */
+	#end = { x: 0, y: 0 }
+	/** @param {Vector} position */
+	set end({ x, y }) {
+		this.#end.x = x;
+		this.#end.y = y;
+	}
+
+	/** @param {FlowViewEdgeConstructorArg} arg */
+	constructor({ id, view, source, target }) {
+		this.id = id
+		const element = this.element = document.createElement('div');
+		element.setAttribute('id', id);
+		element.classList.add(FlowViewEdge.cssClassName);
+		element.appendChild(this.svg)
+		this.svg.appendChild(this.line)
+		// @ts-ignore
+		view.shadowRoot.appendChild(element);
+		this.view = view;
+		this.source = source;
+		this.target = target;
+
+		this._onDblclickLine = this.onDblclickLine.bind(this)
+		this.line.addEventListener('dblclick', this._onDblclickLine)
+		this._onPointerdownLine = this.onPointerdownLine.bind(this)
+		this.line.addEventListener('pointerdown', this._onPointerdownLine)
+		this._onPointerenterLine = this.onPointerenterLine.bind(this)
+		this.line.addEventListener('pointerenter', this._onPointerenterLine)
+		this._onPointerleaveLine = this.onPointerleaveLine.bind(this)
+		this.line.addEventListener('pointerleave', this._onPointerleaveLine)
+	}
+
+	static cssClassName = cssClass
 	static lineWidth = 2
 	static zIndex = 0
 	static style = {
 		[`.${FlowViewEdge.cssClassName}`]: {
-			display: "flex",
-			position: "absolute",
+			display: 'flex',
+			position: 'absolute',
 			border: 0,
-			"pointer-events": "none"
+			'pointer-events': 'none'
 		},
 		[`.${FlowViewEdge.cssClassName} line`]: {
-			"pointer-events": "all",
+			'pointer-events': 'all',
 			stroke: cssVar.connectionColor,
-			"stroke-width": FlowViewEdge.lineWidth,
-			...cssTransition("stroke")
+			'stroke-width': FlowViewEdge.lineWidth,
+			...cssTransition('stroke')
 		},
 		[`.${cssModifierHasError(FlowViewEdge.cssClassName)} line`]: {
 			stroke: cssVar.errorColor
@@ -33,53 +75,19 @@ export class FlowViewEdge extends FlowViewBase {
 		}
 	}
 
-	get hasSourcePin() {
-		return this.source instanceof FlowViewOutput
-	}
-
-	get hasTargetPin() {
-		return this.target instanceof FlowViewInput
-	}
 
 	get isSemiEdge() {
-		return !this.hasTargetPin || !this.hasSourcePin
+		if (!this.source) return true
+		if (!this.target) return true
+		return false
 	}
 
-	/** @param {FlowViewEdgeInitArg} edge */
-	init({ source, target }) {
-		const hasSourcePin = source instanceof FlowViewOutput
-		const hasTargetPin = target instanceof FlowViewInput
-
-		this.source = hasTargetPin && !hasSourcePin ? { center: { x: target.center.x, y: target.center.y } } : source
-		this.target = hasSourcePin && !hasTargetPin ? { center: { x: source.center.x, y: source.center.y } } : target
-
-		const svg = (this.svg = this.createSvg("svg"))
-		this.element.appendChild(svg)
-
-		const line = (this.line = this.createSvg("line"))
-		svg.appendChild(line)
-
-		this.updateGeometry()
-
-		this._onDblclickLine = this.onDblclickLine.bind(this)
-		line.addEventListener("dblclick", this._onDblclickLine)
-		this._onPointerdownLine = this.onPointerdownLine.bind(this)
-		line.addEventListener("pointerdown", this._onPointerdownLine)
-		this._onPointerenterLine = this.onPointerenterLine.bind(this)
-		line.addEventListener("pointerenter", this._onPointerenterLine)
-		this._onPointerleaveLine = this.onPointerleaveLine.bind(this)
-		line.addEventListener("pointerleave", this._onPointerleaveLine)
-	}
-
-	dispose() {
-		// @ts-ignore
-		this.line.removeEventListener("dblclick", this._onDblclickLine)
-		// @ts-ignore
-		this.line.removeEventListener("pointerdown", this._onPointerdownLine)
-		// @ts-ignore
-		this.line.removeEventListener("pointerenter", this._onPointerenterLine)
-		// @ts-ignore
-		this.line.removeEventListener("pointerleave", this._onPointerleaveLine)
+	remove() {
+		this.element.remove()
+		this.line.removeEventListener('dblclick', this._onDblclickLine)
+		this.line.removeEventListener('pointerdown', this._onPointerdownLine)
+		this.line.removeEventListener('pointerenter', this._onPointerenterLine)
+		this.line.removeEventListener('pointerleave', this._onPointerleaveLine)
 	}
 
 	/** @param {MouseEvent} event */
@@ -98,16 +106,21 @@ export class FlowViewEdge extends FlowViewBase {
 		this.view.selectEdge(this)
 	}
 
+	/** @param {boolean} value */
+	set highlight(value) {
+		if (value) this.element.classList.add(highlightedCssClass)
+		else this.element.classList.remove(highlightedCssClass)
+	}
+
 	onPointerenterLine() {
 		if (this.isSemiEdge) return
-		if (this.view.isDraggingEdge) return
-		if (!this.isSelected) {
+		if (this.view.semiEdge) return
+		if (this.isSelected) return
 			this.highlight = true
 			// @ts-ignore
 			this.source.highlight = true
 			// @ts-ignore
 			this.target.highlight = true
-		}
 	}
 
 	onPointerleaveLine() {
@@ -134,18 +147,15 @@ export class FlowViewEdge extends FlowViewBase {
 			element,
 			line,
 			svg,
-			source: {
-				// @ts-ignore
-				center: { x: sourceX, y: sourceY }
-			},
-			target: {
-				// @ts-ignore
-				center: { x: targetX, y: targetY }
-			},
-			view: {
-				origin: { x: originX, y: originY }
-			}
+			source,
+			target,
+			view: { origin: { x: originX, y: originY } }
 		} = this
+		const sourceCenter = source?.center
+		let targetCenter = target?.center ?? this.#end;
+		if (!sourceCenter || !targetCenter) return
+		const { x: sourceX, y: sourceY } = sourceCenter
+		const { x: targetX, y: targetY } = targetCenter
 		const { size: pinSize } = FlowViewPin
 		const halfPinSize = pinSize / 2
 
@@ -160,12 +170,12 @@ export class FlowViewEdge extends FlowViewBase {
 		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize
 		element.style.width = `${width}px`
 		// @ts-ignore
-		svg.setAttribute("width", width)
+		svg.setAttribute('width', width)
 
 		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize
 		element.style.height = `${height}px`
 		// @ts-ignore
-		svg.setAttribute("height", height)
+		svg.setAttribute('height', height)
 
 		const startX = invertedX ? width - halfPinSize : halfPinSize
 		const startY = invertedY ? height - halfPinSize : halfPinSize
@@ -174,20 +184,18 @@ export class FlowViewEdge extends FlowViewBase {
 		const endY = invertedY ? halfPinSize : height - halfPinSize
 
 		// @ts-ignore
-		line.setAttribute("x2", endX)
+		line.setAttribute('x2', endX)
 		// @ts-ignore
-		line.setAttribute("y2", endY)
+		line.setAttribute('y2', endY)
 		// @ts-ignore
-		line.setAttribute("x1", startX)
+		line.setAttribute('x1', startX)
 		// @ts-ignore
-		line.setAttribute("y1", startY)
+		line.setAttribute('y1', startY)
 	}
 
-		// @ts-ignore
 	toObject() {
-		if (this.isSemiEdge) return
 		return {
-			...super.toObject(),
+			id: this.id,
 			// @ts-ignore
 			from: [this.source.node.id, this.source.id],
 			// @ts-ignore

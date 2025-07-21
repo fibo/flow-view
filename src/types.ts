@@ -29,14 +29,16 @@ export type FlowViewEdgeObj = {
 	to: string[]
 }
 
+export type FlowViewEdgeConstructorArg = {
+	id: string
+	view: FlowViewElement
+	source?: FlowViewOutput
+	target?: FlowViewInput
+}
+
 export type FlowViewPinInitArg = {
 	name?: string
 	node: FlowViewNode
-}
-
-export type FlowViewEdgeInitArg = {
-	source: FlowViewOutput
-	target: FlowViewInput
 }
 
 export type FlowViewOutputObj = {

@@ -124,17 +124,8 @@ export class FlowView {
 	 * @param {FlowViewEdgeObj} edge
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newEdge(
-		{ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] },
-		viewChangeInfo = { isProgrammatic: true }
-	) {
-		const sourceNode = this.view.node(sourceNodeId)
-		const targetNode = this.view.node(targetNodeId)
-		const source = sourceNode.output(sourcePinId)
-		const target = targetNode.input(targetPinId)
-
-		// @ts-ignore
-		return this.view.newEdge({ id, source, target }, viewChangeInfo)
+	newEdge({ id, from, to }, viewChangeInfo = { isProgrammatic: true }) {
+		return this.view.newEdge({ id, from, to }, viewChangeInfo)
 	}
 
 	/**

@@ -12,7 +12,7 @@ export class FlowViewOutput extends FlowViewPin {
 
 		// @ts-ignore
 	onPointerdown(event) {
-		if (this.view.isDraggingEdge) {
+		if (this.view.semiEdge) {
 			event.stopPropagation()
 		} else {
 			event.isBubblingFromPin = true

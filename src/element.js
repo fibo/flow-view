@@ -16,7 +16,6 @@ import { cssTheme, cssVar } from './theme.js'
 export class FlowViewElement extends HTMLElement {
 	static minHeight = 200
 	static defaultItems = {
-		edge: FlowViewEdge,
 		node: FlowViewNode
 	}
 
@@ -174,10 +173,6 @@ export class FlowViewElement extends HTMLElement {
 		return this.selectedNodes.length > 0
 	}
 
-	get isDraggingEdge() {
-		return this.semiEdge instanceof FlowViewEdge
-	}
-
 	get selectedNodeIds() {
 		return this.selectedNodes.map((node) => node.id)
 	}
@@ -218,18 +213,21 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	/**
-	 * @param {FlowViewEdge} edge
+	 * @param {FlowViewEdgeObj} edge
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newEdge({ id, source, target }, viewChangeInfo) {
-		const Class = this.itemClassMap.get('edge')
-		const edge = new Class({
-			id,
+	newEdge({ id, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }, viewChangeInfo) {
+		const sourceNode = this.node(sourceNodeId)
+		const targetNode = this.node(targetNodeId)
+		const source = sourceNode.output(sourcePinId)
+		const target = targetNode.input(targetPinId)
+		const edge = new FlowViewEdge({
+			id: id || FlowViewBase.generateId(this),
 			view: this,
-			cssClassName: Class.cssClassName,
 			source,
 			target
 		})
+		edge.updateGeometry()
 		this.edgesMap.set(edge.id, edge)
 		// @ts-ignore
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
@@ -277,7 +275,7 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {FlowViewEdge} edge */
 	selectEdge(edge) {
 		edge.highlight = true
-		edge.selected = true
+		edge.isSelected = true
 		// @ts-ignore
 		edge.source.highlight = true
 		// @ts-ignore
@@ -300,11 +298,12 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {FlowViewEdge} edge */
 	deselectEdge(edge) {
 		edge.highlight = false
-		edge.selected = false
-		// @ts-ignore
-		if (!edge.source.node.isSelected) edge.source.highlight = false
-		// @ts-ignore
-		if (!edge.target.node.isSelected) edge.target.highlight = false
+		edge.isSelected = false
+		const { source, target } = edge
+		if (source && source.node?.isSelected === false)
+			source.highlight = false;
+		if (target && target.node?.isSelected === false)
+			target.highlight = false;
 	}
 
 	/** @param {FlowViewNode} node */
@@ -485,9 +484,9 @@ export class FlowViewElement extends HTMLElement {
 
 			switch (true) {
 				case !!semiEdge: {
-					if (!semiEdge.hasTarget) {
-						semiEdge.target.center.x = pointerPosition.x + this.origin.x
-						semiEdge.target.center.y = pointerPosition.y + this.origin.y
+					semiEdge.end = {
+						x: pointerPosition.x + this.origin.x,
+						y: pointerPosition.y + this.origin.y
 					}
 					semiEdge.updateGeometry()
 					break
@@ -575,10 +574,9 @@ export class FlowViewElement extends HTMLElement {
 	 * @param {FlowViewSemiEdge} arg
 	 */
 	createSemiEdge({ source, target }) {
-		const Class = this.itemClassMap.get('edge')
-		this.semiEdge = new Class({
+		this.semiEdge = new FlowViewEdge({
+			id: 'semiEdge',
 			view: this,
-			cssClassName: Class.cssClassName,
 			source,
 			target
 		})

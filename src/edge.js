@@ -77,8 +77,7 @@ export class FlowViewEdge {
 		return false
 	}
 
-	remove() {
-		this.element.remove()
+	dispose() {
 		this.line.removeEventListener('dblclick', this._onDblclickLine)
 		this.line.removeEventListener('pointerdown', this._onPointerdownLine)
 		this.line.removeEventListener('pointerenter', this._onPointerenterLine)

@@ -36,6 +36,13 @@ export type FlowViewEdgeConstructorArg = {
 	target?: FlowViewInput
 }
 
+export type FlowViewNodeConstructorArg = Vector & FlowViewNodeSignature & {
+	id: string
+	view: FlowViewElement
+	text: string
+	type?: string | undefined
+}
+
 export type FlowViewPinInitArg = {
 	name?: string
 	node: FlowViewNode

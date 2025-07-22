@@ -355,12 +355,13 @@ export class FlowViewElement extends HTMLElement {
 			view: this,
 			cssClassName: cssClass.node,
 			text,
-			inputs,
-			outputs,
 			x,
 			y,
 			type: nodeType
 		});
+		node.initContent({ text, inputs, outputs });
+		for (const pin of inputs) node.newInput(pin)
+		for (const pin of outputs) node.newOutput(pin)
 		this.nodesMap.set(node.id, node);
 		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
 		// @ts-ignore
@@ -381,7 +382,7 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {FlowViewNode} node */
 	selectNode(node) {
 		node.highlight = true
-		node.selected = true
+		node.isSelected = true
 		for (const edge of this.edges) {
 			if (edge.source.node.isSelected && edge.target.node.isSelected) {
 				this.selectEdge(edge)
@@ -405,7 +406,7 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {FlowViewNode} node */
 	deselectNode(node) {
 		node.highlight = false
-		node.selected = false
+		node.isSelected = false
 		for (const input of node.inputs) input.highlight = false
 		for (const output of node.outputs) output.highlight = false
 	}
@@ -422,8 +423,9 @@ export class FlowViewElement extends HTMLElement {
 		edge.target.highlight = false
 
 		// Dispose.
-		this.edgesMap.delete(edge.id)
-		edge.remove()
+		this.edgesMap.delete(edge.id);
+		edge.dispose();
+		edge.element.remove();
 
 		const serializedEdge = edge.toObject()
 		// @ts-ignore
@@ -448,7 +450,8 @@ export class FlowViewElement extends HTMLElement {
 
 		// Dispose.
 		this.nodesMap.delete(node.id)
-		node.remove()
+		node.dispose();
+		node.element.remove();
 
 		const serializedNode = node.toObject()
 		// @ts-ignore
@@ -573,7 +576,8 @@ export class FlowViewElement extends HTMLElement {
 	removeSemiEdge() {
 		if (!this.semiEdge) return
 		const { source, target } = this.semiEdge
-		this.semiEdge.remove()
+		this.semiEdge.dispose()
+		this.semiEdge.element.remove()
 		delete this.semiEdge
 		// @ts-ignore
 		this.host.viewChange(

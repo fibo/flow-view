@@ -1,16 +1,25 @@
 import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar, cssNode, cssClass, cssPin } from "./theme.js"
-import { FlowViewBase } from "./base.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
 /**
+ * @typedef {import('./types').FlowViewNodeConstructorArg} FlowViewNodeConstructorArg
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
  * @typedef {import('./types').FlowViewOutputObj} FlowViewOutputObj
  * @typedef {import('./types').FlowViewInputObj} FlowViewInputObj
  * @typedef {import('./types').Vector} Vector
  */
 
-export class FlowViewNode extends FlowViewBase {
+const highlightedCssClass = cssModifierHighlighted(cssClass.node)
+
+/** @param {string} cssClass */
+const div = (cssClass) => {
+	const element = document.createElement('div');
+	element.classList.add(cssClass);
+	return element;
+}
+
+export class FlowViewNode {
 	static style = {
 		[`.${cssClass.node}`]: {
 			position: "absolute",
@@ -48,105 +57,113 @@ export class FlowViewNode extends FlowViewBase {
 		}
 	}
 
-	/** @param {FlowViewNodeObj} node */
-	init(node) {
-		// @ts-ignore
-		const { text, type, inputs = [], outputs = [], x, y } = node
+    #x = 0; #y = 0;
 
+	isSelected = false;
+	inputsMap = new Map()
+	outputsMap = new Map()
+	inputsDiv = div('pins');
+	outputsDiv = div('pins');
+	contentDiv = div('content');
+
+	/** @param {FlowViewNodeConstructorArg} arg */
+	constructor({ id, text, type, view, x, y }) {
+		this.id = id
 		this.text = text
 		this.type = type
-
-		this.inputsMap = new Map()
-		this.inputsDiv = this.createElement('div', 'pins')
-		for (const pin of inputs) this.newInput(pin)
-
-		this.initContent(node)
-
-		this.outputsMap = new Map()
-		this.outputsDiv = this.createElement("div", "pins")
-		for (const pin of outputs) this.newOutput(pin)
-
+		const element = this.element = document.createElement('div');
+		element.setAttribute('id', id);
+		element.classList.add(cssClass.node);
+		element.appendChild(this.inputsDiv);
+		element.appendChild(this.contentDiv);
+		element.appendChild(this.outputsDiv);
+		// @ts-ignore
+		view.shadowRoot.appendChild(element);
+		this.view = view;
 		this.position = { x, y }
-
 		this._onDblclick = this.onDblclick.bind(this)
 		this.element.addEventListener("dblclick", this._onDblclick)
 		this._onPointerdown = this.onPointerdown.bind(this)
 		this.element.addEventListener("pointerdown", this._onPointerdown)
 	}
 
+	/** @param {boolean} value */
+	set highlight(value) {
+		if (value) this.element.classList.add(highlightedCssClass)
+		else this.element.classList.remove(highlightedCssClass)
+	}
+
+	get bounds() {
+		return this.element.getBoundingClientRect()
+	}
+
+	/**
+	 * @param {string} tag
+	 * @param {string} cssClass
+	 */
+	createElement(tag, cssClass) {
+		const element = document.createElement(tag)
+		element.classList.add(cssClass)
+		this.element.appendChild(element)
+		return element
+	}
+
 	/** @param {FlowViewNodeObj} node */
 	initContent(node) {
-		const div = this.createElement("div", "content")
-		div.textContent = node.text
-		this.contentDiv = div
+		this.contentDiv.textContent = node.text
 	}
 
 	dispose() {
-		// @ts-ignore
 		this.element.removeEventListener("dblclick", this._onDblclick)
-		// @ts-ignore
 		this.element.removeEventListener("pointerdown", this._onPointerdown)
+		for (const input of this.inputs) input.dispose()
+		for (const output of this.outputs) output.dispose()
 	}
 
 	get inputs() {
-		// @ts-ignore
 		return [...this.inputsMap.values()]
 	}
 
 	get outputs() {
-		// @ts-ignore
 		return [...this.outputsMap.values()]
 	}
 
 	/** @returns {Vector} */
 	get position() {
-		// @ts-ignore
-		return { x: this.x, y: this.y }
+		return { x: this.#x, y: this.#y }
 	}
 
-	// @ts-ignore
-	set position({ x = 0, y = 0 } = {}) {
-		const { element, view } = this
-
-		this.x = x
-		this.y = y
-		element.style.top = `${y - view.origin.y}px`
-		element.style.left = `${x - view.origin.x}px`
+	set position({ x, y }) {
+		this.#x = x; this.#y = y;
+		this.element.style.top = `${y - this.view.origin.y}px`
+		this.element.style.left = `${x - this.view.origin.x}px`
 	}
 
 	/** @param {string} id */
 	deleteInput(id) {
-		// @ts-ignore
 		const input = this.inputsMap.get(id)
 		input.remove()
-		// @ts-ignore
 		this.inputsMap.delete(id)
 	}
 
 	/** @param {string} id */
 	deleteOutput(id) {
-		// @ts-ignore
 		const output = this.outputsMap.get(id)
 		output.remove()
-		// @ts-ignore
 		this.outputsMap.delete(id)
 	}
 
 	/** @param {string} id */
 	input(id) {
-		// @ts-ignore
 		if (!this.inputsMap.has(id))
 			throw new Error(`flow-view input not found id=${id}`)
-		// @ts-ignore
 		return this.inputsMap.get(id)
 	}
 
 	/** @param {string} id */
 	output(id) {
-		// @ts-ignore
 		if (!this.outputsMap.has(id))
 			throw new Error(`flow-view node not found id=${id}`)
-		// @ts-ignore
 		return this.outputsMap.get(id)
 	}
 
@@ -160,9 +177,7 @@ export class FlowViewNode extends FlowViewBase {
 			view: this.view,
 			cssClassName: cssClass.pin
 		})
-		// @ts-ignore
 		this.inputsMap.set(pin.id, pin)
-		// @ts-ignore
 		this.inputsDiv.appendChild(pin.element)
 	}
 
@@ -177,9 +192,7 @@ export class FlowViewNode extends FlowViewBase {
 			view: this.view,
 			cssClassName: cssClass.pin
 		})
-		// @ts-ignore
 		this.outputsMap.set(pin.id, pin)
-		// @ts-ignore
 		this.outputsDiv.appendChild(pin.element)
 	}
 
@@ -200,9 +213,10 @@ export class FlowViewNode extends FlowViewBase {
 	}
 
 	toObject() {
-		const { text, inputs, outputs, x, y } = this
+		const { text, inputs, outputs, position } = this
 		return {
-			...super.toObject(),
+			id: this.id,
+			...position,
 			text,
 			...(inputs.length > 0
 				? {
@@ -213,9 +227,7 @@ export class FlowViewNode extends FlowViewBase {
 				? {
 						outs: outputs.map((pin) => pin.toObject())
 				  }
-				: {}),
-			x,
-			y
+				: {})
 		}
 	}
 }

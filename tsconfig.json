@@ -5,6 +5,8 @@
 		"lib": ["dom", "es2022"],
 		"module": "esnext",
     "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 		"paths": {
 			"flow-view": ["./src/index.js"],
 		},

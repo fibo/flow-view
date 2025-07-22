@@ -1,5 +1,5 @@
-import { FlowViewPin } from "./pin.js"
-import { cssNode, cssPin } from './theme.js';
+import { Container } from './common.js';
+import { cssClass, cssNode, cssPin } from './theme.js';
 
 /**
  * @typedef {import('./types').InputConstructorArg} ConstructorArg
@@ -8,54 +8,79 @@ import { cssNode, cssPin } from './theme.js';
 const { borderWidth } = cssNode
 const { halfSize } = cssPin
 
-export class FlowViewInput extends FlowViewPin {
+const eventTypes = [
+	'pointerenter', 'pointerleave', 'pointerup', 'pointerdown'
+];
+
+export class FlowViewInput {
+	info = document.createElement('pre');
+	container = new Container(cssClass.pin);
+
 	/** @param {ConstructorArg} arg */
-	constructor(arg) {
-		super(arg)
-		// @ts-ignore
-		this.info.style.top = "-50px"
+	constructor({ id, node }) {
+		this.id = id
+		this.info.classList.add('info');
+		this.info.style.top = '-50px';
+		this.container.element.appendChild(this.info);
+		this.node = node;
+		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
 	}
 
 	get center() {
-		// @ts-ignore
-		const offsetX = this.bounds.x - this.node.bounds.x
+		const nodeBounds = this.node.container.bounds;
+		const offsetX = this.container.bounds.x - nodeBounds.x;
 		return {
-		// @ts-ignore
 			x: this.node.position.x + halfSize + borderWidth + offsetX,
-		// @ts-ignore
 			y: this.node.position.y + halfSize - borderWidth
 		}
 	}
 
+	dispose() {
+		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
+	}
+
 	get connectedEdge() {
-		return [...this.view.edgesMap.values()]
+		return [...this.node.view.edgesMap.values()]
 			.map((edge) => edge.toObject())
 			// @ts-ignore
 			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
 	}
 
-   // @ts-ignore
-	onPointerdown(event) {
-		event.stopPropagation()
+	/** @param {Event} event */
+	handleEvent(event) {
+		if (event.type === 'pointerenter') {
+			this.highlight = true
+		}
+		if (event.type === 'pointerleave') {
+			this.highlight = false
+		}
+		if (event.type === 'pointerdown') {
+			event.stopPropagation()
+		}
+		if (event.type === 'pointerup') {
+			const { connectedEdge } = this
+			const source = this.node.view.semiEdge?.source
+			if (source) {
+				// Delete previous edge, only one edge per input is allowed.
+				if (connectedEdge) this.node.view.deleteEdge(connectedEdge.id, {})
+				// Do not connect pins of same node.
+				const sourceNode = source.node
+				const targetNode = this.node
+				if (!sourceNode || !targetNode) return
+				if (sourceNode.id === targetNode.id) return
+				this.node.view.newEdge({
+					// @ts-ignore
+					from: [sourceNode.id, source.id],
+					// @ts-ignore
+					to: [targetNode.id, this.id]
+				}, {})
+			}
+		}
 	}
 
-	onPointerup() {
-		const { connectedEdge, view } = this
-		const source = view.semiEdge?.source
-		if (source) {
-			// Delete previous edge, only one edge per input is allowed.
-			if (connectedEdge) view.deleteEdge(connectedEdge.id, {})
-			// Do not connect pins of same node.
-			const sourceNode = source.node
-			const targetNode = this.node
-			if (!sourceNode || !targetNode) return
-			if (sourceNode.id === targetNode.id) return
-			view.newEdge({
-				// @ts-ignore
-				from: [sourceNode.id, source.id],
-				// @ts-ignore
-				to: [targetNode.id, this.id]
-			}, {})
+	toObject() {
+		return {
+			id: this.id
 		}
 	}
 }

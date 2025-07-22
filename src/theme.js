@@ -9,19 +9,13 @@ export const cssTransition = (prop) => ({
 	transition: `${prop} 117ms ease-in-out`
 })
 
-// @ts-ignore
+/** @param {Record<string, Record<string, string | number>>} style */
 export const generateStyle = (style) => Object.entries(style).reduce(
-	(stylesheet, [selector, rules]) =>
-		[
-			stylesheet,
-			`${selector} {`,
-			Object.entries(rules)
-				.map(([key, value]) => `${key}:${value};`)
-				.join('\n'),
-			'}'
-		].join('\n'),
-	''
-)
+	(css, [selector, rules]) => [ css,
+		`${selector} {`, Object.entries(rules)
+		.map(([key, value]) => `${key}:${value};`).join('\n'),
+		'}'
+	].join('\n'), '');
 
 export const cssClass = {
 	edge: 'fv-edge',

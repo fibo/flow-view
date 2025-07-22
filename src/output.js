@@ -1,33 +1,68 @@
-import { FlowViewPin } from "./pin.js"
-import { cssNode, cssPin } from './theme.js';
+import { Container } from './common.js';
+import { cssClass, cssNode, cssPin } from './theme.js';
+
+/**
+ * @typedef {import('./types').OutputConstructorArg} ConstructorArg
+ */
 
 const { borderWidth } = cssNode;
 const { halfSize } = cssPin;
 
-export class FlowViewOutput extends FlowViewPin {
+const eventTypes = [
+	'pointerenter', 'pointerleave', 'pointerup', 'pointerdown'
+];
+
+export class FlowViewOutput {
+	info = document.createElement('pre');
+	container = new Container(cssClass.pin);
+
+	/** @param {ConstructorArg} arg */
+	constructor({ id, node }) {
+		this.id = id
+		this.info.classList.add('info');
+		this.container.element.appendChild(this.info);
+		this.node = node;
+		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
+	}
+
+	/** @param {Event} event */
+	handleEvent(event) {
+		if (event.type === 'pointerenter') {
+			this.highlight = true;
+		}
+		if (event.type === 'pointerleave') {
+			this.highlight = false;
+		}
+		if (event.type === 'pointerup') {
+			event.stopPropagation();
+		}
+		if (event.type === 'pointerdown') {
+			if (this.node.view.semiEdge) {
+				event.stopPropagation()
+			} else {
+				// @ts-ignore
+				event.isBubblingFromPin = true
+				this.node.view.createSemiEdge({ source: this })
+			}
+		}
+	}
+
+	dispose() {
+		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
+	}
+
 	get center() {
-		// @ts-ignore
-		const offsetX = this.bounds.x - this.node.bounds.x
+		const nodeBounds = this.node.container.bounds;
+		const offsetX = this.container.bounds.x - nodeBounds.x;
 		return {
-		// @ts-ignore
 			x: this.node.position.x + halfSize + borderWidth + offsetX,
-		// @ts-ignore
-			y: this.node.position.y + this.node.bounds.height - this.halfPinSize - borderWidth
+			y: this.node.position.y + nodeBounds.height - halfSize - borderWidth
 		}
 	}
 
-		// @ts-ignore
-	onPointerdown(event) {
-		if (this.view.semiEdge) {
-			event.stopPropagation()
-		} else {
-			event.isBubblingFromPin = true
-			this.view.createSemiEdge({ source: this })
+	toObject() {
+		return {
+			id: this.id
 		}
-	}
-
-		// @ts-ignore
-	onPointerup(event) {
-		event.stopPropagation()
 	}
 }

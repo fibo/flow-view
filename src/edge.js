@@ -1,3 +1,4 @@
+import { Container, createSvg } from './common.js';
 import { cssClass, cssModifierHighlighted, cssPin } from './theme.js'
 
 /**
@@ -5,13 +6,12 @@ import { cssClass, cssModifierHighlighted, cssPin } from './theme.js'
  * @typedef {import('./types').Vector} Vector
  */
 
-/** @param {string} tag */
-const createSvg = (tag) =>
-	document.createElementNS('http://www.w3.org/2000/svg', tag)
+const { size: pinSize, halfSize: halfPinSize } = cssPin
 
 const highlightedCssClass = cssModifierHighlighted(cssClass.edge)
 
 export class FlowViewEdge {
+	container = new Container(cssClass.edge);
 	isSelected = false;
 
 	svg = createSvg('svg')
@@ -124,8 +124,6 @@ export class FlowViewEdge {
 		if (!sourceCenter || !targetCenter) return
 		const { x: sourceX, y: sourceY } = sourceCenter
 		const { x: targetX, y: targetY } = targetCenter
-		const pinSize = cssPin.size
-		const halfPinSize = pinSize / 2
 
 		const invertedX = targetX < sourceX
 		const invertedY = targetY < sourceY

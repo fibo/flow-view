@@ -1,3 +1,4 @@
+import { createDiv } from './common.js';
 import { cssClass, cssSelector } from './theme.js';
 
 /**
@@ -5,29 +6,39 @@ import { cssClass, cssSelector } from './theme.js';
  * @typedef {import('./types').Vector} Vector
  */
 
-export class FlowViewSelector {
+export class Selector {
 	highlightedOptionIndex = -1;
 
+	element = createDiv(cssClass.selector);
+
 	/** @param {ConstructorArg} arg */
-	constructor({ element, nodeList, position, view }) {
+	constructor({ x, y, nodeList, view, removeSelector, newNode }) {
 		this.view = view
-		this.element = element;
 		this.nodeList = nodeList;
-		this.position = position;
+		this.removeSelector = removeSelector;
+		this.newNode = newNode;
+
+		// Avoid overflow, using some heuristic values.
+		const overflowY = y - view.origin.y + 40 >= view.height
+		const overflowX = x - view.origin.x + cssSelector.width >= view.width
+		this.x = overflowX ? view.width + view.origin.x - cssSelector.width - 10 : x
+		this.y = overflowY ? view.height + view.origin.y - 50 : y
+
+		this.element.style.top = `${this.y - view.origin.y}px`
+		this.element.style.left = `${this.x - view.origin.x}px`
 
 		this.hint = this.createElement("input", `${cssClass.selector}__hint`)
 
 		const input = (this.input = this.createElement("input"))
-		input.focus()
 
 		this.options = this.createElement("div", `${cssClass.selector}__options`)
 
 		this._onDblclick = this.onDblclick.bind(this)
-		element.addEventListener("dblclick", this._onDblclick)
+		this.element.addEventListener("dblclick", this._onDblclick)
 		this._onPointerdown = this.onPointerdown.bind(this)
-		element.addEventListener("pointerdown", this._onPointerdown)
+		this.element.addEventListener("pointerdown", this._onPointerdown)
 		this._onPointerleave = this.onPointerleave.bind(this)
-		element.addEventListener("pointerleave", this._onPointerleave)
+		this.element.addEventListener("pointerleave", this._onPointerleave)
 
 		this._onKeydown = this.onKeydown.bind(this)
 		input.addEventListener("keydown", this._onKeydown)
@@ -73,39 +84,12 @@ export class FlowViewSelector {
 		)
 	}
 
-	/** @param {Vector} position */
-	set position({ x, y }) {
-		const { element, view } = this
-
-		// Avoid overflow, using some heuristic values.
-		const overflowY = y - view.origin.y + 40 >= view.height
-		const overflowX = x - view.origin.x + cssSelector.width >= view.width
-		const _x = overflowX ? view.width + view.origin.x - cssSelector.width - 10 : x
-		const _y = overflowY ? view.height + view.origin.y - 50 : y
-
-		element.style.top = `${_y - view.origin.y}px`
-		element.style.left = `${_x - view.origin.x}px`
-
-		this.x = _x
-		this.y = _y
-	}
-
-	get position() {
-		// @ts-ignore
-		return { x: this.x, y: this.y }
-	}
-
-	createNode() {
+	#createNode() {
 		// @ts-ignore
 		const nodeText = this.options?.children?.[this.highlightedOptionIndex]?.textContent ?? this.input.value
-		// @ts-ignore
 		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
-		this.view.newNode({
-			x: this.position.x,
-			y: this.position.y,
-			text: matchingNodeText ?? nodeText
-		}, {})
-		this.view.removeSelector()
+		this.newNode(matchingNodeText ?? nodeText)
+		this.removeSelector()
 	}
 
 	/** @param {MouseEvent} event */
@@ -146,13 +130,12 @@ export class FlowViewSelector {
 			deleteOptions()
 			for (let i = 0; i < this.matchingNodes.length; i++) {
 				const name = this.matchingNodes[i]
-				const option = document.createElement("div")
-				option.classList.add(`${cssClass.selector}__option`)
+				const option = createDiv(`${cssClass.selector}__option`)
 				option.textContent = name
 				option.onclick = () => {
 			// @ts-ignore
 					this.input.value = name
-					this.createNode()
+					this.#createNode()
 				}
 				option.onpointerenter = () => {
 					this.highlightedOptionIndex = i
@@ -222,11 +205,11 @@ export class FlowViewSelector {
 
 		switch (event.code) {
 			case "Enter":
-				this.createNode()
+				this.#createNode()
 				break
 			case "Escape":
 			// @ts-ignore
-				if (this.input.value === "") this.view.removeSelector()
+				if (this.input.value === "") this.removeSelector()
 				else {
 					this.completion = ""
 			// @ts-ignore

@@ -13,20 +13,24 @@ export type FlowViewInputObj = {
 	name?: string
 }
 
-export type FlowViewBaseConstructorArg = {
-	cssClassName: string
-	id?: string
-	view: FlowViewElement
-}
-
-export type SelectorConstructorArg = {
-	position: Vector
-	view: FlowViewElement
-	element: HTMLElement
+export type SelectorConstructorArg = Vector & {
 	nodeList: string[]
+	newNode: (text: string) => void
+	removeSelector: () => void
+	view: {
+		origin: Vector
+		width: number
+		height: number
+	}
 }
 
-export type InputConstructorArg = FlowViewBaseConstructorArg & {
+export type InputConstructorArg = {
+	id: string
+	node: FlowViewNode
+}
+
+export type OutputConstructorArg = {
+	id: string
 	node: FlowViewNode
 }
 
@@ -48,7 +52,6 @@ export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
 	id: string
 	view: FlowViewElement
 	text: string
-	element: HTMLElement
 	type?: string | undefined
 }
 

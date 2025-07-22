@@ -6,46 +6,6 @@ import { cssTransition, cssClass, cssSelector, cssVar, cssNode } from "./theme.j
  */
 
 export class FlowViewSelector {
-	static style = {
-		[`.${cssClass.selector}`]: {
-			position: "absolute",
-			"box-shadow": cssVar.boxShadow,
-			"z-index": cssNode.zIndex + 1
-		},
-		[`.${cssClass.selector} input`]: {
-			border: 0,
-			margin: 0,
-			outline: 0,
-			"border-radius": cssVar.borderRadius,
-			"font-family": cssVar.fontFamily,
-			"font-size": cssVar.fontSize,
-			padding: `${cssSelector.padding}px`,
-			width: `${cssSelector.width - 2 * cssSelector.padding}px`
-		},
-		[`.${cssClass.selector}__hint`]: {
-			position: "absolute",
-			left: "0",
-			background: "transparent",
-			"pointer-events": "none"
-		},
-		[`.${cssClass.selector}__hint::placeholder`]: {
-			opacity: "0.4"
-		},
-		[`.${cssClass.selector}__options`]: {
-			"background-color": cssVar.nodeBackgroundColor,
-			height: "fit-content"
-		},
-		[`.${cssClass.selector}__option`]: {
-			padding: "0.5em",
-			border: "1px solid transparent",
-			cursor: "default",
-			...cssTransition("border-color")
-		},
-		[`.${cssClass.selector}__option--highlighted`]: {
-			"border-color": cssVar.borderColorHighlighted
-		}
-	}
-
 	highlightedOptionIndex = -1;
 
 	/** @param {ConstructorArg} arg */

@@ -3,7 +3,7 @@ import { FlowViewEdge } from './edge.js';
 import { FlowViewNode } from './node.js';
 import { FlowViewPin } from './pin.js';
 import { FlowViewSelector } from './selector.js';
-import { cssClass, cssTheme, cssVar } from './theme.js';
+import { cssClass, cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
 
 /**
  * @typedef {import('./flow-view.js').FlowView} FlowView
@@ -25,79 +25,37 @@ const pointerCoordinates = ({ clientX, clientY, target }) => {
 }
 
 export class FlowViewElement extends HTMLElement {
-	static defaultItems = {
-		node: FlowViewNode
-	}
-
-	static style = {
-		':host([hidden])': { display: 'none' },
-		':host': {
-			position: 'relative',
-			display: 'block',
-			overflow: 'hidden',
-			border: 0,
-			margin: 0,
-			outline: 0,
-			'background-color': cssVar.backgroundColor,
-			'border-radius': cssVar.borderRadius,
-			'font-family': cssVar.fontFamily,
-			'font-size': cssVar.fontSize,
-			color: cssVar.textColor
-		},
-		...FlowViewEdge.style,
-		...FlowViewNode.style,
-		...FlowViewPin.style,
-		...FlowViewSelector.style
-	}
-
-	// @ts-ignore
-	static generateStylesheet(style) {
-		return Object.entries(style).reduce(
-			(stylesheet, [selector, rules]) =>
-				[
-					stylesheet,
-					`${selector}{`,
-					Object.entries(rules)
-						.map(([key, value]) => `${key}:${value};`)
-						.join(''),
-					'}'
-				].join(''),
-			''
-		)
-	}
-
 	/** @type {FlowView | undefined} */
 	host
 
 	constructor() {
 		super()
 
-		const template = document.createElement('template')
+		const template = document.createElement('template');
 
 		const hasLight = this.hasAttribute('light')
 		const hasDark = this.hasAttribute('dark')
 		const isLight = hasLight && !hasDark
 		const isDark = !hasLight && hasDark
 
-		const { generateStylesheet } = FlowViewElement
-		const lightStyle = generateStylesheet({ ':host': cssTheme('light') })
-		const darkStyle = generateStylesheet({ ':host': cssTheme('dark') })
+		const lightStyle = generateStyle({ ':host': cssTheme('light') })
+		const darkStyle = generateStyle({ ':host': cssTheme('dark') })
 
 		template.innerHTML = [
 			'<style>',
-			generateStylesheet(FlowViewElement.style),
-			generateStylesheet({
-				':host': {
-					'color-scheme': isLight ? 'light' : isDark ? 'dark' : 'light dark'
-				}
-			}),
-			...(isLight
-				? lightStyle
-				: isDark
-				? darkStyle
+			...(isLight ? lightStyle
+				: isDark ? darkStyle
 				: [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
+			generateStyle({ ':host': {
+				'color-scheme': isLight ? 'light' : isDark ? 'dark' : 'light dark'
+			}}),
+			generateStyle(flowViewStyle),
+			generateStyle(edgeStyle),
+			generateStyle(nodeStyle),
+			generateStyle(pinStyle),
+			generateStyle(selectorStyle),
 			'</style>'
-		].join('')
+		].join('\n')
 
 		this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
 
@@ -105,13 +63,6 @@ export class FlowViewElement extends HTMLElement {
 
 		this.nodesMap = new Map()
 		this.edgesMap = new Map()
-
-		this.itemClassMap = new Map()
-		Object.entries(FlowViewElement.defaultItems).forEach(([key, Class]) => {
-			this.itemClassMap.set(key, Class)
-		})
-
-		this.selectorId = `selector-${FlowViewBase.generateId(this)}`
 	}
 
 	connectedCallback() {
@@ -316,7 +267,7 @@ export class FlowViewElement extends HTMLElement {
 		const source = sourceNode.output(sourcePinId)
 		const target = targetNode.input(targetPinId)
 		const edge = new FlowViewEdge({
-			id: id || FlowViewBase.generateId(this),
+			id: this.#generateId(id),
 			view: this,
 			source,
 			target
@@ -332,7 +283,7 @@ export class FlowViewElement extends HTMLElement {
 	 * @param {FlowViewNodeObj} node
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newNode({ x = 0, y = 0, text, id, ins = [], outs = [] }, viewChangeInfo) {
+	newNode({ x, y, text, id, ins = [], outs = [] }, viewChangeInfo) {
 		const { host } = this;
 		if (!host) return;
 		const nodeType = host.nodeTextToType?.(text) ?? '';
@@ -347,17 +298,15 @@ export class FlowViewElement extends HTMLElement {
 				...item,
 				...(outs[i] ?? {})
 			})) ?? outs;
-		const Class = this.itemClassMap.get(nodeType) ?? this.itemClassMap.get('node');
-		const node = new Class({
-			id,
+		const node = new FlowViewNode({
+			id: this.#generateId(id),
 			view: this,
-			cssClassName: cssClass.node,
 			text,
 			x,
 			y,
 			type: nodeType
 		});
-		node.initContent({ text, inputs, outputs });
+		node.initContent({ text, x, y });
 		for (const pin of inputs) node.newInput(pin)
 		for (const pin of outputs) node.newOutput(pin)
 		this.nodesMap.set(node.id, node);
@@ -600,5 +549,18 @@ export class FlowViewElement extends HTMLElement {
 		element.classList.add(cssClass);
 		this.shadowRoot?.appendChild(element);
 		return element;
+	}
+
+	/**
+	 * @param {(string | undefined)=} wantedId
+	 * @returns {string} id
+	 */
+	#generateId(wantedId) {
+		const id = wantedId || Math.random()
+			.toString(36)
+			.replace(/[^a-z]+/g, "")
+			.substring(0, 5)
+		if (this.shadowRoot?.getElementById(id)) return this.#generateId()
+		else return id
 	}
 }

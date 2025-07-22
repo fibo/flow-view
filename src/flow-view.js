@@ -151,19 +151,4 @@ export class FlowView {
 	deleteEdge(id, viewChangeInfo = { isProgrammatic: true }) {
 		return this.view.deleteEdge(id, viewChangeInfo)
 	}
-
-	/**
-	 * @param {string} key
-	 * @param {FlowViewNode} NodeClass
-	 */
-	addNodeClass(key, NodeClass) {
-		this.view.itemClassMap.set(key, NodeClass)
-		// @ts-ignore
-		if (!NodeClass.style) return
-		const style = document.createElement('style')
-		// @ts-ignore
-		style.textContent = FlowViewElement.generateStylesheet(NodeClass.style)
-		// @ts-ignore
-		this.view.shadowRoot.appendChild(style)
-	}
 }

@@ -49,28 +49,6 @@ export class FlowViewEdge {
 		this.line.addEventListener('pointerleave', this._onPointerleaveLine)
 	}
 
-	static style = {
-		[`.${cssClass.edge}`]: {
-			display: 'flex',
-			position: 'absolute',
-			border: 0,
-			'pointer-events': 'none'
-		},
-		[`.${cssClass.edge} line`]: {
-			'pointer-events': 'all',
-			stroke: cssVar.connectionColor,
-			'stroke-width': cssEdge.lineWidth,
-			...cssTransition('stroke')
-		},
-		[`.${cssModifierHasError(cssClass.edge)} line`]: {
-			stroke: cssVar.errorColor
-		},
-		[`.${cssModifierHighlighted(cssClass.edge)} line`]: {
-			stroke: cssVar.connectionColorHighlighted
-		}
-	}
-
-
 	get isSemiEdge() {
 		if (!this.source) return true
 		if (!this.target) return true

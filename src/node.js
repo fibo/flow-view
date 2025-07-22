@@ -1,4 +1,4 @@
-import { cssModifierHasError, cssModifierHighlighted, cssTransition, cssVar, cssNode, cssClass, cssPin } from "./theme.js"
+import { cssModifierHighlighted, cssClass } from "./theme.js"
 import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
@@ -20,43 +20,6 @@ const div = (cssClass) => {
 }
 
 export class FlowViewNode {
-	static style = {
-		[`.${cssClass.node}`]: {
-			position: "absolute",
-			"background-color": cssVar.nodeBackgroundColor,
-			"border-radius": cssVar.borderRadius,
-			"box-shadow": cssVar.boxShadow,
-			display: "flex",
-			"flex-direction": "column",
-			"justify-content": "space-between",
-			border: `${cssNode.borderWidth}px solid transparent`,
-			"min-height": `${cssNode.minSize}px`,
-			"min-width": `${cssNode.minSize}px`,
-			width: "fit-content",
-			"z-index": cssNode.zIndex,
-			...cssTransition("border-color")
-		},
-		[`.${cssModifierHighlighted(cssClass.node)}`]: {
-			"border-color": cssVar.borderColorHighlighted
-		},
-		[`.${cssModifierHasError(cssClass.node)}`]: {
-			"border-color": cssVar.errorColor
-		},
-		[`.${cssClass.node} .content`]: {
-			"user-select": "none",
-			"padding-left": "0.5em",
-			"padding-right": "0.5em",
-			"text-align": "center"
-		},
-		[`.${cssClass.node} .pins`]: {
-			display: "flex",
-			"flex-direction": "row",
-			gap: `${cssPin.size}px`,
-			"justify-content": "space-between",
-			height: `${cssPin.size}px`
-		}
-	}
-
     #x = 0; #y = 0;
 
 	isSelected = false;

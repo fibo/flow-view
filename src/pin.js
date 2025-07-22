@@ -1,4 +1,4 @@
-import { cssClass, cssModifierHighlighted, cssPin, cssTransition, cssVar } from "./theme.js"
+import { cssPin } from './theme.js'
 import { FlowViewBase } from "./base.js"
 
 /**
@@ -6,32 +6,6 @@ import { FlowViewBase } from "./base.js"
  */
 
 export class FlowViewPin extends FlowViewBase {
-	static style = {
-		[`.${cssClass.pin}`]: {
-			"background-color": cssVar.connectionColor,
-			cursor: "none",
-			position: "relative",
-			display: "block",
-			width: `${cssPin.size}px`,
-			height: `${cssPin.size}px`,
-			...cssTransition("background-color")
-		},
-		[`.${cssClass.pin} .info`]: {
-			visibility: "hidden",
-			position: "absolute",
-			"background-color": cssVar.nodeBackgroundColor
-		},
-		[`.${cssClass.pin} .info:not(:empty)`]: {
-			padding: "2px 5px"
-		},
-		[`.${cssClass.pin}:hover .info`]: {
-			visibility: "visible"
-		},
-		[`.${cssModifierHighlighted(cssClass.pin)}`]: {
-			"background-color": cssVar.connectionColorHighlighted
-		}
-	}
-
 	/** @param {FlowViewPinInitArg} arg */
 	init({ name = "", node }) {
 		this.info = this.createElement("pre", "info")

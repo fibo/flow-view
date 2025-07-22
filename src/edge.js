@@ -1,4 +1,4 @@
-import { cssClass, cssEdge, cssModifierHasError, cssModifierHighlighted, cssPin, cssTransition, cssVar } from './theme.js'
+import { cssClass, cssModifierHighlighted, cssPin } from './theme.js'
 
 /**
  * @typedef {import('./types').EdgeConstructorArg} ConstructorArg
@@ -26,11 +26,9 @@ export class FlowViewEdge {
 	}
 
 	/** @param {ConstructorArg} arg */
-	constructor({ id, view, source, target }) {
+	constructor({ id, element, view, source, target }) {
 		this.id = id
-		const element = this.element = document.createElement('div');
-		element.setAttribute('id', id);
-		element.classList.add(cssClass.edge);
+		this.element = element
 		element.appendChild(this.svg)
 		this.svg.appendChild(this.line)
 		// @ts-ignore
@@ -65,7 +63,6 @@ export class FlowViewEdge {
 	/** @param {MouseEvent} event */
 	onDblclickLine(event) {
 		event.stopPropagation()
-		// @ts-ignore
 		this.view.deleteEdge(this.id, {})
 	}
 
@@ -74,8 +71,7 @@ export class FlowViewEdge {
 		event.stopPropagation()
 		if (this.isSemiEdge) return
 		const isMultiSelection = event.shiftKey
-		if (!isMultiSelection) this.view.clearSelection()
-		this.view.selectEdge(this)
+		this.view.selectEdge(this, isMultiSelection)
 	}
 
 	/** @param {boolean} value */

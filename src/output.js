@@ -1,13 +1,18 @@
 import { FlowViewPin } from "./pin.js"
-import { cssNode } from './theme.js';
+import { cssNode, cssPin } from './theme.js';
+
+const { borderWidth } = cssNode;
+const { halfSize } = cssPin;
 
 export class FlowViewOutput extends FlowViewPin {
 	get center() {
+		// @ts-ignore
+		const offsetX = this.bounds.x - this.node.bounds.x
 		return {
 		// @ts-ignore
-			x: this.node.position.x + this.halfPinSize + cssNode.borderWidth + this.offsetX,
+			x: this.node.position.x + halfSize + borderWidth + offsetX,
 		// @ts-ignore
-			y: this.node.position.y + this.node.bounds.height - this.halfPinSize - cssNode.borderWidth
+			y: this.node.position.y + this.node.bounds.height - this.halfPinSize - borderWidth
 		}
 	}
 

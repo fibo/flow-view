@@ -1,4 +1,4 @@
-import { cssTransition, cssClass, cssSelector, cssVar, cssNode } from "./theme.js"
+import { cssClass, cssSelector } from './theme.js';
 
 /**
  * @typedef {import('./types').SelectorConstructorArg} ConstructorArg
@@ -11,7 +11,6 @@ export class FlowViewSelector {
 	/** @param {ConstructorArg} arg */
 	constructor({ element, nodeList, position, view }) {
 		this.view = view
-		element.setAttribute('tabindex', '0');
 		this.element = element;
 		this.nodeList = nodeList;
 		this.position = position;
@@ -19,6 +18,7 @@ export class FlowViewSelector {
 		this.hint = this.createElement("input", `${cssClass.selector}__hint`)
 
 		const input = (this.input = this.createElement("input"))
+		input.focus()
 
 		this.options = this.createElement("div", `${cssClass.selector}__options`)
 
@@ -53,11 +53,6 @@ export class FlowViewSelector {
 		element.removeEventListener("pointerleave", this._onPointerdown)
 		input.removeEventListener("keydown", this._onKeydown)
 		input.removeEventListener("keyup", this._onKeyup)
-	}
-
-	focus() {
-		// @ts-ignore
-		this.input.focus()
 	}
 
 	get completion() { return this.hint.getAttribute('placeholder') ?? '' }

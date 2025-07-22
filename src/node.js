@@ -30,12 +30,11 @@ export class FlowViewNode {
 	contentDiv = div('content');
 
 	/** @param {ConstructorArg} arg */
-	constructor({ id, text, type, view, x, y }) {
+	constructor({ id, text, type, view, x, y, element }) {
 		this.id = id
 		this.text = text
 		this.type = type
-		const element = this.element = document.createElement('div');
-		element.setAttribute('id', id);
+		this.element = element;
 		element.classList.add(cssClass.node);
 		element.appendChild(this.inputsDiv);
 		element.appendChild(this.contentDiv);
@@ -170,9 +169,8 @@ export class FlowViewNode {
 		if (event.isBubblingFromPin) return
 		// @ts-ignore
 		event.isBubblingFromNode = true
-		const isMultiSelection = event.shiftKey || (this.view.hasSelectedNodes && this.isSelected)
-		if (!isMultiSelection) this.view.clearSelection()
-		this.view.selectNode(this)
+		const isMultiSelection = event.shiftKey;
+		this.view.selectNode(this, isMultiSelection)
 	}
 
 	toObject() {

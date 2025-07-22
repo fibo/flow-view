@@ -38,6 +38,7 @@ export type FlowViewEdgeObj = {
 
 export type EdgeConstructorArg = {
 	id: string
+	element: HTMLElement
 	view: FlowViewElement
 	source?: FlowViewOutput
 	target?: FlowViewInput
@@ -47,6 +48,7 @@ export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
 	id: string
 	view: FlowViewElement
 	text: string
+	element: HTMLElement
 	type?: string | undefined
 }
 
@@ -95,13 +97,7 @@ type FlowViewChange = {
 	action: 'CREATE_NODE'
 	data: Required<Pick<FlowViewNodeObj, 'id'>> & Pick<FlowViewNodeObj, 'type'>
 } | {
-	action: 'DELETE_SEMI_EDGE'
-	data: unknown
-} | {
 	action: 'CREATE_EDGE'
-	data: unknown
-} | {
-	action: 'CREATE_SEMI_EDGE'
 	data: unknown
 } | {
 	action: 'DELETE_NODE'

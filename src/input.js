@@ -1,9 +1,12 @@
 import { FlowViewPin } from "./pin.js"
-import { cssNode } from './theme.js';
+import { cssNode, cssPin } from './theme.js';
 
 /**
  * @typedef {import('./types').InputConstructorArg} ConstructorArg
  */
+
+const { borderWidth } = cssNode
+const { halfSize } = cssPin
 
 export class FlowViewInput extends FlowViewPin {
 	/** @param {ConstructorArg} arg */
@@ -14,11 +17,13 @@ export class FlowViewInput extends FlowViewPin {
 	}
 
 	get center() {
+		// @ts-ignore
+		const offsetX = this.bounds.x - this.node.bounds.x
 		return {
 		// @ts-ignore
-			x: this.node.position.x + this.halfPinSize + cssNode.borderWidth + this.offsetX,
+			x: this.node.position.x + halfSize + borderWidth + offsetX,
 		// @ts-ignore
-			y: this.node.position.y + this.halfPinSize - cssNode.borderWidth
+			y: this.node.position.y + halfSize - borderWidth
 		}
 	}
 

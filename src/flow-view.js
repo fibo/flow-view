@@ -45,8 +45,6 @@ export class FlowView {
 			throw new Error('flow-view was provided with no valid element nor container')
 		}
 
-		this.view.style.isolation = 'isolate'
-
 		this.nodeNameTypeMap = new Map()
 	}
 
@@ -91,7 +89,7 @@ export class FlowView {
 
 	viewChange(
 		// @ts-ignore
-		{ createdNode, createdEdge, createdSemiEdge, deletedNode, deletedEdge, deletedSemiEdge, updatedNode },
+		{ createdNode, createdEdge, deletedNode, deletedEdge, updatedNode },
 		viewChangeInfo = {}
 	) {
 		const { onViewChange } = this
@@ -103,17 +101,11 @@ export class FlowView {
 		if (createdEdge) {
 			onViewChange({ action: 'CREATE_EDGE', data: createdEdge }, viewChangeInfo)
 		}
-		if (createdSemiEdge) {
-			onViewChange({ action: 'CREATE_SEMI_EDGE', data: createdSemiEdge }, viewChangeInfo)
-		}
 		if (deletedNode) {
 			onViewChange({ action: 'DELETE_NODE', data: deletedNode }, viewChangeInfo)
 		}
 		if (deletedEdge) {
 			onViewChange({ action: 'DELETE_EDGE', data: deletedEdge }, viewChangeInfo)
-		}
-		if (deletedSemiEdge) {
-			onViewChange({ action: 'DELETE_SEMI_EDGE', data: deletedSemiEdge }, viewChangeInfo)
 		}
 		if (updatedNode) {
 			onViewChange?.({ action: 'UPDATE_NODE', data: updatedNode }, viewChangeInfo)

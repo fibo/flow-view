@@ -27,11 +27,6 @@ export class FlowViewPin extends FlowViewBase {
 		this.element.addEventListener("pointerup", this._onPointerup)
 	}
 
-	get offsetX() {
-		// @ts-ignore
-		return this.bounds.x - this.node.bounds.x
-	}
-
 	/** @param {string} value */
 	set text(value) {
 		// @ts-ignore

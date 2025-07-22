@@ -36,6 +36,7 @@ export const cssEdge = {
 };
 
 export const cssPin = {
+	halfSize: 5,
 	size: 10,
 };
 

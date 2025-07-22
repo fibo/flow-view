@@ -1,11 +1,11 @@
 import { cssTransition, cssClass, cssSelector, cssVar, cssNode } from "./theme.js"
-import { FlowViewBase } from "./base.js"
 
 /**
+ * @typedef {import('./types').SelectorConstructorArg} ConstructorArg
  * @typedef {import('./types').Vector} Vector
  */
 
-export class FlowViewSelector extends FlowViewBase {
+export class FlowViewSelector {
 	static style = {
 		[`.${cssClass.selector}`]: {
 			position: "absolute",
@@ -46,20 +46,21 @@ export class FlowViewSelector extends FlowViewBase {
 		}
 	}
 
-	// @ts-ignore
-	init({ nodeList, position }) {
-		const { element } = this
-		element.setAttribute("tabindex", '0')
+	highlightedOptionIndex = -1;
+
+	/** @param {ConstructorArg} arg */
+	constructor({ element, nodeList, position, view }) {
+		this.view = view
+		element.setAttribute('tabindex', '0');
+		this.element = element;
+		this.nodeList = nodeList;
+		this.position = position;
 
 		this.hint = this.createElement("input", `${cssClass.selector}__hint`)
 
 		const input = (this.input = this.createElement("input"))
 
 		this.options = this.createElement("div", `${cssClass.selector}__options`)
-
-		this.nodeList = nodeList
-		this.position = position
-		this.highlightedOptionIndex = -1
 
 		this._onDblclick = this.onDblclick.bind(this)
 		element.addEventListener("dblclick", this._onDblclick)
@@ -74,17 +75,23 @@ export class FlowViewSelector extends FlowViewBase {
 		input.addEventListener("keyup", this._onKeyup)
 	}
 
+	/**
+	 * @param {string} tag
+	 * @param {string} cssClass
+	 */
+	createElement(tag, cssClass = '') {
+		const element = document.createElement(tag)
+		if (cssClass) element.classList.add(cssClass)
+		this.element.appendChild(element)
+		return element
+	}
+
 	dispose() {
 		const { element, input } = this
-		// @ts-ignore
 		element.removeEventListener("dblclick", this._onDblclick)
-		// @ts-ignore
 		element.removeEventListener("pointerdown", this._onPointerdown)
-		// @ts-ignore
 		element.removeEventListener("pointerleave", this._onPointerdown)
-		// @ts-ignore
 		input.removeEventListener("keydown", this._onKeydown)
-		// @ts-ignore
 		input.removeEventListener("keyup", this._onKeyup)
 	}
 
@@ -93,22 +100,15 @@ export class FlowViewSelector extends FlowViewBase {
 		this.input.focus()
 	}
 
-	get completion() {
-		// @ts-ignore
-		return this.hint.getAttribute("placeholder")
-	}
+	get completion() { return this.hint.getAttribute('placeholder') ?? '' }
 
-	set completion(text) {
-		// @ts-ignore
-		this.hint.setAttribute("placeholder", text)
-	}
+	set completion(text) { this.hint.setAttribute('placeholder', text) }
 
 	get matchingNodes() {
 		// @ts-ignore
 		const search = this.input.value.toLowerCase()
 		if (search.length === 0) return []
 		return this.nodeList.filter(
-		// @ts-ignore
 			(name) =>
 				// input value fits into node name...
 				name.toLowerCase().startsWith(search) &&

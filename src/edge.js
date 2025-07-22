@@ -1,7 +1,7 @@
 import { cssClass, cssEdge, cssModifierHasError, cssModifierHighlighted, cssPin, cssTransition, cssVar } from './theme.js'
 
 /**
- * @typedef {import('./types').FlowViewEdgeConstructorArg} FlowViewEdgeConstructorArg
+ * @typedef {import('./types').EdgeConstructorArg} ConstructorArg
  * @typedef {import('./types').Vector} Vector
  */
 
@@ -25,7 +25,7 @@ export class FlowViewEdge {
 		this.#end.y = y;
 	}
 
-	/** @param {FlowViewEdgeConstructorArg} arg */
+	/** @param {ConstructorArg} arg */
 	constructor({ id, view, source, target }) {
 		this.id = id
 		const element = this.element = document.createElement('div');

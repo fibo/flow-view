@@ -19,7 +19,14 @@ export type FlowViewBaseConstructorArg = {
 	view: FlowViewElement
 }
 
-export type FlowViewInputConstructorArg = FlowViewBaseConstructorArg & {
+export type SelectorConstructorArg = {
+	position: Vector
+	view: FlowViewElement
+	element: HTMLElement
+	nodeList: string[]
+}
+
+export type InputConstructorArg = FlowViewBaseConstructorArg & {
 	node: FlowViewNode
 }
 
@@ -29,14 +36,14 @@ export type FlowViewEdgeObj = {
 	to: string[]
 }
 
-export type FlowViewEdgeConstructorArg = {
+export type EdgeConstructorArg = {
 	id: string
 	view: FlowViewElement
 	source?: FlowViewOutput
 	target?: FlowViewInput
 }
 
-export type FlowViewNodeConstructorArg = Vector & FlowViewNodeSignature & {
+export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
 	id: string
 	view: FlowViewElement
 	text: string

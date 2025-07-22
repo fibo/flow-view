@@ -2,11 +2,11 @@ import { FlowViewPin } from "./pin.js"
 import { cssNode } from './theme.js';
 
 /**
- * @typedef {import('./types').FlowViewInputConstructorArg} FlowViewInputConstructorArg
+ * @typedef {import('./types').InputConstructorArg} ConstructorArg
  */
 
 export class FlowViewInput extends FlowViewPin {
-	/** @param {FlowViewInputConstructorArg} arg */
+	/** @param {ConstructorArg} arg */
 	constructor(arg) {
 		super(arg)
 		// @ts-ignore

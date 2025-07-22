@@ -3,7 +3,7 @@ import { FlowViewInput } from "./input.js"
 import { FlowViewOutput } from "./output.js"
 
 /**
- * @typedef {import('./types').FlowViewNodeConstructorArg} FlowViewNodeConstructorArg
+ * @typedef {import('./types').NodeConstructorArg} ConstructorArg
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
  * @typedef {import('./types').FlowViewOutputObj} FlowViewOutputObj
  * @typedef {import('./types').FlowViewInputObj} FlowViewInputObj
@@ -66,7 +66,7 @@ export class FlowViewNode {
 	outputsDiv = div('pins');
 	contentDiv = div('content');
 
-	/** @param {FlowViewNodeConstructorArg} arg */
+	/** @param {ConstructorArg} arg */
 	constructor({ id, text, type, view, x, y }) {
 		this.id = id
 		this.text = text

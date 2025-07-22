@@ -148,15 +148,13 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {Event | MouseEvent} event */
 	handleEvent(event) {
 		if (event instanceof KeyboardEvent && event.type === 'keydown') {
-			event.stopPropagation()
+			event.stopPropagation();
 
 			if (!this.selector) {
 				switch (event.code) {
-					case 'Backspace':
-						this.deleteSelectedItems();
+					case 'Backspace': this.deleteSelectedItems();
 						break;
-					case 'Escape':
-						this.clearSelection();
+					case 'Escape': this.clearSelection();
 						break;
 					default: break;
 				}
@@ -175,8 +173,8 @@ export class FlowViewElement extends HTMLElement {
 			}).focus();
 		}
 		if (event instanceof MouseEvent && event.type === 'pointerdown') {
-			event.stopPropagation()
-			this.removeSelector()
+			event.stopPropagation();
+			this.removeSelector();
 			// @ts-ignore
 			if (!event.isBubblingFromNode) this.clearSelection()
 			const isMultiSelection = event.shiftKey
@@ -187,7 +185,7 @@ export class FlowViewElement extends HTMLElement {
 			this.removeSemiEdge();
 		}
 		if (event instanceof MouseEvent && event.type === 'pointermove') {
-			const { hasSelectedNodes, semiEdge, startDraggingPoint } = this
+			const { hasSelectedNodes, semiEdge, startDraggingPoint } = this;
 
 			if (startDraggingPoint) {
 				const pointerPosition = pointerCoordinates(event)
@@ -508,8 +506,7 @@ export class FlowViewElement extends HTMLElement {
 	 */
 	createSelector({ position }) {
 		return (this.selector = new FlowViewSelector({
-			id: this.selectorId,
-			cssClassName: cssClass.selector,
+			element: this.#createElement('div', cssClass.selector),
 			view: this,
 			// @ts-ignore
 			position,
@@ -589,7 +586,19 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	removeSelector() {
-		if (this.selector instanceof FlowViewSelector) this.selector.remove()
+		this.selector?.dispose();
+		this.selector?.element.remove();
 		this.selector = undefined
+	}
+
+	/**
+	 * @param {string} tag
+	 * @param {string} cssClass
+	 */
+	#createElement(tag, cssClass) {
+		const element = document.createElement(tag);
+		element.classList.add(cssClass);
+		this.shadowRoot?.appendChild(element);
+		return element;
 	}
 }

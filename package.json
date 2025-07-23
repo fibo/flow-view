@@ -9,8 +9,7 @@
     "url": "http://fibo.github.io"
   },
   "type": "module",
-  "types": "./dist/flow-view.d.ts",
-  "exports": "./dist/flow-view.js",
+  "exports": "./src/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",
     "install_precommit_hook": "echo '#!/bin/sh\nnpm run check_types' > .git/hooks/pre-commit; chmod +x .git/hooks/pre-commit"

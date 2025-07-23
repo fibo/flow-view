@@ -11,7 +11,13 @@ export class Selector {
 
 	element = createDiv(cssClass.selector);
 
-	/** @param {ConstructorArg} arg */
+	input = document.createElement('input');
+	hint = document.createElement('input');
+	options = createDiv(`${cssClass.selector}__options`);
+
+	/**
+	 * @param {ConstructorArg} arg
+	 */
 	constructor({ x, y, nodeList, view, removeSelector, newNode }) {
 		this.view = view
 		this.nodeList = nodeList;
@@ -27,11 +33,8 @@ export class Selector {
 		this.element.style.top = `${this.y - view.origin.y}px`
 		this.element.style.left = `${this.x - view.origin.x}px`
 
-		this.hint = this.createElement("input", `${cssClass.selector}__hint`)
-
-		const input = (this.input = this.createElement("input"))
-
-		this.options = this.createElement("div", `${cssClass.selector}__options`)
+		this.hint.classList.add(`${cssClass.selector}__hint`);
+		this.element.append(this.input, this.hint, this.options);
 
 		this._onDblclick = this.onDblclick.bind(this)
 		this.element.addEventListener("dblclick", this._onDblclick)
@@ -41,20 +44,9 @@ export class Selector {
 		this.element.addEventListener("pointerleave", this._onPointerleave)
 
 		this._onKeydown = this.onKeydown.bind(this)
-		input.addEventListener("keydown", this._onKeydown)
+		this.input.addEventListener("keydown", this._onKeydown)
 		this._onKeyup = this.onKeyup.bind(this)
-		input.addEventListener("keyup", this._onKeyup)
-	}
-
-	/**
-	 * @param {string} tag
-	 * @param {string} cssClass
-	 */
-	createElement(tag, cssClass = '') {
-		const element = document.createElement(tag)
-		if (cssClass) element.classList.add(cssClass)
-		this.element.appendChild(element)
-		return element
+		this.input.addEventListener("keyup", this._onKeyup)
 	}
 
 	dispose() {
@@ -71,7 +63,6 @@ export class Selector {
 	set completion(text) { this.hint.setAttribute('placeholder', text) }
 
 	get matchingNodes() {
-		// @ts-ignore
 		const search = this.input.value.toLowerCase()
 		if (search.length === 0) return []
 		return this.nodeList.filter(

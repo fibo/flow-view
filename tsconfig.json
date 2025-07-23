@@ -8,7 +8,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 		"paths": {
-			"flow-view": ["./src/index.js"],
+			"flow-view": ["./src/flow-view.js"],
 		},
 		"strict": true,
 		"target": "es2022",

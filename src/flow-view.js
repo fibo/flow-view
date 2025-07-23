@@ -1,7 +1,8 @@
-import { FlowViewElement } from './element.js'
+import { FlowViewElement } from './element.js';
+
+export { FlowViewNode } from './node.js';
 
 /**
- * @typedef {import('./node').FlowViewNode} FlowViewNode
  * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
  * @typedef {import('./types').FlowViewOnChangeCallback} FlowViewOnChangeCallback
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph

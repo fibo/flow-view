@@ -58,6 +58,7 @@ export class FlowViewNode {
 		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
 		for (const input of this.inputs) input.dispose()
 		for (const output of this.outputs) output.dispose()
+		this.container.element.remove();
 	}
 
 	get inputs() {

@@ -38,7 +38,7 @@ export class FlowViewOutput {
 		}
 		if (event.type === 'pointerdown') {
 			if (this.node.view.semiEdge) event.stopPropagation();
-			else this.node.view.createSemiEdge({ source: this });
+			else this.node.view.createSemiEdge(this);
 		}
 	}
 

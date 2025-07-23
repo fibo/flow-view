@@ -57,6 +57,7 @@ export class Selector {
 		element.removeEventListener('pointerleave', this._onPointerdown)
 		input.removeEventListener('keydown', this._onKeydown)
 		input.removeEventListener('keyup', this._onKeyup)
+		element.remove();
 	}
 
 	get #completion() { return this.hint.getAttribute('placeholder') ?? '' }

@@ -1,5 +1,6 @@
 import { Container } from './common.js';
 import { cssClass, cssNode, cssPin } from './theme.js';
+import { FlowViewOutput } from './output.js';
 
 /**
  * @typedef {import('./types').InputConstructorArg} ConstructorArg
@@ -49,18 +50,18 @@ export class FlowViewInput {
 	/** @param {Event} event */
 	handleEvent(event) {
 		if (event.type === 'pointerenter') {
-			this.container.highlight = true
+			this.container.highlight = true;
 		}
 		if (event.type === 'pointerleave') {
-			this.container.highlight = false
+			this.container.highlight = false;
 		}
 		if (event.type === 'pointerdown') {
 			event.stopPropagation()
 		}
 		if (event.type === 'pointerup') {
 			const { connectedEdge } = this
-			const source = this.node.view.semiEdge?.source
-			if (source) {
+			const source = this.node.view.pendingPin
+			if (source instanceof FlowViewOutput) {
 				// Delete previous edge, only one edge per input is allowed.
 				if (connectedEdge) this.node.view.deleteEdge(connectedEdge.id, {})
 				// Do not connect pins of same node.

@@ -42,10 +42,9 @@ export type FlowViewEdgeObj = {
 
 export type EdgeConstructorArg = {
 	id: string
-	element: HTMLElement
 	view: FlowViewElement
-	source?: FlowViewOutput
-	target?: FlowViewInput
+	source: FlowViewOutput
+	target: FlowViewInput
 }
 
 export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
@@ -84,11 +83,6 @@ export type FlowViewNodeSignature = Partial<{
 	ins: Array<{ name?: string }>
 	outs: Array<{ name?: string }>
 }>
-
-export type FlowViewSemiEdge = {
-	source?: FlowViewOutput
-	target?: FlowViewInput
-}
 
 export type FlowViewChangeInfo = {
 	isClearGraph?: boolean

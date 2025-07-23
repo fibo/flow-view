@@ -1,13 +1,15 @@
 import { FlowViewEdge } from './edge.js';
 import { FlowViewNode } from './node.js';
+import { SemiEdge } from './semiEdge.js';
 import { Selector } from './selector.js';
-import { cssClass, cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
+import { cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
 
 /**
  * @typedef {import('./flow-view.js').FlowView} FlowView
+ * @typedef {import('./input').FlowViewInput} FlowViewInput
+ * @typedef {import('./output').FlowViewOutput} FlowViewOutput
  * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
  * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
- * @typedef {import('./types').FlowViewSemiEdge} FlowViewSemiEdge
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
  * @typedef {import('./types').Vector} Vector
  */
@@ -117,10 +119,10 @@ export class FlowViewElement extends HTMLElement {
 			this.#clearSelection();
 			this.#removeSelector();
 			const { x, y } = pointerCoordinates(event);
-			const position = { x: x + this.origin.x, y: y + this.origin.y }
+			const position = { x: x + this.#origin.x, y: y + this.#origin.y }
 			this.selector = new Selector({
 				...position,
-				view: { origin: this.origin, width: this.width, height: this.height },
+				view: { origin: this.#origin, width: this.width, height: this.height },
 				nodeList: Array.from(this.host?.nodeList ?? []),
 				removeSelector: this.#removeSelector.bind(this),
 				newNode: (text) => {
@@ -153,8 +155,8 @@ export class FlowViewElement extends HTMLElement {
 				switch (true) {
 					case !!semiEdge: {
 						semiEdge.end = {
-							x: pointerPosition.x + this.origin.x,
-							y: pointerPosition.y + this.origin.y
+							x: pointerPosition.x + this.#origin.x,
+							y: pointerPosition.y + this.#origin.y
 						}
 						semiEdge.updateGeometry()
 						break
@@ -172,7 +174,6 @@ export class FlowViewElement extends HTMLElement {
 						}
 						for (const edge of edges) {
 							if (
-								// @ts-ignore
 								selectedNodeIds.includes(edge.source.node.id) || selectedNodeIds.includes(edge.target.node.id)
 							) {
 								edge.updateGeometry()
@@ -248,15 +249,13 @@ export class FlowViewElement extends HTMLElement {
 		const source = sourceNode.output(sourcePinId)
 		const target = targetNode.input(targetPinId)
 		const id = this.#generateId(wantedId);
-		const element = this.#createElement('div', cssClass.edge);
 		const edge = new FlowViewEdge({
 			id: this.#generateId(id),
-			element,
 			view: this,
 			source,
 			target
 		})
-		this.shadowRoot?.appendChild(edge.element)
+		this.shadowRoot?.appendChild(edge.container.element)
 		edge.updateGeometry()
 		this.#edges.set(edge.id, edge)
 		// @ts-ignore
@@ -308,12 +307,10 @@ export class FlowViewElement extends HTMLElement {
 	 */
 	selectEdge(edge, isMultiSelection) {
 		if (!isMultiSelection) this.#clearSelection()
-		edge.highlight = true
+		edge.container.highlight = true
 		edge.isSelected = true
-		// @ts-ignore
-		edge.source.highlight = true
-		// @ts-ignore
-		edge.target.highlight = true
+		edge.source.container.highlight = true
+		edge.target.container.highlight = true
 	}
 
 	/**
@@ -325,7 +322,6 @@ export class FlowViewElement extends HTMLElement {
 		node.container.highlight = true
 		node.isSelected = true
 		for (const edge of this.edges) {
-			// @ts-ignore
 			if (edge.source.node.isSelected && edge.target.node.isSelected) {
 				this.selectEdge(edge, isMultiSelection)
 			} else {
@@ -336,7 +332,7 @@ export class FlowViewElement extends HTMLElement {
 
 	/** @param {FlowViewEdge} edge */
 	deselectEdge(edge) {
-		edge.highlight = false
+		edge.container.highlight = false
 		edge.isSelected = false
 		const { source, target } = edge
 		if (source && source.node?.isSelected === false)
@@ -361,16 +357,13 @@ export class FlowViewElement extends HTMLElement {
 		const edge = this.#edges.get(id)
 		if (!edge) return
 
-		// @ts-ignore
-		edge.source.highlight = false
-		// @ts-ignore
-		edge.target.highlight = false
+		edge.source.container.highlight = false
+		edge.target.container.highlight = false
 
 		// Dispose.
 		this.#edges.delete(edge.id);
-		edge.dispose();
-		edge.element.remove();
 		this.#ids.delete(id);
+		edge.dispose();
 
 		const serializedEdge = edge.toObject()
 		// @ts-ignore
@@ -388,7 +381,6 @@ export class FlowViewElement extends HTMLElement {
 
 		// Remove edges connected to node.
 		for (const edge of this.edges) {
-			// @ts-ignore
 			if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
 				this.deleteEdge(edge.id, viewChangeInfo)
 			}
@@ -396,9 +388,8 @@ export class FlowViewElement extends HTMLElement {
 
 		// Dispose.
 		this.#nodes.delete(id)
-		node.dispose();
-		node.container.element.remove();
 		this.#ids.delete(id);
+		node.dispose();
 
 		const serializedNode = node.toObject()
 		// @ts-ignore
@@ -434,31 +425,17 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	/**
-	 * @param {FlowViewSemiEdge} arg
+	 * @param {FlowViewOutput | FlowViewInput} pin
 	 */
-	createSemiEdge({ source, target }) {
-		this.semiEdge = new FlowViewEdge({
-			id: 'semiEdge',
-		    element: this.#createElement('div', cssClass.edge),
-			view: this,
-			source,
-			target
-		})
+	createSemiEdge(pin) {
+		this.pendingPin = pin;
+		this.semiEdge = new SemiEdge({ origin: this.origin, position: pin.center });
+		this.shadowRoot?.appendChild(this.semiEdge.container.element);
 	}
 
 	deleteSelectedItems() {
 		for (const edge of this.#selectedEdges) this.deleteEdge(edge.id, {})
 		for (const node of this.#selectedNodes) this.deleteNode(node.id, {})
-	}
-
-	/**
-	 * @param {string} tag
-	 * @param {string} cssClass
-	 */
-	#createElement(tag, cssClass) {
-		const element = document.createElement(tag);
-		element.classList.add(cssClass);
-		return element;
 	}
 
 	#ids = new Set();
@@ -522,14 +499,13 @@ export class FlowViewElement extends HTMLElement {
 
 	#removeSelector() {
 		this.selector?.dispose();
-		this.selector?.element.remove();
 		delete this.selector
 	}
 
 	#removeSemiEdge() {
 		if (!this.semiEdge) return
 		this.semiEdge.dispose()
-		this.semiEdge.element.remove()
+		this.semiEdge.container.element.remove()
 		delete this.semiEdge
 	}
 }

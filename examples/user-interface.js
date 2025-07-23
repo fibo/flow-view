@@ -34,6 +34,7 @@ flowView.nodeTypeSignature
 ].forEach(item => flowView.nodeList.add(item))
 
 flowView.onChange(({ action, data }) => {
+	console.info(flowView.graph);
   switch (action) {
     case 'CREATE_NODE': {
       const node = flowView.node(data.id)

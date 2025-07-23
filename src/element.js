@@ -130,13 +130,13 @@ export class FlowViewElement extends HTMLElement {
 			this.shadowRoot?.appendChild(this.selector.element);
 			this.selector.input.focus()
 		}
-		if (event instanceof MouseEvent && event.type === 'pointerdown') {
+		if (event instanceof PointerEvent && event.type === 'pointerdown') {
 			event.stopPropagation();
 			this.#removeSelector();
 			// @ts-ignore
 			if (!event.isBubblingFromNode) this.#clearSelection()
 			const isMultiSelection = event.shiftKey
-			if (!isMultiSelection) this.#startTranslation(event)
+			if (!isMultiSelection) this.startTranslation(event)
 		}
 		if (event.type === 'pointerleave' || event.type === 'pointerup') {
 			this.#stopTranslation();
@@ -481,7 +481,7 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	/** @param {MouseEvent} event */
-	#startTranslation(event) {
+	startTranslation(event) {
 		this.startDraggingPoint = pointerCoordinates(event)
 		this.#translation = { x: 0, y: 0 }
 		if (this.#hasSelectedNodes) {

@@ -11,6 +11,8 @@ import { FlowViewOutput } from "./output.js"
  * @typedef {import('./types').Vector} Vector
  */
 
+const eventTypes = ['pointerdown', 'dblclick'];
+
 export class FlowViewNode {
     #x = 0; #y = 0;
 
@@ -30,11 +32,8 @@ export class FlowViewNode {
 		this.type = type
 		this.container.element.append(this.inputsDiv, this.contentDiv, this.outputsDiv);
 		this.view = view;
-		this.position = { x, y }
-		this._onDblclick = this.onDblclick.bind(this)
-		this.container.element.addEventListener("dblclick", this._onDblclick)
-		this._onPointerdown = this.onPointerdown.bind(this)
-		this.container.element.addEventListener("pointerdown", this._onPointerdown)
+		this.position = { x, y };
+		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
 	}
 
 	/** @param {FlowViewNodeObj} node */
@@ -42,9 +41,21 @@ export class FlowViewNode {
 		this.contentDiv.textContent = node.text
 	}
 
+	/** @param {Event} event */
+	handleEvent(event) {
+		if (event instanceof PointerEvent && event.type === 'pointerdown') {
+			// @ts-ignore
+			event.isBubblingFromNode = true
+			const isMultiSelection = event.shiftKey;
+			this.view.selectNode(this, isMultiSelection);
+		}
+		if (event.type === 'dblclick') {
+			event.stopPropagation();
+		}
+	}
+
 	dispose() {
-		this.container.element.removeEventListener("dblclick", this._onDblclick)
-		this.container.element.removeEventListener("pointerdown", this._onPointerdown)
+		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
 		for (const input of this.inputs) input.dispose()
 		for (const output of this.outputs) output.dispose()
 	}
@@ -111,21 +122,6 @@ export class FlowViewNode {
 		if (name) item.info.textContent = name
 		this.outputsMap.set(item.id, item)
 		this.outputsDiv.appendChild(item.container.element)
-	}
-
-	/** @param {MouseEvent} event */
-	onDblclick(event) {
-		event.stopPropagation()
-	}
-
-	/** @param {MouseEvent} event */
-	onPointerdown(event) {
-		// @ts-ignore
-		if (event.isBubblingFromPin) return
-		// @ts-ignore
-		event.isBubblingFromNode = true
-		const isMultiSelection = event.shiftKey;
-		this.view.selectNode(this, isMultiSelection)
 	}
 
 	toObject() {

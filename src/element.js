@@ -12,8 +12,8 @@ import { cssClass, cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, sele
  * @typedef {import('./types').Vector} Vector
  */
 
-const lightStyle = generateStyle({ ':host': cssTheme('light') });
-const darkStyle = generateStyle({ ':host': cssTheme('dark') });
+const lightStyle = generateStyle({ ':host': cssTheme.light });
+const darkStyle = generateStyle({ ':host': cssTheme.dark });
 
 /**
  * @param {MouseEvent} event
@@ -39,25 +39,27 @@ export class FlowViewElement extends HTMLElement {
 
 
 	/** @type {Map<string, FlowViewNode>} */
-    nodesMap = new Map();
+    #nodes = new Map();
 	/** @type {Map<string, FlowViewEdge>} */
-	edgesMap = new Map();
+	#edges = new Map();
 
 	constructor() {
 		super();
 
 		const template = document.createElement('template');
 
-		const hasLight = this.hasAttribute('light')
-		const hasDark = this.hasAttribute('dark')
+		// TODO try react on attribute change, using adopted stylesheet
+		const theme = this.getAttribute('theme');
+		const hasLight = theme === 'light'
+		const hasDark = theme === 'dark'
 		const isLight = hasLight && !hasDark
 		const isDark = !hasLight && hasDark
 
 		template.innerHTML = [
 			'<style>',
-			...(isLight ? lightStyle
-				: isDark ? darkStyle
-				: [lightStyle, `@media(prefers-color-scheme:dark){${darkStyle}}`]),
+			...(isLight ? [lightStyle]
+				: isDark ? [darkStyle]
+				: [lightStyle, `@media(prefers-color-scheme:dark) {${darkStyle}}`]),
 			generateStyle({ ':host': {
 				'color-scheme': isLight ? 'light' : isDark ? 'dark' : 'light dark'
 			}}),
@@ -208,11 +210,11 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	get edges() {
-		return [...this.edgesMap.values()]
+		return [...this.#edges.values()]
 	}
 
 	get nodes() {
-		return [...this.nodesMap.values()]
+		return [...this.#nodes.values()]
 	}
 
 	/** @param {number} value */
@@ -242,6 +244,7 @@ export class FlowViewElement extends HTMLElement {
 	newEdge({ id: wantedId, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }, viewChangeInfo) {
 		const sourceNode = this.node(sourceNodeId)
 		const targetNode = this.node(targetNodeId)
+		if (!sourceNode || !targetNode) throw new Error('Node not found')
 		const source = sourceNode.output(sourcePinId)
 		const target = targetNode.input(targetPinId)
 		const id = this.#generateId(wantedId);
@@ -255,7 +258,7 @@ export class FlowViewElement extends HTMLElement {
 		})
 		this.shadowRoot?.appendChild(edge.element)
 		edge.updateGeometry()
-		this.edgesMap.set(edge.id, edge)
+		this.#edges.set(edge.id, edge)
 		// @ts-ignore
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
 		return edge
@@ -292,7 +295,7 @@ export class FlowViewElement extends HTMLElement {
 		node.initContent({ text, x, y });
 		for (const pin of inputs) node.newInput(pin)
 		for (const pin of outputs) node.newOutput(pin)
-		this.nodesMap.set(node.id, node);
+		this.#nodes.set(node.id, node);
 		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
 		// @ts-ignore
 		this.host.viewChange({ createdNode }, viewChangeInfo);
@@ -337,9 +340,9 @@ export class FlowViewElement extends HTMLElement {
 		edge.isSelected = false
 		const { source, target } = edge
 		if (source && source.node?.isSelected === false)
-			source.highlight = false;
+			source.container.highlight = false;
 		if (target && target.node?.isSelected === false)
-			target.highlight = false;
+			target.container.highlight = false;
 	}
 
 	/** @param {FlowViewNode} node */
@@ -355,7 +358,7 @@ export class FlowViewElement extends HTMLElement {
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
 	deleteEdge(id, viewChangeInfo) {
-		const edge = this.edgesMap.get(id)
+		const edge = this.#edges.get(id)
 		if (!edge) return
 
 		// @ts-ignore
@@ -364,7 +367,7 @@ export class FlowViewElement extends HTMLElement {
 		edge.target.highlight = false
 
 		// Dispose.
-		this.edgesMap.delete(edge.id);
+		this.#edges.delete(edge.id);
 		edge.dispose();
 		edge.element.remove();
 		this.#ids.delete(id);
@@ -380,7 +383,7 @@ export class FlowViewElement extends HTMLElement {
 	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
 	deleteNode(id, viewChangeInfo) {
-		const node = this.nodesMap.get(id)
+		const node = this.#nodes.get(id)
 		if (!node) return
 
 		// Remove edges connected to node.
@@ -392,7 +395,7 @@ export class FlowViewElement extends HTMLElement {
 		}
 
 		// Dispose.
-		this.nodesMap.delete(id)
+		this.#nodes.delete(id)
 		node.dispose();
 		node.container.element.remove();
 		this.#ids.delete(id);
@@ -405,25 +408,15 @@ export class FlowViewElement extends HTMLElement {
 
 	/**
 	 * @param {string} id
-	 * @returns {FlowViewEdge}
+	 * @returns {FlowViewEdge | undefined}
 	 */
-	edge(id) {
-		const edge = this.edgesMap.get(id);
-		if (!edge)
-			throw new Error(`flow-view edge not found id=${id}`)
-		return edge
-	}
+	edge(id) { return this.#edges.get(id) }
 
 	/**
 	 * @param {string} id
-	 * @returns {FlowViewNode}
+	 * @returns {FlowViewNode | undefined}
 	 */
-	node(id) {
-		const node = this.nodesMap.get(id);
-		if (!node)
-			throw new Error(`flow-view node not found id=${id}`)
-		return node;
-	}
+	node(id) { return this.#nodes.get(id) }
 
 	/** @param {{ node: FlowViewNode }} arg */
 	updateNode({ node }) {

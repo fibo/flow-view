@@ -42,8 +42,10 @@ flowView.onChange(({ action, data }) => {
 			case 'child':
 			case 'parent': break
 			default:
-				node.newInput({ name: 'in' })
-				node.newOutput({ name: 'out' })
+				if (node) {
+					node.newInput({ name: 'in' });
+					node.newOutput({ name: 'out' });
+				}
 				break
 		}
     }

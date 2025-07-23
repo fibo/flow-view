@@ -40,7 +40,7 @@ export class FlowViewInput {
 	}
 
 	get connectedEdge() {
-		return [...this.node.view.edgesMap.values()]
+		return this.node.view.edges
 			.map((edge) => edge.toObject())
 			// @ts-ignore
 			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
@@ -49,10 +49,10 @@ export class FlowViewInput {
 	/** @param {Event} event */
 	handleEvent(event) {
 		if (event.type === 'pointerenter') {
-			this.highlight = true
+			this.container.highlight = true
 		}
 		if (event.type === 'pointerleave') {
-			this.highlight = false
+			this.container.highlight = false
 		}
 		if (event.type === 'pointerdown') {
 			event.stopPropagation()

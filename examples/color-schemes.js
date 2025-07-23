@@ -1,9 +1,9 @@
 import { FlowView } from 'flow-view';
 
-const lightContainer = document.querySelector('article#color-schemes .container.light-theme');
-const darkContainer = document.querySelector('article#color-schemes .container.dark-theme');
+const lightElement = document.querySelector('flow-view[theme="light"]');
+const darkElement = document.querySelector('flow-view[theme="dark"]');
 
-if (!lightContainer || !darkContainer)
+if (!lightElement || !darkElement)
 	throw new Error('Element not found');
 
 const graph = {
@@ -12,5 +12,5 @@ const graph = {
 	]
 };
 
-new FlowView(lightContainer).loadGraph(graph);
-new FlowView(darkContainer).loadGraph(graph);
+new FlowView(lightElement).loadGraph(graph);
+new FlowView(darkElement).loadGraph(graph);

@@ -1,6 +1,8 @@
 import { createDiv } from './common.js';
 import { cssClass, cssSelector } from './theme.js';
 
+const optionHighlightedClass = `${cssClass.selector}__option--highlighted`;
+
 /**
  * @typedef {import('./types').SelectorConstructorArg} ConstructorArg
  * @typedef {import('./types').Vector} Vector
@@ -19,7 +21,6 @@ export class Selector {
 	 * @param {ConstructorArg} arg
 	 */
 	constructor({ x, y, nodeList, view, removeSelector, newNode }) {
-		this.view = view
 		this.nodeList = nodeList;
 		this.removeSelector = removeSelector;
 		this.newNode = newNode;
@@ -37,32 +38,32 @@ export class Selector {
 		this.element.append(this.input, this.hint, this.options);
 
 		this._onDblclick = this.onDblclick.bind(this)
-		this.element.addEventListener("dblclick", this._onDblclick)
+		this.element.addEventListener('dblclick', this._onDblclick)
 		this._onPointerdown = this.onPointerdown.bind(this)
-		this.element.addEventListener("pointerdown", this._onPointerdown)
+		this.element.addEventListener('pointerdown', this._onPointerdown)
 		this._onPointerleave = this.onPointerleave.bind(this)
-		this.element.addEventListener("pointerleave", this._onPointerleave)
+		this.element.addEventListener('pointerleave', this._onPointerleave)
 
 		this._onKeydown = this.onKeydown.bind(this)
-		this.input.addEventListener("keydown", this._onKeydown)
+		this.input.addEventListener('keydown', this._onKeydown)
 		this._onKeyup = this.onKeyup.bind(this)
-		this.input.addEventListener("keyup", this._onKeyup)
+		this.input.addEventListener('keyup', this._onKeyup)
 	}
 
 	dispose() {
 		const { element, input } = this
-		element.removeEventListener("dblclick", this._onDblclick)
-		element.removeEventListener("pointerdown", this._onPointerdown)
-		element.removeEventListener("pointerleave", this._onPointerdown)
-		input.removeEventListener("keydown", this._onKeydown)
-		input.removeEventListener("keyup", this._onKeyup)
+		element.removeEventListener('dblclick', this._onDblclick)
+		element.removeEventListener('pointerdown', this._onPointerdown)
+		element.removeEventListener('pointerleave', this._onPointerdown)
+		input.removeEventListener('keydown', this._onKeydown)
+		input.removeEventListener('keyup', this._onKeyup)
 	}
 
-	get completion() { return this.hint.getAttribute('placeholder') ?? '' }
+	get #completion() { return this.hint.getAttribute('placeholder') ?? '' }
 
-	set completion(text) { this.hint.setAttribute('placeholder', text) }
+	set #completion(text) { this.hint.setAttribute('placeholder', text) }
 
-	get matchingNodes() {
+	get #matchingNodes() {
 		const search = this.input.value.toLowerCase()
 		if (search.length === 0) return []
 		return this.nodeList.filter(
@@ -76,7 +77,6 @@ export class Selector {
 	}
 
 	#createNode() {
-		// @ts-ignore
 		const nodeText = this.options?.children?.[this.highlightedOptionIndex]?.textContent ?? this.input.value
 		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
 		this.newNode(matchingNodeText ?? nodeText)
@@ -91,194 +91,84 @@ export class Selector {
 	/** @param {KeyboardEvent} event */
 	onKeyup(event) {
 		event.stopPropagation()
-		const highlightedClassName = `${cssClass.selector}__option--highlighted`
-		const highlightOptions = () => {
-			// @ts-ignore
-			for (let i = 0; i < this.options.childElementCount; i++) {
-			// @ts-ignore
-				const option = this.options.children[i]
-				if (this.highlightedOptionIndex === i) option.classList.add(highlightedClassName)
-				else option.classList.remove(highlightedClassName)
-			}
-		}
-		const nextOption = () => {
-			// @ts-ignore
-			this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1)
-		}
-		const previousOption = () => {
-			this.highlightedOptionIndex =
-				this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1
-		}
-		const deleteOptions = () => {
-			// @ts-ignore
-			while (this.options.firstChild) this.options.removeChild(this.options.lastChild)
-		}
-		const resetOptions = () => {
-			this.highlightedOptionIndex = -1
-			deleteOptions()
-		}
-		const createOptions = () => {
-			deleteOptions()
-			for (let i = 0; i < this.matchingNodes.length; i++) {
-				const name = this.matchingNodes[i]
-				const option = createDiv(`${cssClass.selector}__option`)
-				option.textContent = name
-				option.onclick = () => {
-			// @ts-ignore
-					this.input.value = name
-					this.#createNode()
-				}
-				option.onpointerenter = () => {
-					this.highlightedOptionIndex = i
-					option.classList.add(highlightedClassName)
-				}
-				option.onpointerleave = () => {
-					option.classList.remove(highlightedClassName)
-				}
-			// @ts-ignore
-				this.options.append(option)
-			}
-		}
-		const setCompletion = () => {
-			switch (this.matchingNodes.length) {
-				case 0:
-					this.completion = ""
-					this.highlightedOptionIndex = -1
-					break
-				case 1: {
-					const name = this.matchingNodes[0]
-			// @ts-ignore
-					if (name.includes(this.input.value)) this.completion = name
-					break
-				}
-				default:
-					if (this.highlightedOptionIndex === -1) {
-			// @ts-ignore
-						this.completion = this.input.value
-
-			// @ts-ignore
-						const shortestMatch = this.matchingNodes.reduce((shortest, match) =>
-							shortest.length < match.length ? shortest : match
-						)
-
-			// @ts-ignore
-						for (let i = this.input.value.length; i < shortestMatch.length; i++) {
-							const currentChar = shortestMatch[i]
-			// @ts-ignore
-							if (this.matchingNodes.every((name) => name.startsWith(this.completion + currentChar))) {
-								this.completion += currentChar
-							}
-						}
-					} else {
-			// @ts-ignore
-						this.completion = this.options.children[this.highlightedOptionIndex].textContent
-					}
-			}
-		}
-		const autocomplete = () => {
-			// @ts-ignore
-			if (this.completion) this.input.value = this.completion
-		}
-		const caseInsensitiveMatchingNode = () =>
-			this.matchingNodes.find(
-			// @ts-ignore
-				(name) =>
-			// @ts-ignore
-					!name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
-			)
-		const fixCase = () => {
-			const text = caseInsensitiveMatchingNode()
-			if (!text) return
-			// @ts-ignore
-			this.input.value = text.substring(0, this.input.value.length)
-			setCompletion()
-		}
-
 		switch (event.code) {
-			case "Enter":
+			case 'Enter':
 				this.#createNode()
 				break
-			case "Escape":
-			// @ts-ignore
-				if (this.input.value === "") this.removeSelector()
+			case 'Escape':
+				if (this.input.value === '')
+					this.removeSelector();
 				else {
-					this.completion = ""
-			// @ts-ignore
-					this.input.value = ""
-					resetOptions()
+					this.#completion = '';
+					this.input.value = '';
+					this.#resetOptions();
 				}
 				break
-			case "ArrowLeft":
-			case "ShiftLeft":
-			case "ShiftRight":
-				break
-			case "ArrowDown":
-				fixCase()
-				nextOption()
-				highlightOptions()
-				setCompletion()
-				break
-			case "ArrowUp":
+			case 'ArrowLeft':
+			case 'ShiftLeft':
+			case 'ShiftRight':
+				break;
+			case 'ArrowDown':
+				this.#fixCase()
+				this.#nextOption()
+				this.#highlightOptions()
+				this.#setCompletion();
+				break;
+			case 'ArrowUp':
 				event.preventDefault()
-				fixCase()
-				previousOption()
-				highlightOptions()
-				setCompletion()
+				this.#fixCase()
+				this.#previousOption()
+				this.#highlightOptions()
+				this.#setCompletion();
 				break
-			case "ArrowRight":
+			case 'ArrowRight':
 			// @ts-ignore
 				if (this.input.value.length === event.target.selectionStart) {
-					autocomplete()
-					resetOptions()
+					this.#autocomplete()
+					this.#resetOptions()
 				}
 				break
-			case "Backspace":
+			case 'Backspace':
 				this.highlightedOptionIndex = -1
-				createOptions()
-				setCompletion()
+				this.#createOptions()
+				this.#setCompletion();
 				break
-			case "Tab": {
+			case 'Tab': {
 				event.preventDefault()
 				// Fix case with Tab.
-				fixCase()
+				this.#fixCase()
 				// Exact match.
-				if (this.matchingNodes.length === 1) {
-					setCompletion()
-					autocomplete()
-					resetOptions()
+				if (this.#matchingNodes.length === 1) {
+					this.#setCompletion();
+					this.#autocomplete()
+					this.#resetOptions()
 					break
 				}
 				// Use Tab or Shift-Tab to highlight options ciclically.
 				if (event.shiftKey) {
-					if (0 === this.highlightedOptionIndex) {
-			// @ts-ignore
-						this.highlightedOptionIndex = this.options.childElementCount - 1
-					} else {
-						previousOption()
-					}
+					if (0 === this.highlightedOptionIndex)
+						this.highlightedOptionIndex = this.options.childElementCount - 1;
+					else this.#previousOption();
 				} else {
-			// @ts-ignore
-					if (this.options.childElementCount - 1 === this.highlightedOptionIndex) {
-						this.highlightedOptionIndex = 0
-					} else {
-						nextOption()
-					}
+					if (this.options.childElementCount - 1 === this.highlightedOptionIndex)
+						this.highlightedOptionIndex = 0;
+					else this.#nextOption();
 				}
-				createOptions()
-				setCompletion()
-				highlightOptions()
-				break
+				this.#createOptions();
+				this.#setCompletion();
+				this.#highlightOptions()
+				break;
 			}
 			default:
-				createOptions()
-				setCompletion()
+				this.#createOptions();
+				this.#setCompletion();
 		}
 	}
 
 	/** @param {KeyboardEvent} event */
 	onKeydown(event) {
 		event.stopPropagation()
-		if (["ArrowUp", "Tab"].includes(event.code)) event.preventDefault()
+		if (['ArrowUp', 'Tab'].includes(event.code)) event.preventDefault()
 	}
 
 	/** @param {MouseEvent} event */
@@ -288,5 +178,108 @@ export class Selector {
 
 	onPointerleave() {
 		this.highlightedOptionIndex = -1
+	}
+
+	#deleteOptions() {
+		while (this.options.firstChild) {
+			const lastChild = this.options.lastChild;
+			if (lastChild) this.options.removeChild(lastChild);
+		}
+	}
+
+	#autocomplete() {
+		if (this.#completion) this.input.value = this.#completion
+	}
+
+	#nextOption() {
+		this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1)
+	}
+
+	#previousOption() {
+		this.highlightedOptionIndex =
+			this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1
+	}
+
+	#highlightOptions() {
+		for (let i = 0; i < this.options.childElementCount; i++) {
+			const option = this.options.children[i];
+			if (this.highlightedOptionIndex === i)
+				option.classList.add(optionHighlightedClass);
+			else
+				option.classList.remove(optionHighlightedClass);
+		}
+	}
+
+	#createOptions() {
+		this.#deleteOptions();
+		for (let i = 0; i < this.#matchingNodes.length; i++) {
+			const name = this.#matchingNodes[i]
+			const option = createDiv(`${cssClass.selector}__option`)
+			option.textContent = name
+			option.onclick = () => {
+				this.input.value = name
+				this.#createNode()
+			}
+			option.onpointerenter = () => {
+				this.highlightedOptionIndex = i
+				option.classList.add(optionHighlightedClass);
+			}
+			option.onpointerleave = () => {
+				option.classList.remove(optionHighlightedClass);
+			}
+			this.options.append(option);
+		}
+	}
+
+	#resetOptions() {
+		this.highlightedOptionIndex = -1;
+		this.#deleteOptions();
+	}
+
+	#caseInsensitiveMatchingNode() {
+		return this.#matchingNodes.find(
+			(name) =>
+				!name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
+		)
+	}
+
+	#fixCase() {
+		const text = this.#caseInsensitiveMatchingNode()
+		if (!text) return
+		this.input.value = text.substring(0, this.input.value.length)
+		this.#setCompletion();
+	}
+
+	#setCompletion() {
+		switch (this.#matchingNodes.length) {
+			case 0:
+				this.#completion = '';
+				this.highlightedOptionIndex = -1;
+				break;
+			case 1: {
+				const name = this.#matchingNodes[0];
+				if (name.includes(this.input.value))
+					this.#completion = name;
+				break;
+			}
+			default: {
+				if (this.highlightedOptionIndex !== -1) {
+					this.#completion = this.options.children[this.highlightedOptionIndex].textContent ?? ''
+					break;
+				}
+				this.#completion = this.input.value
+
+				const shortestMatch = this.#matchingNodes.reduce((shortest, match) =>
+					shortest.length < match.length ? shortest : match
+				);
+
+				for (let i = this.input.value.length; i < shortestMatch.length; i++) {
+					const currentChar = shortestMatch[i]
+					if (this.#matchingNodes.every((name) => name.startsWith(this.#completion + currentChar))) {
+						this.#completion += currentChar
+					}
+				}
+			}
+		}
 	}
 }

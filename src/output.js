@@ -28,10 +28,10 @@ export class FlowViewOutput {
 	/** @param {Event} event */
 	handleEvent(event) {
 		if (event.type === 'pointerenter') {
-			this.highlight = true;
+			this.container.highlight = true;
 		}
 		if (event.type === 'pointerleave') {
-			this.highlight = false;
+			this.container.highlight = false;
 		}
 		if (event.type === 'pointerup') {
 			event.stopPropagation();

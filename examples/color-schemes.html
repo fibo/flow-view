@@ -21,31 +21,19 @@
 				max-width: 100%;
 			}
 		}
-
-		/* These variables are copied from defaults. */
-
-		.light-theme {
-			--fv-text-color: #222;
-			--fv-background-color: #fefefe;
-			--fv-node-background-color: #fefefe;
-		}
-
-		.dark-theme {
-			--fv-text-color: #ccc;
-			--fv-background-color: #555;
-			--fv-node-background-color: #2b2b2b;
-		}
 	</style>
 
 	<h2>Color schemes</h2>
 
-	<p>Flow View supports light and dark themes.</p>
+	<p>Flow View supports light and dark color schemes.</p>
 
 	<div class="containers">
-		<div class="container light-theme">
+		<div class="container">
+			<flow-view theme="light"></flow-view>
 		</div>
 
-		<div class="container dark-theme">
+		<div class="container">
+			<flow-view theme="dark"></flow-view>
 		</div>
 	</div>
 </article>

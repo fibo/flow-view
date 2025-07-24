@@ -3,7 +3,7 @@ import { FlowView } from 'flow-view';
 const container = document.querySelector('.container');
 if (!container)
   throw new Error('Container element not found');
-const flowView = new FlowView(container);
+const flowView = FlowView.instance(container);
 
 const parents = ['Marge', 'Homer', 'Ned'];
 const children = ['Bart', 'Lisa', 'Milhouse', 'Ralph'];
@@ -79,4 +79,4 @@ const initialGraph = {
   ]
 }
 
-flowView.loadGraph(initialGraph)
+flowView.load(initialGraph);

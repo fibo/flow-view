@@ -1,4 +1,4 @@
-import type { FlowViewElement } from './element'
+import type { FlowView } from './flow-view'
 
 export type Vector = {
 	x: number
@@ -18,7 +18,7 @@ export type FlowViewEdgeObj = {
 
 export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
 	id: string
-	view: FlowViewElement
+	view: FlowView
 	text: string
 	type?: string | undefined
 }

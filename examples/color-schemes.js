@@ -12,5 +12,5 @@ const graph = {
 	]
 };
 
-new FlowView(lightElement).loadGraph(graph);
-new FlowView(darkElement).loadGraph(graph);
+FlowView.instance(lightElement).load(graph);
+FlowView.instance(darkElement).load(graph);

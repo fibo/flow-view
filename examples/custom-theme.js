@@ -25,9 +25,9 @@ observer.observe(codeElement, {
 	subtree: true
 });
 
-const flowView = new FlowView(container);
+const flowView = FlowView.instance(container);
 
-flowView.loadGraph({
+flowView.load({
 	nodes: [
 		{ text: 'Hello World', x: 60, y: 70 },
 	]

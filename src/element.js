@@ -28,7 +28,7 @@ const pointerCoordinates = ({ clientX, clientY, target }) => {
 }
 
 const eventTypes = [
-	'dblclick', 'keydown', 'pointerdown', 'pointermove', 'pointerleave', 'pointerup', 'touchmove'
+	'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove'
 ];
 
 export class FlowViewElement extends HTMLElement {
@@ -39,6 +39,7 @@ export class FlowViewElement extends HTMLElement {
 	/** @type {Vector} */
 	#translation = { x: 0, y: 0 };
 
+	#isGrabbing = false;
 
 	/** @type {Map<string, FlowViewNode>} */
     #nodes = new Map();
@@ -103,12 +104,24 @@ export class FlowViewElement extends HTMLElement {
 
 			if (!this.selector) {
 				switch (event.code) {
+					case 'Space':
+						event.preventDefault();
+						this.style.cursor = 'grabbing';
+						this.#isGrabbing = true;
+						break;
 					case 'Backspace': this.deleteSelectedItems();
 						break;
 					case 'Escape': this.#clearSelection();
 						break;
 					default: break;
 				}
+			}
+		}
+		if (event instanceof KeyboardEvent && event.type === 'keyup') {
+			event.stopPropagation();
+			if (event.code === 'Space') {
+				this.style.cursor = 'default';
+				this.#isGrabbing = false;
 			}
 		}
 		if (event.type === 'touchmove') {
@@ -140,15 +153,26 @@ export class FlowViewElement extends HTMLElement {
 			const isMultiSelection = event.shiftKey
 			if (!isMultiSelection) this.startTranslation(event)
 		}
+		if (event.type === 'pointerenter') {
+			window.addEventListener('keydown', this);
+			window.addEventListener('keyup', this);
+		}
+		if (event.type === 'pointerleave') {
+			window.removeEventListener('keydown', this);
+			window.removeEventListener('keyup', this);
+		}
 		if (event.type === 'pointerleave' || event.type === 'pointerup') {
 			this.#stopTranslation();
 			this.#removeSemiEdge();
 		}
 		if (event instanceof MouseEvent && event.type === 'pointermove') {
+			const pointerPosition = pointerCoordinates(event)
+			if (this.#isGrabbing) {
+			}
+
 			const { semiEdge, startDraggingPoint } = this;
 
 			if (startDraggingPoint) {
-				const pointerPosition = pointerCoordinates(event)
 				const x = startDraggingPoint.x - pointerPosition.x
 				const y = startDraggingPoint.y - pointerPosition.y
 

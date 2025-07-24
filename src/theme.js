@@ -21,7 +21,7 @@ export const cssClass = {
 	edge: 'fv-edge',
 	node: 'fv-node',
 	pin: 'fv-pin',
-	selector: 'fv-selector',
+	prompt: 'fv-prompt',
 }
 
 export const cssEdge = {
@@ -34,7 +34,7 @@ export const cssPin = {
 	size: 10,
 };
 
-export const cssSelector = {
+export const cssPrompt = {
 	padding: 9,
 	width: 170,
 }
@@ -195,41 +195,41 @@ export const pinStyle = {
 }
 
 export const selectorStyle = {
-	[`.${cssClass.selector}`]: {
+	[`.${cssClass.prompt}`]: {
 		position: 'absolute',
 		'box-shadow': cssVar.boxShadow,
 		'z-index': cssNode.zIndex + 1
 	},
-	[`.${cssClass.selector} input`]: {
+	[`.${cssClass.prompt} input`]: {
 		border: 0,
 		margin: 0,
 		outline: 0,
 		'border-radius': cssVar.borderRadius,
 		'font-family': cssVar.fontFamily,
 		'font-size': cssVar.fontSize,
-		padding: `${cssSelector.padding}px`,
-		width: `${cssSelector.width - 2 * cssSelector.padding}px`
+		padding: `${cssPrompt.padding}px`,
+		width: `${cssPrompt.width - 2 * cssPrompt.padding}px`
 	},
-	[`.${cssClass.selector}__hint`]: {
+	[`.${cssClass.prompt}__hint`]: {
 		position: 'absolute',
 		left: '0',
 		background: 'transparent',
 		'pointer-events': 'none'
 	},
-	[`.${cssClass.selector}__hint::placeholder`]: {
+	[`.${cssClass.prompt}__hint::placeholder`]: {
 		opacity: '0.4'
 	},
-	[`.${cssClass.selector}__options`]: {
+	[`.${cssClass.prompt}__options`]: {
 		'background-color': cssVar.nodeBackgroundColor,
 		height: 'fit-content'
 	},
-	[`.${cssClass.selector}__option`]: {
+	[`.${cssClass.prompt}__option`]: {
 		padding: '0.5em',
 		border: '1px solid transparent',
 		cursor: 'default',
 		...cssTransition('border-color')
 	},
-	[`.${cssClass.selector}__option--highlighted`]: {
+	[`.${cssClass.prompt}__option--highlighted`]: {
 		'border-color': cssVar.borderColorHighlighted
 	}
 }

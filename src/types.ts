@@ -10,17 +10,6 @@ export type FlowViewInputObj = {
 	name?: string
 }
 
-export type SelectorConstructorArg = Vector & {
-	nodeList: string[]
-	newNode: (text: string) => void
-	removeSelector: () => void
-	view: {
-		origin: Vector
-		width: number
-		height: number
-	}
-}
-
 export type FlowViewEdgeObj = {
 	id?: string
 	from: string[]
@@ -58,32 +47,3 @@ export type FlowViewNodeSignature = Partial<{
 	ins: Array<{ name?: string }>
 	outs: Array<{ name?: string }>
 }>
-
-export type FlowViewChangeInfo = {
-	isClearGraph?: boolean
-	isProgrammatic?: boolean
-	isLoadGraph?: boolean
-}
-
-type FlowViewChange = {
-	action: 'CREATE_NODE'
-	data: Required<Pick<FlowViewNodeObj, 'id'>> & Pick<FlowViewNodeObj, 'type'>
-} | {
-	action: 'CREATE_EDGE'
-	data: unknown
-} | {
-	action: 'DELETE_NODE'
-	data: unknown
-} | {
-	action: 'DELETE_EDGE'
-	data: unknown
-} | {
-	action: 'UPDATE_NODE'
-	data: unknown
-}
-
-export type FlowViewOnChangeCallback = (
-	arg: FlowViewChange,
-	info?: FlowViewChangeInfo
-) => void
-

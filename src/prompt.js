@@ -1,40 +1,43 @@
 import { createDiv } from './common.js';
-import { cssClass, cssSelector } from './theme.js';
+import { cssClass, cssPrompt } from './theme.js';
 
-const optionHighlightedClass = `${cssClass.selector}__option--highlighted`;
+const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
 
 /**
- * @typedef {import('./types').SelectorConstructorArg} ConstructorArg
  * @typedef {import('./types').Vector} Vector
  */
 
-export class Selector {
+export class Prompt {
 	highlightedOptionIndex = -1;
 
-	element = createDiv(cssClass.selector);
+	/** @type {string[]} */
+	nodeList = [];
+
+	element = createDiv(cssClass.prompt);
 
 	input = document.createElement('input');
 	hint = document.createElement('input');
-	options = createDiv(`${cssClass.selector}__options`);
+	options = createDiv(`${cssClass.prompt}__options`);
 
 	/**
-	 * @param {ConstructorArg} arg
+	 * @param {Vector} position
+	 * @param {{ origin: Vector, width: number, height: number }} view
+	 * @param {{ delete: () => void, newNode: (text: string) => void }} action
 	 */
-	constructor({ x, y, nodeList, view, removeSelector, newNode }) {
-		this.nodeList = nodeList;
-		this.removeSelector = removeSelector;
-		this.newNode = newNode;
+	constructor({ x, y }, view, action) {
+		this.delete = action.delete;
+		this.newNode = action.newNode;
 
 		// Avoid overflow, using some heuristic values.
 		const overflowY = y - view.origin.y + 40 >= view.height
-		const overflowX = x - view.origin.x + cssSelector.width >= view.width
-		this.x = overflowX ? view.width + view.origin.x - cssSelector.width - 10 : x
+		const overflowX = x - view.origin.x + cssPrompt.width >= view.width
+		this.x = overflowX ? view.width + view.origin.x - cssPrompt.width - 10 : x
 		this.y = overflowY ? view.height + view.origin.y - 50 : y
 
 		this.element.style.top = `${this.y - view.origin.y}px`
 		this.element.style.left = `${this.x - view.origin.x}px`
 
-		this.hint.classList.add(`${cssClass.selector}__hint`);
+		this.hint.classList.add(`${cssClass.prompt}__hint`);
 		this.element.append(this.input, this.hint, this.options);
 
 		this._onDblclick = this.onDblclick.bind(this)
@@ -81,7 +84,7 @@ export class Selector {
 		const nodeText = this.options?.children?.[this.highlightedOptionIndex]?.textContent ?? this.input.value
 		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
 		this.newNode(matchingNodeText ?? nodeText)
-		this.removeSelector()
+		this.delete()
 	}
 
 	/** @param {MouseEvent} event */
@@ -98,7 +101,7 @@ export class Selector {
 				break
 			case 'Escape':
 				if (this.input.value === '')
-					this.removeSelector();
+					this.delete();
 				else {
 					this.#completion = '';
 					this.input.value = '';
@@ -215,7 +218,7 @@ export class Selector {
 		this.#deleteOptions();
 		for (let i = 0; i < this.#matchingNodes.length; i++) {
 			const name = this.#matchingNodes[i]
-			const option = createDiv(`${cssClass.selector}__option`)
+			const option = createDiv(`${cssClass.prompt}__option`)
 			option.textContent = name
 			option.onclick = () => {
 				this.input.value = name

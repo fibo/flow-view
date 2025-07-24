@@ -67,7 +67,7 @@ export class FlowViewInput {
 				this.node.view.newEdge({
 					from: [sourceNode.id, source.id],
 					to: [targetNode.id, this.id]
-				}, {})
+				})
 			}
 		}
 	}

@@ -3,8 +3,6 @@ import { FlowViewElement } from './element.js';
 export { FlowViewNode } from './node.js';
 
 /**
- * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
- * @typedef {import('./types').FlowViewOnChangeCallback} FlowViewOnChangeCallback
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
@@ -14,9 +12,6 @@ export { FlowViewNode } from './node.js';
 export class FlowView {
 	/** @type {FlowViewElement} */
 	view
-
-	/** @type {FlowViewOnChangeCallback | undefined} */
-	onViewChange
 
 	/** @type {Set<string>} */
 	nodeList = new Set()
@@ -73,68 +68,31 @@ export class FlowView {
 		return this.view.edge(id)
 	}
 
-	clearGraph() {
-		this.view.clear({ isClearGraph: true })
-	}
-
 	/** @param {FlowViewGraph} graph */
 	loadGraph({ nodes = [], edges = [] }) {
-		for (const node of nodes) this.newNode(node, { isLoadGraph: true })
-		for (const edge of edges) this.newEdge(edge, { isLoadGraph: true })
-	}
-
-	/** @param {FlowViewOnChangeCallback} callback */
-	onChange(callback) {
-		this.onViewChange = callback
-	}
-
-	viewChange(
-		// @ts-ignore
-		{ createdNode, createdEdge, deletedNode, deletedEdge, updatedNode },
-		viewChangeInfo = {}
-	) {
-		const { onViewChange } = this
-		if (!onViewChange) return
-
-		if (createdNode) {
-			onViewChange({ action: 'CREATE_NODE', data: createdNode }, viewChangeInfo)
-		}
-		if (createdEdge) {
-			onViewChange({ action: 'CREATE_EDGE', data: createdEdge }, viewChangeInfo)
-		}
-		if (deletedNode) {
-			onViewChange({ action: 'DELETE_NODE', data: deletedNode }, viewChangeInfo)
-		}
-		if (deletedEdge) {
-			onViewChange({ action: 'DELETE_EDGE', data: deletedEdge }, viewChangeInfo)
-		}
-		if (updatedNode) {
-			onViewChange?.({ action: 'UPDATE_NODE', data: updatedNode }, viewChangeInfo)
-		}
+		for (const node of nodes) this.newNode(node)
+		for (const edge of edges) this.newEdge(edge)
 	}
 
 	/**
 	 * @param {FlowViewEdgeObj} edge
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newEdge({ id, from, to }, viewChangeInfo = { isProgrammatic: true }) {
-		return this.view.newEdge({ id, from, to }, viewChangeInfo)
+	newEdge({ id, from, to }) {
+		return this.view.newEdge({ id, from, to })
 	}
 
 	/**
 	 * @param {FlowViewNodeObj} node
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newNode(node, viewChangeInfo = { isProgrammatic: true }) {
-		return this.view.newNode(node, viewChangeInfo)
+	newNode(node) {
+		return this.view.newNode(node)
 	}
 
 	/**
 	 * @param {string} id
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	deleteNode(id, viewChangeInfo = { isProgrammatic: true }) {
-		return this.view.deleteNode(id, viewChangeInfo)
+	deleteNode(id) {
+		return this.view.deleteNode(id)
 	}
 
 	/**

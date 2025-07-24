@@ -18,7 +18,7 @@ flowView.nodeTypeSignature
 	.set('child', { ins: [{ name: 'in1' }, { name: 'in2' }] })
 	.set('parent', { outs: [{ name: 'out' }] });
 
-[
+const nodeList = [
     'Marge',
     'Homer',
     'Bart',
@@ -31,30 +31,8 @@ flowView.nodeTypeSignature
     'Ralph',
     'Selma',
     'Mr. Burns',
-].forEach(item => flowView.nodeList.add(item))
-
-flowView.onChange(({ action, data }) => {
-	console.info(flowView.graph);
-  switch (action) {
-    case 'CREATE_NODE': {
-      const node = flowView.node(data.id)
-
-		switch (data.type) {
-			case 'child':
-			case 'parent': break
-			default:
-				if (node) {
-					node.newInput({ name: 'in' });
-					node.newOutput({ name: 'out' });
-				}
-				break
-		}
-    }
-
-    default:
-      console.info(action, data)
-  }
-})
+];
+nodeList.forEach(item => flowView.nodeList.add(item))
 
 const initialGraph = {
   nodes: [

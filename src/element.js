@@ -1,14 +1,13 @@
 import { FlowViewEdge } from './edge.js';
 import { FlowViewNode } from './node.js';
+import { Prompt } from './prompt.js';
 import { SemiEdge } from './semiEdge.js';
-import { Selector } from './selector.js';
 import { cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
 
 /**
  * @typedef {import('./flow-view.js').FlowView} FlowView
  * @typedef {import('./input').FlowViewInput} FlowViewInput
  * @typedef {import('./output').FlowViewOutput} FlowViewOutput
- * @typedef {import('./types').FlowViewChangeInfo} FlowViewChangeInfo
  * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
  * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
  * @typedef {import('./types').Vector} Vector
@@ -102,7 +101,7 @@ export class FlowViewElement extends HTMLElement {
 		if (event instanceof KeyboardEvent && event.type === 'keydown') {
 			event.stopPropagation();
 
-			if (!this.selector) {
+			if (!this.prompt) {
 				switch (event.code) {
 					case 'Space':
 						event.preventDefault();
@@ -132,24 +131,26 @@ export class FlowViewElement extends HTMLElement {
 		}
 		if (event instanceof MouseEvent && event.type === 'dblclick') {
 			this.#clearSelection();
-			this.#removeSelector();
+			this.#removePrompt();
 			const { x, y } = pointerCoordinates(event);
 			const position = { x: x + this.#origin.x, y: y + this.#origin.y }
-			this.selector = new Selector({
-				...position,
-				view: { origin: this.#origin, width: this.width, height: this.height },
-				nodeList: Array.from(this.host?.nodeList ?? []),
-				removeSelector: this.#removeSelector.bind(this),
-				newNode: (text) => {
-					this.newNode({ x: position.x, y: position.y, text }, {});
+			const prompt = this.prompt = new Prompt(
+				position,
+				{ origin: this.#origin, width: this.width, height: this.height },
+				{
+					delete: this.#removePrompt.bind(this),
+					newNode: (text) => {
+						this.newNode({ text, ...position });
+					}
 				}
-			});
-			this.shadowRoot?.appendChild(this.selector.element);
-			this.selector.input.focus()
+			);
+			prompt.nodeList = Array.from(this.host?.nodeList ?? []);
+			this.shadowRoot?.appendChild(prompt.element);
+			prompt.input.focus()
 		}
 		if (event instanceof PointerEvent && event.type === 'pointerdown') {
 			event.stopPropagation();
-			this.#removeSelector();
+			this.#removePrompt();
 			// @ts-ignore
 			if (!event.isBubblingFromNode) this.#clearSelection()
 			const isMultiSelection = event.shiftKey
@@ -257,18 +258,15 @@ export class FlowViewElement extends HTMLElement {
 		this.style.width = `${value}px`
 	}
 
-	/** @param {FlowViewChangeInfo} viewChangeInfo */
-	clear(viewChangeInfo) {
-		this.nodes.forEach((node) => {
-			this.deleteNode(node.id, viewChangeInfo)
-		})
+	clear() {
+		for (const id of this.#nodes.keys())
+			this.deleteNode(id);
 	}
 
 	/**
 	 * @param {FlowViewEdgeObj} edge
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newEdge({ id: wantedId, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }, viewChangeInfo) {
+	newEdge({ id: wantedId, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }) {
 		const sourceNode = this.node(sourceNodeId)
 		const targetNode = this.node(targetNodeId)
 		if (!sourceNode || !targetNode) throw new Error('Node not found')
@@ -282,16 +280,13 @@ export class FlowViewElement extends HTMLElement {
 		this.shadowRoot?.appendChild(edge.container.element)
 		edge.updateGeometry(this.origin)
 		this.#edges.set(id, edge)
-		// @ts-ignore
-		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
 		return edge
 	}
 
 	/**
 	 * @param {FlowViewNodeObj} node
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	newNode({ x, y, text, id: wantedId, ins = [], outs = [] }, viewChangeInfo) {
+	newNode({ x, y, text, id: wantedId, ins = [], outs = [] }) {
 		const { host } = this;
 		if (!host) return;
 		const nodeType = host.nodeTextToType?.(text) ?? '';
@@ -319,9 +314,6 @@ export class FlowViewElement extends HTMLElement {
 		for (const pin of inputs) node.newInput(pin)
 		for (const pin of outputs) node.newOutput(pin)
 		this.#nodes.set(node.id, node);
-		const createdNode = nodeType ? { ...node.toObject(), type: nodeType } : node.toObject();
-		// @ts-ignore
-		this.host.viewChange({ createdNode }, viewChangeInfo);
 		return node;
 	}
 
@@ -396,9 +388,8 @@ export class FlowViewElement extends HTMLElement {
 
 	/**
 	 * @param {string} id
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	deleteNode(id, viewChangeInfo) {
+	deleteNode(id) {
 		const node = this.#nodes.get(id)
 		if (!node) return
 
@@ -416,7 +407,7 @@ export class FlowViewElement extends HTMLElement {
 
 		const serializedNode = node.toObject()
 		// @ts-ignore
-		this.host.viewChange({ deletedNode: serializedNode }, viewChangeInfo)
+		this.host.viewChange({ deletedNode: serializedNode })
 		return serializedNode
 	}
 
@@ -435,7 +426,7 @@ export class FlowViewElement extends HTMLElement {
 	/** @param {{ node: FlowViewNode }} arg */
 	updateNode({ node }) {
 		// @ts-ignore
-		this.host.viewChange({ updatedNode: node.toObject() }, viewChangeInfo)
+		this.host.viewChange({ updatedNode: node.toObject() })
 	}
 
 	/** @param {ResizeObserverEntry[]} entries */
@@ -461,7 +452,7 @@ export class FlowViewElement extends HTMLElement {
 			if (edge.isSelected)
 				this.deleteEdge(id);
 		for (const node of this.#selectedNodes)
-			this.deleteNode(node.id, {})
+			this.deleteNode(node.id)
 	}
 
 	#ids = new Set();
@@ -521,9 +512,9 @@ export class FlowViewElement extends HTMLElement {
 			this.deselectEdge(edge);
 	}
 
-	#removeSelector() {
-		this.selector?.dispose();
-		delete this.selector
+	#removePrompt() {
+		this.prompt?.dispose();
+		delete this.prompt
 	}
 
 	#removeSemiEdge() {

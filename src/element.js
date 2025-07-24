@@ -109,9 +109,11 @@ export class FlowViewElement extends HTMLElement {
 						this.style.cursor = 'grabbing';
 						this.#isGrabbing = true;
 						break;
-					case 'Backspace': this.deleteSelectedItems();
+					case 'Backspace':
+						this.deleteSelectedItems();
 						break;
-					case 'Escape': this.#clearSelection();
+					case 'Escape':
+						this.#clearSelection();
 						break;
 					default: break;
 				}
@@ -200,7 +202,7 @@ export class FlowViewElement extends HTMLElement {
 							if (
 								selectedNodeIds.includes(edge.source.node.id) || selectedNodeIds.includes(edge.target.node.id)
 							) {
-								edge.updateGeometry()
+								edge.updateGeometry(this.origin)
 							}
 						}
 
@@ -218,7 +220,7 @@ export class FlowViewElement extends HTMLElement {
 						}
 
 						for (const edge of edges) {
-							edge.updateGeometry()
+							edge.updateGeometry(this.origin)
 						}
 					}
 				}
@@ -273,15 +275,13 @@ export class FlowViewElement extends HTMLElement {
 		const source = sourceNode.output(sourcePinId)
 		const target = targetNode.input(targetPinId)
 		const id = this.#generateId(wantedId);
-		const edge = new FlowViewEdge({
-			id: this.#generateId(id),
-			view: this,
-			source,
-			target
-		})
+		const edge = new FlowViewEdge(source, target, {
+			delete: () => this.deleteEdge(id),
+			select: () => this.selectEdge(edge),
+		});
 		this.shadowRoot?.appendChild(edge.container.element)
-		edge.updateGeometry()
-		this.#edges.set(edge.id, edge)
+		edge.updateGeometry(this.origin)
+		this.#edges.set(id, edge)
 		// @ts-ignore
 		this.host.viewChange({ createdEdge: edge.toObject() }, viewChangeInfo)
 		return edge
@@ -375,9 +375,8 @@ export class FlowViewElement extends HTMLElement {
 
 	/**
 	 * @param {string} id
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	deleteEdge(id, viewChangeInfo) {
+	deleteEdge(id) {
 		const edge = this.#edges.get(id)
 		if (!edge) return
 
@@ -385,13 +384,13 @@ export class FlowViewElement extends HTMLElement {
 		edge.target.container.highlight = false
 
 		// Dispose.
-		this.#edges.delete(edge.id);
+		this.#edges.delete(id);
 		this.#ids.delete(id);
 		edge.dispose();
 
 		const serializedEdge = edge.toObject()
 		// @ts-ignore
-		this.host.viewChange({ deletedEdge: serializedEdge }, viewChangeInfo)
+		this.host.viewChange({ deletedEdge: serializedEdge })
 		return serializedEdge
 	}
 
@@ -404,9 +403,9 @@ export class FlowViewElement extends HTMLElement {
 		if (!node) return
 
 		// Remove edges connected to node.
-		for (const edge of this.edges) {
+		for (const [edgeId, edge] of this.#edges.entries()) {
 			if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
-				this.deleteEdge(edge.id, viewChangeInfo)
+				this.deleteEdge(edgeId)
 			}
 		}
 
@@ -458,8 +457,11 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	deleteSelectedItems() {
-		for (const edge of this.#selectedEdges) this.deleteEdge(edge.id, {})
-		for (const node of this.#selectedNodes) this.deleteNode(node.id, {})
+		for (const [id, edge] of this.#edges.entries())
+			if (edge.isSelected)
+				this.deleteEdge(id);
+		for (const node of this.#selectedNodes)
+			this.deleteNode(node.id, {})
 	}
 
 	#ids = new Set();
@@ -504,10 +506,6 @@ export class FlowViewElement extends HTMLElement {
 		delete this.selectedNodesStartPosition
 	}
 
-	get #selectedEdges() {
-		return this.edges.filter((edge) => edge.isSelected)
-	}
-
 	get #selectedNodes() {
 		return this.nodes.filter((node) => node.isSelected)
 	}
@@ -517,8 +515,10 @@ export class FlowViewElement extends HTMLElement {
 	}
 
 	#clearSelection() {
-		for (const node of this.#selectedNodes) this.deselectNode(node)
-		for (const edge of this.#selectedEdges) this.deselectEdge(edge)
+		for (const node of this.#selectedNodes)
+			this.deselectNode(node)
+		for (const edge of this.#edges.values())
+			this.deselectEdge(edge);
 	}
 
 	#removeSelector() {

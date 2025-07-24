@@ -1,7 +1,7 @@
 import { Container, createDiv } from './common.js';
-import { cssClass } from "./theme.js"
-import { FlowViewInput } from "./input.js"
-import { FlowViewOutput } from "./output.js"
+import { cssClass } from './theme.js';
+import { FlowViewInput } from './input.js';
+import { FlowViewOutput } from './output.js';
 
 /**
  * @typedef {import('./types').NodeConstructorArg} ConstructorArg
@@ -14,7 +14,8 @@ import { FlowViewOutput } from "./output.js"
 const eventTypes = ['pointerdown', 'dblclick'];
 
 export class FlowViewNode {
-    #x = 0; #y = 0;
+	/** @type {Vector} */
+    #position = { x: 0, y: 0 };
 
 	container = new Container(cssClass.node);
 
@@ -36,6 +37,13 @@ export class FlowViewNode {
 		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
 	}
 
+	dispose() {
+		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
+		for (const input of this.inputs) input.dispose()
+		for (const output of this.outputs) output.dispose()
+		this.container.element.remove();
+	}
+
 	/** @param {FlowViewNodeObj} node */
 	initContent(node) {
 		this.contentDiv.textContent = node.text
@@ -54,13 +62,6 @@ export class FlowViewNode {
 		}
 	}
 
-	dispose() {
-		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
-		for (const input of this.inputs) input.dispose()
-		for (const output of this.outputs) output.dispose()
-		this.container.element.remove();
-	}
-
 	get inputs() {
 		return [...this.inputsMap.values()]
 	}
@@ -69,13 +70,12 @@ export class FlowViewNode {
 		return [...this.outputsMap.values()]
 	}
 
-	/** @returns {Vector} */
 	get position() {
-		return { x: this.#x, y: this.#y }
+		return this.#position;
 	}
 
 	set position({ x, y }) {
-		this.#x = x; this.#y = y;
+		this.#position = { x, y };
 		this.container.element.style.top = `${y - this.view.origin.y}px`
 		this.container.element.style.left = `${x - this.view.origin.x}px`
 	}

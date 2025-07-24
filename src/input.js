@@ -3,7 +3,8 @@ import { cssClass, cssNode, cssPin } from './theme.js';
 import { FlowViewOutput } from './output.js';
 
 /**
- * @typedef {import('./types').InputConstructorArg} ConstructorArg
+ * @typedef {import('./edge').FlowViewEdge} FlowViewEdge
+ * @typedef {import('./node').FlowViewNode} FlowViewNode
  */
 
 const { borderWidth } = cssNode
@@ -16,8 +17,10 @@ const eventTypes = [
 export class FlowViewInput {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
+	/** @type {FlowViewEdge | undefined} */
+	edge
 
-	/** @param {ConstructorArg} arg */
+	/** @param {{ id: string, node: FlowViewNode }} arg */
 	constructor({ id, node }) {
 		this.id = id
 		this.info.classList.add('info');
@@ -40,13 +43,6 @@ export class FlowViewInput {
 		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
 	}
 
-	get connectedEdge() {
-		return this.node.view.edges
-			.map((edge) => edge.toObject())
-			// @ts-ignore
-			.find(({ to: [nodeId, inputId] }) => nodeId === this.node.id && inputId === this.id)
-	}
-
 	/** @param {Event} event */
 	handleEvent(event) {
 		if (event.type === 'pointerenter') {
@@ -59,20 +55,17 @@ export class FlowViewInput {
 			event.stopPropagation()
 		}
 		if (event.type === 'pointerup') {
-			const { connectedEdge } = this
 			const source = this.node.view.pendingPin
 			if (source instanceof FlowViewOutput) {
 				// Delete previous edge, only one edge per input is allowed.
-				if (connectedEdge) this.node.view.deleteEdge(connectedEdge.id, {})
+				if (this.edge) this.edge.delete()
 				// Do not connect pins of same node.
 				const sourceNode = source.node
 				const targetNode = this.node
 				if (!sourceNode || !targetNode) return
 				if (sourceNode.id === targetNode.id) return
 				this.node.view.newEdge({
-					// @ts-ignore
 					from: [sourceNode.id, source.id],
-					// @ts-ignore
 					to: [targetNode.id, this.id]
 				}, {})
 			}

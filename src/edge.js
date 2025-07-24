@@ -2,7 +2,8 @@ import { Connection, Container } from './common.js';
 import { cssClass, cssPin } from './theme.js'
 
 /**
- * @typedef {import('./types').EdgeConstructorArg} ConstructorArg
+ * @typedef {import('./input').FlowViewInput} FlowViewInput
+ * @typedef {import('./output').FlowViewOutput} FlowViewOutput
  * @typedef {import('./types').Vector} Vector
  */
 
@@ -14,21 +15,17 @@ export class FlowViewEdge {
 	container = new Container(cssClass.edge);
 	connection = new Connection();
 
-	/** @type {Vector} */
-	#end = { x: 0, y: 0 }
-	/** @param {Vector} position */
-	set end({ x, y }) {
-		this.#end.x = x;
-		this.#end.y = y;
-	}
-
-	/** @param {ConstructorArg} arg */
-	constructor({ id, view, source, target }) {
-		this.id = id
+	/**
+	 * @param {FlowViewOutput} source
+	 * @param {FlowViewInput} target
+	 * @param {{ delete: () => void, select: () => void }} action
+	 */
+	constructor(source, target, action) {
 		this.container.element.appendChild(this.connection.svg)
-		this.view = view;
 		this.source = source;
 		this.target = target;
+		this.delete = action.delete;
+		this.select = action.select;
 
 		this.connection.line.addEventListener('dblclick', this)
 		this.connection.line.addEventListener('pointerdown', this)
@@ -48,15 +45,13 @@ export class FlowViewEdge {
 	handleEvent(event) {
 		if (event.type === 'dblclick') {
 			event.stopPropagation();
-			this.view.deleteEdge(this.id, {});
+			this.delete();
 		}
 		if (event instanceof PointerEvent && event.type === 'pointerdown') {
 			event.stopPropagation()
-			const isMultiSelection = event.shiftKey
-			this.view.selectEdge(this, isMultiSelection)
+			this.select();
 		}
 		if (event.type === 'pointerenter') {
-			if (this.view.semiEdge) return
 			if (this.isSelected) return
 			this.container.highlight = true
 			this.source.container.highlight = true
@@ -77,24 +72,17 @@ export class FlowViewEdge {
 		}
 	}
 
-	updateGeometry() {
-		const {
-			source,
-			target,
-			view: { origin: { x: originX, y: originY } }
-		} = this
+	/** @param {Vector} origin */
+	updateGeometry(origin) {
 		const element = this.container.element
-		const sourceCenter = source?.center
-		let targetCenter = target?.center ?? this.#end;
-		if (!sourceCenter || !targetCenter) return
-		const { x: sourceX, y: sourceY } = sourceCenter
-		const { x: targetX, y: targetY } = targetCenter
+		const { x: sourceX, y: sourceY } = this.source.center
+		const { x: targetX, y: targetY } = this.target.center
 
 		const invertedX = targetX < sourceX
 		const invertedY = targetY < sourceY
 
-		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - originY
-		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - originX
+		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - origin.y
+		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - origin.x
 		element.style.top = `${top}px`
 		element.style.left = `${left}px`
 
@@ -118,10 +106,7 @@ export class FlowViewEdge {
 
 	toObject() {
 		return {
-			id: this.id,
-			// @ts-ignore
 			from: [this.source.node.id, this.source.id],
-			// @ts-ignore
 			to: [this.target.node.id, this.target.id]
 		}
 	}

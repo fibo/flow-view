@@ -139,9 +139,8 @@ export class FlowView {
 
 	/**
 	 * @param {string} id
-	 * @param {FlowViewChangeInfo} viewChangeInfo
 	 */
-	deleteEdge(id, viewChangeInfo = { isProgrammatic: true }) {
-		return this.view.deleteEdge(id, viewChangeInfo)
+	deleteEdge(id) {
+		return this.view.deleteEdge(id)
 	}
 }

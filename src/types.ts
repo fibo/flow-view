@@ -1,6 +1,3 @@
-import type { FlowViewInput } from './input'
-import type { FlowViewOutput } from './output'
-import type { FlowViewNode } from './node'
 import type { FlowViewElement } from './element'
 
 export type Vector = {
@@ -24,27 +21,10 @@ export type SelectorConstructorArg = Vector & {
 	}
 }
 
-export type InputConstructorArg = {
-	id: string
-	node: FlowViewNode
-}
-
-export type OutputConstructorArg = {
-	id: string
-	node: FlowViewNode
-}
-
 export type FlowViewEdgeObj = {
 	id?: string
 	from: string[]
 	to: string[]
-}
-
-export type EdgeConstructorArg = {
-	id: string
-	view: FlowViewElement
-	source: FlowViewOutput
-	target: FlowViewInput
 }
 
 export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
@@ -52,11 +32,6 @@ export type NodeConstructorArg = Vector & FlowViewNodeSignature & {
 	view: FlowViewElement
 	text: string
 	type?: string | undefined
-}
-
-export type FlowViewPinInitArg = {
-	name?: string
-	node: FlowViewNode
 }
 
 export type FlowViewOutputObj = {

@@ -2,7 +2,8 @@ import { Container } from './common.js';
 import { cssClass, cssNode, cssPin } from './theme.js';
 
 /**
- * @typedef {import('./types').OutputConstructorArg} ConstructorArg
+ * @typedef {import('./edge').FlowViewEdge} FlowViewEdge
+ * @typedef {import('./node').FlowViewNode} FlowViewNode
  */
 
 const { borderWidth } = cssNode;
@@ -16,7 +17,7 @@ export class FlowViewOutput {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
 
-	/** @param {ConstructorArg} arg */
+	/** @param {{ id: string, node: FlowViewNode }} arg */
 	constructor({ id, node }) {
 		this.id = id
 		this.info.classList.add('info');

@@ -36,21 +36,20 @@ export class Container {
 }
 
 export class Connection {
-	svg = createSvg('svg');
+	container = createSvg('svg');
 	line = createSvg('line');
 
 	constructor() {
-		this.svg.appendChild(this.line);
-		this.element = this.svg;
+		this.container.appendChild(this.line);
 	}
 
 	/** @param {number} arg */
 	set width(arg) {
-		this.svg.setAttribute('width', `${arg}`);
+		this.container.setAttribute('width', `${arg}`);
 	}
 	/** @param {number} arg */
 	set height(arg) {
-		this.svg.setAttribute('height', `${arg}`);
+		this.container.setAttribute('height', `${arg}`);
 	}
 
 	/** @param {Vector} arg */

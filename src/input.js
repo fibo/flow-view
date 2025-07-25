@@ -71,10 +71,4 @@ export class FlowViewInput {
 			}
 		}
 	}
-
-	toObject() {
-		return {
-			id: this.id
-		}
-	}
 }

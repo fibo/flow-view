@@ -21,7 +21,7 @@ export class FlowViewEdge {
 	 * @param {{ delete: () => void, select: () => void }} action
 	 */
 	constructor(source, target, action) {
-		this.container.element.appendChild(this.connection.svg)
+		this.container.element.appendChild(this.connection.container)
 		this.source = source;
 		this.target = target;
 		this.delete = action.delete;
@@ -102,12 +102,5 @@ export class FlowViewEdge {
 			x: invertedX ? halfPinSize : width - halfPinSize,
 			y: invertedY ? halfPinSize : height - halfPinSize
 		};
-	}
-
-	toObject() {
-		return {
-			from: [this.source.node.id, this.source.id],
-			to: [this.target.node.id, this.target.id]
-		}
 	}
 }

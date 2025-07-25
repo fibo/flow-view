@@ -43,6 +43,14 @@ export class FlowView extends HTMLElement {
 	/** @type {((text: string) => string | undefined) | undefined} */
 	nodeTextToType
 
+	#resizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			if (this.parentNode !== entry.target) continue;
+			this.width = Math.floor(entry.contentRect.width);
+			this.height = Math.floor(entry.contentRect.height);
+		}
+	});
+
 	/** @type {Vector} */
 	#origin = { x: 0, y: 0 };
 	/** @type {Vector} */
@@ -109,18 +117,14 @@ export class FlowView extends HTMLElement {
 		this.setAttribute('tabindex', '-1'); // Enables keyboard events.
 		this.style.isolation = 'isolate';
 		eventTypes.forEach((eventType) => this.addEventListener(eventType, this));
-		if ('ResizeObserver' in window) {
-			if (this.parentNode instanceof Element) {
-				this.rootResizeObserver = new ResizeObserver(this.onRootResize.bind(this))
-				this.rootResizeObserver.observe(this.parentNode)
-			}
-		} else this.height = 200;
+		if (this.parentNode instanceof Element)
+			this.#resizeObserver.observe(this.parentNode);
 	}
 
 	disconnectedCallback() {
 		eventTypes.forEach((eventType) => this.removeEventListener(eventType, this));
 		if (this.parentNode instanceof Element)
-			this.rootResizeObserver?.unobserve(this.parentNode);
+			this.#resizeObserver.unobserve(this.parentNode);
 	}
 
 	/** @param {Event} event */
@@ -328,17 +332,21 @@ export class FlowView extends HTMLElement {
 			})) ?? outs;
 		const id = this.#generateId(wantedId);
 		const node = new FlowViewNode({
-			x, y,
 			id,
+			x, y,
 			view: this,
 			text,
 			type: nodeType
 		});
 		this.shadowRoot?.appendChild(node.container.element);
 		node.initContent({ text, x, y });
-		for (const pin of inputs) node.newInput(pin)
-		for (const pin of outputs) node.newOutput(pin)
-		this.#nodes.set(node.id, node);
+		for (const pin of inputs) {
+			node.newInput(pin)
+		}
+		for (const pin of outputs) {
+			node.newOutput(pin)
+		}
+		this.#nodes.set(id, node);
 		return node;
 	}
 
@@ -356,19 +364,10 @@ export class FlowView extends HTMLElement {
 
 	/**
 	 * @param {FlowViewNode} node
-	 * @param {boolean=} isMultiSelection
 	 */
-	selectNode(node, isMultiSelection) {
-		if (!isMultiSelection) this.#clearSelection()
+	selectNode(node) {
 		node.container.highlight = true
 		node.isSelected = true
-		for (const edge of this.edges) {
-			if (edge.source.node.isSelected && edge.target.node.isSelected) {
-				this.selectEdge(edge, isMultiSelection)
-			} else {
-				this.deselectEdge(edge)
-			}
-		}
 	}
 
 	/** @param {FlowViewEdge} edge */
@@ -404,11 +403,6 @@ export class FlowView extends HTMLElement {
 		this.#edges.delete(id);
 		this.#ids.delete(id);
 		edge.dispose();
-
-		const serializedEdge = edge.toObject()
-		// @ts-ignore
-		this.host.viewChange({ deletedEdge: serializedEdge })
-		return serializedEdge
 	}
 
 	/**
@@ -417,23 +411,14 @@ export class FlowView extends HTMLElement {
 	deleteNode(id) {
 		const node = this.#nodes.get(id)
 		if (!node) return
-
 		// Remove edges connected to node.
-		for (const [edgeId, edge] of this.#edges.entries()) {
-			if (edge.source.node.id === node.id || edge.target.node.id === node.id) {
-				this.deleteEdge(edgeId)
-			}
-		}
-
+		for (const [edgeId, edge] of this.#edges.entries())
+			if (edge.source.node.id === id || edge.target.node.id === id)
+				this.deleteEdge(edgeId);
 		// Dispose.
 		this.#nodes.delete(id)
 		this.#ids.delete(id);
 		node.dispose();
-
-		const serializedNode = node.toObject()
-		// @ts-ignore
-		this.host.viewChange({ deletedNode: serializedNode })
-		return serializedNode
 	}
 
 	/**
@@ -452,15 +437,6 @@ export class FlowView extends HTMLElement {
 	updateNode({ node }) {
 		// @ts-ignore
 		this.host.viewChange({ updatedNode: node.toObject() })
-	}
-
-	/** @param {ResizeObserverEntry[]} entries */
-	onRootResize(entries) {
-		for (const entry of entries) {
-			if (this.parentNode !== entry.target) continue;
-			this.width = Math.floor(entry.contentRect.width);
-			this.height = Math.floor(entry.contentRect.height);
-		}
 	}
 
 	/**

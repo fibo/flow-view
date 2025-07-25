@@ -11,7 +11,7 @@ import { FlowViewOutput } from './output.js';
  * @typedef {import('./types').Vector} Vector
  */
 
-const eventTypes = ['pointerdown', 'dblclick'];
+const eventTypes = ['dblclick'];
 
 export class FlowViewNode {
 	/** @type {Vector} */
@@ -26,7 +26,9 @@ export class FlowViewNode {
 	outputsDiv = createDiv('pins');
 	contentDiv = createDiv('content');
 
-	/** @param {ConstructorArg} arg */
+	/**
+	 * @param {ConstructorArg} arg
+	 */
 	constructor({ id, text, type, view, x, y }) {
 		this.id = id
 		this.text = text
@@ -51,12 +53,6 @@ export class FlowViewNode {
 
 	/** @param {Event} event */
 	handleEvent(event) {
-		if (event instanceof PointerEvent && event.type === 'pointerdown') {
-			// @ts-ignore
-			event.isBubblingFromNode = true
-			const isMultiSelection = event.shiftKey;
-			this.view.selectNode(this, isMultiSelection);
-		}
 		if (event.type === 'dblclick') {
 			event.stopPropagation();
 		}
@@ -123,24 +119,5 @@ export class FlowViewNode {
 		if (name) item.info.textContent = name
 		this.outputsMap.set(item.id, item)
 		this.outputsDiv.appendChild(item.container.element)
-	}
-
-	toObject() {
-		const { text, inputs, outputs, position } = this
-		return {
-			id: this.id,
-			...position,
-			text,
-			...(inputs.length > 0
-				? {
-						ins: inputs.map((item) => item.toObject())
-				  }
-				: {}),
-			...(outputs.length > 0
-				? {
-						outs: outputs.map((item) => item.toObject())
-				  }
-				: {})
-		}
 	}
 }

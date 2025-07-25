@@ -38,8 +38,7 @@ export class FlowViewOutput {
 			event.stopPropagation();
 		}
 		if (event.type === 'pointerdown') {
-			if (this.node.view.semiEdge) event.stopPropagation();
-			else this.node.view.createSemiEdge(this);
+			this.node.view.createSemiEdge(this);
 		}
 	}
 
@@ -53,12 +52,6 @@ export class FlowViewOutput {
 		return {
 			x: this.node.position.x + halfSize + borderWidth + offsetX,
 			y: this.node.position.y + nodeBounds.height - halfSize - borderWidth
-		}
-	}
-
-	toObject() {
-		return {
-			id: this.id
 		}
 	}
 }

@@ -23,7 +23,7 @@ export class SemiEdge {
 
 	/** @param {{ origin: Vector, position: Vector }} arg */
 	constructor({ origin, position }) {
-		this.container.element.appendChild(this.connection.svg)
+		this.container.element.appendChild(this.connection.container)
 		this.origin = origin;
 		this.#start = {...position};
 		this.#end = {...position};

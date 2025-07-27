@@ -1,13 +1,11 @@
 import { Connection, Container } from './common.js';
-import { cssClass, cssPin } from './theme.js'
+import { cssClass } from './theme.js'
 
 /**
  * @typedef {import('./input').Input} Input
  * @typedef {import('./output').Output} Output
  * @typedef {import('./types').Vector} Vector
  */
-
-const { size: pinSize, halfSize: halfPinSize } = cssPin
 
 export class Link {
 	isSelected = false;
@@ -72,35 +70,6 @@ export class Link {
 		}
 	}
 
-	/** @param {Vector} origin */
-	updateGeometry(origin) {
-		const element = this.container.element
-		const { x: sourceX, y: sourceY } = this.source.center
-		const { x: targetX, y: targetY } = this.target.center
-
-		const invertedX = targetX < sourceX
-		const invertedY = targetY < sourceY
-
-		const top = (invertedY ? targetY - halfPinSize : sourceY - halfPinSize) - origin.y
-		const left = (invertedX ? targetX - halfPinSize : sourceX - halfPinSize) - origin.x
-		element.style.top = `${top}px`
-		element.style.left = `${left}px`
-
-		const width = invertedX ? sourceX - targetX + pinSize : targetX - sourceX + pinSize;
-		element.style.width = `${width}px`
-		this.connection.width = width;
-
-		const height = invertedY ? sourceY - targetY + pinSize : targetY - sourceY + pinSize;
-		element.style.height = `${height}px`
-		this.connection.height = height;
-
-		this.connection.start = {
-			x: invertedX ? width - halfPinSize : halfPinSize,
-			y: invertedY ? height - halfPinSize : halfPinSize
-		};
-		this.connection.end = {
-			x: invertedX ? halfPinSize : width - halfPinSize,
-			y: invertedY ? halfPinSize : height - halfPinSize
-		};
-	}
+	get start() { return this.source.center }
+	get end() { return this.target.center }
 }

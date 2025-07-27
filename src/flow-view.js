@@ -1,12 +1,12 @@
+import { Connection, Container } from './common.js';
 import { Link } from './link.js';
 import { Node } from './node.js';
+import { Input } from './input.js';
+import { Output } from './output.js';
 import { Prompt } from './prompt.js';
-import { SemiLink } from './semiLink.js';
-import { cssTheme, flowViewStyle, linkStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
+import { cssTheme, cssClass, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
 
 /**
- * @typedef {import('./input').Input} Input
- * @typedef {import('./output').Output} Output
  * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
@@ -24,6 +24,22 @@ const pointerCoordinates = ({ clientX, clientY, target }) => {
 
 const lightStyle = generateStyle({ ':host': cssTheme.light });
 const darkStyle = generateStyle({ ':host': cssTheme.dark });
+
+const { size: pinSize, halfSize: halfPinSize } = cssPin
+
+class SemiLink {
+	container = new Container(cssClass.link);
+	connection = new Connection();
+	/** @param {Vector} position */
+	constructor(position) {
+		this.start = position;
+		this.end = position;
+		this.container.element.append(this.connection.container);
+	}
+	dispose() {
+		this.container.element.remove();
+	}
+}
 
 const eventTypes = [
 	'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel'
@@ -204,11 +220,17 @@ export class FlowView extends HTMLElement {
 			}
 
 			if (this.#semiLink) {
-				this.#semiLink.end = {
-					x: pointerPosition.x + this.#origin.x,
-					y: pointerPosition.y + this.#origin.y
-				}
-				this.#semiLink.updateGeometry(this.#origin);
+				if (this.pendingPin instanceof Output)
+					this.#semiLink.end = {
+						x: pointerPosition.x + this.#origin.x,
+						y: pointerPosition.y + this.#origin.y
+					};
+				if (this.pendingPin instanceof Input)
+					this.#semiLink.start = {
+						x: pointerPosition.x + this.#origin.x,
+						y: pointerPosition.y + this.#origin.y
+					};
+				this.#updateLinkGeometry(this.#semiLink)
 			}
 		}
 		if (event instanceof WheelEvent && event.type === 'wheel') {
@@ -255,8 +277,8 @@ export class FlowView extends HTMLElement {
 			select: () => this.#selectLink(link),
 		});
 		this.#root.append(link.container.element)
-		link.updateGeometry(this.#origin)
 		this.#links.set(id, link)
+		this.#updateLinkGeometry(link);
 		return link
 	}
 
@@ -306,8 +328,47 @@ export class FlowView extends HTMLElement {
 	 */
 	createSemiLink(pin) {
 		this.pendingPin = pin;
-		this.#semiLink = new SemiLink({ origin: this.#origin, position: pin.center });
+		this.#semiLink = new SemiLink(pin.center);
 		this.#root.append(this.#semiLink.container.element);
+	}
+
+	/**
+	 * @param {{
+	 *   container: Container
+	 *   connection: Connection
+	 *   start: Vector
+	 *   end: Vector
+	 * }} link
+	 */
+	#updateLinkGeometry({ container, connection, start, end }) {
+		const { element }  = container;
+		const { x: startX, y: startY } = start;
+		const { x: endX, y: endY } = end;
+
+		const invertedX = endX < startX
+		const invertedY = endY < startY
+
+		const top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
+		const left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x
+		element.style.top = `${top}px`
+		element.style.left = `${left}px`
+
+		const width = invertedX ? startX - endX + pinSize : endX - startX + pinSize;
+		element.style.width = `${width}px`
+		connection.width = width;
+
+		const height = invertedY ? startY - endY + pinSize : endY - startY + pinSize;
+		element.style.height = `${height}px`
+		connection.height = height;
+
+		connection.start = {
+			x: invertedX ? width - halfPinSize : halfPinSize,
+			y: invertedY ? height - halfPinSize : halfPinSize
+		};
+		connection.end = {
+			x: invertedX ? halfPinSize : width - halfPinSize,
+			y: invertedY ? halfPinSize : height - halfPinSize
+		};
 	}
 
 	/** @param {Node} node */
@@ -320,15 +381,16 @@ export class FlowView extends HTMLElement {
 		for (const node of this.#nodes.values())
 			this.#updateNodeGeometry(node);
 		for (const link of this.#links.values())
-			link.updateGeometry(this.#origin);
+			this.#updateLinkGeometry(link);
 	}
 
 	#deleteSelectedItems() {
-		// for (const [id, link] of this.#links.entries())
-		// 	if (link.isSelected)
-		// 		this.#deleteLink(id);
-		// for (const node of this.#selectedNodes)
-		// 	this.#deleteNode(node.id)
+		for (const [id, node] of this.#nodes.entries())
+			if (node.isSelected)
+				this.#deleteNode(id);
+		for (const [id, link] of this.#links.entries())
+			if (link.isSelected)
+				this.#deleteLink(id);
 	}
 
 	/**

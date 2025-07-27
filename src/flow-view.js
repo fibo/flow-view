@@ -4,21 +4,16 @@ import { Prompt } from './prompt.js';
 import { SemiEdge } from './semiEdge.js';
 import { cssTheme, flowViewStyle, edgeStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './theme.js';
 
-export { FlowViewNode } from './node.js';
-
 /**
  * @typedef {import('./input').FlowViewInput} FlowViewInput
  * @typedef {import('./output').FlowViewOutput} FlowViewOutput
- * @typedef {import('./types').FlowViewEdgeObj} FlowViewEdgeObj
+ * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
- * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./types').Vector} Vector
  */
 
 /**
  * @param {MouseEvent} event
- * @returns {Vector}
  */
 const pointerCoordinates = ({ clientX, clientY, target }) => {
 	if (!(target instanceof Element)) throw new Error();
@@ -37,23 +32,25 @@ export class FlowView extends HTMLElement {
 	/** @type {Set<string>} */
 	nodeList = new Set()
 
-	/** @type {Map<string, FlowViewNodeSignature>} */
+	/** @type {Map<string, Partial<FlowViewNodeSignature>>} */
 	nodeTypeSignature = new Map()
 
-	/** @type {((text: string) => string | undefined) | undefined} */
-	nodeTextToType
+	/** @type {((text: string) => string | undefined)} */
+	nodeTextToType = (_) => ''
 
+	/** @type {ShadowRoot} */
+	#root;
+
+	get #parent() { return /** @type {Element} */ (this.parentNode) }
 	#resizeObserver = new ResizeObserver((entries) => {
 		for (const entry of entries) {
-			if (this.parentNode !== entry.target) continue;
+			if (this.#parent !== entry.target) continue;
 			this.width = Math.floor(entry.contentRect.width);
 			this.height = Math.floor(entry.contentRect.height);
 		}
 	});
 
-	/** @type {Vector} */
 	#origin = { x: 0, y: 0 };
-	/** @type {Vector} */
 	#translation = { x: 0, y: 0 };
 
 	#isGrabbing = false;
@@ -74,7 +71,7 @@ export class FlowView extends HTMLElement {
 			return element;
 		if (element instanceof HTMLElement) {
 			const view = document.createElement('flow-view')
-			element.appendChild(view)
+			element.append(view)
 			if (view instanceof FlowView) return view
 		}
 		throw new Error('Invalid element', { cause: element });
@@ -110,21 +107,20 @@ export class FlowView extends HTMLElement {
 			'</style>'
 		].join('\n')
 
-		this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
+		this.#root = this.attachShadow({ mode: 'open' });
+		this.#root.append(template.content.cloneNode(true));
 	}
 
 	connectedCallback() {
 		this.setAttribute('tabindex', '-1'); // Enables keyboard events.
 		this.style.isolation = 'isolate';
 		eventTypes.forEach((eventType) => this.addEventListener(eventType, this));
-		if (this.parentNode instanceof Element)
-			this.#resizeObserver.observe(this.parentNode);
+		this.#resizeObserver.observe(this.#parent);
 	}
 
 	disconnectedCallback() {
 		eventTypes.forEach((eventType) => this.removeEventListener(eventType, this));
-		if (this.parentNode instanceof Element)
-			this.#resizeObserver.unobserve(this.parentNode);
+		this.#resizeObserver.unobserve(this.#parent);
 	}
 
 	/** @param {Event} event */
@@ -176,7 +172,7 @@ export class FlowView extends HTMLElement {
 				}
 			);
 			prompt.nodeList = Array.from(this.nodeList);
-			this.shadowRoot?.appendChild(prompt.element);
+			this.#root.append(prompt.element);
 			prompt.input.focus()
 		}
 		if (event instanceof PointerEvent && event.type === 'pointerdown') {
@@ -295,57 +291,51 @@ export class FlowView extends HTMLElement {
 	}
 
 	/**
-	 * @param {FlowViewEdgeObj} edge
+	 * @param {FlowViewPinPath} from
+	 * @param {FlowViewPinPath} to
 	 */
-	newEdge({ id: wantedId, from: [sourceNodeId, sourcePinId], to: [targetNodeId, targetPinId] }) {
-		const sourceNode = this.node(sourceNodeId)
-		const targetNode = this.node(targetNodeId)
+	newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]) {
+		const sourceNode = this.#nodes.get(sourceNodeId)
+		const targetNode = this.#nodes.get(targetNodeId)
 		if (!sourceNode || !targetNode) throw new Error('Node not found')
-		const source = sourceNode.output(sourcePinId)
-		const target = targetNode.input(targetPinId)
-		const id = this.#generateId(wantedId);
+		const source = sourceNode.outputs[sourcePosition]
+		const target = targetNode.inputs[targetPosition]
+		if (!source || !target) throw new Error('Pin not found')
+		const id = this.#generateId();
 		const edge = new FlowViewEdge(source, target, {
 			delete: () => this.deleteEdge(id),
 			select: () => this.selectEdge(edge),
 		});
-		this.shadowRoot?.appendChild(edge.container.element)
+		this.#root.append(edge.container.element)
 		edge.updateGeometry(this.origin)
 		this.#edges.set(id, edge)
 		return edge
 	}
 
 	/**
-	 * @param {FlowViewNodeObj} node
+	 * @param {{
+	 *   x: number
+	 *   y: number
+	 *   text: string
+	 * }} node
+	 * @param {string=} wantedId
 	 */
-	newNode({ x, y, text, id: wantedId, ins = [], outs = [] }) {
-		const nodeType = this.nodeTextToType?.(text) ?? '';
-		const nodeSignature = this.nodeTypeSignature.get(nodeType);
-		const inputs =
-			nodeSignature?.ins?.map((item, i) => ({
-				...item,
-				...(ins[i] ?? {})
-			})) ?? ins;
-		const outputs =
-			nodeSignature?.outs?.map((item, i) => ({
-				...item,
-				...(outs[i] ?? {})
-			})) ?? outs;
+	newNode({ x, y, text }, wantedId) {
+		const nodeType = this.nodeTextToType(text) ?? '';
+		const signature = this.nodeTypeSignature.get(nodeType) ?? {};
 		const id = this.#generateId(wantedId);
 		const node = new FlowViewNode({
 			id,
-			x, y,
+			position: { x, y},
 			view: this,
 			text,
 			type: nodeType
+		}, {
+			inputs: signature.inputs ?? [],
+			outputs: signature.outputs ?? []
 		});
-		this.shadowRoot?.appendChild(node.container.element);
-		node.initContent({ text, x, y });
-		for (const pin of inputs) {
-			node.newInput(pin)
-		}
-		for (const pin of outputs) {
-			node.newOutput(pin)
-		}
+		this.#root.append(node.container.element);
+		node.contentDiv.textContent = node.text
 		this.#nodes.set(id, node);
 		return node;
 	}
@@ -368,25 +358,6 @@ export class FlowView extends HTMLElement {
 	selectNode(node) {
 		node.container.highlight = true
 		node.isSelected = true
-	}
-
-	/** @param {FlowViewEdge} edge */
-	deselectEdge(edge) {
-		edge.container.highlight = false
-		edge.isSelected = false
-		const { source, target } = edge
-		if (source && source.node?.isSelected === false)
-			source.container.highlight = false;
-		if (target && target.node?.isSelected === false)
-			target.container.highlight = false;
-	}
-
-	/** @param {FlowViewNode} node */
-	deselectNode(node) {
-		node.container.highlight = false
-		node.isSelected = false
-		for (const input of node.inputs) input.highlight = false
-		for (const output of node.outputs) output.highlight = false
 	}
 
 	/**
@@ -445,7 +416,7 @@ export class FlowView extends HTMLElement {
 	createSemiEdge(pin) {
 		this.pendingPin = pin;
 		this.semiEdge = new SemiEdge({ origin: this.origin, position: pin.center });
-		this.shadowRoot?.appendChild(this.semiEdge.container.element);
+		this.#root.append(this.semiEdge.container.element);
 	}
 
 	deleteSelectedItems() {
@@ -457,6 +428,27 @@ export class FlowView extends HTMLElement {
 	}
 
 	#ids = new Set();
+
+	/** @param {FlowViewEdge} edge */
+	#deselectEdge(edge) {
+		edge.container.highlight = false
+		edge.isSelected = false
+		const { source, target } = edge
+		if (source && source.node?.isSelected === false)
+			source.container.highlight = false;
+		if (target && target.node?.isSelected === false)
+			target.container.highlight = false;
+	}
+
+	/** @param {FlowViewNode} node */
+	#deselectNode(node) {
+		node.container.highlight = false
+		node.isSelected = false
+		for (const input of node.inputs)
+			input.container.highlight = false;
+		for (const output of node.outputs)
+			output.container.highlight = false;
+	}
 
 	/**
 	 * @param {(string | undefined)=} wantedId
@@ -508,9 +500,9 @@ export class FlowView extends HTMLElement {
 
 	#clearSelection() {
 		for (const node of this.#selectedNodes)
-			this.deselectNode(node)
+			this.#deselectNode(node)
 		for (const edge of this.#edges.values())
-			this.deselectEdge(edge);
+			this.#deselectEdge(edge);
 	}
 
 	#removePrompt() {
@@ -525,8 +517,10 @@ export class FlowView extends HTMLElement {
 		delete this.semiEdge
 	}
 	/** @param {FlowViewGraph} graph */
-	load({ nodes = [], edges = [] }) {
-		for (const node of nodes) this.newNode(node)
-		for (const edge of edges) this.newEdge(edge)
+	load({ nodes, links = [] }) {
+		for (const [id, node] of Object.entries(nodes))
+			this.newNode(node, id);
+		for (const { from, to } of links)
+			this.newLink(from, to);
 	}
 }

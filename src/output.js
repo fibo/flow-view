@@ -17,11 +17,18 @@ export class FlowViewOutput {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
 
-	/** @param {{ id: string, node: FlowViewNode }} arg */
-	constructor({ id, node }) {
-		this.id = id
+	/**
+	 * @param {{
+	 *   node: FlowViewNode
+	 *   index: number
+	 * }} arg
+	 * @param {{ name?: string }} info
+	 */
+	constructor({ node, index }, { name }) {
+		this.index = index
 		this.info.classList.add('info');
-		this.container.element.appendChild(this.info);
+		if (name) this.info.textContent = name;
+		this.container.element.append(this.info);
 		this.node = node;
 		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
 	}

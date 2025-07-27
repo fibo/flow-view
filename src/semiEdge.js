@@ -11,9 +11,7 @@ export class SemiEdge {
 	container = new Container(cssClass.edge);
 	connection = new Connection();
 
-	/** @type {Vector} */
 	#start = { x: 0, y: 0 }
-	/** @type {Vector} */
 	#end = { x: 0, y: 0 }
 	/** @param {Vector} position */
 	set end({ x, y }) {
@@ -23,7 +21,7 @@ export class SemiEdge {
 
 	/** @param {{ origin: Vector, position: Vector }} arg */
 	constructor({ origin, position }) {
-		this.container.element.appendChild(this.connection.container)
+		this.container.element.append(this.connection.container)
 		this.origin = origin;
 		this.#start = {...position};
 		this.#end = {...position};

@@ -40,7 +40,7 @@ export class Connection {
 	line = createSvg('line');
 
 	constructor() {
-		this.container.appendChild(this.line);
+		this.container.append(this.line);
 	}
 
 	/** @param {number} arg */

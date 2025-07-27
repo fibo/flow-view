@@ -45,7 +45,7 @@ const updateScript = async (url) => {
             scriptMap.set(url, text);
             scriptElement.innerHTML = text;
         }
-        contentElement.appendChild(scriptElement);
+        contentElement.append(scriptElement);
     } catch (error) {
         console.error(error);
     }

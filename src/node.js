@@ -4,10 +4,8 @@ import { FlowViewInput } from './input.js';
 import { FlowViewOutput } from './output.js';
 
 /**
- * @typedef {import('./types').NodeConstructorArg} ConstructorArg
- * @typedef {import('./types').FlowViewNodeObj} FlowViewNodeObj
- * @typedef {import('./types').FlowViewOutputObj} FlowViewOutputObj
- * @typedef {import('./types').FlowViewInputObj} FlowViewInputObj
+ * @typedef {import('./flow-view').FlowView} FlowView
+ * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./types').Vector} Vector
  */
 
@@ -20,22 +18,48 @@ export class FlowViewNode {
 	container = new Container(cssClass.node);
 
 	isSelected = false;
-	inputsMap = new Map()
-	outputsMap = new Map()
-	inputsDiv = createDiv('pins');
-	outputsDiv = createDiv('pins');
+
 	contentDiv = createDiv('content');
 
+	/** @type {FlowViewInput[]} */
+	inputs = []
+	/** @type {FlowViewOutput[]} */
+	outputs = []
+
 	/**
-	 * @param {ConstructorArg} arg
+	 * @param {{
+	 *   id: string
+	 *   text: string
+	 *   type: string
+	 *   view: FlowView
+	 *   position: Vector
+	 * }} arg
+	 * @param {FlowViewNodeSignature} signature
 	 */
-	constructor({ id, text, type, view, x, y }) {
+	constructor({ id, text, type, view, position}, { inputs, outputs }) {
 		this.id = id
 		this.text = text
 		this.type = type
-		this.container.element.append(this.inputsDiv, this.contentDiv, this.outputsDiv);
+
+		const inputsDiv = createDiv('pins');
+		const outputsDiv = createDiv('pins');
+		this.container.element.append(inputsDiv, this.contentDiv, outputsDiv);
+
 		this.view = view;
-		this.position = { x, y };
+		this.position = position;
+
+		for (let index = 0; index < inputs.length; index++) {
+			const input = new FlowViewInput({ node: this, index }, inputs[index]);
+			this.inputs.push(input);
+			inputsDiv.append(input.container.element);
+		}
+
+		for (let index = 0; index < outputs.length; index++) {
+			const output = new FlowViewOutput({ node: this, index }, outputs[index]);
+			this.outputs.push(output);
+			outputsDiv.append(output.container.element);
+		}
+
 		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
 	}
 
@@ -46,24 +70,11 @@ export class FlowViewNode {
 		this.container.element.remove();
 	}
 
-	/** @param {FlowViewNodeObj} node */
-	initContent(node) {
-		this.contentDiv.textContent = node.text
-	}
-
 	/** @param {Event} event */
 	handleEvent(event) {
 		if (event.type === 'dblclick') {
 			event.stopPropagation();
 		}
-	}
-
-	get inputs() {
-		return [...this.inputsMap.values()]
-	}
-
-	get outputs() {
-		return [...this.outputsMap.values()]
 	}
 
 	get position() {
@@ -74,50 +85,5 @@ export class FlowViewNode {
 		this.#position = { x, y };
 		this.container.element.style.top = `${y - this.view.origin.y}px`
 		this.container.element.style.left = `${x - this.view.origin.x}px`
-	}
-
-	/** @param {string} id */
-	deleteInput(id) {
-		const input = this.inputsMap.get(id)
-		input.remove()
-		this.inputsMap.delete(id)
-	}
-
-	/** @param {string} id */
-	deleteOutput(id) {
-		const output = this.outputsMap.get(id)
-		output.remove()
-		this.outputsMap.delete(id)
-	}
-
-	/** @param {string} id */
-	input(id) {
-		if (!this.inputsMap.has(id))
-			throw new Error(`flow-view input not found id=${id}`)
-		return this.inputsMap.get(id)
-	}
-
-	/** @param {string} id */
-	output(id) {
-		if (!this.outputsMap.has(id))
-			throw new Error(`flow-view node not found id=${id}`)
-		return this.outputsMap.get(id)
-	}
-
-	/** @param {FlowViewInputObj} arg */
-	newInput({ id = '', name }) {
-		const item = new FlowViewInput({ id: id, node: this })
-		if (name) item.info.textContent = name
-		this.inputsMap.set(id, item)
-		this.inputsDiv.appendChild(item.container.element)
-	}
-
-
-	/** @param {FlowViewOutputObj} arg */
-	newOutput({ id = '', name }) {
-		const item = new FlowViewOutput({ id, node: this })
-		if (name) item.info.textContent = name
-		this.outputsMap.set(item.id, item)
-		this.outputsDiv.appendChild(item.container.element)
 	}
 }

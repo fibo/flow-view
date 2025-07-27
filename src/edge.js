@@ -21,7 +21,7 @@ export class FlowViewEdge {
 	 * @param {{ delete: () => void, select: () => void }} action
 	 */
 	constructor(source, target, action) {
-		this.container.element.appendChild(this.connection.container)
+		this.container.element.append(this.connection.container)
 		this.source = source;
 		this.target = target;
 		this.delete = action.delete;

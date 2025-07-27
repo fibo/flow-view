@@ -28,7 +28,11 @@ observer.observe(codeElement, {
 const flowView = FlowView.instance(container);
 
 flowView.load({
-	nodes: [
-		{ text: 'Hello World', x: 60, y: 70 },
-	]
+	nodes: {
+		id1: {
+			text: 'Hello World',
+			x: 50,
+			y: 50,
+		},
+	}
 })

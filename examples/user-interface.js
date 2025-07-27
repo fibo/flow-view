@@ -15,8 +15,8 @@ flowView.nodeTextToType = (text) => {
 }
 
 flowView.nodeTypeSignature
-	.set('child', { ins: [{ name: 'in1' }, { name: 'in2' }] })
-	.set('parent', { outs: [{ name: 'out' }] });
+	.set('child', { inputs: [{ name: 'in1' }, { name: 'in2' }] })
+	.set('parent', { outputs: [{ name: 'out' }] });
 
 const nodeList = [
     'Marge',
@@ -34,49 +34,20 @@ const nodeList = [
 ];
 nodeList.forEach(item => flowView.nodeList.add(item))
 
+/** @type {import('flow-view').FlowViewGraph} */
 const initialGraph = {
-  nodes: [
-    {
-      id: 'dad',
-      text: 'Homer',
-      x: 60,
-      y: 70,
-      outs: [{ id: 'children', name: 'out' }]
+	nodes: {
+		dad: { text: 'Homer', x: 60, y: 70 },
+		mom: { text: 'Marge', x: 160, y: 70 },
+		son: { text: 'Bart', x: 60, y: 240 },
+		daughter: { text: 'Lisa', x: 220, y: 240 }
     },
-    {
-      id: 'mom',
-      text: 'Marge',
-      x: 160,
-      y: 70,
-      outs: [{ id: 'children', name: 'out' }]
-    },
-    {
-      id: 'son',
-      text: 'Bart',
-      x: 60,
-      y: 240,
-      ins: [
-        { id: 'father', name: 'in1' },
-        { id: 'mother', name: 'in2' }
-      ]
-    },
-    {
-      id: 'daughter',
-      text: 'Lisa',
-      x: 220,
-      y: 220,
-      ins: [
-        { id: 'father', name: 'in1' },
-        { id: 'mother', name: 'in2' }
-      ]
-    }
-  ],
-  edges: [
-    { from: ['dad', 'children'], to: ['son', 'father'] },
-    { from: ['dad', 'children'], to: ['daughter', 'father'] },
-    { from: ['mom', 'children'], to: ['son', 'mother'] },
-    { from: ['mom', 'children'], to: ['daughter', 'mother'] }
-  ]
+	links: [
+		{ from: ['dad', 0], to: ['son', 0] },
+		{ from: ['dad', 0], to: ['daughter', 0] },
+		{ from: ['mom', 0], to: ['son', 1] },
+		{ from: ['mom', 0], to: ['daughter', 1] },
+	]
 }
 
 flowView.load(initialGraph);

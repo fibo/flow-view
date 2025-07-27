@@ -7,8 +7,8 @@ import { cssClass, cssPin } from './theme.js'
 
 const { size: pinSize, halfSize: halfPinSize } = cssPin
 
-export class SemiEdge {
-	container = new Container(cssClass.edge);
+export class SemiLink {
+	container = new Container(cssClass.link);
 	connection = new Connection();
 
 	#start = { x: 0, y: 0 }
@@ -31,16 +31,17 @@ export class SemiEdge {
 		this.container.element.remove();
 	}
 
-	updateGeometry() {
-		const { container: { element }, origin: { x: originX, y: originY } } = this;
+	/** @param {Vector} origin */
+	updateGeometry(origin) {
+		const { container: { element } } = this;
 		const { x: startX, y: startY } = this.#start;
 		const { x: endX, y: endY } = this.#end;
 
 		const invertedX = endX < startX
 		const invertedY = endY < startY
 
-		const top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - originY
-		const left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - originX
+		const top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - origin.y
+		const left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - origin.x
 		element.style.top = `${top}px`
 		element.style.left = `${left}px`
 

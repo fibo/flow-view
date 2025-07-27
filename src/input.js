@@ -1,10 +1,10 @@
 import { Container } from './common.js';
 import { cssClass, cssNode, cssPin } from './theme.js';
-import { FlowViewOutput } from './output.js';
+import { Output } from './output.js';
 
 /**
- * @typedef {import('./edge').FlowViewEdge} FlowViewEdge
- * @typedef {import('./node').FlowViewNode} FlowViewNode
+ * @typedef {import('./link').Link} Link
+ * @typedef {import('./node').Node} Node
  */
 
 const { borderWidth } = cssNode
@@ -14,15 +14,15 @@ const eventTypes = [
 	'pointerenter', 'pointerleave', 'pointerup', 'pointerdown'
 ];
 
-export class FlowViewInput {
+export class Input {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
-	/** @type {FlowViewEdge | undefined} */
+	/** @type {Link | undefined} */
 	edge
 
 	/**
 	 * @param {{
-	 *   node: FlowViewNode
+	 *   node: Node
 	 *   index: number
 	 * }} arg
 	 * @param {{ name?: string }} info
@@ -63,7 +63,7 @@ export class FlowViewInput {
 		}
 		if (event.type === 'pointerup') {
 			const source = this.node.view.pendingPin
-			if (source instanceof FlowViewOutput) {
+			if (source instanceof Output) {
 				// Delete previous edge, only one edge per input is allowed.
 				if (this.edge) this.edge.delete()
 				// Do not connect pins of same node.

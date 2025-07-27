@@ -2,8 +2,7 @@ import { Container } from './common.js';
 import { cssClass, cssNode, cssPin } from './theme.js';
 
 /**
- * @typedef {import('./edge').FlowViewEdge} FlowViewEdge
- * @typedef {import('./node').FlowViewNode} FlowViewNode
+ * @typedef {import('./node').Node} Node
  */
 
 const { borderWidth } = cssNode;
@@ -13,13 +12,13 @@ const eventTypes = [
 	'pointerenter', 'pointerleave', 'pointerup', 'pointerdown'
 ];
 
-export class FlowViewOutput {
+export class Output {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
 
 	/**
 	 * @param {{
-	 *   node: FlowViewNode
+	 *   node: Node
 	 *   index: number
 	 * }} arg
 	 * @param {{ name?: string }} info
@@ -45,7 +44,7 @@ export class FlowViewOutput {
 			event.stopPropagation();
 		}
 		if (event.type === 'pointerdown') {
-			this.node.view.createSemiEdge(this);
+			this.node.view.createSemiLink(this);
 		}
 	}
 

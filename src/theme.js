@@ -18,13 +18,14 @@ export const generateStyle = (style) => Object.entries(style).reduce(
 	].join('\n'), '');
 
 export const cssClass = {
-	edge: 'fv-edge',
+	link: 'fv-link',
 	node: 'fv-node',
 	pin: 'fv-pin',
 	prompt: 'fv-prompt',
+	selection: 'fv-selection'
 }
 
-export const cssEdge = {
+export const csslink = {
 	lineWidth: 2,
 	zIndex: 0,
 };
@@ -42,7 +43,7 @@ export const cssPrompt = {
 export const cssNode = {
 	borderWidth: 1,
 	minSize: cssPin.size * 4,
-	zIndex: cssEdge.zIndex + 1,
+	zIndex: csslink.zIndex + 1,
 };
 
 /** @param {string} name */
@@ -110,23 +111,23 @@ export const flowViewStyle = {
 	}
 }
 
-export const edgeStyle = {
-	[`.${cssClass.edge}`]: {
+export const linkStyle = {
+	[`.${cssClass.link}`]: {
 		display: 'flex',
 		position: 'absolute',
 		border: 0,
 		'pointer-events': 'none'
 	},
-	[`.${cssClass.edge} line`]: {
+	[`.${cssClass.link} line`]: {
 		'pointer-events': 'all',
 		stroke: cssVar.connectionColor,
-		'stroke-width': cssEdge.lineWidth,
+		'stroke-width': csslink.lineWidth,
 		...cssTransition('stroke')
 	},
-	[`.${cssModifierHasError(cssClass.edge)} line`]: {
+	[`.${cssModifierHasError(cssClass.link)} line`]: {
 		stroke: cssVar.errorColor
 	},
-	[`.${cssModifierHighlighted(cssClass.edge)} line`]: {
+	[`.${cssModifierHighlighted(cssClass.link)} line`]: {
 		stroke: cssVar.connectionColorHighlighted
 	}
 }

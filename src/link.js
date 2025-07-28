@@ -1,10 +1,39 @@
-import { Connection, Container } from './common.js';
+import { createSvg, Container } from './common.js';
+import { Input, Output } from './node.js';
 import { cssClass } from './style.js'
 
 /**
- * @typedef {import('./input').Input} Input
- * @typedef {import('./output').Output} Output
+ * @typedef {import('./types').Vector} Vector
  */
+
+export class Connection {
+	container = createSvg('svg');
+	line = createSvg('line');
+
+	constructor() {
+		this.container.append(this.line);
+	}
+
+	/** @param {number} arg */
+	set width(arg) {
+		this.container.setAttribute('width', `${arg}`);
+	}
+	/** @param {number} arg */
+	set height(arg) {
+		this.container.setAttribute('height', `${arg}`);
+	}
+
+	/** @param {Vector} arg */
+	set start({ x, y }) {
+		this.line.setAttribute('x1', `${x}`)
+		this.line.setAttribute('y1', `${y}`)
+	}
+	/** @param {Vector} arg */
+	set end({ x, y }) {
+		this.line.setAttribute('x2', `${x}`)
+		this.line.setAttribute('y2', `${y}`)
+	}
+}
 
 export class Link {
 	container = new Container(cssClass.link);
@@ -72,3 +101,26 @@ export class Link {
 	get start() { return this.source.center }
 	get end() { return this.target.center }
 }
+
+export class SemiLink {
+	container = new Container(cssClass.link);
+	connection = new Connection();
+	/**
+	 * @param {Input | Output} pin
+	 * @param {Vector} position
+	 */
+	constructor(pin, position) {
+		this.start = position;
+		this.end = position;
+		this.pin = pin;
+		if (pin instanceof Input)
+			this.end = pin.center;
+		if (pin instanceof Output)
+			this.start = pin.center;
+		this.container.element.append(this.connection.container);
+	}
+	dispose() {
+		this.container.element.remove();
+	}
+}
+

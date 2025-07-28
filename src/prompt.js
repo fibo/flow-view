@@ -1,14 +1,14 @@
 import { createDiv } from './common.js';
 import { cssClass, cssPrompt } from './style.js';
 
-const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
-
 /**
  * @typedef {import('./types').Vector} Vector
  */
 
+const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
+
 export class Prompt {
-	highlightedOptionIndex = -1;
+	#highlightedOptionIndex = -1;
 
 	/** @type {string[]} */
 	nodeList = [];
@@ -81,7 +81,7 @@ export class Prompt {
 	}
 
 	#createNode() {
-		const nodeText = this.options?.children?.[this.highlightedOptionIndex]?.textContent ?? this.input.value
+		const nodeText = this.options?.children?.[this.#highlightedOptionIndex]?.textContent ?? this.input.value
 		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
 		this.newNode(matchingNodeText ?? nodeText)
 		this.delete()
@@ -133,7 +133,7 @@ export class Prompt {
 				}
 				break
 			case 'Backspace':
-				this.highlightedOptionIndex = -1
+				this.#highlightedOptionIndex = -1
 				this.#createOptions()
 				this.#setCompletion();
 				break
@@ -150,12 +150,12 @@ export class Prompt {
 				}
 				// Use Tab or Shift-Tab to highlight options ciclically.
 				if (event.shiftKey) {
-					if (0 === this.highlightedOptionIndex)
-						this.highlightedOptionIndex = this.options.childElementCount - 1;
+					if (0 === this.#highlightedOptionIndex)
+						this.#highlightedOptionIndex = this.options.childElementCount - 1;
 					else this.#previousOption();
 				} else {
-					if (this.options.childElementCount - 1 === this.highlightedOptionIndex)
-						this.highlightedOptionIndex = 0;
+					if (this.options.childElementCount - 1 === this.#highlightedOptionIndex)
+						this.#highlightedOptionIndex = 0;
 					else this.#nextOption();
 				}
 				this.#createOptions();
@@ -181,7 +181,7 @@ export class Prompt {
 	}
 
 	onPointerleave() {
-		this.highlightedOptionIndex = -1
+		this.#highlightedOptionIndex = -1
 	}
 
 	#deleteOptions() {
@@ -196,18 +196,18 @@ export class Prompt {
 	}
 
 	#nextOption() {
-		this.highlightedOptionIndex = Math.min(this.highlightedOptionIndex + 1, this.options.childElementCount - 1)
+		this.#highlightedOptionIndex = Math.min(this.#highlightedOptionIndex + 1, this.options.childElementCount - 1)
 	}
 
 	#previousOption() {
-		this.highlightedOptionIndex =
-			this.highlightedOptionIndex !== -1 ? Math.max(this.highlightedOptionIndex - 1, 0) : -1
+		this.#highlightedOptionIndex =
+			this.#highlightedOptionIndex !== -1 ? Math.max(this.#highlightedOptionIndex - 1, 0) : -1
 	}
 
 	#highlightOptions() {
 		for (let i = 0; i < this.options.childElementCount; i++) {
 			const option = this.options.children[i];
-			if (this.highlightedOptionIndex === i)
+			if (this.#highlightedOptionIndex === i)
 				option.classList.add(optionHighlightedClass);
 			else
 				option.classList.remove(optionHighlightedClass);
@@ -225,7 +225,7 @@ export class Prompt {
 				this.#createNode()
 			}
 			option.onpointerenter = () => {
-				this.highlightedOptionIndex = i
+				this.#highlightedOptionIndex = i
 				option.classList.add(optionHighlightedClass);
 			}
 			option.onpointerleave = () => {
@@ -236,7 +236,7 @@ export class Prompt {
 	}
 
 	#resetOptions() {
-		this.highlightedOptionIndex = -1;
+		this.#highlightedOptionIndex = -1;
 		this.#deleteOptions();
 	}
 
@@ -258,7 +258,7 @@ export class Prompt {
 		switch (this.#matchingNodes.length) {
 			case 0:
 				this.#completion = '';
-				this.highlightedOptionIndex = -1;
+				this.#highlightedOptionIndex = -1;
 				break;
 			case 1: {
 				const name = this.#matchingNodes[0];
@@ -267,8 +267,8 @@ export class Prompt {
 				break;
 			}
 			default: {
-				if (this.highlightedOptionIndex !== -1) {
-					this.#completion = this.options.children[this.highlightedOptionIndex].textContent ?? ''
+				if (this.#highlightedOptionIndex !== -1) {
+					this.#completion = this.options.children[this.#highlightedOptionIndex].textContent ?? ''
 					break;
 				}
 				this.#completion = this.input.value

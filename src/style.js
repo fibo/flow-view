@@ -22,7 +22,7 @@ export const cssClass = {
 	node: 'fv-node',
 	pin: 'fv-pin',
 	prompt: 'fv-prompt',
-	selection: 'fv-selection'
+	group: 'fv-group'
 }
 
 export const csslink = {
@@ -71,6 +71,12 @@ const defaultCssProps = (arg) => Object.entries(arg).reduce(
 	(obj, [key, value]) => ({...obj, [fvCssDefaultVarName(key)]: value}), {}
 );
 
+const commonCssTheme = {
+	'border-radius': '2px',
+	'font-family': 'sans-serif',
+	'font-size': '15px',
+}
+
 export const cssTheme = {
 	light: defaultCssProps({
 		'background-color': '#fefefe',
@@ -80,7 +86,8 @@ export const cssTheme = {
 		'error-color': '#ffa600',
 		'node-background-color': '#fefefe',
 		[`${cssModifierHighlighted('node-border-color')}`]: '#717171',
-		'text-color': '#222'
+		'text-color': '#222',
+		...commonCssTheme
 	}),
 	dark: defaultCssProps({
 		'background-color': '#555',
@@ -90,7 +97,8 @@ export const cssTheme = {
 		'error-color': '#ffb600',
 		'node-background-color': '#2b2b2b',
 		[`${cssModifierHighlighted('node-border-color')}`]: '#efefef',
-		'text-color': '#ccc'
+		'text-color': '#ccc',
+		...commonCssTheme
 	})
 }
 
@@ -177,6 +185,7 @@ export const pinStyle = {
 		display: 'block',
 		width: `${cssPin.size}px`,
 		height: `${cssPin.size}px`,
+		'border-radius': `${cssVar.borderRadius}`,
 		...cssTransition('background-color')
 	},
 	[`.${cssClass.pin} .info`]: {
@@ -198,7 +207,7 @@ export const pinStyle = {
 	}
 }
 
-export const selectorStyle = {
+export const promptStyle = {
 	[`.${cssClass.prompt}`]: {
 		position: 'absolute',
 		'box-shadow': cssVar.boxShadow,
@@ -235,5 +244,16 @@ export const selectorStyle = {
 	},
 	[`.${cssClass.prompt}__option--highlighted`]: {
 		'border-color': cssVar.borderColorHighlighted
+	}
+}
+
+export const groupStyle = {
+	[`.${cssClass.group}`]: {
+		position: 'absolute',
+		display: 'block',
+		border: `1px solid ${cssVar.borderColorHighlighted}`,
+		'border-radius': cssVar.borderRadius,
+		'background-color': 'transparent',
+		'z-index': cssNode.zIndex + 1,
 	}
 }

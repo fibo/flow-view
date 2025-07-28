@@ -26,40 +26,21 @@ export class Container {
 
 	get bounds() { return this.element.getBoundingClientRect() }
 
+	/** @param {number} value */
+	set top(value) { this.element.style.top = `${value}px` }
+	/** @param {number} value */
+	set left(value) { this.element.style.left = `${value}px` }
+
+	/** @param {number} value */
+	set width(value) { this.element.style.width = `${value}px` }
+	/** @param {number} value */
+	set height(value) { this.element.style.height = `${value}px` }
+
 	/** @param {boolean} value */
 	set highlight(value) {
 		if (value)
 			this.element.classList.add(this.highlightedCssClass);
 		else
 			this.element.classList.remove(this.highlightedCssClass);
-	}
-}
-
-export class Connection {
-	container = createSvg('svg');
-	line = createSvg('line');
-
-	constructor() {
-		this.container.append(this.line);
-	}
-
-	/** @param {number} arg */
-	set width(arg) {
-		this.container.setAttribute('width', `${arg}`);
-	}
-	/** @param {number} arg */
-	set height(arg) {
-		this.container.setAttribute('height', `${arg}`);
-	}
-
-	/** @param {Vector} arg */
-	set start({ x, y }) {
-		this.line.setAttribute('x1', `${x}`)
-		this.line.setAttribute('y1', `${y}`)
-	}
-	/** @param {Vector} arg */
-	set end({ x, y }) {
-		this.line.setAttribute('x2', `${x}`)
-		this.line.setAttribute('y2', `${y}`)
 	}
 }

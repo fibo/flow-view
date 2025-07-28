@@ -1,12 +1,11 @@
-import { Connection, Container } from './common.js';
-import { Link } from './link.js';
-import { Node } from './node.js';
-import { Input } from './input.js';
-import { Output } from './output.js';
+import { Container } from './common.js';
+import { Link, SemiLink } from './link.js';
+import { Node, Input, Output } from './node.js';
 import { Prompt } from './prompt.js';
-import { cssTheme, cssClass, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, selectorStyle, generateStyle } from './style.js';
+import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, groupStyle, generateStyle } from './style.js';
 
 /**
+ * @typedef {import('./link').Connection} Connection
  * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
@@ -16,29 +15,11 @@ import { cssTheme, cssClass, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 const lightStyle = generateStyle({ ':host': cssTheme.light });
 const darkStyle = generateStyle({ ':host': cssTheme.dark });
 
-const { size: pinSize, halfSize: halfPinSize } = cssPin
-
-class SemiLink {
-	container = new Container(cssClass.link);
-	connection = new Connection();
-	/**
-	 * @param {Input | Output} pin
-	 * @param {Vector} position
-	 */
-	constructor(pin, position) {
-		this.start = position;
-		this.end = position;
-		this.pin = pin;
-		if (pin instanceof Input)
-			this.end = pin.center;
-		if (pin instanceof Output)
-			this.start = pin.center;
-		this.container.element.append(this.connection.container);
-	}
-	dispose() {
-		this.container.element.remove();
-	}
+class Group {
+	container = new Container(cssClass.group);
 }
+
+const { size: pinSize, halfSize: halfPinSize } = cssPin
 
 const eventTypes = [
 	'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel'
@@ -131,7 +112,8 @@ export class FlowView extends HTMLElement {
 				...linkStyle,
 				...nodeStyle,
 				...pinStyle,
-				...selectorStyle,
+				...promptStyle,
+				...groupStyle,
 			}),
 			'</style>'
 		].join('\n')
@@ -274,6 +256,12 @@ export class FlowView extends HTMLElement {
 					} else {
 						this.#clearSelection();
 						this.#removeSemiLink();
+						const group = new Group();
+						group.container.top = y
+						group.container.left = x;
+						group.container.width = 100
+						group.container.height = 100
+						this.#root.append(group.container.element);
 					}
 				}
 			}
@@ -432,24 +420,21 @@ export class FlowView extends HTMLElement {
 	 * }} link
 	 */
 	#updateLinkGeometry({ container, connection, start, end }) {
-		const { element }  = container;
 		const { x: startX, y: startY } = start;
 		const { x: endX, y: endY } = end;
 
 		const invertedX = endX < startX
 		const invertedY = endY < startY
 
-		const top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
-		const left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x
-		element.style.top = `${top}px`
-		element.style.left = `${left}px`
+		container.top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
+		container.left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x
 
 		const width = invertedX ? startX - endX + pinSize : endX - startX + pinSize;
-		element.style.width = `${width}px`
+		container.width = width;
 		connection.width = width;
 
 		const height = invertedY ? startY - endY + pinSize : endY - startY + pinSize;
-		element.style.height = `${height}px`
+		container.height = height;
 		connection.height = height;
 
 		connection.start = {
@@ -592,7 +577,7 @@ export class FlowView extends HTMLElement {
 	/** @param {Vector} position */
 	#getNodeAtPosition({ x, y }) {
 		for (const node of this.#nodes.values()) {
-			const { width, height } = node.container.element.getBoundingClientRect();
+			const { width, height } = node.container.bounds;
 			if (x < node.position.x || x > node.position.x + width)
 				continue;
 			if (y < node.position.y || y > node.position.y + height)

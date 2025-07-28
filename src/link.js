@@ -1,17 +1,16 @@
 import { Connection, Container } from './common.js';
-import { cssClass } from './theme.js'
+import { cssClass } from './style.js'
 
 /**
  * @typedef {import('./input').Input} Input
  * @typedef {import('./output').Output} Output
- * @typedef {import('./types').Vector} Vector
  */
 
 export class Link {
-	isSelected = false;
-
 	container = new Container(cssClass.link);
 	connection = new Connection();
+
+	isSelected = false;
 
 	/**
 	 * @param {Output} source

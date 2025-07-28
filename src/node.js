@@ -1,22 +1,18 @@
 import { Container, createDiv } from './common.js';
-import { cssClass } from './theme.js';
 import { Input } from './input.js';
 import { Output } from './output.js';
+import { cssClass } from './style.js';
 
 /**
- * @typedef {import('./flow-view').FlowView} FlowView
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./types').Vector} Vector
  */
 
-const eventTypes = ['dblclick'];
-
 export class Node {
 	container = new Container(cssClass.node);
+	contentDiv = createDiv('content');
 
 	isSelected = false;
-
-	contentDiv = createDiv('content');
 
 	/** @type {Input[]} */
 	inputs = []
@@ -28,12 +24,11 @@ export class Node {
 	 *   id: string
 	 *   text: string
 	 *   type: string
-	 *   view: FlowView
 	 *   position: Vector
 	 * }} arg
 	 * @param {FlowViewNodeSignature} signature
 	 */
-	constructor({ id, text, type, view, position}, { inputs, outputs }) {
+	constructor({ id, text, type, position}, { inputs, outputs }) {
 		this.id = id
 		this.text = text
 		this.type = type
@@ -43,7 +38,6 @@ export class Node {
 		this.container.element.append(inputsDiv, this.contentDiv, outputsDiv);
 
 		this.position = position;
-		this.view = view;
 
 		for (let index = 0; index < inputs.length; index++) {
 			const input = new Input({ node: this, index }, inputs[index]);
@@ -57,13 +51,11 @@ export class Node {
 			outputsDiv.append(output.container.element);
 		}
 
-		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
+		this.container.element.addEventListener('dblclick', this);
 	}
 
 	dispose() {
-		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
-		for (const input of this.inputs) input.dispose()
-		for (const output of this.outputs) output.dispose()
+		this.container.element.removeEventListener('dblclick', this);
 		this.container.element.remove();
 	}
 

@@ -1,4 +1,4 @@
-import { cssModifierHighlighted } from './theme.js';
+import { cssModifierHighlighted } from './style.js';
 
 /**
  * @typedef {import('./types').Vector} Vector

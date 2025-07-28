@@ -1,5 +1,5 @@
 import { createDiv } from './common.js';
-import { cssClass, cssPrompt } from './theme.js';
+import { cssClass, cssPrompt } from './style.js';
 
 const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
 

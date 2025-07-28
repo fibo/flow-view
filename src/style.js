@@ -187,6 +187,9 @@ export const pinStyle = {
 	[`.${cssClass.pin} .info:not(:empty)`]: {
 		padding: '2px 5px'
 	},
+	[`.${cssClass.pin}:hover`]: {
+		'background-color': cssVar.connectionColorHighlighted
+	},
 	[`.${cssClass.pin}:hover .info`]: {
 		visibility: 'visible'
 	},

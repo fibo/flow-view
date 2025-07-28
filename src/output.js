@@ -1,5 +1,5 @@
 import { Container } from './common.js';
-import { cssClass, cssNode, cssPin } from './theme.js';
+import { cssClass, cssNode, cssPin } from './style.js';
 
 /**
  * @typedef {import('./node').Node} Node
@@ -7,10 +7,6 @@ import { cssClass, cssNode, cssPin } from './theme.js';
 
 const { borderWidth } = cssNode;
 const { halfSize } = cssPin;
-
-const eventTypes = [
-	'pointerenter', 'pointerleave', 'pointerup', 'pointerdown'
-];
 
 export class Output {
 	info = document.createElement('pre');
@@ -29,27 +25,6 @@ export class Output {
 		if (name) this.info.textContent = name;
 		this.container.element.append(this.info);
 		this.node = node;
-		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
-	}
-
-	/** @param {Event} event */
-	handleEvent(event) {
-		if (event.type === 'pointerenter') {
-			this.container.highlight = true;
-		}
-		if (event.type === 'pointerleave') {
-			this.container.highlight = false;
-		}
-		if (event.type === 'pointerup') {
-			event.stopPropagation();
-		}
-		if (event.type === 'pointerdown') {
-			this.node.view.createSemiLink(this);
-		}
-	}
-
-	dispose() {
-		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
 	}
 
 	get center() {

@@ -1,5 +1,5 @@
 import { Connection, Container } from './common.js';
-import { cssClass, cssPin } from './theme.js'
+import { cssClass, cssPin } from './style.js'
 
 /**
  * @typedef {import('./input').Input} Input

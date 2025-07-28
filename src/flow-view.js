@@ -17,6 +17,9 @@ const darkStyle = generateStyle({ ':host': cssTheme.dark });
 
 class Group {
 	container = new Container(cssClass.group);
+	dispose() {
+		this.container.element.remove();
+	}
 }
 
 const { size: pinSize, halfSize: halfPinSize } = cssPin
@@ -40,6 +43,11 @@ export class FlowView extends HTMLElement {
 
 	/** @type {SemiLink | undefined} */
 	#semiLink
+
+	/** @type {Group | undefined} */
+	#selectionGroup
+	/** @type {Vector | undefined} */
+	#selectionVectorStart
 
 	#ids = new Set();
 
@@ -259,9 +267,11 @@ export class FlowView extends HTMLElement {
 						const group = new Group();
 						group.container.top = y
 						group.container.left = x;
-						group.container.width = 100
-						group.container.height = 100
+						group.container.width = 1
+						group.container.height = 1
 						this.#root.append(group.container.element);
+						this.#selectionGroup = group;
+						this.#selectionVectorStart = { x, y };
 					}
 				}
 			}
@@ -272,7 +282,9 @@ export class FlowView extends HTMLElement {
 					this.#origin.y += this.#grabbingVector.y - y;
 					this.#updateNodesAndLinksGeometry();
 					this.#grabbingVector = { x, y };
-				} else if (this.#semiLink) {
+				}
+
+				if (this.#semiLink) {
 					if (this.#semiLink.pin instanceof Output)
 						this.#semiLink.end = {
 							x: x + this.#origin.x,
@@ -284,6 +296,26 @@ export class FlowView extends HTMLElement {
 							y: y + this.#origin.y
 						};
 					this.#updateLinkGeometry(this.#semiLink)
+				}
+
+				if (this.#selectionGroup && this.#selectionVectorStart) {
+					const top = Math.min(this.#selectionVectorStart.y, y);
+					const left = Math.min(this.#selectionVectorStart.x, x);
+					const width = Math.abs(this.#selectionVectorStart.x - x);
+					const height = Math.abs(this.#selectionVectorStart.y - y);
+					for (const node of this.#nodes.values()) {
+						const { width: nodeWidth, height: nodeHeight } = node.container.bounds;
+						if (node.position.x < left + width && node.position.x + nodeWidth > left &&
+							node.position.y < top + height && node.position.y + nodeHeight > top) {
+							this.#selectNode(node);
+						} else {
+							this.#deselectNode(node);
+						}
+					}
+					this.#selectionGroup.container.top = top;
+					this.#selectionGroup.container.left = left;
+					this.#selectionGroup.container.width = width;
+					this.#selectionGroup.container.height = height;
 				} else if (this.#pointerVector) {
 					/** @type {string[]} */
 					const selecteNodeIds = [];
@@ -305,10 +337,21 @@ export class FlowView extends HTMLElement {
 					}
 					this.#pointerVector = { x, y };
 				}
+
 			}
 
 			if (event.type === 'pointerup') {
 				this.#pointerVector = undefined;
+				if (this.#selectionGroup) {
+					if (this.#selectionVectorStart) {
+						if (Math.abs(this.#selectionVectorStart.y - y) < 10) {
+							// TODO cut links
+						}
+					}
+					this.#selectionVectorStart = undefined;
+					this.#selectionGroup.dispose()
+					this.#selectionGroup = undefined;
+				}
 			}
 		}
 	}

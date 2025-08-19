@@ -1,12 +1,12 @@
 {
   "name": "flow-view",
-  "description": "is a visual editor for dataflow programming",
+  "description": "Visual editor for dataflow programming",
   "version": "7.0.0",
   "license": "MIT",
   "homepage": "https://fibo.github.io/flow-view",
   "author": {
     "name": "Gianluca Casati",
-    "url": "http://fibo.github.io"
+    "url": "https://fibo.github.io"
   },
   "type": "module",
   "exports": "./src/flow-view.js",

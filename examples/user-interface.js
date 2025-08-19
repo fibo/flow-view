@@ -32,7 +32,7 @@ const nodeList = [
     'Selma',
     'Mr. Burns',
 ];
-nodeList.forEach(item => flowView.nodeList.add(item))
+nodeList.forEach(item => flowView.nodeList.add(item));
 
 /** @type {import('flow-view').FlowViewGraph} */
 const initialGraph = {
@@ -48,6 +48,6 @@ const initialGraph = {
 		{ from: ['mom', 0], to: ['son', 1] },
 		{ from: ['mom', 0], to: ['daughter', 1] },
 	]
-}
+};
 
 flowView.load(initialGraph);

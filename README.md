@@ -2,9 +2,9 @@
 
 > Visual editor for [Dataflow programming][dataflow_wikipedia]
 
-<a href="http://fibo.github.io/flow-view/">
+<a href="https://fibo.github.io/flow-view/">
 <div>Demo</div>
-<img width="517" height="490" src="assets/screenshot.png" alt="flow view Simpsons example">
+<img width="350" height="350" src="https://fibo.github.io/flow-view/assets/screenshot.png" alt="The Simpsons flow-view example">
 </a>
 
 ## Installation

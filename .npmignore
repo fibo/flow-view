@@ -1,6 +1,6 @@
 index.html
-tsconfig*.json
+404.html
+tsconfig.json
 assets/
-!assets/screenshot.png
 examples/
 server.js

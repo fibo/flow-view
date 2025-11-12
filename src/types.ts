@@ -11,10 +11,11 @@ export type FlowViewGraph = {
 		y: number
 		text: string
 	}>
-	links?: Array<{
-		from: FlowViewPinPath
-		to: FlowViewPinPath
-	}>
+	/**
+	 * Keys are targets, values are sources.
+	 * Where a target is `nodeId:inputIndex` and a source is `nodeId:ouputIndex`.
+	 */
+	links?: Record<string, string>
 }
 
 export type FlowViewNodeSignature = {

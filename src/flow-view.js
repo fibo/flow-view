@@ -356,8 +356,8 @@ export class FlowView extends HTMLElement {
 		}
 	}
 
-	get height() { return parseInt(this.style.height) }
-	get width() { return parseInt(this.style.width) }
+	get height() { return +this.style.height }
+	get width() { return +this.style.width }
 
 	clear() {
 		for (const id of this.#nodes.keys())
@@ -365,11 +365,18 @@ export class FlowView extends HTMLElement {
 	}
 
 	/** @param {FlowViewGraph} graph */
-	load({ nodes, links = [] }) {
+	load({ nodes, links = {} }) {
 		for (const [id, node] of Object.entries(nodes))
 			this.newNode(node, id);
-		for (const { from, to } of links)
-			this.newLink(from, to);
+		for (const [target, source] of Object.entries(links)) {
+			const from  = source.split(',');
+			const to = target.split(',');
+			const sourceNodeId = from[0];
+			const sourcePosition = +from[1];
+			const targetNodeId = to[0];
+			const targetPosition = +to[1];
+			this.newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]);
+		}
 	}
 
 	/**

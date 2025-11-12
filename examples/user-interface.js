@@ -42,12 +42,13 @@ const initialGraph = {
 		son: { text: 'Bart', x: 60, y: 240 },
 		daughter: { text: 'Lisa', x: 220, y: 240 }
     },
-	links: [
-		{ from: ['dad', 0], to: ['son', 0] },
-		{ from: ['dad', 0], to: ['daughter', 0] },
-		{ from: ['mom', 0], to: ['son', 1] },
-		{ from: ['mom', 0], to: ['daughter', 1] },
-	]
+	links: {
+		// From dad, 0 to son, 0
+		'son,0': 'dad,0',
+		'daughter,0': 'dad,0',
+		'son,1': 'mom,0',
+		'daughter,1': 'mom,0',
+	}
 };
 
 flowView.load(initialGraph);

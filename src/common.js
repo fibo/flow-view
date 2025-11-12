@@ -16,8 +16,6 @@ export const createSvg = (tag) =>
 	document.createElementNS('http://www.w3.org/2000/svg', tag);
 
 export class Container {
-	element = document.createElement('div');
-
 	/** @param {string} cssClass */
 	constructor(cssClass) {
 		this.element = createDiv(cssClass);

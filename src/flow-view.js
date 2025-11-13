@@ -254,7 +254,6 @@ export class FlowView extends HTMLElement {
 				}
 
 				const pin = this.#getClosestPin([...node.inputs, ...node.outputs], { x, y });
-				console.log(pin)
 				if (!pin) {
 					this.#clearSelection()
 					this.#selectNode(node);

@@ -35,6 +35,8 @@ export class Connection {
 	}
 }
 
+const eventTypes = ['dblclick', 'pointerdown', 'pointerenter', 'pointerleave'];
+
 export class Link {
 	container = new Container(cssClass.link);
 	connection = new Connection();
@@ -53,17 +55,11 @@ export class Link {
 		this.delete = action.delete;
 		this.select = action.select;
 
-		this.connection.line.addEventListener('dblclick', this)
-		this.connection.line.addEventListener('pointerdown', this)
-		this.connection.line.addEventListener('pointerenter', this)
-		this.connection.line.addEventListener('pointerleave', this)
+		eventTypes.forEach((eventType) => this.connection.line.addEventListener(eventType, this));
 	}
 
 	dispose() {
-		this.connection.line.removeEventListener('dblclick', this)
-		this.connection.line.removeEventListener('pointerdown', this)
-		this.connection.line.removeEventListener('pointerenter', this)
-		this.connection.line.removeEventListener('pointerleave', this)
+		eventTypes.forEach((eventType) => this.connection.line.removeEventListener(eventType, this));
 		this.container.element.remove()
 	}
 

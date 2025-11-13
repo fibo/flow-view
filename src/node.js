@@ -70,7 +70,7 @@ export class Output {
 
 export class Node {
 	container = new Container(cssClass.node);
-	contentDiv = createDiv('content');
+	contentDiv = createDiv(cssClass.nodeContent);
 
 	isSelected = false;
 

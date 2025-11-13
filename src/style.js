@@ -20,6 +20,7 @@ export const generateStyle = (style) => Object.entries(style).reduce(
 export const cssClass = {
 	link: 'fv-link',
 	node: 'fv-node',
+	nodeContent: 'fv-node__content',
 	pin: 'fv-pin',
 	prompt: 'fv-prompt',
 	group: 'fv-group'
@@ -165,7 +166,7 @@ export const nodeStyle = {
 	[`.${cssModifierHasError(cssClass.node)}`]: {
 		'border-color': cssVar.errorColor
 	},
-	[`.${cssClass.node} .content`]: {
+	[`.${cssClass.node} .${cssClass.nodeContent}`]: {
 		'user-select': 'none',
 		'padding-left': '0.5em',
 		'padding-right': '0.5em',

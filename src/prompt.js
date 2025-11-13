@@ -8,23 +8,27 @@ import { cssClass, cssPrompt } from './style.js';
 const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
 
 export class Prompt {
-	/** @type {string[]} */
-	nodeList = [];
-
-	#highlightedOptionIndex = -1;
-	/** @type {() => void} */
-	#delete
-
-	/** @type {(text: string) => void} */
-	#newNode
-
 	element = createDiv(cssClass.prompt);
 
 	input = document.createElement('input');
 	hint = document.createElement('input');
 	options = createDiv(`${cssClass.prompt}__options`);
 
+	/** @type {Set<string>} */
+	#nodeList;
+
+	#highlightedOptionIndex = -1;
+
 	/**
+	 * @type {{
+	 *   delete: () => void,
+	 *   newNode: (text: string) => void
+	 * }} action
+	 */
+	#action;
+
+	/**
+	 * @param {Set<string>} nodeList
 	 * @param {Vector} position
 	 * @param {{
 	 *   origin: Vector,
@@ -36,9 +40,9 @@ export class Prompt {
 	 *   newNode: (text: string) => void
 	 * }} action
 	 */
-	constructor({ x, y }, view, action) {
-		this.#delete = action.delete;
-		this.#newNode = action.newNode;
+	constructor(nodeList, { x, y }, view, action) {
+		this.#nodeList = nodeList;
+		this.#action = action
 
 		// Avoid overflow, using some heuristic values.
 		const overflowY = y - view.origin.y + 40 >= view.height
@@ -52,27 +56,121 @@ export class Prompt {
 		this.hint.classList.add(`${cssClass.prompt}__hint`);
 		this.element.append(this.input, this.hint, this.options);
 
-		this._onDblclick = this.onDblclick.bind(this)
-		this.element.addEventListener('dblclick', this._onDblclick)
-		this._onPointerdown = this.onPointerdown.bind(this)
-		this.element.addEventListener('pointerdown', this._onPointerdown)
-		this._onPointerleave = this.onPointerleave.bind(this)
-		this.element.addEventListener('pointerleave', this._onPointerleave)
+		this.element.addEventListener('dblclick', this)
+		this.element.addEventListener('pointerdown', this)
+		this.element.addEventListener('pointerleave', this)
 
-		this._onKeydown = this.onKeydown.bind(this)
-		this.input.addEventListener('keydown', this._onKeydown)
-		this._onKeyup = this.onKeyup.bind(this)
-		this.input.addEventListener('keyup', this._onKeyup)
+		this.input.addEventListener('keydown', this)
+		this.input.addEventListener('keyup', this)
 	}
 
 	dispose() {
 		const { element, input } = this
-		element.removeEventListener('dblclick', this._onDblclick)
-		element.removeEventListener('pointerdown', this._onPointerdown)
-		element.removeEventListener('pointerleave', this._onPointerdown)
-		input.removeEventListener('keydown', this._onKeydown)
-		input.removeEventListener('keyup', this._onKeyup)
+		element.removeEventListener('dblclick', this)
+		element.removeEventListener('pointerdown', this)
+		element.removeEventListener('pointerleave', this)
+		input.removeEventListener('keydown', this)
+		input.removeEventListener('keyup', this)
 		element.remove();
+	}
+
+	/** @param {Event} event */
+	handleEvent(event) {
+		if (event.type === 'dblclick') {
+			event.stopPropagation()
+			return
+		}
+
+		if (event.type === 'pointerdown') {
+			event.stopPropagation()
+			return
+		}
+
+		if (event.type === 'pointerleave') {
+			this.#highlightedOptionIndex = -1
+			return
+		}
+
+		if (event instanceof KeyboardEvent && event.type === 'keydown') {
+			event.stopPropagation()
+			if (['ArrowUp', 'Tab'].includes(event.code)) event.preventDefault()
+			return
+		}
+
+		if (event instanceof KeyboardEvent && event.type === 'keyup') {
+			event.stopPropagation()
+			switch (event.code) {
+				case 'Enter':
+					this.#createNode()
+					break
+				case 'Escape':
+					if (this.input.value === '')
+						this.#action.delete();
+					else {
+						this.#completion = '';
+						this.input.value = '';
+						this.#resetOptions();
+					}
+					break
+				case 'ArrowLeft':
+				case 'ShiftLeft':
+				case 'ShiftRight':
+					break;
+				case 'ArrowDown':
+					this.#fixCase()
+					this.#nextOption()
+					this.#highlightOptions()
+					this.#setCompletion();
+					break;
+				case 'ArrowUp':
+					event.preventDefault()
+					this.#fixCase()
+					this.#previousOption()
+					this.#highlightOptions()
+					this.#setCompletion();
+					break;
+				case 'ArrowRight':
+					if (this.input.value.length === this.input.selectionStart) {
+						this.#autocomplete()
+						this.#resetOptions()
+					}
+					break;
+				case 'Backspace':
+					this.#highlightedOptionIndex = -1
+					this.#createOptions()
+					this.#setCompletion();
+					break
+				case 'Tab': {
+					event.preventDefault()
+					// Fix case with Tab.
+					this.#fixCase()
+					// Exact match.
+					if (this.#matchingNodes.length === 1) {
+						this.#setCompletion();
+						this.#autocomplete()
+						this.#resetOptions()
+						break
+					}
+					// Use Tab or Shift-Tab to highlight options ciclically.
+					if (event.shiftKey) {
+						if (0 === this.#highlightedOptionIndex)
+							this.#highlightedOptionIndex = this.options.childElementCount - 1;
+						else this.#previousOption();
+					} else {
+						if (this.options.childElementCount - 1 === this.#highlightedOptionIndex)
+							this.#highlightedOptionIndex = 0;
+						else this.#nextOption();
+					}
+					this.#createOptions();
+					this.#setCompletion();
+					this.#highlightOptions()
+					break;
+				}
+				default:
+					this.#createOptions();
+					this.#setCompletion();
+			}
+		}
 	}
 
 	get #completion() { return this.hint.getAttribute('placeholder') ?? '' }
@@ -82,7 +180,7 @@ export class Prompt {
 	get #matchingNodes() {
 		const search = this.input.value.toLowerCase()
 		if (search.length === 0) return []
-		return this.nodeList.filter(
+		return Array.from(this.#nodeList).filter(
 			(name) =>
 				// input value fits into node name...
 				name.toLowerCase().startsWith(search) &&
@@ -93,107 +191,21 @@ export class Prompt {
 	}
 
 	#createNode() {
-		const nodeText = this.options?.children?.[this.#highlightedOptionIndex]?.textContent ?? this.input.value
-		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
-		this.#newNode(matchingNodeText ?? nodeText)
-		this.#delete()
-	}
-
-	/** @param {MouseEvent} event */
-	onDblclick(event) {
-		event.stopPropagation()
-	}
-
-	/** @param {KeyboardEvent} event */
-	onKeyup(event) {
-		event.stopPropagation()
-		switch (event.code) {
-			case 'Enter':
-				this.#createNode()
-				break
-			case 'Escape':
-				if (this.input.value === '')
-					this.#delete();
-				else {
-					this.#completion = '';
-					this.input.value = '';
-					this.#resetOptions();
+		const nodeText = this.options.children?.[this.#highlightedOptionIndex]?.textContent ?? this.input.value;
+		const exactMatch = this.#nodeList.has(nodeText) ? nodeText : undefined;
+		if (exactMatch) {
+			this.#action.newNode(exactMatch);
+		} else {
+			const nodeTextLowerCase = nodeText.toLowerCase();
+			for (const name of this.#nodeList)
+				if (name.toLowerCase() === nodeTextLowerCase) {
+					// Exact match (case-insensitive).
+					this.#action.newNode(name);
+					break;
 				}
-				break
-			case 'ArrowLeft':
-			case 'ShiftLeft':
-			case 'ShiftRight':
-				break;
-			case 'ArrowDown':
-				this.#fixCase()
-				this.#nextOption()
-				this.#highlightOptions()
-				this.#setCompletion();
-				break;
-			case 'ArrowUp':
-				event.preventDefault()
-				this.#fixCase()
-				this.#previousOption()
-				this.#highlightOptions()
-				this.#setCompletion();
-				break
-			case 'ArrowRight':
-			// @ts-ignore
-				if (this.input.value.length === event.target.selectionStart) {
-					this.#autocomplete()
-					this.#resetOptions()
-				}
-				break
-			case 'Backspace':
-				this.#highlightedOptionIndex = -1
-				this.#createOptions()
-				this.#setCompletion();
-				break
-			case 'Tab': {
-				event.preventDefault()
-				// Fix case with Tab.
-				this.#fixCase()
-				// Exact match.
-				if (this.#matchingNodes.length === 1) {
-					this.#setCompletion();
-					this.#autocomplete()
-					this.#resetOptions()
-					break
-				}
-				// Use Tab or Shift-Tab to highlight options ciclically.
-				if (event.shiftKey) {
-					if (0 === this.#highlightedOptionIndex)
-						this.#highlightedOptionIndex = this.options.childElementCount - 1;
-					else this.#previousOption();
-				} else {
-					if (this.options.childElementCount - 1 === this.#highlightedOptionIndex)
-						this.#highlightedOptionIndex = 0;
-					else this.#nextOption();
-				}
-				this.#createOptions();
-				this.#setCompletion();
-				this.#highlightOptions()
-				break;
-			}
-			default:
-				this.#createOptions();
-				this.#setCompletion();
+			this.#action.newNode(nodeText);
 		}
-	}
-
-	/** @param {KeyboardEvent} event */
-	onKeydown(event) {
-		event.stopPropagation()
-		if (['ArrowUp', 'Tab'].includes(event.code)) event.preventDefault()
-	}
-
-	/** @param {MouseEvent} event */
-	onPointerdown(event) {
-		event.stopPropagation()
-	}
-
-	onPointerleave() {
-		this.#highlightedOptionIndex = -1
+		this.#action.delete();
 	}
 
 	#deleteOptions() {

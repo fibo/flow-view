@@ -185,6 +185,7 @@ export class FlowView extends HTMLElement {
 			const { x, y } = this.#pointerCoordinates(event);
 			const position = { x: x + this.#origin.x, y: y + this.#origin.y }
 			const prompt = this.#prompt = new Prompt(
+			    this.nodeList,
 				position,
 				{ origin: this.#origin, width: this.width, height: this.height },
 				{
@@ -194,7 +195,6 @@ export class FlowView extends HTMLElement {
 					}
 				}
 			);
-			prompt.nodeList = Array.from(this.nodeList);
 			this.#root.append(prompt.element);
 			prompt.input.focus()
 		}

@@ -211,6 +211,10 @@ export class FlowView extends HTMLElement {
 			this.#pointerVector = undefined;
 			this.#selectionVectorStart = undefined;
 			this.#selectionGroup?.dispose();
+			if (this.#isGrabbing) {
+				this.style.cursor = 'default';
+				this.#isGrabbing = false;
+			}
 		}
 
 		if (event instanceof WheelEvent && event.type === 'wheel') {
@@ -637,7 +641,9 @@ export class FlowView extends HTMLElement {
 	}
 
 	/** @param {Vector} position */
-	#getNodeAtPosition({ x, y }) {
+	#getNodeAtPosition(position) {
+		const x = position.x + this.#origin.x;
+		const y = position.y + this.#origin.y;
 		for (const node of this.#nodes.values()) {
 			const { width, height } = node.container.bounds;
 			if (x < node.position.x || x > node.position.x + width)

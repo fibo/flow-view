@@ -1,6 +1,11 @@
 import { Container, createDiv } from './common.js';
 import { cssClass, cssNode, cssPin } from './style.js';
 
+/**
+ * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./types').Vector} Vector
+ */
+
 const { borderWidth } = cssNode
 const { halfSize } = cssPin
 
@@ -62,11 +67,6 @@ export class Output {
 		}
 	}
 }
-
-/**
- * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./types').Vector} Vector
- */
 
 export class Node {
 	container = new Container(cssClass.node);

@@ -265,8 +265,7 @@ export class FlowView extends HTMLElement {
 						this.#clearSelection();
 						this.#removeSemiLink();
 						const group = new Group();
-						group.container.top = y
-						group.container.left = x;
+						group.container.position = { x, y }
 						group.container.width = 1
 						group.container.height = 1
 						this.#root.append(group.container.element);
@@ -312,8 +311,7 @@ export class FlowView extends HTMLElement {
 							this.#deselectNode(node);
 						}
 					}
-					this.#selectionGroup.container.top = top;
-					this.#selectionGroup.container.left = left;
+					this.#selectionGroup.container.position = { x: left, y: top };
 					this.#selectionGroup.container.width = width;
 					this.#selectionGroup.container.height = height;
 				} else if (this.#pointerVector) {
@@ -398,7 +396,6 @@ export class FlowView extends HTMLElement {
 			select: () => this.#selectLink(link),
 		});
 		this.#root.append(link.container.element)
-		link.container.element.setAttribute('id', id);
 		this.#links.set(id, link)
 		this.#updateLinkGeometry(link);
 		return link
@@ -476,8 +473,10 @@ export class FlowView extends HTMLElement {
 		const invertedX = endX < startX
 		const invertedY = endY < startY
 
-		container.top = (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
-		container.left = (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x
+		container.position = {
+			x: (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x,
+			y: (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
+		}
 
 		const width = invertedX ? startX - endX + pinSize : endX - startX + pinSize;
 		container.width = width;

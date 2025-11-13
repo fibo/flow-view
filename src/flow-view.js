@@ -41,9 +41,10 @@ export class FlowView extends HTMLElement {
 	/** @type {ShadowRoot} */
 	#root;
 
+	/** @type {Prompt | undefined} */
+	#prompt
 	/** @type {SemiLink | undefined} */
 	#semiLink
-
 	/** @type {Group | undefined} */
 	#selectionGroup
 	/** @type {Vector | undefined} */
@@ -149,6 +150,7 @@ export class FlowView extends HTMLElement {
 			if (event.type === 'keydown') {
 				if (event.code === 'Space') {
 					event.preventDefault();
+					if (this.#prompt) return;
 					if (this.#isGrabbing) return;
 					this.#isGrabbing = true;
 					this.style.cursor = 'grabbing';
@@ -182,7 +184,7 @@ export class FlowView extends HTMLElement {
 			this.#removePrompt();
 			const { x, y } = this.#pointerCoordinates(event);
 			const position = { x: x + this.#origin.x, y: y + this.#origin.y }
-			const prompt = this.prompt = new Prompt(
+			const prompt = this.#prompt = new Prompt(
 				position,
 				{ origin: this.#origin, width: this.width, height: this.height },
 				{
@@ -201,17 +203,19 @@ export class FlowView extends HTMLElement {
 			window.addEventListener('keydown', this);
 			window.addEventListener('keyup', this);
 		}
+
 		if (event.type === 'pointerleave') {
 			window.removeEventListener('keydown', this);
 			window.removeEventListener('keyup', this);
-		}
-		if (event.type === 'pointerleave') {
+
 			this.#removeSemiLink();
 			this.#grabbingVector = undefined;
 			this.#pointerVector = undefined;
-			this.#selectionVectorStart = undefined;
-			this.#selectionGroup?.dispose();
-			if (this.#isGrabbing) {
+			if (this.#selectionVectorStart) {
+				this.#selectionVectorStart = undefined;
+				this.#selectionGroup?.dispose()
+			}
+			if (this.#isGrabbing = false) {
 				this.style.cursor = 'default';
 				this.#isGrabbing = false;
 			}
@@ -223,6 +227,8 @@ export class FlowView extends HTMLElement {
 			this.#origin.x += event.deltaX;
 			this.#origin.y += event.deltaY;
 			this.#updateNodesAndLinksGeometry();
+			if (this.#semiLink) this.#removeSemiLink();
+			if (this.#prompt) this.#removePrompt();
 		}
 
 		if (event instanceof PointerEvent) {
@@ -248,6 +254,7 @@ export class FlowView extends HTMLElement {
 				}
 
 				const pin = this.#getClosestPin([...node.inputs, ...node.outputs], { x, y });
+				console.log(pin)
 				if (!pin) {
 					this.#clearSelection()
 					this.#selectNode(node);
@@ -270,6 +277,7 @@ export class FlowView extends HTMLElement {
 					this.#removeSemiLink();
 				} else {
 					if (pin instanceof Output) {
+						this.#clearSelection()
 						this.#createSemiLink(pin, { x, y });
 					} else {
 						const linkId = [pin.node.id, pin.index].join();
@@ -631,8 +639,8 @@ export class FlowView extends HTMLElement {
 	}
 
 	#removePrompt() {
-		this.prompt?.dispose();
-		delete this.prompt
+		this.#prompt?.dispose();
+		this.#prompt = undefined;
 	}
 
 	#removeSemiLink() {
@@ -658,7 +666,9 @@ export class FlowView extends HTMLElement {
 	 * @param {Array<Input | Output>} pins
 	 * @param {Vector} position
 	 */
-	#getClosestPin(pins, { x, y }) {
+	#getClosestPin(pins, position) {
+		const x = position.x + this.#origin.x;
+		const y = position.y + this.#origin.y;
 		return pins.find(({ center }) => (
 			(x >= center.x - pinSize && x <= center.x + pinSize) &&
 			(y >= center.y - pinSize && y <= center.y + pinSize)

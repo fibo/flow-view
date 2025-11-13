@@ -63,6 +63,7 @@ const cssVar = {
 	fontFamily: fvCssVar('font-family'),
 	fontSize: fvCssVar('font-size'),
 	nodeBackgroundColor: fvCssVar('node-background-color'),
+	semiTransparent: fvCssVar('semi-transparent'),
 	textColor: fvCssVar('text-color')
 }
 
@@ -87,6 +88,7 @@ export const cssTheme = {
 		'node-background-color': '#fefefe',
 		[`${cssModifierHighlighted('node-border-color')}`]: '#717171',
 		'text-color': '#222',
+		'semi-transparent': 'rgba(0, 0, 0, 0.017)',
 		...commonCssTheme
 	}),
 	dark: defaultCssProps({
@@ -98,6 +100,7 @@ export const cssTheme = {
 		'node-background-color': '#2b2b2b',
 		[`${cssModifierHighlighted('node-border-color')}`]: '#efefef',
 		'text-color': '#ccc',
+		'semi-transparent': 'rgba(255, 255, 255, 0.071)',
 		...commonCssTheme
 	})
 }
@@ -253,7 +256,7 @@ export const groupStyle = {
 		display: 'block',
 		border: `1px solid ${cssVar.borderColorHighlighted}`,
 		'border-radius': cssVar.borderRadius,
-		'background-color': 'transparent',
+		'background-color': cssVar.semiTransparent,
 		'z-index': cssNode.zIndex + 1,
 	}
 }

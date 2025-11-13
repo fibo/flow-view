@@ -8,10 +8,15 @@ import { cssClass, cssPrompt } from './style.js';
 const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
 
 export class Prompt {
-	#highlightedOptionIndex = -1;
-
 	/** @type {string[]} */
 	nodeList = [];
+
+	#highlightedOptionIndex = -1;
+	/** @type {() => void} */
+	#delete
+
+	/** @type {(text: string) => void} */
+	#newNode
 
 	element = createDiv(cssClass.prompt);
 
@@ -21,12 +26,19 @@ export class Prompt {
 
 	/**
 	 * @param {Vector} position
-	 * @param {{ origin: Vector, width: number, height: number }} view
-	 * @param {{ delete: () => void, newNode: (text: string) => void }} action
+	 * @param {{
+	 *   origin: Vector,
+	 *   width: number,
+	 *   height: number
+	 * }} view
+	 * @param {{
+	 *   delete: () => void,
+	 *   newNode: (text: string) => void
+	 * }} action
 	 */
 	constructor({ x, y }, view, action) {
-		this.delete = action.delete;
-		this.newNode = action.newNode;
+		this.#delete = action.delete;
+		this.#newNode = action.newNode;
 
 		// Avoid overflow, using some heuristic values.
 		const overflowY = y - view.origin.y + 40 >= view.height
@@ -83,8 +95,8 @@ export class Prompt {
 	#createNode() {
 		const nodeText = this.options?.children?.[this.#highlightedOptionIndex]?.textContent ?? this.input.value
 		const matchingNodeText = this.nodeList.find(([name]) => name.toLowerCase() === nodeText.toLowerCase())
-		this.newNode(matchingNodeText ?? nodeText)
-		this.delete()
+		this.#newNode(matchingNodeText ?? nodeText)
+		this.#delete()
 	}
 
 	/** @param {MouseEvent} event */
@@ -101,7 +113,7 @@ export class Prompt {
 				break
 			case 'Escape':
 				if (this.input.value === '')
-					this.delete();
+					this.#delete();
 				else {
 					this.#completion = '';
 					this.input.value = '';

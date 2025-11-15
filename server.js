@@ -16,7 +16,7 @@ let baseUrl = `http://localhost:${PORT}/${basePathname}/`
 let fileExtensionToMimeTypeMap = new Map()
   .set('css', 'text/css; charset=UTF-8')
   .set('html', 'text/html; charset=UTF-8')
-  .set('js', 'application/javascript; charset=UTF-8')
+  .set('js', 'text/javascript; charset=UTF-8')
 
 createServer(async (req, res) => {
   let url = req.url.split('/').filter((part) => part != basePathname).join('/')

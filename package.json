@@ -9,6 +9,7 @@
     "url": "https://fibo.github.io"
   },
   "type": "module",
+  "types": "./src/types.ts",
   "exports": "./src/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",

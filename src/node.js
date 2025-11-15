@@ -2,9 +2,18 @@ import { Container, createDiv } from './common.js';
 import { cssClass, cssNode, cssPin } from './style.js';
 
 /**
+ * @typedef {import('./types').FlowViewNode} FlowViewNode
+ * @typedef {import('./types').FlowViewNodeBodyCreator} FlowViewNodeBodyCreator
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./types').Vector} Vector
  */
+
+/** @type {FlowViewNodeBodyCreator} */
+export function defaultNodeBodyCreator(node) {
+	const div = createDiv(cssClass.nodeContent);
+	div.textContent = node.text;
+	return div;
+}
 
 const { borderWidth } = cssNode
 const { halfSize } = cssPin
@@ -30,8 +39,7 @@ export class Input {
 	}
 
 	get center() {
-		const nodeBounds = this.node.container.bounds;
-		const offsetX = this.container.bounds.x - nodeBounds.x;
+		const offsetX = this.container.bounds.x - this.node.container.bounds.x;
 		return {
 			x: this.node.position.x + halfSize + borderWidth + offsetX,
 			y: this.node.position.y + halfSize - borderWidth
@@ -68,6 +76,7 @@ export class Output {
 	}
 }
 
+/** @implements {FlowViewNode} */
 export class Node {
 	container = new Container(cssClass.node);
 	contentDiv = createDiv(cssClass.nodeContent);
@@ -79,36 +88,31 @@ export class Node {
 	/** @type {Output[]} */
 	outputs = []
 
+	inputsDiv = createDiv('pins');
+	outputsDiv = createDiv('pins');
+
 	/**
-	 * @param {{
-	 *   id: string
-	 *   text: string
-	 *   type: string
-	 *   position: Vector
-	 * }} arg
-	 * @param {FlowViewNodeSignature} signature
+	 * @param {string} id
+	 * @param {string} text
+	 * @param {Vector} position
+	 * @param {Partial<FlowViewNodeSignature>} signature
 	 */
-	constructor({ id, text, type, position}, { inputs, outputs }) {
+	constructor(id, text, position, { inputs = [], outputs  = []}) {
 		this.id = id
 		this.text = text
-		this.type = type
-
-		const inputsDiv = createDiv('pins');
-		const outputsDiv = createDiv('pins');
-		this.container.element.append(inputsDiv, this.contentDiv, outputsDiv);
 
 		this.position = position;
 
 		for (let index = 0; index < inputs.length; index++) {
 			const input = new Input({ node: this, index }, inputs[index]);
 			this.inputs.push(input);
-			inputsDiv.append(input.container.element);
+			this.inputsDiv.append(input.container.element);
 		}
 
 		for (let index = 0; index < outputs.length; index++) {
 			const output = new Output({ node: this, index }, outputs[index]);
 			this.outputs.push(output);
-			outputsDiv.append(output.container.element);
+			this.outputsDiv.append(output.container.element);
 		}
 
 		this.container.element.addEventListener('dblclick', this);

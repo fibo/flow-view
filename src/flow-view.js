@@ -1,14 +1,16 @@
 import { Container } from './common.js';
 import { Link, SemiLink } from './link.js';
-import { Node, Input, Output } from './node.js';
+import { Node, Input, Output, defaultNodeBodyCreator } from './node.js';
 import { Prompt } from './prompt.js';
 import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, groupStyle, generateStyle } from './style.js';
 
 /**
  * @typedef {import('./link').Connection} Connection
- * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
+ * @typedef {import('./types').FlowView} FlowViewStatic
+ * @typedef {import('./types').FlowViewCustomElement} FlowViewCustomElement
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
  * @typedef {import('./types').Vector} Vector
  */
 
@@ -28,19 +30,18 @@ const eventTypes = [
 	'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel'
 ];
 
+/** @implements {FlowViewCustomElement} */
 export class FlowView extends HTMLElement {
-	/** @type {Set<string>} */
+	/** @type {FlowViewCustomElement['nodeList']} */
 	nodeList = new Set()
-
-	/** @type {Map<string, Partial<FlowViewNodeSignature>>} */
+	/** @type {FlowViewCustomElement['nodeTextToType']} */
+	nodeTextToType = (_) => ''
+	/** @type {FlowViewCustomElement['nodeTextToBody']} */
+	nodeTextToBody = (_) => undefined
+	/** @type {FlowViewCustomElement['nodeTypeSignature']} */
 	nodeTypeSignature = new Map()
 
-	/** @type {((text: string) => string | undefined)} */
-	nodeTextToType = (_) => ''
-
-	/** @type {ShadowRoot} */
-	#root;
-
+	#ids = new Set();
 	/** @type {Prompt | undefined} */
 	#prompt
 	/** @type {SemiLink | undefined} */
@@ -49,8 +50,6 @@ export class FlowView extends HTMLElement {
 	#selectionGroup
 	/** @type {Vector | undefined} */
 	#selectionVectorStart
-
-	#ids = new Set();
 
 	get #parent() { return /** @type {Element} */ (this.parentNode) }
 	#resizeObserver = new ResizeObserver((entries) => {
@@ -62,28 +61,23 @@ export class FlowView extends HTMLElement {
 	});
 
 	#origin = { x: 0, y: 0 };
-
 	#isGrabbing = false;
 	/** @type {Vector | undefined } */
 	#grabbingVector;
-
 	/** @type {Vector | undefined } */
 	#pointerVector;
-
 	/** @type {Map<string, Node>} */
     #nodes = new Map();
 	/** @type {Map<string, Link>} */
 	#links = new Map();
 
+	/** @type {FlowViewStatic['defineElement']} */
 	static defineElement() {
 		if (!customElements.get('flow-view'))
 			customElements.define('flow-view', FlowView);
 	}
 
-	/**
-	 * @param {Element} element
-	 * @returns {FlowView}
-	 */
+	/** @type {FlowViewStatic['instance']} */
 	static instance(element) {
 		FlowView.defineElement();
 		if (element instanceof FlowView)
@@ -127,8 +121,7 @@ export class FlowView extends HTMLElement {
 			'</style>'
 		].join('\n')
 
-		this.#root = this.attachShadow({ mode: 'open' });
-		this.#root.append(template.content.cloneNode(true));
+		this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
 	}
 
 	connectedCallback() {
@@ -195,7 +188,7 @@ export class FlowView extends HTMLElement {
 					}
 				}
 			);
-			this.#root.append(prompt.element);
+			this.#append(prompt.element);
 			prompt.input.focus()
 		}
 
@@ -247,7 +240,7 @@ export class FlowView extends HTMLElement {
 					group.container.position = { x, y }
 					group.container.width = 1
 					group.container.height = 1
-					this.#root.append(group.container.element);
+					this.#append(group.container.element);
 					this.#selectionGroup = group;
 					this.#selectionVectorStart = { x, y };
 					return;
@@ -338,10 +331,10 @@ export class FlowView extends HTMLElement {
 					this.#selectionGroup.container.height = height;
 				} else if (this.#pointerVector) {
 					/** @type {string[]} */
-					const selecteNodeIds = [];
+					const selectedNodeIds = [];
 					for (const node of this.#nodes.values()) {
 						if (node.isSelected) {
-							selecteNodeIds.push(node.id);
+							selectedNodeIds.push(node.id);
 							node.position = {
 								x: node.position.x + x - this.#pointerVector.x,
 								y: node.position.y + y - this.#pointerVector.y
@@ -350,8 +343,8 @@ export class FlowView extends HTMLElement {
 						}
 					}
 					for (const link of this.#links.values()) {
-						if (selecteNodeIds.includes(link.source.node.id) ||
-							selecteNodeIds.includes(link.target.node.id)) {
+						if (selectedNodeIds.includes(link.source.node.id) ||
+							selectedNodeIds.includes(link.target.node.id)) {
 							this.#updateLinkGeometry(link);
 						}
 					}
@@ -399,56 +392,39 @@ export class FlowView extends HTMLElement {
 		}
 	}
 
-	/**
-	 * @param {FlowViewPinPath} from
-	 * @param {FlowViewPinPath} to
-	 */
+	/** @type {FlowViewCustomElement['newLink']} */
 	newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]) {
 		const sourceNode = this.#nodes.get(sourceNodeId)
 		const targetNode = this.#nodes.get(targetNodeId)
-		if (!sourceNode || !targetNode) throw new Error('Node not found')
+		if (!sourceNode || !targetNode)
+			throw new Error('Node not found')
 		const source = sourceNode.outputs[sourcePosition]
 		const target = targetNode.inputs[targetPosition]
-		if (!source || !target) throw new Error('Pin not found')
+		if (!source || !target)
+			throw new Error('Pin not found')
 		// An Input can be connected only to one Link.
 		const id = [targetNodeId, targetPosition].join();
-		if (this.#links.has(id)) throw new Error('Input already connected');
+		if (this.#links.has(id))
+			throw new Error('Input already connected');
 		const link = new Link(source, target, {
 			delete: () => this.#deleteLink(id),
 			select: () => this.#selectLink(link),
 		});
-		this.#root.append(link.container.element)
+		this.#append(link.container.element)
 		this.#links.set(id, link)
 		this.#updateLinkGeometry(link);
-		return link
 	}
 
-	/**
-	 * @param {{
-	 *   x: number
-	 *   y: number
-	 *   text: string
-	 * }} node
-	 * @param {string=} wantedId
-	 */
-	newNode({ x, y, text }, wantedId) {
-		const nodeType = this.nodeTextToType(text) ?? '';
-		const signature = this.nodeTypeSignature.get(nodeType) ?? {};
-		const id = this.#generateId(wantedId);
-		const node = new Node({
-			id,
-			position: { x, y},
-			text,
-			type: nodeType
-		}, {
-			inputs: signature.inputs ?? [],
-			outputs: signature.outputs ?? []
-		});
-		this.#root.append(node.container.element);
+	/** @type {FlowViewCustomElement['newNode']} */
+	newNode({ x, y, text }, id = this.#generateId()) {
+		const nodeType = this.nodeTextToType(text);
+		const signature = nodeType ? this.nodeTypeSignature.get(nodeType) : {};
+		const bodyCreator = this.nodeTextToBody(text) ?? defaultNodeBodyCreator;
+		const node = new Node(id, text, { x, y }, signature ?? {});
+		node.container.element.append(node.inputsDiv, bodyCreator(node, this), node.outputsDiv);
+		this.#append(node.container.element)
 		this.#updateNodeGeometry(node);
-		node.contentDiv.textContent = node.text
 		this.#nodes.set(id, node);
-		return node;
 	}
 
 	/**
@@ -463,6 +439,9 @@ export class FlowView extends HTMLElement {
 	 */
 	node(id) { return this.#nodes.get(id) }
 
+	/** @type {ShadowRoot['append']} */
+	#append(...args) { /** @type {ShadowRoot } */(this.shadowRoot).append(...args) }
+
 	/** @param {MouseEvent} event */
 	#pointerCoordinates({ clientX, clientY }) {
 		const { x, y } = this.getBoundingClientRect();
@@ -476,8 +455,8 @@ export class FlowView extends HTMLElement {
 	 */
 	#createSemiLink(pin, position) {
 		const semiLink = new SemiLink(pin, position);
-		this.#root.append(semiLink.container.element);
-		return (this.#semiLink = semiLink);
+		this.#append(semiLink.container.element);
+		return this.#semiLink = semiLink;
 	}
 
 	/**
@@ -613,21 +592,14 @@ export class FlowView extends HTMLElement {
 			output.container.highlight = false;
 	}
 
-	/**
-	 * @param {(string | undefined)=} wantedId
-	 * @returns {string} id
-	 */
-	#generateId(wantedId) {
-		const id = wantedId || Math.random()
-			.toString(36)
-			.replace(/[^a-z]+/g, "")
-			.substring(0, 5);
+	/** @returns {string} id */
+	#generateId() {
+		const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substring(0, 5);
 		if (this.#ids.has(id))
 			return this.#generateId();
-		else {
+		else
 			this.#ids.add(id);
-			return id;
-		}
+		return id;
 	}
 
 	#clearSelection() {

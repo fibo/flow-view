@@ -1,108 +1,84 @@
-import { createDiv } from './common.js';
-import { cssClass, cssPrompt } from './style.js';
+import { Container, createDiv, stop } from './common.js';
+import { cssClass } from './style.js';
 
 /**
  * @typedef {import('./types').Vector} Vector
+ *
+ * @typedef {{
+ *   delete: () => void,
+ *   newNode: (text: string) => void
+ * }} PromptAction
  */
 
-const optionHighlightedClass = `${cssClass.prompt}__option--highlighted`;
+const eventTypes = {
+	container: ['dblclick', 'pointerdown', 'pointerleave'],
+    input: ['keydown', 'keyup']
+};
 
 export class Prompt {
-	element = createDiv(cssClass.prompt);
-
+	container = new Container(cssClass.prompt);
 	input = document.createElement('input');
 	hint = document.createElement('input');
-	options = createDiv(`${cssClass.prompt}__options`);
+	options = createDiv(cssClass.promptOptions);
 
 	/** @type {Set<string>} */
 	#nodeList;
 
 	#highlightedOptionIndex = -1;
 
-	/**
-	 * @type {{
-	 *   delete: () => void,
-	 *   newNode: (text: string) => void
-	 * }} action
-	 */
+	/** @type {PromptAction} */
 	#action;
 
 	/**
 	 * @param {Set<string>} nodeList
 	 * @param {Vector} position
-	 * @param {{
-	 *   origin: Vector,
-	 *   width: number,
-	 *   height: number
-	 * }} view
-	 * @param {{
-	 *   delete: () => void,
-	 *   newNode: (text: string) => void
-	 * }} action
+	 * @param {PromptAction} action
 	 */
-	constructor(nodeList, { x, y }, view, action) {
+	constructor(nodeList, position, action) {
 		this.#nodeList = nodeList;
-		this.#action = action
+		this.#action = action;
 
-		// Avoid overflow, using some heuristic values.
-		const overflowY = y - view.origin.y + 40 >= view.height
-		const overflowX = x - view.origin.x + cssPrompt.width >= view.width
-		this.x = overflowX ? view.width + view.origin.x - cssPrompt.width - 10 : x
-		this.y = overflowY ? view.height + view.origin.y - 50 : y
+		const { container, hint, input } = this;
 
-		this.element.style.top = `${this.y - view.origin.y}px`
-		this.element.style.left = `${this.x - view.origin.x}px`
+		hint.classList.add(cssClass.promptHint);
+		container.element.append(input, hint, this.options);
 
-		this.hint.classList.add(`${cssClass.prompt}__hint`);
-		this.element.append(this.input, this.hint, this.options);
+		container.position = position;
+		container.setElementPosition();
 
-		this.element.addEventListener('dblclick', this)
-		this.element.addEventListener('pointerdown', this)
-		this.element.addEventListener('pointerleave', this)
-
-		this.input.addEventListener('keydown', this)
-		this.input.addEventListener('keyup', this)
+		eventTypes.container.forEach(eventType => container.element.addEventListener(eventType, this));
+		eventTypes.input.forEach(eventType => input.addEventListener(eventType, this));
 	}
 
 	dispose() {
-		const { element, input } = this
-		element.removeEventListener('dblclick', this)
-		element.removeEventListener('pointerdown', this)
-		element.removeEventListener('pointerleave', this)
-		input.removeEventListener('keydown', this)
-		input.removeEventListener('keyup', this)
-		element.remove();
+		const { container, input } = this;
+		eventTypes.container.forEach(eventType => container.element.removeEventListener(eventType, this));
+		eventTypes.input.forEach(eventType => input.removeEventListener(eventType, this));
+		container.element.remove();
 	}
 
 	/** @param {Event} event */
 	handleEvent(event) {
-		if (event.type === 'dblclick') {
-			event.stopPropagation()
-			return
-		}
-
-		if (event.type === 'pointerdown') {
-			event.stopPropagation()
-			return
-		}
+		if (event.type === 'dblclick' || event.type === 'pointerdown')
+			return stop(event);
 
 		if (event.type === 'pointerleave') {
-			this.#highlightedOptionIndex = -1
-			return
+			this.#highlightedOptionIndex = -1;
+			return;
 		}
 
 		if (event instanceof KeyboardEvent && event.type === 'keydown') {
-			event.stopPropagation()
-			if (['ArrowUp', 'Tab'].includes(event.code)) event.preventDefault()
-			return
+			stop(event);
+			if (['ArrowUp', 'Tab'].includes(event.code)) event.preventDefault();
+			return;
 		}
 
 		if (event instanceof KeyboardEvent && event.type === 'keyup') {
-			event.stopPropagation()
+			stop(event);
 			switch (event.code) {
 				case 'Enter':
-					this.#createNode()
-					break
+					this.#createNode();
+					break;
 				case 'Escape':
 					if (this.input.value === '')
 						this.#action.delete();
@@ -111,45 +87,45 @@ export class Prompt {
 						this.input.value = '';
 						this.#resetOptions();
 					}
-					break
+					break;
 				case 'ArrowLeft':
 				case 'ShiftLeft':
 				case 'ShiftRight':
 					break;
 				case 'ArrowDown':
-					this.#fixCase()
-					this.#nextOption()
-					this.#highlightOptions()
+					this.#fixCase();
+					this.#nextOption();
+					this.#highlightOptions();
 					this.#setCompletion();
 					break;
 				case 'ArrowUp':
-					event.preventDefault()
-					this.#fixCase()
-					this.#previousOption()
-					this.#highlightOptions()
+					event.preventDefault();
+					this.#fixCase();
+					this.#previousOption();
+					this.#highlightOptions();
 					this.#setCompletion();
 					break;
 				case 'ArrowRight':
 					if (this.input.value.length === this.input.selectionStart) {
-						this.#autocomplete()
-						this.#resetOptions()
+						this.#autocomplete();
+						this.#resetOptions();
 					}
 					break;
 				case 'Backspace':
-					this.#highlightedOptionIndex = -1
-					this.#createOptions()
+					this.#highlightedOptionIndex = -1;
+					this.#createOptions();
 					this.#setCompletion();
-					break
+					break;
 				case 'Tab': {
-					event.preventDefault()
+					event.preventDefault();
 					// Fix case with Tab.
-					this.#fixCase()
+					this.#fixCase();
 					// Exact match.
 					if (this.#matchingNodes.length === 1) {
 						this.#setCompletion();
-						this.#autocomplete()
-						this.#resetOptions()
-						break
+						this.#autocomplete();
+						this.#resetOptions();
+						break;
 					}
 					// Use Tab or Shift-Tab to highlight options ciclically.
 					if (event.shiftKey) {
@@ -163,7 +139,7 @@ export class Prompt {
 					}
 					this.#createOptions();
 					this.#setCompletion();
-					this.#highlightOptions()
+					this.#highlightOptions();
 					break;
 				}
 				default:
@@ -178,82 +154,79 @@ export class Prompt {
 	set #completion(text) { this.hint.setAttribute('placeholder', text) }
 
 	get #matchingNodes() {
-		const search = this.input.value.toLowerCase()
-		if (search.length === 0) return []
-		return Array.from(this.#nodeList).filter(
-			(name) =>
-				// input value fits into node name...
-				name.toLowerCase().startsWith(search) &&
-				// ...but they are not the same yet.
-				// Otherwise if a text starts with another text, some completions could be missed.
-				name.toLowerCase() !== search
-		)
+		const search = this.input.value.toLowerCase();
+		if (search.length === 0) return [];
+		return Array.from(this.#nodeList).filter(name =>
+			// input value fits into node name...
+			name.toLowerCase().startsWith(search) &&
+			// ...but they are not the same yet.
+			// Otherwise if a text starts with another text, some completions could be missed.
+			name.toLowerCase() !== search
+		);
 	}
 
 	#createNode() {
 		const nodeText = this.options.children?.[this.#highlightedOptionIndex]?.textContent ?? this.input.value;
 		const exactMatch = this.#nodeList.has(nodeText) ? nodeText : undefined;
-		if (exactMatch) {
+		if (exactMatch)
 			this.#action.newNode(exactMatch);
-		} else {
+		else {
 			const nodeTextLowerCase = nodeText.toLowerCase();
+			let foundCaseInsensitiveMatch = false;
 			for (const name of this.#nodeList)
 				if (name.toLowerCase() === nodeTextLowerCase) {
-					// Exact match (case-insensitive).
+					foundCaseInsensitiveMatch = true;
 					this.#action.newNode(name);
 					break;
 				}
-			this.#action.newNode(nodeText);
+			if (!foundCaseInsensitiveMatch)
+				this.#action.newNode(nodeText);
 		}
 		this.#action.delete();
 	}
 
 	#deleteOptions() {
-		while (this.options.firstChild) {
-			const lastChild = this.options.lastChild;
-			if (lastChild) this.options.removeChild(lastChild);
-		}
+		while (this.options.firstChild)
+			if (this.options.lastChild)
+				 this.options.removeChild(this.options.lastChild);
 	}
 
-	#autocomplete() {
-		if (this.#completion) this.input.value = this.#completion
-	}
+	#autocomplete() { if (this.#completion) this.input.value = this.#completion }
 
 	#nextOption() {
-		this.#highlightedOptionIndex = Math.min(this.#highlightedOptionIndex + 1, this.options.childElementCount - 1)
+		this.#highlightedOptionIndex = Math.min(this.#highlightedOptionIndex + 1, this.options.childElementCount - 1);
 	}
 
 	#previousOption() {
-		this.#highlightedOptionIndex =
-			this.#highlightedOptionIndex !== -1 ? Math.max(this.#highlightedOptionIndex - 1, 0) : -1
+		this.#highlightedOptionIndex = this.#highlightedOptionIndex !== -1 ? Math.max(this.#highlightedOptionIndex - 1, 0) : -1;
 	}
 
 	#highlightOptions() {
 		for (let i = 0; i < this.options.childElementCount; i++) {
 			const option = this.options.children[i];
 			if (this.#highlightedOptionIndex === i)
-				option.classList.add(optionHighlightedClass);
+				option.classList.add(cssClass.promptOptionHighlighted);
 			else
-				option.classList.remove(optionHighlightedClass);
+				option.classList.remove(cssClass.promptOptionHighlighted);
 		}
 	}
 
 	#createOptions() {
 		this.#deleteOptions();
 		for (let i = 0; i < this.#matchingNodes.length; i++) {
-			const name = this.#matchingNodes[i]
-			const option = createDiv(`${cssClass.prompt}__option`)
-			option.textContent = name
+			const name = this.#matchingNodes[i];
+			const option = createDiv(cssClass.promptOption);
+			option.textContent = name;
 			option.onclick = () => {
-				this.input.value = name
-				this.#createNode()
+				this.input.value = name;
+				this.#createNode();
 			}
 			option.onpointerenter = () => {
-				this.#highlightedOptionIndex = i
-				option.classList.add(optionHighlightedClass);
+				this.#highlightedOptionIndex = i;
+				option.classList.add(cssClass.promptOptionHighlighted);
 			}
 			option.onpointerleave = () => {
-				option.classList.remove(optionHighlightedClass);
+				option.classList.remove(cssClass.promptOptionHighlighted);
 			}
 			this.options.append(option);
 		}
@@ -265,16 +238,15 @@ export class Prompt {
 	}
 
 	#caseInsensitiveMatchingNode() {
-		return this.#matchingNodes.find(
-			(name) =>
-				!name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
+		return this.#matchingNodes.find(name =>
+			!name.startsWith(this.input.value) && name.toLowerCase().startsWith(this.input.value.toLowerCase())
 		)
 	}
 
 	#fixCase() {
-		const text = this.#caseInsensitiveMatchingNode()
-		if (!text) return
-		this.input.value = text.substring(0, this.input.value.length)
+		const text = this.#caseInsensitiveMatchingNode();
+		if (!text) return;
+		this.input.value = text.substring(0, this.input.value.length);
 		this.#setCompletion();
 	}
 
@@ -292,19 +264,19 @@ export class Prompt {
 			}
 			default: {
 				if (this.#highlightedOptionIndex !== -1) {
-					this.#completion = this.options.children[this.#highlightedOptionIndex].textContent ?? ''
+					this.#completion = this.options.children[this.#highlightedOptionIndex].textContent ?? '';
 					break;
 				}
-				this.#completion = this.input.value
+				this.#completion = this.input.value;
 
 				const shortestMatch = this.#matchingNodes.reduce((shortest, match) =>
 					shortest.length < match.length ? shortest : match
 				);
 
 				for (let i = this.input.value.length; i < shortestMatch.length; i++) {
-					const currentChar = shortestMatch[i]
+					const currentChar = shortestMatch[i];
 					if (this.#matchingNodes.every((name) => name.startsWith(this.#completion + currentChar))) {
-						this.#completion += currentChar
+						this.#completion += currentChar;
 					}
 				}
 			}

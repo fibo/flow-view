@@ -4,10 +4,6 @@
   "version": "7.0.0",
   "license": "MIT",
   "homepage": "https://fibo.github.io/flow-view",
-  "author": {
-    "name": "Gianluca Casati",
-    "url": "https://fibo.github.io"
-  },
   "type": "module",
   "types": "./src/types.ts",
   "exports": "./src/flow-view.js",
@@ -26,6 +22,10 @@
     "vanilla",
     "web-component"
   ],
+  "author": {
+    "name": "Gianluca Casati",
+    "url": "https://fibo.github.io"
+  },
   "bugs": {
     "url": "https://github.com/fibo/flow-view/issues"
   }

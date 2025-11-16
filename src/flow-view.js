@@ -1,8 +1,8 @@
-import { Container } from './common.js';
+import { Container, ctrlOrMeta, stop, prevent, vector } from './common.js';
 import { Link, SemiLink } from './link.js';
 import { Node, Input, Output, defaultNodeBodyCreator } from './node.js';
 import { Prompt } from './prompt.js';
-import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, groupStyle, generateStyle } from './style.js';
+import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, selectionGroupStyle, generateStyle } from './style.js';
 
 /**
  * @typedef {import('./link').Connection} Connection
@@ -10,6 +10,7 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
  * @typedef {import('./types').FlowViewCustomElement} FlowViewCustomElement
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./types').FlowViewPin} FlowViewPin
  * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
  * @typedef {import('./types').Vector} Vector
  */
@@ -17,50 +18,35 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 const lightStyle = generateStyle({ ':host': cssTheme.light });
 const darkStyle = generateStyle({ ':host': cssTheme.dark });
 
-class Group {
-	container = new Container(cssClass.group);
-	dispose() {
-		this.container.element.remove();
-	}
-}
-
 const { size: pinSize, halfSize: halfPinSize } = cssPin
 
-const eventTypes = [
-	'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel'
-];
+const eventTypes = [ 'contextmenu', 'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel' ];
 
 /** @implements {FlowViewCustomElement} */
 export class FlowView extends HTMLElement {
 	/** @type {FlowViewCustomElement['nodeList']} */
-	nodeList = new Set()
+	nodeList = new Set();
 	/** @type {FlowViewCustomElement['nodeTextToType']} */
-	nodeTextToType = (_) => ''
+	nodeTextToType = () => '';
 	/** @type {FlowViewCustomElement['nodeTextToBody']} */
-	nodeTextToBody = (_) => undefined
+	nodeTextToBody = () => undefined;
 	/** @type {FlowViewCustomElement['nodeTypeSignature']} */
-	nodeTypeSignature = new Map()
+	nodeTypeSignature = new Map();
 
 	#ids = new Set();
 	/** @type {Prompt | undefined} */
-	#prompt
+	#prompt;
 	/** @type {SemiLink | undefined} */
-	#semiLink
-	/** @type {Group | undefined} */
-	#selectionGroup
+	#semiLink;
+	/** @type {Set<string>} */
+	#selectedNodeIds = new Set();
+	/** @type {Set<string>} */
+	#selectedLinkIds = new Set();
+	/** @type {Container | undefined} */
+	#selection;
 	/** @type {Vector | undefined} */
-	#selectionVectorStart
-
-	get #parent() { return /** @type {Element} */ (this.parentNode) }
-	#resizeObserver = new ResizeObserver((entries) => {
-		for (const entry of entries) {
-			if (this.#parent !== entry.target) continue;
-			this.style.width = `${Math.floor(entry.contentRect.width)}px`;
-			this.style.height = `${Math.floor(entry.contentRect.height)}px`;
-		}
-	});
-
-	#origin = { x: 0, y: 0 };
+	#selectionStartPosition;
+	#origin = vector.zero();
 	#isGrabbing = false;
 	/** @type {Vector | undefined } */
 	#grabbingVector;
@@ -70,6 +56,16 @@ export class FlowView extends HTMLElement {
     #nodes = new Map();
 	/** @type {Map<string, Link>} */
 	#links = new Map();
+
+
+	get #parent() { return /** @type {Element} */ (this.parentNode) }
+	#resizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			if (this.#parent !== entry.target) continue;
+			this.style.width = `${Math.floor(entry.contentRect.width)}px`;
+			this.style.height = `${Math.floor(entry.contentRect.height)}px`;
+		}
+	});
 
 	/** @type {FlowViewStatic['defineElement']} */
 	static defineElement() {
@@ -116,7 +112,7 @@ export class FlowView extends HTMLElement {
 				...nodeStyle,
 				...pinStyle,
 				...promptStyle,
-				...groupStyle,
+				...selectionGroupStyle,
 			}),
 			'</style>'
 		].join('\n')
@@ -127,69 +123,57 @@ export class FlowView extends HTMLElement {
 	connectedCallback() {
 		this.setAttribute('tabindex', '-1'); // Enables keyboard events.
 		this.style.isolation = 'isolate';
-		eventTypes.forEach((eventType) => this.addEventListener(eventType, this));
+		eventTypes.forEach(eventType => this.addEventListener(eventType, this));
 		this.#resizeObserver.observe(this.#parent);
 	}
 
 	disconnectedCallback() {
-		eventTypes.forEach((eventType) => this.removeEventListener(eventType, this));
+		eventTypes.forEach(eventType => this.removeEventListener(eventType, this));
 		this.#resizeObserver.unobserve(this.#parent);
 	}
 
 	/** @param {Event} event */
 	handleEvent(event) {
+		if (event.type === 'contextmenu') {
+			stop(event); prevent(event);
+		}
+
 		if (event instanceof KeyboardEvent) {
-			event.stopPropagation();
+			stop(event); prevent(event);
+			const code = event.code;
 			if (event.type === 'keydown') {
-				if (event.code === 'Space') {
-					event.preventDefault();
-					if (this.#prompt) return;
-					if (this.#isGrabbing) return;
-					this.#isGrabbing = true;
-					this.style.cursor = 'grabbing';
-					this.#clearSelection();
-					this.#removeSemiLink();
+				if (code.startsWith('Arrow')) {
+					if (!this.#selectedNodeIds.size) return;
+					let x = 0, y = 0;
+					if (code === 'ArrowLeft') x = -pinSize;
+					if (code === 'ArrowRight') x = pinSize;
+					if (code === 'ArrowUp') y = -pinSize;
+					if (code === 'ArrowDown') y = +pinSize;
+					this.#moveSelectedNodes({ x, y });
 				}
-				if (event.code === 'Backspace') {
-					this.#deleteSelectedItems();
-				}
-				if (event.code === 'Escape') {
-					this.#clearSelection();
+				if (code === 'Backspace') return this.#deleteSelectedItems();
+				if (code === 'Escape') return this.#clearSelection();
+				if (code === 'Space') return this.#startGrabbing();
+				if (ctrlOrMeta(event)) {
+					if (code === 'KeyA') {
+						for (const node of this.#nodes.values())
+							this.#selectNode(node);
+					}
 				}
 			}
 			if (event.type === 'keyup') {
-				if (event.code === 'Space') {
-					this.style.cursor = 'default';
-					this.#isGrabbing = false;
-					this.#grabbingVector = undefined;
-				}
+				if (code === 'Space') return this.#stopGrabbing();
 			}
 		}
 
 		if (event.type === 'touchmove') {
-			event.preventDefault();
-			event.stopPropagation();
+			stop(event); prevent(event);
 		}
 
 		if (event instanceof MouseEvent && event.type === 'dblclick') {
 			if (this.#isGrabbing) return;
 			this.#clearSelection();
-			this.#removePrompt();
-			const { x, y } = this.#pointerCoordinates(event);
-			const position = { x: x + this.#origin.x, y: y + this.#origin.y }
-			const prompt = this.#prompt = new Prompt(
-			    this.nodeList,
-				position,
-				{ origin: this.#origin, width: this.width, height: this.height },
-				{
-					delete: this.#removePrompt.bind(this),
-					newNode: (text) => {
-						this.newNode({ text, ...position });
-					}
-				}
-			);
-			this.#append(prompt.element);
-			prompt.input.focus()
+			this.#newPrompt(this.#pointerCoordinates(event));
 		}
 
 		if (event.type === 'pointerenter') {
@@ -202,86 +186,76 @@ export class FlowView extends HTMLElement {
 			window.removeEventListener('keyup', this);
 
 			this.#removeSemiLink();
-			this.#grabbingVector = undefined;
 			this.#pointerVector = undefined;
-			if (this.#selectionVectorStart) {
-				this.#selectionVectorStart = undefined;
-				this.#selectionGroup?.dispose()
-			}
-			if (this.#isGrabbing = false) {
-				this.style.cursor = 'default';
-				this.#isGrabbing = false;
-			}
+			this.#removeSelection();
+			this.#stopGrabbing();
 		}
 
 		if (event instanceof WheelEvent && event.type === 'wheel') {
-			event.preventDefault();
-			event.stopPropagation();
-			this.#origin.x += event.deltaX;
-			this.#origin.y += event.deltaY;
-			this.#updateNodesAndLinksGeometry();
-			if (this.#semiLink) this.#removeSemiLink();
-			if (this.#prompt) this.#removePrompt();
+			stop(event); prevent(event);
+			this.#origin = vector.add(this.#origin, { x: event.deltaX, y: event.deltaY });
+			this.#updateNodesAndLinksPosition();
+			if (this.#semiLink)
+				this.#updateSemiLinkPosition(vector.add(this.#pointerCoordinates(event), this.#origin));
+			if (this.#prompt)
+				this.#removePrompt();
 		}
 
 		if (event instanceof PointerEvent) {
-			const { x, y } = this.#pointerCoordinates(event);
+			const pointer = this.#pointerCoordinates(event);
 
 			if (event.type === 'pointerdown') {
-				event.stopPropagation();
+				stop(event); prevent(event);
 				this.#removePrompt();
-				this.#pointerVector = { x, y };
+				if (this.#isGrabbing) return;
+				this.#pointerVector = pointer;
 
-				const node = this.#getNodeAtPosition({ x, y });
+				const node = this.#getNodeUnderPointer(pointer);
 				if (!node) {
-					this.#clearSelection();
+					if (!ctrlOrMeta(event)) this.#clearSelection();
 					this.#removeSemiLink();
-					const group = new Group();
-					group.container.position = { x, y }
-					group.container.width = 1
-					group.container.height = 1
-					this.#append(group.container.element);
-					this.#selectionGroup = group;
-					this.#selectionVectorStart = { x, y };
+					this.#newSelection(pointer);
 					return;
 				}
 
-				const pin = this.#getClosestPin([...node.inputs, ...node.outputs], { x, y });
+				const pin = this.#getClosestPin([...node.inputs, ...node.outputs], pointer);
 				if (!pin) {
-					this.#clearSelection()
-					this.#selectNode(node);
-					return
+					if (this.#selectedNodeIds.has(node.id)) {
+						if (ctrlOrMeta(event)) this.#deselectNode(node);
+					} else {
+						if (!ctrlOrMeta(event)) this.#clearSelection();
+						this.#selectNode(node);
+					}
+					return;
 				}
 
 				if (this.#semiLink) {
 					const pendingPin = this.#semiLink.pin;
 					if (pendingPin.node !== node) { // Avoid loops.
-						if (pendingPin instanceof Input && pin instanceof Output) {
+						if (pendingPin instanceof Input && pin instanceof Output)
 							this.newLink([pin.node.id, pin.index], [pendingPin.node.id, pendingPin.index]);
-						}
-						if(pendingPin instanceof Output && pin instanceof Input) {
+						if (pendingPin instanceof Output && pin instanceof Input) {
 							const linkId = [pin.node.id, pin.index].join();
 							const link = this.#links.get(linkId);
-							if (link) this.#deleteLink(linkId);
+							if (link)
+								this.deleteLink(linkId);
 							this.newLink([pendingPin.node.id, pendingPin.index], [pin.node.id, pin.index]);
 						}
 					}
 					this.#removeSemiLink();
 				} else {
 					if (pin instanceof Output) {
-						this.#clearSelection()
-						this.#createSemiLink(pin, { x, y });
-					} else {
+						if (!ctrlOrMeta(event)) this.#clearSelection();
+						this.#newSemiLink(pin, pointer);
+					}
+					if (pin instanceof Input) {
 						const linkId = [pin.node.id, pin.index].join();
 						const link = this.#links.get(linkId);
-						// If Input is already connected, create a semi link.
 						if (link) {
-							const semiLink = this.#createSemiLink(link.source, { x, y });
-							this.#updateLinkGeometry(semiLink)
-							this.#deleteLink(linkId);
-						} else {
-							this.#createSemiLink(pin, { x, y });
-						}
+							this.#updateLinkPosition(this.#newSemiLink(link.source, vector.add(pointer, this.#origin)));
+							this.deleteLink(linkId);
+						} else
+							this.#newSemiLink(pin, pointer);
 					}
 				}
 			}
@@ -289,95 +263,53 @@ export class FlowView extends HTMLElement {
 			if (event.type === 'pointermove') {
 				if (this.#isGrabbing) {
 					if (!this.#grabbingVector) {
-						this.#grabbingVector = { x, y };
+						this.#grabbingVector = pointer;
 						return;
 					}
-					this.#origin.x += this.#grabbingVector.x - x;
-					this.#origin.y += this.#grabbingVector.y - y;
-					this.#updateNodesAndLinksGeometry();
-					this.#grabbingVector = { x, y };
+					this.#origin = vector.add(this.#origin, vector.sub(this.#grabbingVector, pointer));
+					this.#updateNodesAndLinksPosition();
+					this.#grabbingVector = pointer;
 				}
 
 				if (this.#semiLink) {
-					if (this.#semiLink.pin instanceof Output)
-						this.#semiLink.end = {
-							x: x + this.#origin.x,
-							y: y + this.#origin.y
-						};
-					if (this.#semiLink.pin instanceof Input)
-						this.#semiLink.start = {
-							x: x + this.#origin.x,
-							y: y + this.#origin.y
-						};
-					this.#updateLinkGeometry(this.#semiLink)
+					this.#updateSemiLinkPosition(vector.add(pointer, this.#origin));
+					return;
 				}
 
-				if (this.#selectionGroup && this.#selectionVectorStart) {
-					const top = Math.min(this.#selectionVectorStart.y, y);
-					const left = Math.min(this.#selectionVectorStart.x, x);
-					const width = Math.abs(this.#selectionVectorStart.x - x);
-					const height = Math.abs(this.#selectionVectorStart.y - y);
-					for (const node of this.#nodes.values()) {
-						const { width: nodeWidth, height: nodeHeight } = node.container.bounds;
-						if (node.position.x < left + width && node.position.x + nodeWidth > left &&
-							node.position.y < top + height && node.position.y + nodeHeight > top) {
+				if (this.#selection && this.#selectionStartPosition) {
+					const start = this.#selectionStartPosition;
+					this.#selection.position = { x: Math.min(start.x, pointer.x), y: Math.min(start.y, pointer.y) };
+					this.#selection.setElementPosition();
+					this.#selection.dimensions = { width: Math.abs(start.x - pointer.x), height: Math.abs(start.y - pointer.y) };
+					this.#selection.setElementDimensions();
+					for (const node of this.#nodes.values())
+						if (this.#selection.intersects(node.container))
 							this.#selectNode(node);
-						} else {
+						else
 							this.#deselectNode(node);
-						}
-					}
-					this.#selectionGroup.container.position = { x: left, y: top };
-					this.#selectionGroup.container.width = width;
-					this.#selectionGroup.container.height = height;
 				} else if (this.#pointerVector) {
-					/** @type {string[]} */
-					const selectedNodeIds = [];
-					for (const node of this.#nodes.values()) {
-						if (node.isSelected) {
-							selectedNodeIds.push(node.id);
-							node.position = {
-								x: node.position.x + x - this.#pointerVector.x,
-								y: node.position.y + y - this.#pointerVector.y
-							};
-							this.#updateNodeGeometry(node);
-						}
-					}
-					for (const link of this.#links.values()) {
-						if (selectedNodeIds.includes(link.source.node.id) ||
-							selectedNodeIds.includes(link.target.node.id)) {
-							this.#updateLinkGeometry(link);
-						}
-					}
-					this.#pointerVector = { x, y };
+					this.#moveSelectedNodes(vector.sub(pointer, this.#pointerVector));
+					this.#pointerVector = pointer;
 				}
-
 			}
 
 			if (event.type === 'pointerup') {
 				this.#pointerVector = undefined;
-				if (this.#selectionGroup) {
-					if (this.#selectionVectorStart) {
-						if (Math.abs(this.#selectionVectorStart.y - y) < 10) {
-							// TODO cut links
-						}
-					}
-					this.#selectionVectorStart = undefined;
-					this.#selectionGroup.dispose()
-					this.#selectionGroup = undefined;
-				}
+				this.#removeSelection();
 			}
 		}
 	}
 
-	get height() { return +this.style.height }
-	get width() { return +this.style.width }
-
 	clear() {
+		this.#removePrompt();
+		this.#removeSemiLink();
+		for (const id of this.#links.keys())
+			this.deleteLink(id);
 		for (const id of this.#nodes.keys())
-			this.#deleteNode(id);
+			this.deleteNode(id);
 	}
 
-	/** @param {FlowViewGraph} graph */
+	/** @type {FlowViewCustomElement['load']} */
 	load({ nodes, links = {} }) {
 		for (const [id, node] of Object.entries(nodes))
 			this.newNode(node, id);
@@ -407,12 +339,15 @@ export class FlowView extends HTMLElement {
 		if (this.#links.has(id))
 			throw new Error('Input already connected');
 		const link = new Link(source, target, {
-			delete: () => this.#deleteLink(id),
-			select: () => this.#selectLink(link),
+			delete: () => this.deleteLink(id),
+			select: (isMulti) => {
+				if (!isMulti) this.#clearSelection();
+				this.#selectLink(link);
+			}
 		});
 		this.#append(link.container.element)
 		this.#links.set(id, link)
-		this.#updateLinkGeometry(link);
+		this.#updateLinkPosition(link);
 	}
 
 	/** @type {FlowViewCustomElement['newNode']} */
@@ -423,21 +358,39 @@ export class FlowView extends HTMLElement {
 		const node = new Node(id, text, { x, y }, signature ?? {});
 		node.container.element.append(node.inputsDiv, bodyCreator(node, this), node.outputsDiv);
 		this.#append(node.container.element)
-		this.#updateNodeGeometry(node);
+		node.container.dimensions = node.container.element.getBoundingClientRect();
+		node.updatePinsOffset();
+		this.#updateNodesPosition(node);
 		this.#nodes.set(id, node);
 	}
 
-	/**
-	 * @param {string} id
-	 * @returns {Link | undefined}
-	 */
-	link(id) { return this.#links.get(id) }
+	/** @type {FlowViewCustomElement['deleteLink']} */
+	deleteLink(id) {
+		const link = this.#links.get(id);
+		if (!link) return;
+		link.source.container.highlight = false;
+		link.target.container.highlight = false;
+		// Dispose.
+		this.#deselectLink(link);
+		this.#links.delete(id);
+		this.#ids.delete(id);
+		link.dispose();
+	}
 
-	/**
-	 * @param {string} id
-	 * @returns {Node | undefined}
-	 */
-	node(id) { return this.#nodes.get(id) }
+	/** @param {string} id */
+	deleteNode(id) {
+		const node = this.#nodes.get(id);
+		if (!node) return;
+		// Remove links connected to node.
+		for (const [linkId, link] of this.#links.entries())
+			if (link.source.node.id === id || link.target.node.id === id)
+				this.deleteLink(linkId);
+		// Dispose.
+		this.#deselectNode(node);
+		this.#nodes.delete(id);
+		this.#ids.delete(id);
+		node.dispose();
+	}
 
 	/** @type {ShadowRoot['append']} */
 	#append(...args) { /** @type {ShadowRoot } */(this.shadowRoot).append(...args) }
@@ -448,45 +401,81 @@ export class FlowView extends HTMLElement {
 		return { x: Math.round(clientX - x), y: Math.round(clientY - y) }
 	}
 
-	/**
-	 * @param {Input | Output} pin
-	 * @param {Vector} position
-	 * @returns {SemiLink}
-	 */
-	#createSemiLink(pin, position) {
-		const semiLink = new SemiLink(pin, position);
-		this.#append(semiLink.container.element);
-		return this.#semiLink = semiLink;
+	/** @param {Vector} translation */
+	#moveSelectedNodes(translation) {
+		for (const nodeId of this.#selectedNodeIds) {
+			const node = this.#nodes.get(nodeId);
+			if (!node) continue;
+			node.position = {
+				x: node.position.x + translation.x,
+				y: node.position.y + translation.y
+			};
+			this.#updateNodesPosition(node);
+		}
+		for (const link of this.#links.values())
+			if (this.#selectedNodeIds.has(link.source.node.id) ||
+				this.#selectedNodeIds.has(link.target.node.id))
+				this.#updateLinkPosition(link);
 	}
 
 	/**
-	 * @param {{
-	 *   container: Container
-	 *   connection: Connection
-	 *   start: Vector
-	 *   end: Vector
-	 * }} link
+	 * @param {FlowViewPin} pin
+	 * @param {Vector} position
+	 * @returns {SemiLink} semiLink
 	 */
-	#updateLinkGeometry({ container, connection, start, end }) {
-		const { x: startX, y: startY } = start;
-		const { x: endX, y: endY } = end;
+	#newSemiLink(pin, position) {
+		const semiLink = this.#semiLink = new SemiLink(pin, position);
+		this.#append(semiLink.container.element);
+		return semiLink
+	}
 
-		const invertedX = endX < startX
-		const invertedY = endY < startY
+	/** @param {Vector} pointer */
+	#newSelection(pointer) {
+		const selection = this.#selection = new Container(cssClass.selection);
+		selection.position = pointer;
+		selection.setElementPosition();
+		selection.setElementDimensions();
+		this.#append(selection.element);
+		this.#selectionStartPosition = pointer;
+	}
 
-		container.position = {
-			x: (invertedX ? endX - halfPinSize : startX - halfPinSize) - this.#origin.x,
-			y: (invertedY ? endY - halfPinSize : startY - halfPinSize) - this.#origin.y
-		}
+	#removeSelection() {
+		if (!this.#selection) return;
+		this.#selection.element.remove();
+		this.#selection = undefined;
+		this.#selectionStartPosition = undefined;
+	}
 
-		const width = invertedX ? startX - endX + pinSize : endX - startX + pinSize;
-		container.width = width;
-		connection.width = width;
+	#startGrabbing() {
+		if (this.#isGrabbing || this.#prompt || this.#selection || this.#semiLink) return;
+		this.#isGrabbing = true;
+		this.style.cursor = 'grabbing';
+	}
 
-		const height = invertedY ? startY - endY + pinSize : endY - startY + pinSize;
-		container.height = height;
-		connection.height = height;
+	#stopGrabbing() {
+		if (!this.#isGrabbing) return;
+		this.style.cursor = 'default';
+		this.#isGrabbing = false;
+		this.#grabbingVector = undefined;
+	}
 
+	/** @param {Link | SemiLink} arg */
+	#updateLinkPosition({ container, connection, start, end }) {
+		const invertedX = end.x < start.x;
+		const invertedY = end.y < start.y;
+
+		const width = invertedX ? start.x - end.x + pinSize : end.x - start.x + pinSize;
+		const height = invertedY ? start.y - end.y + pinSize : end.y - start.y + pinSize;
+
+		container.position = vector.sub({
+			x: (invertedX ? end.x - halfPinSize : start.x - halfPinSize),
+			y: (invertedY ? end.y - halfPinSize : start.y - halfPinSize)
+		}, this.#origin);
+		container.setElementPosition();
+		container.dimensions = { width, height };
+		container.setElementDimensions();
+
+		connection.dimensions = { width, height };
 		connection.start = {
 			x: invertedX ? width - halfPinSize : halfPinSize,
 			y: invertedY ? height - halfPinSize : halfPinSize
@@ -498,98 +487,59 @@ export class FlowView extends HTMLElement {
 	}
 
 	/** @param {Node} node */
-	#updateNodeGeometry(node) {
-		node.container.position = {
-			x: node.position.x - this.#origin.x,
-			y: node.position.y - this.#origin.y
-		}
+	#updateNodesPosition(node) {
+		node.container.position = vector.sub(node.position, this.#origin);
+		node.container.setElementPosition();
 	}
 
-	#updateNodesAndLinksGeometry() {
+	#updateNodesAndLinksPosition() {
 		for (const node of this.#nodes.values())
-			this.#updateNodeGeometry(node);
+			this.#updateNodesPosition(node);
 		for (const link of this.#links.values())
-			this.#updateLinkGeometry(link);
+			this.#updateLinkPosition(link);
+	}
+
+	/** @param {Vector} position */
+	#updateSemiLinkPosition(position) {
+		if (!this.#semiLink) return;
+		if (this.#semiLink.pin instanceof Output)
+			this.#semiLink.end = position;
+		if (this.#semiLink.pin instanceof Input)
+			this.#semiLink.start = position;
+		this.#updateLinkPosition(this.#semiLink);
 	}
 
 	#deleteSelectedItems() {
-		for (const [id, node] of this.#nodes.entries())
-			if (node.isSelected)
-				this.#deleteNode(id);
-		for (const [id, link] of this.#links.entries())
-			if (link.isSelected)
-				this.#deleteLink(id);
-	}
-
-	/**
-	 * @param {string} id
-	 */
-	#deleteLink(id) {
-		const edge = this.#links.get(id)
-		if (!edge) return
-
-		edge.source.container.highlight = false
-		edge.target.container.highlight = false
-
-		// Dispose.
-		this.#links.delete(id);
-		this.#ids.delete(id);
-		edge.dispose();
-	}
-
-	/**
-	 * @param {string} id
-	 */
-	#deleteNode(id) {
-		const node = this.#nodes.get(id)
-		if (!node) return
-		// Remove links connected to node.
-		for (const [edgeId, edge] of this.#links.entries())
-			if (edge.source.node.id === id || edge.target.node.id === id)
-				this.#deleteLink(edgeId);
-		// Dispose.
-		this.#nodes.delete(id)
-		this.#ids.delete(id);
-		node.dispose();
+		for (const id of this.#selectedNodeIds)
+			this.deleteNode(id);
+		this.#selectedNodeIds.clear();
+		for (const id of this.#selectedLinkIds)
+			this.deleteLink(id);
+		this.#selectedLinkIds.clear();
 	}
 
 	/** @param {Link} link */
 	#deselectLink(link) {
-		link.container.highlight = false
-		link.isSelected = false
-		const { source, target } = link
-			source.container.highlight = false;
-			target.container.highlight = false;
+		link.isSelected = false;
+		this.#selectedLinkIds.delete(link.id);
 	}
 
-	/**
-	 * @param {Link} link
-	 * @param {boolean=} isMultiSelection
-	 */
-	#selectLink(link, isMultiSelection) {
-		if (!isMultiSelection) this.#clearSelection()
-		link.container.highlight = true
-		link.isSelected = true
-		link.source.container.highlight = true
-		link.target.container.highlight = true
+	/** @param {Link} link */
+	#selectLink(link) {
+		link.isSelected = true;
+		this.#selectedLinkIds.add(link.id);
 	}
 
-	/**
-	 * @param {Node} node
-	 */
+	/** @param {Node} node */
 	#selectNode(node) {
-		node.container.highlight = true
-		node.isSelected = true
+		node.isSelected = true;
+		this.#selectedNodeIds.add(node.id);
 	}
 
 	/** @param {Node} node */
 	#deselectNode(node) {
-		node.container.highlight = false
-		node.isSelected = false
-		for (const input of node.inputs)
-			input.container.highlight = false;
-		for (const output of node.outputs)
-			output.container.highlight = false;
+		node.isSelected = false;
+		this.#selectedNodeIds.delete(node.id);
 	}
 
 	/** @returns {string} id */
@@ -597,16 +547,30 @@ export class FlowView extends HTMLElement {
 		const id = Math.random().toString(36).replace(/[^a-z]+/g, "").substring(0, 5);
 		if (this.#ids.has(id))
 			return this.#generateId();
-		else
-			this.#ids.add(id);
+		this.#ids.add(id);
 		return id;
 	}
 
 	#clearSelection() {
 		for (const node of this.#nodes.values())
-			this.#deselectNode(node)
-		for (const edge of this.#links.values())
-			this.#deselectLink(edge);
+			this.#deselectNode(node);
+		for (const link of this.#links.values())
+			this.#deselectLink(link);
+	}
+
+	/** @param {Vector} pointer */
+	#newPrompt(pointer) {
+		this.#removePrompt();
+		const prompt = this.#prompt = new Prompt(
+			this.nodeList,
+			pointer,
+			{
+				delete: this.#removePrompt.bind(this),
+				newNode: text => this.newNode({ text, ...vector.add(pointer, this.#origin) })
+			}
+		);
+		this.#append(prompt.container.element);
+		prompt.input.focus()
 	}
 
 	#removePrompt() {
@@ -615,22 +579,15 @@ export class FlowView extends HTMLElement {
 	}
 
 	#removeSemiLink() {
-		this.#semiLink?.dispose()
-		this.#semiLink = undefined
+		this.#semiLink?.dispose();
+		this.#semiLink = undefined;
 	}
 
-	/** @param {Vector} position */
-	#getNodeAtPosition(position) {
-		const x = position.x + this.#origin.x;
-		const y = position.y + this.#origin.y;
-		for (const node of this.#nodes.values()) {
-			const { width, height } = node.container.bounds;
-			if (x < node.position.x || x > node.position.x + width)
-				continue;
-			if (y < node.position.y || y > node.position.y + height)
-				continue;
-			return node;
-		}
+	/** @param {Vector} pointer */
+	#getNodeUnderPointer(pointer) {
+		for (const node of this.#nodes.values())
+			if (node.container.intersects({ position: pointer, dimensions: { width: 0, height: 0 } }))
+				return node;
 	}
 
 	/**
@@ -638,11 +595,10 @@ export class FlowView extends HTMLElement {
 	 * @param {Vector} position
 	 */
 	#getClosestPin(pins, position) {
-		const x = position.x + this.#origin.x;
-		const y = position.y + this.#origin.y;
+		const { x, y } = vector.add(position, this.#origin);
 		return pins.find(({ center }) => (
 			(x >= center.x - pinSize && x <= center.x + pinSize) &&
 			(y >= center.y - pinSize && y <= center.y + pinSize)
-		))
+		));
 	}
 }

@@ -1,9 +1,16 @@
-import { createSvg, Container } from './common.js';
+import { Container, ctrlOrMeta, createSvg, stop } from './common.js';
 import { Input, Output } from './node.js';
 import { cssClass } from './style.js'
 
 /**
+ * @typedef {import('./types').FlowViewPin} FlowViewPin
+ * @typedef {import('./types').Dimensions} Dimensions
  * @typedef {import('./types').Vector} Vector
+ *
+ * @typedef {{
+ *   delete: () => void,
+ *   select: (isMulti: boolean) => void
+ * }} LinkAction
  */
 
 export class Connection {
@@ -14,13 +21,10 @@ export class Connection {
 		this.container.append(this.line);
 	}
 
-	/** @param {number} arg */
-	set width(arg) {
-		this.container.setAttribute('width', `${arg}`);
-	}
-	/** @param {number} arg */
-	set height(arg) {
-		this.container.setAttribute('height', `${arg}`);
+	/** @param {Dimensions} dimensions */
+	set dimensions({ width, height }) {
+		this.container.setAttribute('width', `${width}`);
+		this.container.setAttribute('height', `${height}`);
 	}
 
 	/** @param {Vector} arg */
@@ -41,19 +45,26 @@ export class Link {
 	container = new Container(cssClass.link);
 	connection = new Connection();
 
-	isSelected = false;
+	/** @type {Output} */
+	source;
+	/** @type {Input} */
+	target;
+
+	/** @type {LinkAction} */
+	#action;
+
+	#isSelected = false;
 
 	/**
 	 * @param {Output} source
 	 * @param {Input} target
-	 * @param {{ delete: () => void, select: () => void }} action
+	 * @param {LinkAction} action
 	 */
 	constructor(source, target, action) {
 		this.container.element.append(this.connection.container)
 		this.source = source;
 		this.target = target;
-		this.delete = action.delete;
-		this.select = action.select;
+		this.#action = action;
 
 		eventTypes.forEach((eventType) => this.connection.line.addEventListener(eventType, this));
 	}
@@ -63,46 +74,49 @@ export class Link {
 		this.container.element.remove()
 	}
 
-	/** @param {Event} event */
+	/** @param {MouseEvent | PointerEvent} event */
 	handleEvent(event) {
 		if (event.type === 'dblclick') {
-			event.stopPropagation();
-			this.delete();
+			stop(event);
+			this.#action.delete();
 		}
-		if (event instanceof PointerEvent && event.type === 'pointerdown') {
-			event.stopPropagation()
-			this.select();
+		if (event.type === 'pointerdown') {
+			stop(event);
+			this.#action.select(ctrlOrMeta(event));
 		}
 		if (event.type === 'pointerenter') {
-			if (this.isSelected) return
-			this.container.highlight = true
-			this.source.container.highlight = true
-			this.target.container.highlight = true
+			if (this.#isSelected) return;
+			this.container.highlight = true;
 		}
 		if (event.type === 'pointerleave') {
-			const { source, target } = this
-			if (!source || !target) return
-			if (!this.isSelected) {
-				this.container.highlight = false
-				if (!source.node.isSelected) {
-					source.container.highlight = false
-				}
-				if (!target.node.isSelected) {
-					target.container.highlight = false
-				}
-			}
+			if (this.#isSelected) return;
+			this.container.highlight = false;
 		}
 	}
 
 	get start() { return this.source.center }
 	get end() { return this.target.center }
+
+	get id() { return [this.target.node.id, this.target.index].join() }
+
+	/** @param {boolean} value */
+	set isSelected(value) {
+		this.#isSelected = value;
+		this.container.highlight = value;
+		this.source.container.highlight = value;
+		this.target.container.highlight = value;
+	}
 }
 
 export class SemiLink {
 	container = new Container(cssClass.link);
 	connection = new Connection();
+	/** @type {Vector} */
+	start;
+	/** @type {Vector} */
+	end;
 	/**
-	 * @param {Input | Output} pin
+	 * @param {FlowViewPin} pin
 	 * @param {Vector} position
 	 */
 	constructor(pin, position) {

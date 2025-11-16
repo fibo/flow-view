@@ -1,12 +1,16 @@
-import { Container, createDiv } from './common.js';
+import { Container, createDiv, stop, vector } from './common.js';
 import { cssClass, cssNode, cssPin } from './style.js';
 
 /**
  * @typedef {import('./types').FlowViewNode} FlowViewNode
  * @typedef {import('./types').FlowViewNodeBodyCreator} FlowViewNodeBodyCreator
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./types').FlowViewPin} FlowViewPin
  * @typedef {import('./types').Vector} Vector
  */
+
+const { size: pinSize, halfSize: halfPinSize } = cssPin
+const { borderWidth } = cssNode
 
 /** @type {FlowViewNodeBodyCreator} */
 export function defaultNodeBodyCreator(node) {
@@ -15,12 +19,11 @@ export function defaultNodeBodyCreator(node) {
 	return div;
 }
 
-const { borderWidth } = cssNode
-const { halfSize } = cssPin
-
+/** @implements {FlowViewPin} */
 export class Input {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
+	offsetX = 0;
 
 	/**
 	 * @param {{
@@ -35,21 +38,23 @@ export class Input {
 		this.info.style.top = '-50px';
 		if (name) this.info.textContent = name;
 		this.container.element.append(this.info);
+		this.container.dimensions = { width: pinSize, height: pinSize };
 		this.node = node;
 	}
 
 	get center() {
-		const offsetX = this.container.bounds.x - this.node.container.bounds.x;
-		return {
-			x: this.node.position.x + halfSize + borderWidth + offsetX,
-			y: this.node.position.y + halfSize - borderWidth
-		}
+		return vector.add(this.node.position, {
+			x: halfPinSize + borderWidth + this.offsetX,
+			y: halfPinSize - borderWidth
+		})
 	}
 }
 
+/** @implements {FlowViewPin} */
 export class Output {
 	info = document.createElement('pre');
 	container = new Container(cssClass.pin);
+	offsetX = 0;
 
 	/**
 	 * @param {{
@@ -63,30 +68,28 @@ export class Output {
 		this.info.classList.add('info');
 		if (name) this.info.textContent = name;
 		this.container.element.append(this.info);
+		this.container.dimensions = { width: pinSize, height: pinSize };
 		this.node = node;
 	}
 
 	get center() {
-		const nodeBounds = this.node.container.bounds;
-		const offsetX = this.container.bounds.x - nodeBounds.x;
-		return {
-			x: this.node.position.x + halfSize + borderWidth + offsetX,
-			y: this.node.position.y + nodeBounds.height - halfSize - borderWidth
-		}
+		return vector.add(this.node.position, {
+			x: halfPinSize + borderWidth + this.offsetX,
+			y: this.node.container.dimensions.height - halfPinSize - borderWidth
+		})
 	}
 }
 
 /** @implements {FlowViewNode} */
 export class Node {
 	container = new Container(cssClass.node);
-	contentDiv = createDiv(cssClass.nodeContent);
 
-	isSelected = false;
+	#isSelected = false;
 
 	/** @type {Input[]} */
-	inputs = []
+	inputs = [];
 	/** @type {Output[]} */
-	outputs = []
+	outputs = [];
 
 	inputsDiv = createDiv('pins');
 	outputsDiv = createDiv('pins');
@@ -98,8 +101,8 @@ export class Node {
 	 * @param {Partial<FlowViewNodeSignature>} signature
 	 */
 	constructor(id, text, position, { inputs = [], outputs  = []}) {
-		this.id = id
-		this.text = text
+		this.id = id;
+		this.text = text;
 
 		this.position = position;
 
@@ -118,6 +121,15 @@ export class Node {
 		this.container.element.addEventListener('dblclick', this);
 	}
 
+	updatePinsOffset() {
+		const bounds = this.container.element.getBoundingClientRect();
+		for (const pin of [...this.inputs, ...this.outputs]) {
+			if (pin.index === 0) continue;
+			const pinBounds = pin.container.element.getBoundingClientRect();
+			pin.offsetX = Math.floor(pinBounds.x - bounds.x);
+		}
+	}
+
 	dispose() {
 		this.container.element.removeEventListener('dblclick', this);
 		this.container.element.remove();
@@ -125,8 +137,20 @@ export class Node {
 
 	/** @param {Event} event */
 	handleEvent(event) {
-		if (event.type === 'dblclick') {
-			event.stopPropagation();
+		if (event.type === 'dblclick') stop(event);
+	}
+
+	get isSelected() { return this.#isSelected }
+
+	/** @param {boolean} value */
+	set isSelected(value) {
+		this.#isSelected = value;
+		this.container.highlight = value;
+		if (!value) {
+			for (const input of this.inputs)
+				input.container.highlight = false;
+			for (const output of this.outputs)
+				output.container.highlight = false;
 		}
 	}
 }

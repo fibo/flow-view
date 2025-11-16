@@ -18,7 +18,6 @@ npm run install_precommit_hook
 
 ## Start dev server
 
-```shell
+```sh
 npm start
 ```
-

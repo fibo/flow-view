@@ -23,7 +23,11 @@ export const cssClass = {
 	nodeContent: 'fv-node__content',
 	pin: 'fv-pin',
 	prompt: 'fv-prompt',
-	group: 'fv-group'
+	promptHint: 'fv-prompt__hint',
+	promptOption: 'fv-prompt__option',
+	promptOptions: 'fv-prompt__options',
+	promptOptionHighlighted: 'fv-prompt__option--highlighted',
+	selection: 'fv-selection'
 }
 
 export const csslink = {
@@ -195,7 +199,8 @@ export const pinStyle = {
 	[`.${cssClass.pin} .info`]: {
 		visibility: 'hidden',
 		position: 'absolute',
-		'background-color': cssVar.nodeBackgroundColor
+		'background-color': cssVar.nodeBackgroundColor,
+		'user-select': 'none',
 	},
 	[`.${cssClass.pin} .info:not(:empty)`]: {
 		padding: '2px 5px'
@@ -227,32 +232,32 @@ export const promptStyle = {
 		padding: `${cssPrompt.padding}px`,
 		width: `${cssPrompt.width - 2 * cssPrompt.padding}px`
 	},
-	[`.${cssClass.prompt}__hint`]: {
+	[`.${cssClass.promptHint}`]: {
 		position: 'absolute',
 		left: '0',
 		background: 'transparent',
 		'pointer-events': 'none'
 	},
-	[`.${cssClass.prompt}__hint::placeholder`]: {
+	[`.${cssClass.promptHint}::placeholder`]: {
 		opacity: '0.4'
 	},
-	[`.${cssClass.prompt}__options`]: {
+	[`.${cssClass.promptOptions}`]: {
 		'background-color': cssVar.nodeBackgroundColor,
 		height: 'fit-content'
 	},
-	[`.${cssClass.prompt}__option`]: {
+	[`.${cssClass.promptOption}`]: {
 		padding: '0.5em',
 		border: '1px solid transparent',
 		cursor: 'default',
 		...cssTransition('border-color')
 	},
-	[`.${cssClass.prompt}__option--highlighted`]: {
+	[`.${cssModifierHighlighted(cssClass.promptOption)}`]: {
 		'border-color': cssVar.borderColorHighlighted
 	}
 }
 
-export const groupStyle = {
-	[`.${cssClass.group}`]: {
+export const selectionGroupStyle = {
+	[`.${cssClass.selection}`]: {
 		position: 'absolute',
 		display: 'block',
 		border: `1px solid ${cssVar.borderColorHighlighted}`,

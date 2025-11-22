@@ -36,12 +36,16 @@ export class FlowView extends HTMLElement {
 	#ids = new Set();
 	/** @type {Prompt | undefined} */
 	#prompt;
+	/** @type {Node | undefined} */
+	#pointedOutNode;
 	/** @type {SemiLink | undefined} */
 	#semiLink;
 	/** @type {Set<string>} */
 	#selectedNodeIds = new Set();
 	/** @type {Set<string>} */
 	#selectedLinkIds = new Set();
+	/** @type {Set<string>} */
+	#clipboardNodeIds = new Set();
 	/** @type {Container | undefined} */
 	#selection;
 	/** @type {Vector | undefined} */
@@ -139,26 +143,42 @@ export class FlowView extends HTMLElement {
 		}
 
 		if (event instanceof KeyboardEvent) {
-			stop(event); prevent(event);
+			stop(event);
 			const code = event.code;
 			if (event.type === 'keydown') {
 				if (code.startsWith('Arrow')) {
+					prevent(event);
 					if (!this.#selectedNodeIds.size) return;
 					let x = 0, y = 0;
-					if (code === 'ArrowLeft') x = -pinSize;
-					if (code === 'ArrowRight') x = pinSize;
-					if (code === 'ArrowUp') y = -pinSize;
-					if (code === 'ArrowDown') y = +pinSize;
+					const step = ctrlOrMeta(event) ? halfPinSize : pinSize * 4;
+					if (code === 'ArrowLeft') x = -step;
+					if (code === 'ArrowRight') x = step;
+					if (code === 'ArrowUp') y = -step;
+					if (code === 'ArrowDown') y = +step;
 					this.#moveSelectedNodes({ x, y });
 				}
-				if (code === 'Backspace') return this.#deleteSelectedItems();
-				if (code === 'Escape') return this.#clearSelection();
-				if (code === 'Space') return this.#startGrabbing();
+				if (code === 'Backspace')
+					this.#deleteSelectedItems();
+				if (code === 'Escape') {
+					this.#clearSelection();
+					this.#removeSemiLink();
+				}
+				if (code === 'Space') {
+					prevent(event);
+					this.#startGrabbing();
+				}
 				if (ctrlOrMeta(event)) {
 					if (code === 'KeyA') {
 						for (const node of this.#nodes.values())
 							this.#selectNode(node);
 					}
+					if (code === 'KeyC') this.#copy();
+					if (code === 'KeyD') {
+						prevent(event);
+						this.#copy();
+						this.#paste();
+					}
+					if (code === 'KeyV') this.#paste();
 				}
 			}
 			if (event.type === 'keyup') {
@@ -210,7 +230,7 @@ export class FlowView extends HTMLElement {
 				if (this.#isGrabbing) return;
 				this.#pointerVector = pointer;
 
-				const node = this.#getNodeUnderPointer(pointer);
+				const node = this.#pointedOutNode;
 				if (!node) {
 					if (!ctrlOrMeta(event)) this.#clearSelection();
 					this.#removeSemiLink();
@@ -244,10 +264,9 @@ export class FlowView extends HTMLElement {
 					}
 					this.#removeSemiLink();
 				} else {
-					if (pin instanceof Output) {
-						if (!ctrlOrMeta(event)) this.#clearSelection();
+					if (!ctrlOrMeta(event)) this.#clearSelection();
+					if (pin instanceof Output)
 						this.#newSemiLink(pin, pointer);
-					}
 					if (pin instanceof Input) {
 						const linkId = [pin.node.id, pin.index].join();
 						const link = this.#links.get(linkId);
@@ -261,6 +280,7 @@ export class FlowView extends HTMLElement {
 			}
 
 			if (event.type === 'pointermove') {
+				this.#pointedOutNode = undefined;
 				if (this.#isGrabbing) {
 					if (!this.#grabbingVector) {
 						this.#grabbingVector = pointer;
@@ -316,11 +336,7 @@ export class FlowView extends HTMLElement {
 		for (const [target, source] of Object.entries(links)) {
 			const from  = source.split(',');
 			const to = target.split(',');
-			const sourceNodeId = from[0];
-			const sourcePosition = +from[1];
-			const targetNodeId = to[0];
-			const targetPosition = +to[1];
-			this.newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]);
+			this.newLink([from[0], +from[1]], [to[0], +to[1]]);
 		}
 	}
 
@@ -355,7 +371,12 @@ export class FlowView extends HTMLElement {
 		const nodeType = this.nodeTextToType(text);
 		const signature = nodeType ? this.nodeTypeSignature.get(nodeType) : {};
 		const bodyCreator = this.nodeTextToBody(text) ?? defaultNodeBodyCreator;
-		const node = new Node(id, text, { x, y }, signature ?? {});
+		const node = new Node(id, text, { x, y }, signature ?? {}, {
+			select: () => {
+				this.#append(node.container.element);
+				this.#pointedOutNode = node;
+			}
+		});
 		node.container.element.append(node.inputsDiv, bodyCreator(node, this), node.outputsDiv);
 		this.#append(node.container.element)
 		node.container.dimensions = node.container.element.getBoundingClientRect();
@@ -394,6 +415,37 @@ export class FlowView extends HTMLElement {
 
 	/** @type {ShadowRoot['append']} */
 	#append(...args) { /** @type {ShadowRoot } */(this.shadowRoot).append(...args) }
+
+	#copy() {
+		this.#clipboardNodeIds.clear();
+		for (const nodeId of this.#selectedNodeIds)
+			this.#clipboardNodeIds.add(nodeId);
+	}
+
+	#paste() {
+		this.#clearSelection();
+		const links = new Set();
+		const nodeIdsMap = new Map();
+		for (const link of this.#links.values()) {
+			if (this.#clipboardNodeIds.has(link.source.node.id) && this.#clipboardNodeIds.has(link.target.node.id))
+				links.add(link);
+		}
+		for (const nodeId of this.#clipboardNodeIds) {
+			const node = /** @type {Node} */ (this.#nodes.get(nodeId));
+			const newPosition = vector.add(node.position, { x: pinSize * 2, y: pinSize * 2 });
+			const id = this.#generateId();
+			nodeIdsMap.set(nodeId, id);
+			this.newNode({ x: newPosition.x, y: newPosition.y, text: node.text }, id);
+			this.#selectNode(/** @type {Node} */ (this.#nodes.get(id)));
+		}
+		for (const link of links)
+			this.newLink(
+				[/** @type {string} */ (nodeIdsMap.get(link.source.node.id)), link.source.index],
+				[/** @type {string} */ (nodeIdsMap.get(link.target.node.id)), link.target.index]
+			);
+		this.#clipboardNodeIds.clear();
+		this.#clipboardNodeIds = new Set(this.#selectedNodeIds);
+	}
 
 	/** @param {MouseEvent} event */
 	#pointerCoordinates({ clientX, clientY }) {
@@ -552,6 +604,7 @@ export class FlowView extends HTMLElement {
 	}
 
 	#clearSelection() {
+		this.#pointedOutNode = undefined;
 		for (const node of this.#nodes.values())
 			this.#deselectNode(node);
 		for (const link of this.#links.values())
@@ -581,13 +634,6 @@ export class FlowView extends HTMLElement {
 	#removeSemiLink() {
 		this.#semiLink?.dispose();
 		this.#semiLink = undefined;
-	}
-
-	/** @param {Vector} pointer */
-	#getNodeUnderPointer(pointer) {
-		for (const node of this.#nodes.values())
-			if (node.container.intersects({ position: pointer, dimensions: { width: 0, height: 0 } }))
-				return node;
 	}
 
 	/**

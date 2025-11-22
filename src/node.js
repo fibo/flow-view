@@ -7,6 +7,10 @@ import { cssClass, cssNode, cssPin } from './style.js';
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./types').FlowViewPin} FlowViewPin
  * @typedef {import('./types').Vector} Vector
+ *
+ * @typedef {{
+ *   select: () => void
+ * }} NodeAction
  */
 
 const { size: pinSize, halfSize: halfPinSize } = cssPin
@@ -80,9 +84,14 @@ export class Output {
 	}
 }
 
+const eventTypes = ['dblclick', 'pointerdown'];
+
 /** @implements {FlowViewNode} */
 export class Node {
 	container = new Container(cssClass.node);
+
+	/** @type {NodeAction} */
+	#action;
 
 	#isSelected = false;
 
@@ -99,12 +108,13 @@ export class Node {
 	 * @param {string} text
 	 * @param {Vector} position
 	 * @param {Partial<FlowViewNodeSignature>} signature
+	 * @param {NodeAction} action
 	 */
-	constructor(id, text, position, { inputs = [], outputs  = []}) {
+	constructor(id, text, position, { inputs = [], outputs  = []}, action) {
 		this.id = id;
 		this.text = text;
-
 		this.position = position;
+		this.#action = action;
 
 		for (let index = 0; index < inputs.length; index++) {
 			const input = new Input({ node: this, index }, inputs[index]);
@@ -118,7 +128,18 @@ export class Node {
 			this.outputsDiv.append(output.container.element);
 		}
 
-		this.container.element.addEventListener('dblclick', this);
+		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
+	}
+
+	dispose() {
+		eventTypes.forEach((eventType) => this.container.element.removeEventListener(eventType, this));
+		this.container.element.remove();
+	}
+
+	/** @param {Event} event */
+	handleEvent(event) {
+		if (event.type === 'dblclick') stop(event);
+		if (event.type === 'pointerdown') this.#action.select();
 	}
 
 	updatePinsOffset() {
@@ -128,16 +149,6 @@ export class Node {
 			const pinBounds = pin.container.element.getBoundingClientRect();
 			pin.offsetX = Math.floor(pinBounds.x - bounds.x);
 		}
-	}
-
-	dispose() {
-		this.container.element.removeEventListener('dblclick', this);
-		this.container.element.remove();
-	}
-
-	/** @param {Event} event */
-	handleEvent(event) {
-		if (event.type === 'dblclick') stop(event);
 	}
 
 	get isSelected() { return this.#isSelected }

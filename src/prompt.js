@@ -1,4 +1,4 @@
-import { Container, createDiv, stop } from './common.js';
+import { Container, createHtml, div, stop } from './common.js';
 import { cssClass } from './style.js';
 
 /**
@@ -17,9 +17,9 @@ const eventTypes = {
 
 export class Prompt {
 	container = new Container(cssClass.prompt);
-	input = document.createElement('input');
-	hint = document.createElement('input');
-	options = createDiv(cssClass.promptOptions);
+	input = createHtml('input');
+	hint = createHtml('input');
+	options = div(cssClass.promptOptions);
 
 	/** @type {Set<string>} */
 	#nodeList;
@@ -215,8 +215,7 @@ export class Prompt {
 		this.#deleteOptions();
 		for (let i = 0; i < this.#matchingNodes.length; i++) {
 			const name = this.#matchingNodes[i];
-			const option = createDiv(cssClass.promptOption);
-			option.textContent = name;
+			const option = div(cssClass.promptOption, [name]);
 			option.onclick = () => {
 				this.input.value = name;
 				this.#createNode();

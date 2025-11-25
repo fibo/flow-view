@@ -7,14 +7,34 @@ import { cssModifierHighlighted } from './style.js';
  * @typedef {import('./types').VectorOperator} VectorOperator
  */
 
-/** @param {string} cssClass */
-export const createDiv = (cssClass) => {
-	const element = document.createElement('div');
-	element.classList.add(cssClass);
+/**
+ * @template {keyof HTMLElementTagNameMap} T
+ * @param {T} tag
+ * @param {(Record<string, string> | null)=} attributes
+ * @param {Array<number | string | HTMLElement>=} children
+ * @returns {HTMLElementTagNameMap[T]}
+ */
+export const createHtml = (tag, attributes = null, children = []) => {
+	const element = document.createElement(tag);
+	if (attributes)
+		for (const [key, value] of Object.entries(attributes))
+			element.setAttribute(key, value);
+	for (const child of children)
+		if (typeof child === 'number' || typeof child === 'string')
+			element.appendChild(document.createTextNode(child.toString()));
 	return element;
 }
 
-/** @param {string} tag */
+/**
+ * @param {string} cssClass
+ * @param {Array<number | string | HTMLElement>=} children
+ */
+export const div = (cssClass, children = []) => createHtml('div', { class: cssClass }, children);
+
+/**
+ * @param {string} tag
+ * @returns {SVGElement}
+ */
 export const createSvg = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
 
 /** @param {{ ctrlKey: boolean; metaKey: boolean }} event */
@@ -44,7 +64,7 @@ export class Container {
 
 	/** @param {string} cssClass */
 	constructor(cssClass) {
-		this.element = createDiv(cssClass);
+		this.element = div(cssClass);
 		this.#highlightedCssClass = cssModifierHighlighted(cssClass);
 	}
 

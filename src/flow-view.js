@@ -1,4 +1,4 @@
-import { Container, ctrlOrMeta, stop, prevent, vector } from './common.js';
+import { Container, createHtml, ctrlOrMeta, stop, prevent, vector } from './common.js';
 import { Link, SemiLink } from './link.js';
 import { Node, Input, Output, defaultNodeBodyCreator } from './node.js';
 import { Prompt } from './prompt.js';
@@ -76,9 +76,9 @@ export class FlowView extends HTMLElement {
 		if (element instanceof FlowView)
 			return element;
 		if (element instanceof Element) {
-			const view = document.createElement('flow-view')
-			element.append(view)
-			if (view instanceof FlowView) return view
+			const view = document.createElement('flow-view');
+			element.append(view);
+			return /** @type {FlowView} */ (view)
 		}
 		throw new Error('Invalid element');
 	}
@@ -86,7 +86,7 @@ export class FlowView extends HTMLElement {
 	constructor() {
 		super();
 
-		const template = document.createElement('template');
+		const template = createHtml('template');
 
 		// TODO try react on attribute change, using adopted stylesheet
 		const theme = this.getAttribute('theme');

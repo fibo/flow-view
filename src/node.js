@@ -1,4 +1,4 @@
-import { Container, createDiv, stop, vector } from './common.js';
+import { Container, createHtml, div, stop, vector } from './common.js';
 import { cssClass, cssNode, cssPin } from './style.js';
 
 /**
@@ -9,6 +9,11 @@ import { cssClass, cssNode, cssPin } from './style.js';
  * @typedef {import('./types').Vector} Vector
  *
  * @typedef {{
+ *   node: Node
+ *   index: number
+ * }} Pin
+ *
+ * @typedef {{
  *   select: () => void
  * }} NodeAction
  */
@@ -17,23 +22,17 @@ const { size: pinSize, halfSize: halfPinSize } = cssPin
 const { borderWidth } = cssNode
 
 /** @type {FlowViewNodeBodyCreator} */
-export function defaultNodeBodyCreator(node) {
-	const div = createDiv(cssClass.nodeContent);
-	div.textContent = node.text;
-	return div;
-}
+export const defaultNodeBodyCreator = (node) =>
+	div(cssClass.nodeContent, [node.text]);
 
 /** @implements {FlowViewPin} */
 export class Input {
-	info = document.createElement('pre');
+	info = createHtml('pre');
 	container = new Container(cssClass.pin);
 	offsetX = 0;
 
 	/**
-	 * @param {{
-	 *   node: Node
-	 *   index: number
-	 * }} arg
+	 * @param {Pin} arg
 	 * @param {{ name?: string }} info
 	 */
 	constructor({ node, index }, { name }) {
@@ -56,15 +55,12 @@ export class Input {
 
 /** @implements {FlowViewPin} */
 export class Output {
-	info = document.createElement('pre');
+	info = createHtml('pre');
 	container = new Container(cssClass.pin);
 	offsetX = 0;
 
 	/**
-	 * @param {{
-	 *   node: Node
-	 *   index: number
-	 * }} arg
+	 * @param {Pin} arg
 	 * @param {{ name?: string }} info
 	 */
 	constructor({ node, index }, { name }) {
@@ -100,8 +96,8 @@ export class Node {
 	/** @type {Output[]} */
 	outputs = [];
 
-	inputsDiv = createDiv('pins');
-	outputsDiv = createDiv('pins');
+	inputsDiv = div('pins');
+	outputsDiv = div('pins');
 
 	/**
 	 * @param {string} id

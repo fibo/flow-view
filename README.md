@@ -13,7 +13,7 @@
 
 With [npm](https://npmjs.org/) do
 
-```bash
+```shell
 npm install flow-view
 ```
 
@@ -26,14 +26,29 @@ Try this in your HTML page
 	{ "imports": { "flow-view": "https://unpkg.com/flow-view" } }
 </script>
 
-<script type="module">
-	import { defineFlowViewCustomElements } from 'flow-view';
+<style>
+.container {
+  max-width: 100%;
+  height: 400px;
+}
+</style>
 
-	addEventListener('load', () => {
-		defineFlowViewCustomElements();
-	});
+<div class="container"></div>
+
+<script type="module">
+  import { FlowView } from 'flow-view';
+
+  const container = document.querySelector('.container');
+  const flowView = FlowView.instance(container);
+  flowView.load({
+    "nodes": {
+      id1: { "type": "Hello", "x": 10, "y": 10 }
+    }
+  });
 </script>
 ```
+
+Be aware that there is no minified bundle, so you probably do not want to use the CDN in production.
 
 ## Usage
 

@@ -6,8 +6,8 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 
 /**
  * @typedef {import('./link').Connection} Connection
- * @typedef {import('./types').FlowView} FlowViewStatic
  * @typedef {import('./types').FlowViewCustomElement} FlowViewCustomElement
+ * @typedef {import('./types').FlowViewStaticMethod} FlowViewStaticMethod
  * @typedef {import('./types').FlowViewGraph} FlowViewGraph
  * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./types').FlowViewPin} FlowViewPin
@@ -71,23 +71,16 @@ export class FlowView extends HTMLElement {
 		}
 	});
 
-	/** @type {FlowViewStatic['defineElement']} */
-	static defineElement() {
-		if (!customElements.get('flow-view'))
-			customElements.define('flow-view', FlowView);
-	}
-
-	/** @type {FlowViewStatic['instance']} */
+	/** @type {FlowViewStaticMethod['instance']} */
 	static instance(element) {
-		FlowView.defineElement();
 		if (element instanceof FlowView)
 			return element;
-		if (element instanceof HTMLElement) {
+		if (element instanceof Element) {
 			const view = document.createElement('flow-view')
 			element.append(view)
 			if (view instanceof FlowView) return view
 		}
-		throw new Error('Invalid element', { cause: element });
+		throw new Error('Invalid element');
 	}
 
 	constructor() {
@@ -119,7 +112,7 @@ export class FlowView extends HTMLElement {
 				...selectionGroupStyle,
 			}),
 			'</style>'
-		].join('\n')
+		].join('\n');
 
 		this.attachShadow({ mode: 'open' }).append(template.content.cloneNode(true));
 	}
@@ -342,14 +335,14 @@ export class FlowView extends HTMLElement {
 
 	/** @type {FlowViewCustomElement['newLink']} */
 	newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]) {
-		const sourceNode = this.#nodes.get(sourceNodeId)
-		const targetNode = this.#nodes.get(targetNodeId)
+		const sourceNode = this.#nodes.get(sourceNodeId);
+		const targetNode = this.#nodes.get(targetNodeId);
 		if (!sourceNode || !targetNode)
-			throw new Error('Node not found')
-		const source = sourceNode.outputs[sourcePosition]
-		const target = targetNode.inputs[targetPosition]
+			throw new Error('Node not found');
+		const source = sourceNode.outputs[sourcePosition];
+		const target = targetNode.inputs[targetPosition];
 		if (!source || !target)
-			throw new Error('Pin not found')
+			throw new Error('Pin not found');
 		// An Input can be connected only to one Link.
 		const id = [targetNodeId, targetPosition].join();
 		if (this.#links.has(id))
@@ -361,8 +354,8 @@ export class FlowView extends HTMLElement {
 				this.#selectLink(link);
 			}
 		});
-		this.#append(link.container.element)
-		this.#links.set(id, link)
+		this.#append(link.container.element);
+		this.#links.set(id, link);
 		this.#updateLinkPosition(link);
 	}
 
@@ -378,7 +371,7 @@ export class FlowView extends HTMLElement {
 			}
 		});
 		node.container.element.append(node.inputsDiv, bodyCreator(node, this), node.outputsDiv);
-		this.#append(node.container.element)
+		this.#append(node.container.element);
 		node.container.dimensions = node.container.element.getBoundingClientRect();
 		node.updatePinsOffset();
 		this.#updateNodesPosition(node);
@@ -426,10 +419,9 @@ export class FlowView extends HTMLElement {
 		this.#clearSelection();
 		const links = new Set();
 		const nodeIdsMap = new Map();
-		for (const link of this.#links.values()) {
+		for (const link of this.#links.values())
 			if (this.#clipboardNodeIds.has(link.source.node.id) && this.#clipboardNodeIds.has(link.target.node.id))
 				links.add(link);
-		}
 		for (const nodeId of this.#clipboardNodeIds) {
 			const node = /** @type {Node} */ (this.#nodes.get(nodeId));
 			const newPosition = vector.add(node.position, { x: pinSize * 2, y: pinSize * 2 });
@@ -458,10 +450,7 @@ export class FlowView extends HTMLElement {
 		for (const nodeId of this.#selectedNodeIds) {
 			const node = this.#nodes.get(nodeId);
 			if (!node) continue;
-			node.position = {
-				x: node.position.x + translation.x,
-				y: node.position.y + translation.y
-			};
+			node.position = vector.add(node.position, translation);
 			this.#updateNodesPosition(node);
 		}
 		for (const link of this.#links.values())
@@ -648,3 +637,5 @@ export class FlowView extends HTMLElement {
 		));
 	}
 }
+
+if (!customElements.get('flow-view')) customElements.define('flow-view', FlowView);

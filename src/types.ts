@@ -1,6 +1,5 @@
-export type FlowView = {
-	defineElement: () => void;
-	instance(element: Element): FlowViewCustomElement;
+export type FlowViewStaticMethod = {
+	instance(element: Element | null): FlowViewCustomElement;
 };
 
 export type FlowViewCustomElement = {

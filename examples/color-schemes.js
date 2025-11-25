@@ -3,9 +3,6 @@ import { FlowView } from 'flow-view';
 const lightElement = document.querySelector('flow-view[theme="light"]');
 const darkElement = document.querySelector('flow-view[theme="dark"]');
 
-if (!lightElement || !darkElement)
-	throw new Error('Element not found');
-
 /** @type {import('flow-view').FlowViewGraph} */
 const graph = {
 	nodes: {

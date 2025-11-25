@@ -3,10 +3,7 @@ import { FlowView } from 'flow-view';
 const containerSelector = 'article#custom-theme .container';
 const codeElement = document.querySelector('code');
 const styleElement = document.querySelector('style#container-css-props');
-const container = document.querySelector(containerSelector);
 const flowViewElement = document.querySelector('flow-view');
-if (!codeElement || !container || !flowViewElement || !styleElement)
-	throw new Error('Element not found');
 
 function applyCustomTheme() {
 	if (!styleElement || !codeElement) return;
@@ -20,7 +17,7 @@ function applyCustomTheme() {
 applyCustomTheme();
 
 const observer = new MutationObserver(() => { applyCustomTheme() });
-observer.observe(codeElement, {
+observer.observe(/** @type {Node} */(codeElement), {
 	characterData: true,
 	childList: true,
 	subtree: true

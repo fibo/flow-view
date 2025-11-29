@@ -3,9 +3,9 @@ import { Input, Output } from './node.js';
 import { cssClass } from './style.js'
 
 /**
- * @typedef {import('./types').FlowViewPin} FlowViewPin
- * @typedef {import('./types').Dimensions} Dimensions
- * @typedef {import('./types').Vector} Vector
+ * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
+ * @typedef {import('./flow-view.d.ts').Dimensions} Dimensions
+ * @typedef {import('./flow-view.d.ts').Vector} Vector
  *
  * @typedef {{
  *   delete: () => void,

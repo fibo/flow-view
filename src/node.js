@@ -2,11 +2,11 @@ import { Container, createHtml, div, stop, vector } from './common.js';
 import { cssClass, cssNode, cssPin } from './style.js';
 
 /**
- * @typedef {import('./types').FlowViewNode} FlowViewNode
- * @typedef {import('./types').FlowViewNodeBodyCreator} FlowViewNodeBodyCreator
- * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./types').FlowViewPin} FlowViewPin
- * @typedef {import('./types').Vector} Vector
+ * @typedef {import('./flow-view.d.ts').FlowViewNode} FlowViewNode
+ * @typedef {import('./flow-view.d.ts').FlowViewNodeBodyCreator} FlowViewNodeBodyCreator
+ * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
+ * @typedef {import('./flow-view.d.ts').Vector} Vector
  *
  * @typedef {{
  *   node: Node

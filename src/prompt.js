@@ -2,7 +2,7 @@ import { Container, createHtml, div, stop } from './common.js';
 import { cssClass } from './style.js';
 
 /**
- * @typedef {import('./types').Vector} Vector
+ * @typedef {import('./flow-view.d.ts').Vector} Vector
  *
  * @typedef {{
  *   delete: () => void,

@@ -5,7 +5,7 @@
   "license": "MIT",
   "homepage": "https://fibo.github.io/flow-view",
   "type": "module",
-  "types": "./src/types.ts",
+  "types": "./src/flow-view.d.ts",
   "exports": "./src/flow-view.js",
   "scripts": {
     "check_types": "tsc --noEmit",

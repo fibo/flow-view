@@ -6,13 +6,13 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 
 /**
  * @typedef {import('./link').Connection} Connection
- * @typedef {import('./types').FlowViewCustomElement} FlowViewCustomElement
- * @typedef {import('./types').FlowViewStaticMethod} FlowViewStaticMethod
- * @typedef {import('./types').FlowViewGraph} FlowViewGraph
- * @typedef {import('./types').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./types').FlowViewPin} FlowViewPin
- * @typedef {import('./types').FlowViewPinPath} FlowViewPinPath
- * @typedef {import('./types').Vector} Vector
+ * @typedef {import('./flow-view.d.ts').FlowViewCustomElement} FlowViewCustomElement
+ * @typedef {import('./flow-view.d.ts').FlowViewStaticMethod} FlowViewStaticMethod
+ * @typedef {import('./flow-view.d.ts').FlowViewGraph} FlowViewGraph
+ * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
+ * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
+ * @typedef {import('./flow-view.d.ts').FlowViewPinPath} FlowViewPinPath
+ * @typedef {import('./flow-view.d.ts').Vector} Vector
  */
 
 const lightStyle = generateStyle({ ':host': cssTheme.light });

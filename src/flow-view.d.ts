@@ -25,11 +25,6 @@ export type FlowViewNodeBodyCreator = (
 	view: FlowViewCustomElement
 ) => HTMLElement;
 
-export type FlowViewPin = {
-	readonly center: Vector;
-	readonly node: FlowViewNode;
-}
-
 export type FlowViewPinPath = [nodeId: string, pinIndex: number];
 
 export type FlowViewGraphNode = {
@@ -47,24 +42,11 @@ export type FlowViewGraph = {
 	links?: Record<string, string>;
 };
 
+export type FlowViewPinMetadata = {
+	name?: string;
+};
+
 export type FlowViewNodeSignature = Partial<{
-	inputs: Array<{ name?: string }>;
-	outputs: Array<{ name?: string }>;
+	inputs: FlowViewPinMetadata[];
+	outputs: FlowViewPinMetadata[];
 }>;
-
-export type Dimensions = {
-	width: number;
-	height: number;
-};
-
-export type Vector = {
-	x: number;
-	y: number;
-};
-
-export type VectorOperator = (a: Vector, b: Vector) => Vector;
-
-export type Rectangle = {
-	dimensions: Dimensions;
-	position: Vector;
-};

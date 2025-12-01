@@ -3,9 +3,9 @@ import { Input, Output } from './node.js';
 import { cssClass } from './style.js'
 
 /**
- * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
- * @typedef {import('./flow-view.d.ts').Dimensions} Dimensions
- * @typedef {import('./flow-view.d.ts').Vector} Vector
+ * @typedef {import('./internals.d.ts').Pin} Pin
+ * @typedef {import('./internals.d.ts').Dimensions} Dimensions
+ * @typedef {import('./internals.d.ts').Vector} Vector
  *
  * @typedef {{
  *   delete: () => void,
@@ -116,7 +116,7 @@ export class SemiLink {
 	/** @type {Vector} */
 	end;
 	/**
-	 * @param {FlowViewPin} pin
+	 * @param {Pin} pin
 	 * @param {Vector} position
 	 */
 	constructor(pin, position) {

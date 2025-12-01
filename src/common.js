@@ -1,10 +1,10 @@
 import { cssModifierHighlighted } from './style.js';
 
 /**
- * @typedef {import('./flow-view.d.ts').Dimensions} Dimensions
- * @typedef {import('./flow-view.d.ts').Rectangle} Rectangle
- * @typedef {import('./flow-view.d.ts').Vector} Vector
- * @typedef {import('./flow-view.d.ts').VectorOperator} VectorOperator
+ * @typedef {import('./internals.d.ts').Dimensions} Dimensions
+ * @typedef {import('./internals.d.ts').Rectangle} Rectangle
+ * @typedef {import('./internals.d.ts').Vector} Vector
+ * @typedef {import('./internals.d.ts').VectorOperator} VectorOperator
  */
 
 /**

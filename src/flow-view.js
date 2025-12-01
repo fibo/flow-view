@@ -5,14 +5,13 @@ import { Prompt } from './prompt.js';
 import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, selectionGroupStyle, generateStyle } from './style.js';
 
 /**
- * @typedef {import('./link').Connection} Connection
  * @typedef {import('./flow-view.d.ts').FlowViewCustomElement} FlowViewCustomElement
  * @typedef {import('./flow-view.d.ts').FlowViewStaticMethod} FlowViewStaticMethod
  * @typedef {import('./flow-view.d.ts').FlowViewGraph} FlowViewGraph
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
- * @typedef {import('./flow-view.d.ts').FlowViewPinPath} FlowViewPinPath
- * @typedef {import('./flow-view.d.ts').Vector} Vector
+ *
+ * @typedef {import('./internals.d.ts').Pin} Pin
+ * @typedef {import('./internals.d.ts').Vector} Vector
  */
 
 const lightStyle = generateStyle({ ':host': cssTheme.light });
@@ -460,7 +459,7 @@ export class FlowView extends HTMLElement {
 	}
 
 	/**
-	 * @param {FlowViewPin} pin
+	 * @param {Pin} pin
 	 * @param {Vector} position
 	 * @returns {SemiLink} semiLink
 	 */

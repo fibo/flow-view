@@ -5,13 +5,10 @@ import { cssClass, cssNode, cssPin } from './style.js';
  * @typedef {import('./flow-view.d.ts').FlowViewNode} FlowViewNode
  * @typedef {import('./flow-view.d.ts').FlowViewNodeBodyCreator} FlowViewNodeBodyCreator
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
- * @typedef {import('./flow-view.d.ts').FlowViewPin} FlowViewPin
- * @typedef {import('./flow-view.d.ts').Vector} Vector
+ * @typedef {import('./flow-view.d.ts').FlowViewPinMetadata} FlowViewPinMetadata
  *
- * @typedef {{
- *   node: Node
- *   index: number
- * }} Pin
+ * @typedef {import('./internals.d.ts').Pin} Pin
+ * @typedef {import('./internals.d.ts').Vector} Vector
  *
  * @typedef {{
  *   select: () => void
@@ -25,17 +22,18 @@ const { borderWidth } = cssNode
 export const defaultNodeBodyCreator = (node) =>
 	div(cssClass.nodeContent, [node.text]);
 
-/** @implements {FlowViewPin} */
+/** @implements {Pin} */
 export class Input {
 	info = createHtml('pre');
 	container = new Container(cssClass.pin);
 	offsetX = 0;
 
 	/**
-	 * @param {Pin} arg
-	 * @param {{ name?: string }} info
+	 * @param {Node} node
+	 * @param {number} index
+	 * @param {{ name?: string }} FlowViewPinMetadata
 	 */
-	constructor({ node, index }, { name }) {
+	constructor(node, index, { name }) {
 		this.index = index
 		this.info.classList.add('info');
 		this.info.style.top = '-50px';
@@ -53,17 +51,18 @@ export class Input {
 	}
 }
 
-/** @implements {FlowViewPin} */
+/** @implements {Pin} */
 export class Output {
 	info = createHtml('pre');
 	container = new Container(cssClass.pin);
 	offsetX = 0;
 
 	/**
-	 * @param {Pin} arg
-	 * @param {{ name?: string }} info
+	 * @param {Node} node
+	 * @param {number} index
+	 * @param {{ name?: string }} FlowViewPinMetadata
 	 */
-	constructor({ node, index }, { name }) {
+	constructor(node, index, { name }) {
 		this.index = index
 		this.info.classList.add('info');
 		if (name) this.info.textContent = name;
@@ -113,13 +112,13 @@ export class Node {
 		this.#action = action;
 
 		for (let index = 0; index < inputs.length; index++) {
-			const input = new Input({ node: this, index }, inputs[index]);
+			const input = new Input(this, index, inputs[index]);
 			this.inputs.push(input);
 			this.inputsDiv.append(input.container.element);
 		}
 
 		for (let index = 0; index < outputs.length; index++) {
-			const output = new Output({ node: this, index }, outputs[index]);
+			const output = new Output(this, index, outputs[index]);
 			this.outputs.push(output);
 			this.outputsDiv.append(output.container.element);
 		}

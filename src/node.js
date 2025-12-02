@@ -18,6 +18,8 @@ import { cssClass, cssNode, cssPin } from './style.js';
 const { size: pinSize, halfSize: halfPinSize } = cssPin
 const { borderWidth } = cssNode
 
+const { xy, add } = vector;
+
 /** @type {FlowViewNodeBodyCreator} */
 export const defaultNodeBodyCreator = (node) =>
 	div(cssClass.nodeContent, [node.text]);
@@ -44,10 +46,7 @@ export class Input {
 	}
 
 	get center() {
-		return vector.add(this.node.position, {
-			x: halfPinSize + borderWidth + this.offsetX,
-			y: halfPinSize - borderWidth
-		})
+		return add(this.node.position, xy(halfPinSize + borderWidth + this.offsetX, halfPinSize - borderWidth))
 	}
 }
 
@@ -72,10 +71,7 @@ export class Output {
 	}
 
 	get center() {
-		return vector.add(this.node.position, {
-			x: halfPinSize + borderWidth + this.offsetX,
-			y: this.node.container.dimensions.height - halfPinSize - borderWidth
-		})
+		return add(this.node.position, xy(halfPinSize + borderWidth + this.offsetX, this.node.container.dimensions.height - halfPinSize - borderWidth))
 	}
 }
 
@@ -84,19 +80,16 @@ const eventTypes = ['dblclick', 'pointerdown'];
 /** @implements {FlowViewNode} */
 export class Node {
 	container = new Container(cssClass.node);
-
-	/** @type {NodeAction} */
-	#action;
+	inputsDiv = div('pins');
+	outputsDiv = div('pins');
 
 	#isSelected = false;
-
+	/** @type {NodeAction} */
+	#action;
 	/** @type {Input[]} */
 	inputs = [];
 	/** @type {Output[]} */
 	outputs = [];
-
-	inputsDiv = div('pins');
-	outputsDiv = div('pins');
 
 	/**
 	 * @param {string} id
@@ -136,6 +129,8 @@ export class Node {
 		if (event.type === 'dblclick') stop(event);
 		if (event.type === 'pointerdown') this.#action.select();
 	}
+
+	toJSON() { return { text: this.text, ...this.position } }
 
 	updatePinsOffset() {
 		const bounds = this.container.element.getBoundingClientRect();

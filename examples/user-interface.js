@@ -48,4 +48,8 @@ const initialGraph = {
 	}
 };
 
+flowView.onChange((detail) => {
+	console.info('change', JSON.stringify(detail, null, 2));
+});
+
 flowView.load(initialGraph);

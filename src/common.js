@@ -45,19 +45,25 @@ export const prevent = (event) => event.preventDefault();
 /** @param {Event} event */
 export const stop = (event) => event.stopPropagation();
 
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {Vector}
+ */
+const xy = (x, y) => ({ x, y })
+
 export const vector = {
+	xy,
 	/** @type {VectorOperator} */
-	add: (a, b) => ({ x: a.x + b.x, y: a.y + b.y }),
+	add: (a, b) => xy(a.x + b.x, a.y + b.y),
     /** @type {VectorOperator} */
-    sub: (a, b) => ({ x: a.x - b.x, y: a.y - b.y }),
-	/** @type {() => Vector} */
-	zero: () => ({ x: 0, y: 0 }),
+    sub: (a, b) => xy(a.x - b.x, a.y - b.y),
 }
 
 /** @implements {Rectangle} */
 export class Container {
 	/** Position in viewport coordinates */
-	position = vector.zero();
+	position = xy(0, 0);
 	/** @type {Dimensions} */
 	dimensions = { width: 0, height: 0 };
 	#highlightedCssClass;

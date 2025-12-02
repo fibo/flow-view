@@ -98,6 +98,7 @@ export class Link {
 	get end() { return this.target.center }
 
 	get id() { return [this.target.node.id, this.target.index].join() }
+	get sourceId() { return [this.source.node.id, this.source.index].join() }
 
 	/** @param {boolean} value */
 	set isSelected(value) {

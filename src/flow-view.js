@@ -6,14 +6,14 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 
 /**
  * @typedef {import('./flow-view.d.ts').FlowViewChangeEventDetail} FlowViewChangeEventDetail
- * @typedef {import('./flow-view.d.ts').FlowViewCustomElement} FlowViewCustomElement
  * @typedef {import('./flow-view.d.ts').FlowViewGraphLinks} FlowViewGraphLinks
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNodes} FlowViewGraphNodes
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNode} FlowViewGraphNode
  * @typedef {import('./flow-view.d.ts').FlowViewGraph} FlowViewGraph
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./flow-view.d.ts').FlowViewPinPath} FlowViewPinPath
- * @typedef {import('./flow-view.d.ts').FlowViewStaticMethod} FlowViewStaticMethod
+ *
+ * @typedef {import('./flow-view.d.ts').HTMLFlowViewElement} HTMLFlowViewElement
  *
  * @typedef {import('./internals.d.ts').Pin} Pin
  * @typedef {import('./internals.d.ts').Vector} Vector
@@ -28,15 +28,15 @@ const eventTypes = [ 'contextmenu', 'dblclick', 'keydown', 'keyup', 'pointerdown
 
 const { add, sub, xy } = vector;
 
-/** @implements {FlowViewCustomElement} */
+/** @implements {HTMLFlowViewElement} */
 export class FlowView extends HTMLElement {
-	/** @type {FlowViewCustomElement['nodeList']} */
+	/** @type {HTMLFlowViewElement['nodeList']} */
 	nodeList = new Set();
-	/** @type {FlowViewCustomElement['nodeTextToType']} */
+	/** @type {HTMLFlowViewElement['nodeTextToType']} */
 	nodeTextToType = () => '';
-	/** @type {FlowViewCustomElement['nodeTextToBody']} */
+	/** @type {HTMLFlowViewElement['nodeTextToBody']} */
 	nodeTextToBody = () => undefined;
-	/** @type {FlowViewCustomElement['nodeTypeSignature']} */
+	/** @type {HTMLFlowViewElement['nodeTypeSignature']} */
 	nodeTypeSignature = new Map();
 
 	#ids = new Set();
@@ -77,7 +77,7 @@ export class FlowView extends HTMLElement {
 		}
 	});
 
-	/** @type {FlowViewStaticMethod['instance']} */
+	/** @param {Element | null} element */
 	static instance(element) {
 		if (element instanceof FlowView)
 			return element;
@@ -341,7 +341,7 @@ export class FlowView extends HTMLElement {
 		}
 	}
 
-	/** @type {FlowViewCustomElement['clear']} */
+	/** @type {HTMLFlowViewElement['clear']} */
 	clear() {
 		const graph = this.graph;
 		this.#removePrompt();
@@ -353,7 +353,7 @@ export class FlowView extends HTMLElement {
 		this.#emitChange({ delete: graph });
 	}
 
-	/** @type {FlowViewCustomElement['load']} */
+	/** @type {HTMLFlowViewElement['load']} */
 	load({ nodes, links = {} }) {
 		/** @type {FlowViewGraphNodes} */ const newNodes = {};
 		for (const [id, node] of Object.entries(nodes)) {
@@ -370,7 +370,7 @@ export class FlowView extends HTMLElement {
 		this.#emitChange({ create: { nodes: newNodes, links: newLinks } } );
 	}
 
-	/** @type {FlowViewCustomElement['onChange']} */
+	/** @type {HTMLFlowViewElement['onChange']} */
 	onChange(callback) { this.addEventListener('change', (event) => callback(/** @type {CustomEvent<FlowViewChangeEventDetail>} */ (event).detail)) }
 
 	/** @param {FlowViewChangeEventDetail} detail */

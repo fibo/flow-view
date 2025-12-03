@@ -27,7 +27,7 @@ export const cssClass = {
 	promptOption: 'fv-prompt__option',
 	promptOptions: 'fv-prompt__options',
 	promptOptionHighlighted: 'fv-prompt__option--highlighted',
-	selection: 'fv-selection'
+	selector: 'fv-selector'
 }
 
 export const csslink = {
@@ -256,8 +256,8 @@ export const promptStyle = {
 	}
 }
 
-export const selectionGroupStyle = {
-	[`.${cssClass.selection}`]: {
+export const selectorGroupStyle = {
+	[`.${cssClass.selector}`]: {
 		position: 'absolute',
 		display: 'block',
 		border: `1px solid ${cssVar.borderColorHighlighted}`,

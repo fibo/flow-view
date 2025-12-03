@@ -40,5 +40,6 @@ flowView.load({
 			x: 50,
 			y: 50,
 		},
-	}
+	},
+	links: {}
 })

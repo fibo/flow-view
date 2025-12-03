@@ -2,18 +2,18 @@ import { Container, createHtml, ctrlOrMeta, stop, prevent, vector } from './comm
 import { Link, SemiLink } from './link.js';
 import { Node, Input, Output, defaultNodeBodyCreator } from './node.js';
 import { Prompt } from './prompt.js';
-import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, selectionGroupStyle, generateStyle } from './style.js';
+import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, selectorGroupStyle, generateStyle } from './style.js';
 
 /**
  * @typedef {import('./flow-view.d.ts').FlowViewChangeEventDetail} FlowViewChangeEventDetail
- * @typedef {import('./flow-view.d.ts').FlowViewCustomElement} FlowViewCustomElement
  * @typedef {import('./flow-view.d.ts').FlowViewGraphLinks} FlowViewGraphLinks
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNodes} FlowViewGraphNodes
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNode} FlowViewGraphNode
  * @typedef {import('./flow-view.d.ts').FlowViewGraph} FlowViewGraph
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./flow-view.d.ts').FlowViewPinPath} FlowViewPinPath
- * @typedef {import('./flow-view.d.ts').FlowViewStaticMethod} FlowViewStaticMethod
+ *
+ * @typedef {import('./flow-view.d.ts').HTMLFlowViewElement} HTMLFlowViewElement
  *
  * @typedef {import('./internals.d.ts').Pin} Pin
  * @typedef {import('./internals.d.ts').Vector} Vector
@@ -22,21 +22,21 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
 const lightStyle = generateStyle({ ':host': cssTheme.light });
 const darkStyle = generateStyle({ ':host': cssTheme.dark });
 
-const { size: pinSize, halfSize: halfPinSize } = cssPin
+const { size: pinSize, halfSize: halfPinSize } = cssPin;
 
 const eventTypes = [ 'contextmenu', 'dblclick', 'keydown', 'keyup', 'pointerdown', 'pointerenter', 'pointermove', 'pointerleave', 'pointerup', 'touchmove', 'wheel' ];
 
 const { add, sub, xy } = vector;
 
-/** @implements {FlowViewCustomElement} */
+/** @implements {HTMLFlowViewElement} */
 export class FlowView extends HTMLElement {
-	/** @type {FlowViewCustomElement['nodeList']} */
+	/** @type {HTMLFlowViewElement['nodeList']} */
 	nodeList = new Set();
-	/** @type {FlowViewCustomElement['nodeTextToType']} */
+	/** @type {HTMLFlowViewElement['nodeTextToType']} */
 	nodeTextToType = () => '';
-	/** @type {FlowViewCustomElement['nodeTextToBody']} */
+	/** @type {HTMLFlowViewElement['nodeTextToBody']} */
 	nodeTextToBody = () => undefined;
-	/** @type {FlowViewCustomElement['nodeTypeSignature']} */
+	/** @type {HTMLFlowViewElement['nodeTypeSignature']} */
 	nodeTypeSignature = new Map();
 
 	#ids = new Set();
@@ -53,11 +53,12 @@ export class FlowView extends HTMLElement {
 	/** @type {Set<string>} */
 	#clipboardNodeIds = new Set();
 	/** @type {Container | undefined} */
-	#selection;
+	#selector;
 	/** @type {Vector | undefined} */
-	#selectionStartPosition;
+	#selectorStartPosition;
 	#origin = xy(0, 0);
 	#isGrabbing = false;
+	#someNodeWasMoved = false;
 	/** @type {Vector | undefined } */
 	#grabbingVector;
 	/** @type {Vector | undefined } */
@@ -67,24 +68,14 @@ export class FlowView extends HTMLElement {
 	/** @type {Map<string, Link>} */
 	#links = new Map();
 
-
-	get #parent() { return /** @type {Element} */ (this.parentNode) }
-	#resizeObserver = new ResizeObserver((entries) => {
-		for (const entry of entries) {
-			if (this.#parent !== entry.target) continue;
-			this.style.width = `${Math.floor(entry.contentRect.width)}px`;
-			this.style.height = `${Math.floor(entry.contentRect.height)}px`;
-		}
-	});
-
-	/** @type {FlowViewStaticMethod['instance']} */
+	/** @param {Element | null} element */
 	static instance(element) {
 		if (element instanceof FlowView)
 			return element;
 		if (element instanceof Element) {
 			const view = document.createElement('flow-view');
 			element.append(view);
-			return /** @type {FlowView} */ (view)
+			return /** @type {HTMLFlowViewElement} */ (view);
 		}
 		throw new Error('Invalid element');
 	}
@@ -96,10 +87,10 @@ export class FlowView extends HTMLElement {
 
 		// TODO try react on attribute change, using adopted stylesheet
 		const theme = this.getAttribute('theme');
-		const hasLight = theme === 'light'
-		const hasDark = theme === 'dark'
-		const isLight = hasLight && !hasDark
-		const isDark = !hasLight && hasDark
+		const hasLight = theme === 'light';
+		const hasDark = theme === 'dark';
+		const isLight = hasLight && !hasDark;
+		const isDark = !hasLight && hasDark;
 
 		template.innerHTML = [
 			'<style>',
@@ -115,7 +106,7 @@ export class FlowView extends HTMLElement {
 				...nodeStyle,
 				...pinStyle,
 				...promptStyle,
-				...selectionGroupStyle,
+				...selectorGroupStyle,
 			}),
 			'</style>'
 		].join('\n');
@@ -142,48 +133,59 @@ export class FlowView extends HTMLElement {
 		}
 
 		if (event instanceof KeyboardEvent) {
-			stop(event);
-			const code = event.code;
+			/** @param {Record<string, () => void>} codeFunc */
+			const isCode = (codeFunc) => {
+				const func = codeFunc[event.code];
+				if (typeof func != 'function') return;
+				func();
+				stop(event); prevent(event);
+				return true;
+			}
+
 			if (event.type === 'keydown') {
-				if (code.startsWith('Arrow')) {
-					prevent(event);
+				if (isCode({
+					Backspace: () => { this.#deleteSelectedItems() },
+					Escape: () => {
+						this.#clearSelection();
+						this.#removeSemiLink();
+					},
+					Space: () => { this.#startGrabbing() }
+				})) return;
+
+
+				if (event.code.startsWith('Arrow')) {
 					if (!this.#selectedNodeIds.size) return;
 					let x = 0, y = 0;
 					const step = ctrlOrMeta(event) ? halfPinSize : pinSize * 4;
-					if (code === 'ArrowLeft') x = -step;
-					if (code === 'ArrowRight') x = step;
-					if (code === 'ArrowUp') y = -step;
-					if (code === 'ArrowDown') y = +step;
-					this.#moveSelectedNodes({ x, y });
-				}
-				if (code === 'Backspace')
-					this.#deleteSelectedItems();
-				if (code === 'Escape') {
-					this.#clearSelection();
-					this.#removeSemiLink();
-				}
-				if (code === 'Space') {
-					prevent(event);
-					this.#startGrabbing();
-				}
-				if (ctrlOrMeta(event)) {
-					if (code === 'KeyA')
-						for (const node of this.#nodes.values())
-							this.#selectNode(node);
-					if (code === 'KeyC')
-						this.#copy();
-					if (code === 'KeyD') {
-						prevent(event);
-						this.#copy();
-						this.#paste();
+
+					if(isCode({
+						ArrowLeft: () => { x = -step },
+						ArrowRight: () => { x = step },
+						ArrowUp: () => { y = -step },
+						ArrowDown: () => { y = +step }
+					})) {
+						this.#moveSelectedNodes({ x, y });
+						return true;
 					}
-					if (code === 'KeyV')
-						this.#paste();
+				}
+
+				if (ctrlOrMeta(event)) {
+					if (isCode({
+						KeyA: () => {
+							for (const node of this.#nodes.values())
+								this.#selectNode(node);
+						},
+						KeyC: () => { this.#copy() },
+						KeyD: () => { this.#copy(); this.#paste(); },
+						KeyV: () => { this.#paste() }
+					})) return;
 				}
 			}
-			if (event.type === 'keyup') {
-				if (code === 'Space') return this.#stopGrabbing();
-			}
+
+			if (event.type === 'keyup')
+				if (isCode({
+					'Space': () => { this.#stopGrabbing() }
+				})) return;
 		}
 
 		if (event.type === 'touchmove') {
@@ -205,12 +207,14 @@ export class FlowView extends HTMLElement {
 			window.removeEventListener('keydown', this);
 			window.removeEventListener('keyup', this);
 
+			this.#emitMovedNodes();
 			this.#removeSemiLink();
 			this.#pointerVector = undefined;
-			this.#removeSelection();
+			this.#removeSelector();
 			this.#stopGrabbing();
 		}
 
+		/* TODO disable for now moving nodes with the wheel handler
 		if (event instanceof WheelEvent && event.type === 'wheel') {
 			stop(event); prevent(event);
 			this.#origin = add(this.#origin, xy(event.deltaX, event.deltaY));
@@ -220,6 +224,7 @@ export class FlowView extends HTMLElement {
 			if (this.#prompt)
 				this.#removePrompt();
 		}
+		*/
 
 		if (event instanceof PointerEvent) {
 			const pointer = this.#pointerCoordinates(event);
@@ -234,11 +239,11 @@ export class FlowView extends HTMLElement {
 				if (!node) {
 					if (!ctrlOrMeta(event)) this.#clearSelection();
 					this.#removeSemiLink();
-					this.#newSelection(pointer);
+					this.#newSelector(pointer);
 					return;
 				}
 
-				const pin = this.#getClosestPin([...node.inputs, ...node.outputs], pointer);
+				const pin = this.#findClosestPin([...node.inputs, ...node.outputs], pointer);
 				if (!pin) {
 					if (this.#selectedNodeIds.has(node.id)) {
 						if (ctrlOrMeta(event)) this.#deselectNode(node);
@@ -306,26 +311,28 @@ export class FlowView extends HTMLElement {
 					return;
 				}
 
-				if (this.#selection && this.#selectionStartPosition) {
-					const start = this.#selectionStartPosition;
-					this.#selection.position = xy(Math.min(start.x, pointer.x), Math.min(start.y, pointer.y));
-					this.#selection.setElementPosition();
-					this.#selection.dimensions = { width: Math.abs(start.x - pointer.x), height: Math.abs(start.y - pointer.y) };
-					this.#selection.setElementDimensions();
+				if (this.#selector && this.#selectorStartPosition) {
+					const start = this.#selectorStartPosition;
+					this.#selector.position = xy(Math.min(start.x, pointer.x), Math.min(start.y, pointer.y));
+					this.#selector.setElementPosition();
+					this.#selector.dimensions = { width: Math.abs(start.x - pointer.x), height: Math.abs(start.y - pointer.y) };
+					this.#selector.setElementDimensions();
 					for (const node of this.#nodes.values())
-						if (this.#selection.intersects(node.container))
+						if (this.#selector.intersects(node.container))
 							this.#selectNode(node);
 						else
 							this.#deselectNode(node);
 				} else if (this.#pointerVector) {
+					this.#someNodeWasMoved = true;
 					this.#moveSelectedNodes(sub(pointer, this.#pointerVector));
 					this.#pointerVector = pointer;
 				}
 			}
 
 			if (event.type === 'pointerup') {
+				this.#emitMovedNodes();
 				this.#pointerVector = undefined;
-				this.#removeSelection();
+				this.#removeSelector();
 			}
 		}
 	}
@@ -341,7 +348,7 @@ export class FlowView extends HTMLElement {
 		}
 	}
 
-	/** @type {FlowViewCustomElement['clear']} */
+	/** @type {HTMLFlowViewElement['clear']} */
 	clear() {
 		const graph = this.graph;
 		this.#removePrompt();
@@ -353,7 +360,7 @@ export class FlowView extends HTMLElement {
 		this.#emitChange({ delete: graph });
 	}
 
-	/** @type {FlowViewCustomElement['load']} */
+	/** @type {HTMLFlowViewElement['load']} */
 	load({ nodes, links = {} }) {
 		/** @type {FlowViewGraphNodes} */ const newNodes = {};
 		for (const [id, node] of Object.entries(nodes)) {
@@ -367,17 +374,40 @@ export class FlowView extends HTMLElement {
 			const newLink = this.#newLink([from[0], +from[1]], [to[0], +to[1]]);
 			newLinks[newLink.id] = newLink.sourceId;
 		}
-		this.#emitChange({ create: { nodes: newNodes, links: newLinks } } );
+		this.#emitChange({ load: { nodes: newNodes, links: newLinks } } );
 	}
 
-	/** @type {FlowViewCustomElement['onChange']} */
+	/** @type {HTMLFlowViewElement['onChange']} */
 	onChange(callback) { this.addEventListener('change', (event) => callback(/** @type {CustomEvent<FlowViewChangeEventDetail>} */ (event).detail)) }
+
+	get #parent() { return /** @type {Element} */ (this.parentNode) }
+	#resizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			if (this.#parent !== entry.target) continue;
+			this.style.width = `${Math.floor(entry.contentRect.width)}px`;
+			this.style.height = `${Math.floor(entry.contentRect.height)}px`;
+		}
+	});
+
+	/** @returns {Node[]} */
+	get #selectedNodes() {
+		return Array.from(this.#selectedNodeIds).map(id => /** @type {Node} */ (this.#nodes.get(id)))
+	}
+
+	/** @type {ShadowRoot['append']} */
+	#append(...args) { /** @type {ShadowRoot } */(this.shadowRoot).append(...args) }
 
 	/** @param {FlowViewChangeEventDetail} detail */
 	#emitChange(detail) { this.dispatchEvent(new CustomEvent('change', { detail })) }
 
-	/** @type {ShadowRoot['append']} */
-	#append(...args) { /** @type {ShadowRoot } */(this.shadowRoot).append(...args) }
+	#emitMovedNodes() {
+		if (!this.#someNodeWasMoved) return;
+		/** @type {Record<string, Vector>} */ const movedNodes = {}
+		for (const node of this.#selectedNodes)
+			movedNodes[node.id] = node.position;
+		this.#emitChange({ move: { nodes: movedNodes } } );
+		this.#someNodeWasMoved = false;
+	}
 
 	#copy() {
 		this.#clipboardNodeIds.clear();
@@ -387,7 +417,7 @@ export class FlowView extends HTMLElement {
 
 	#paste() {
 		this.#clearSelection();
-		const links = new Set();
+		/** @type Set<Link> */ const links = new Set();
 		const nodeIdsMap = new Map();
 		/** @type {FlowViewGraphNodes} */ const newNodes = {};
 		for (const link of this.#links.values())
@@ -525,9 +555,7 @@ export class FlowView extends HTMLElement {
 
 	/** @param {Vector} translation */
 	#moveSelectedNodes(translation) {
-		for (const nodeId of this.#selectedNodeIds) {
-			const node = this.#nodes.get(nodeId);
-			if (!node) continue;
+		for (const node of this.#selectedNodes) {
 			node.position = add(node.position, translation);
 			this.#updateNodesPosition(node);
 		}
@@ -549,24 +577,24 @@ export class FlowView extends HTMLElement {
 	}
 
 	/** @param {Vector} pointer */
-	#newSelection(pointer) {
-		const selection = this.#selection = new Container(cssClass.selection);
-		selection.position = pointer;
-		selection.setElementPosition();
-		selection.setElementDimensions();
-		this.#append(selection.element);
-		this.#selectionStartPosition = pointer;
+	#newSelector(pointer) {
+		const selector = this.#selector = new Container(cssClass.selector);
+		selector.position = pointer;
+		selector.setElementPosition();
+		selector.setElementDimensions();
+		this.#append(selector.element);
+		this.#selectorStartPosition = pointer;
 	}
 
-	#removeSelection() {
-		if (!this.#selection) return;
-		this.#selection.element.remove();
-		this.#selection = undefined;
-		this.#selectionStartPosition = undefined;
+	#removeSelector() {
+		if (!this.#selector) return;
+		this.#selector.element.remove();
+		this.#selector = undefined;
+		this.#selectorStartPosition = undefined;
 	}
 
 	#startGrabbing() {
-		if (this.#isGrabbing || this.#prompt || this.#selection || this.#semiLink) return;
+		if (this.#isGrabbing || this.#prompt || this.#selector || this.#semiLink) return;
 		this.#isGrabbing = true;
 		this.style.cursor = 'grabbing';
 	}
@@ -690,7 +718,7 @@ export class FlowView extends HTMLElement {
 			}
 		});
 		this.#append(prompt.container.element);
-		prompt.input.focus()
+		prompt.input.focus();
 	}
 
 	#removePrompt() {
@@ -707,7 +735,7 @@ export class FlowView extends HTMLElement {
 	 * @param {Array<Input | Output>} pins
 	 * @param {Vector} position
 	 */
-	#getClosestPin(pins, position) {
+	#findClosestPin(pins, position) {
 		const { x, y } = add(position, this.#origin);
 		return pins.find(({ center }) => (
 			(x >= center.x - pinSize && x <= center.x + pinSize) &&
@@ -716,4 +744,4 @@ export class FlowView extends HTMLElement {
 	}
 }
 
-if (!customElements.get('flow-view')) customElements.define('flow-view', FlowView);
+customElements.define('flow-view', FlowView);

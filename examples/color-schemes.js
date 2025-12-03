@@ -7,7 +7,8 @@ const darkElement = document.querySelector('flow-view[theme="dark"]');
 const graph = {
 	nodes: {
 		id1: { text: 'Node', x: 10, y: 10 },
-	}
+	},
+	links: {}
 };
 
 FlowView.instance(lightElement).load(graph);

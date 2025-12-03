@@ -1,10 +1,20 @@
-export type FlowViewStaticMethod = {
-	instance(element: Element | null): FlowViewCustomElement;
-};
+export declare class FlowView {
+	/**
+	 * Create or retrieve a flow-view instance.
+	 *
+	 * @example Get a flow-view instance
+	 * const flowView = FlowView.instance(document.querySelector('flow-view'));
+	 *
+	 * @example Create a new flow-view instance inside a container.
+	 * const flowView = FlowView.instance(document.querySelector('.container'));
+	 */
+	static instance(element: Element | null): HTMLFlowViewElement;
+}
 
-export type FlowViewCustomElement = HTMLElement & {
+export type HTMLFlowViewElement = HTMLElement & {
 	clear(): void;
 	load(graph: FlowViewGraph): void;
+	undo(): void;
 	readonly graph: FlowViewGraph;
 	readonly nodeList: Set<string>;
 	readonly nodeTypeSignature: Map<string, FlowViewNodeSignature>;
@@ -21,7 +31,7 @@ export type FlowViewNode = {
 
 export type FlowViewNodeBodyCreator = (
 	node: FlowViewNode,
-	view: FlowViewCustomElement
+	view: HTMLFlowViewElement
 ) => HTMLElement;
 
 export type FlowViewPinPath = [nodeId: string, pinIndex: number];
@@ -45,7 +55,7 @@ export type FlowViewGraphLinks = Record<string, string>;
 
 export type FlowViewGraph = {
 	nodes: FlowViewGraphNodes;
-	links?: FlowViewGraphLinks;
+	links: FlowViewGraphLinks;
 };
 
 export type FlowViewPinMetadata = {
@@ -58,6 +68,8 @@ export type FlowViewNodeSignature = Partial<{
 }>;
 
 export type FlowViewChangeEventDetail = Partial<{
-	create: Partial<FlowViewGraph>;
-	delete: Partial<FlowViewGraph>;
+	create: FlowViewGraph;
+	delete: FlowViewGraph;
+	load: FlowViewGraph;
+	move: Pick<FlowViewGraphNode, 'x' | 'y'> & { nodeIds: string[] }
 }>

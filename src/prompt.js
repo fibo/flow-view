@@ -127,7 +127,7 @@ export class Prompt {
 						this.#resetOptions();
 						break;
 					}
-					// Use Tab or Shift-Tab to highlight options ciclically.
+					// Use Tab or Shift-Tab to highlight options cyclically.
 					if (event.shiftKey) {
 						if (0 === this.#highlightedOptionIndex)
 							this.#highlightedOptionIndex = this.options.childElementCount - 1;

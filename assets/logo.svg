@@ -1,0 +1,19 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<style>
+:root {
+	--fg: #465863;
+	--bg: #d5ede6;
+}
+.background { fill: var(--bg); }
+.node { fill: var(--fg); }
+
+@media (prefers-color-scheme: dark) {
+.background { fill: var(--fg); }
+.node { fill: var(--bg); }
+}
+</style>
+	<rect class="background" width="512" height="512"></rect>
+	<rect class="node" x="170" y="70" width="270" height="70"></rect>
+	<rect class="node" x="120" y="220" width="170" height="70"></rect>
+	<rect class="node" x="70" y="370" width="70" height="70"></rect>
+</svg>

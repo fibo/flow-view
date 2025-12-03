@@ -1,12 +1,17 @@
 /*
  * Common styles for flow-view documentation and demos.
  */
-
 :root {
+	/* System fonts, from https://modernfontstacks.com/ */
+	--sans-serif: system-ui, sans-serif;
+	--serif: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+	--monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
 	--background-color: #edf4f2;
+	--background-color2: #d5ede6;
 	--text-color: #170900;
 	--accent-color: #d66c37;
-	--heading-font-family: Georgia, serif;
+
 	--title-margin: 0.5rem;
 	--title-line-height: 3rem;
 }
@@ -14,6 +19,7 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		--background-color: #40464a;
+		--background-color2: #465863;
 		--text-color: #cbd0c7;
 	}
 }
@@ -25,7 +31,7 @@ body {
 	padding-inline: min(max(0.5em, 3vw), 5em);
 	color: var(--text-color);
 	background-color: var(--background-color);
-	font-family: Verdana, sans-serif;
+	font-family: var(--sans-serif);
 	font-size: 18px;
 }
 
@@ -50,7 +56,7 @@ pre {
 	overflow-x: auto;
 
 	code {
-		font-family: monospace;
+		font-family: var(--monospace);
 		word-break: break-all;
 		color: #ccc;
 
@@ -76,19 +82,17 @@ pre {
 
 header {
 	grid-area: header;
-}
 
-header {
 	h1 {
-		font-size: 3em;
-		font-family: var(--heading-font-family);
-		margin: 1rem;
+		font-size: 2.5em;
+		font-family: var(--serif);
+		margin: 1em 0 0.2em 0;
 	}
 
 	blockquote {
 		font-size: 1.2em;
-		margin: 0.5rem;
-		font-family: var(--heading-font-family);
+		margin: 0.25em;
+		font-family: var(--serif);
 
 		&::before {
 			content: open-quote;
@@ -106,13 +110,18 @@ nav.navigation {
 	}
 
 	ul {
-		padding-inline: 1.5em;
+		margin: 0;
+		padding: 0.5em;
 		list-style-type: none;
-		line-height: 1.8em;
+		line-height: 2em;
+		background-color: var(--background-color2);
 
 		li a {
 			white-space: nowrap;
 			color: var(--accent-color);
+			padding: 0.25em;
+			color: var(--text-color);
+			outline-color: var(--text-color);
 		}
 
 		li a::before {
@@ -121,14 +130,11 @@ nav.navigation {
 		}
 
 		li a.selected {
-			list-style-type: circle;
-			color: var(--text-color);
-			outline-color: var(--text-color);
 			cursor: default;
 		}
 
 		li a.selected::before {
-			content: '\2022\2192';
+			content: '\2192';
 			margin-right: 0.6em;
 		}
 	}
@@ -141,7 +147,7 @@ main.content {
 	view-transition-name: content;
 
 	article h2 {
-		font-family: var(--heading-font-family);
+		font-family: var(--serif);
 		font-size: 2em;
 		margin: var(--title-margin);
 		line-height: var(--title-line-height);

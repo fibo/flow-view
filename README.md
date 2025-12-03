@@ -1,10 +1,13 @@
 # flow-view
 
-> Visual editor for [Dataflow programming][dataflow_wikipedia]
+> Visual editor for [Dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming)
 
 <a href="https://fibo.github.io/flow-view/">
-<div>Demo</div>
-<img width="350" height="350" src="https://fibo.github.io/flow-view/assets/screenshot.png" alt="The Simpsons flow-view example">
+  <div>Demo</div>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://fibo.github.io/flow-view/assets/screenshot-dark.png">
+    <img width="350" src="https://fibo.github.io/flow-view/assets/screenshot-light.png" alt="The Simpsons flow-view example">
+  </picture>
 </a>
 
 ## Installation
@@ -23,14 +26,14 @@ Try this in your HTML page
 
 ```html
 <script type="importmap">
-	{ "imports": { "flow-view": "https://unpkg.com/flow-view" } }
+  { "imports": { "flow-view": "https://unpkg.com/flow-view" } }
 </script>
 
 <style>
-.container {
-  max-width: 100%;
-  height: 400px;
-}
+  .container {
+    max-width: 100%;
+    height: 400px;
+  }
 </style>
 
 <div class="container"></div>
@@ -41,21 +44,22 @@ Try this in your HTML page
   const container = document.querySelector('.container');
   const flowView = FlowView.instance(container);
   flowView.load({
-    "nodes": {
-      id1: { "type": "Hello", "x": 10, "y": 10 }
+    nodes: {
+      id1: { text: 'Hello World', x: 10, y: 10 }
     }
   });
 </script>
 ```
 
-Be aware that there is no minified bundle, so you probably do not want to use the CDN in production.
+> [!WARNING]
+> Be aware that there is no minified bundle, so you probably do not want to use the CDN in production.
+> Your bundler (e.g. esbuild, Vite, rollup, etc.) will take care of minification and transpiling according to your target browsers.
 
 ## Usage
 
-See [documentation and examples page](http://fibo.github.io/flow-view/).
+See [documentation and examples](http://fibo.github.io/flow-view/).
 
 ## License
 
 [MIT](http://fibo.github.io/mit-license)
 
-[dataflow_wikipedia]: https://en.wikipedia.org/wiki/Dataflow_programming 'Dataflow programming'

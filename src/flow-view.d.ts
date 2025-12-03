@@ -1,8 +1,8 @@
-export type FlowViewStaticMethod = {
-	instance(element: Element | null): FlowViewCustomElement;
-};
+export declare class FlowView {
+	static instance(element: Element | null): HTMLFlowViewElement;
+}
 
-export type FlowViewCustomElement = HTMLElement & {
+export type HTMLFlowViewElement = HTMLElement & {
 	clear(): void;
 	load(graph: FlowViewGraph): void;
 	readonly graph: FlowViewGraph;
@@ -21,7 +21,7 @@ export type FlowViewNode = {
 
 export type FlowViewNodeBodyCreator = (
 	node: FlowViewNode,
-	view: FlowViewCustomElement
+	view: HTMLFlowViewElement
 ) => HTMLElement;
 
 export type FlowViewPinPath = [nodeId: string, pinIndex: number];

@@ -220,18 +220,6 @@ export class FlowView extends HTMLElement {
 			this.#pointerVector = undefined;
 		}
 
-		/* TODO disable for now moving nodes with the wheel handler
-		if (event instanceof WheelEvent && event.type === 'wheel') {
-			stop(event); prevent(event);
-			this.#origin = add(this.#origin, xy(event.deltaX, event.deltaY));
-			this.#updateNodesAndLinksPosition();
-			if (this.#semiLink)
-				this.#updateSemiLinkPosition(add(this.#pointerCoordinates(event), this.#origin));
-			if (this.#prompt)
-				this.#removePrompt();
-		}
-		*/
-
 		if (event instanceof PointerEvent) {
 			const pointer = this.#pointerCoordinates(event);
 
@@ -495,17 +483,17 @@ export class FlowView extends HTMLElement {
 	 * @param {FlowViewPinPath} target
 	 * @returns {Link}
 	 */
-	#newLink([sourceNodeId, sourcePosition], [targetNodeId, targetPosition]) {
+	#newLink([sourceNodeId, sourceIndex], [targetNodeId, targetIndex]) {
 		const sourceNode = this.#nodes.get(sourceNodeId);
 		const targetNode = this.#nodes.get(targetNodeId);
 		if (!sourceNode || !targetNode)
 			throw new Error('Node not found');
-		const source = sourceNode.outputs[sourcePosition];
-		const target = targetNode.inputs[targetPosition];
+		const source = sourceNode.outputs[sourceIndex];
+		const target = targetNode.inputs[targetIndex];
 		if (!source || !target)
 			throw new Error('Pin not found');
 		// An Input can be connected only to one Link.
-		const id = [targetNodeId, targetPosition].join();
+		const id = [targetNodeId, targetIndex].join();
 		if (this.#links.has(id))
 			throw new Error('Input already connected');
 		const link = new Link(source, target, {

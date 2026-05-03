@@ -40,7 +40,7 @@ a:active,
 a:link,
 a:hover,
 a:focus {
-	color: var(--text-color);
+	color: var(--accent-color);
 	text-decoration: none;
 	outline-color: var(--accent-color);
 }
@@ -163,14 +163,6 @@ main.content {
 footer {
 	grid-area: footer;
 	margin-block: 2em;
-
-	a:visited,
-	a:active,
-	a:link,
-	a:hover,
-	a:focus {
-		color: var(--accent-color);
-	}
 }
 
 @keyframes fade-in {

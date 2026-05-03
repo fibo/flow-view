@@ -1,3 +1,5 @@
+<img width="28" src="https://fibo.github.io/flow-view/assets/logo.svg">
+
 # flow-view
 
 > Visual editor for [Dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming)
@@ -62,4 +64,3 @@ See [documentation and examples](http://fibo.github.io/flow-view/).
 ## License
 
 [MIT](http://fibo.github.io/mit-license)
-

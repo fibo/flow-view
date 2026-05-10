@@ -15,6 +15,7 @@ export type HTMLFlowViewElement = HTMLElement & {
 	clear(): void;
 	load(graph: FlowViewGraph): void;
 	undo(): void;
+	readonly adoptedStyleSheets: ShadowRoot['adoptedStyleSheets'];
 	readonly graph: FlowViewGraph;
 	readonly nodeList: Set<string>;
 	readonly nodeTypeSignature: Map<string, FlowViewNodeSignature>;

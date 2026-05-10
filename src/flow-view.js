@@ -333,6 +333,8 @@ export class FlowView extends HTMLElement {
 		}
 	}
 
+	get adoptedStyleSheets() { return /** @type {ShadowRoot} */ (this.shadowRoot).adoptedStyleSheets }
+
 	get graph() {
 		return {
 			nodes: Object.fromEntries(

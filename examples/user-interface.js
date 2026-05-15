@@ -46,7 +46,7 @@ const initialGraph = {
 // This function can be used to connect to some engine or library.
 // It gets triggered when items are created, deleted, moved, etc.
 
-flowView.onChange((detail) => {
+flowView.addEventListener('fv:change', ({ detail }) => {
 	console.info('change', JSON.stringify(detail, null, 2));
 });
 

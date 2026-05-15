@@ -375,9 +375,6 @@ export class FlowView extends HTMLElement {
 		this.#emitChange({ load: { nodes: newNodes, links: newLinks } } );
 	}
 
-	/** @type {HTMLFlowViewElement['onChange']} */
-	onChange(callback) { this.addEventListener('change', (event) => callback(/** @type {CustomEvent<FlowViewChangeEventDetail>} */ (event).detail)) }
-
 	undo() {
 		const change = this.#history.pop();
 		if (!change) return;
@@ -427,7 +424,7 @@ export class FlowView extends HTMLElement {
 			if (this.#history.length > this.#historyLength)
 				this.#history.shift();
 		}
-		this.dispatchEvent(new CustomEvent('change', { detail }))
+		this.dispatchEvent(new CustomEvent('fv:change', { detail }))
 	}
 
 	#emitMove() {

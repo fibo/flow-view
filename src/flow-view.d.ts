@@ -11,6 +11,9 @@ export declare class FlowView {
 	static instance(element: Element | null): HTMLFlowViewElement;
 }
 
+/**
+ * @event {FlowViewChangeEvent} fv:change
+ */
 export type HTMLFlowViewElement = HTMLElement & {
 	clear(): void;
 	load(graph: FlowViewGraph): void;
@@ -21,7 +24,6 @@ export type HTMLFlowViewElement = HTMLElement & {
 	readonly nodeTypeSignature: Map<string, FlowViewNodeSignature>;
 	nodeTextToBody: (text: string) => FlowViewNodeBodyCreator | undefined;
 	nodeTextToType: (text: string) => string | undefined;
-	onChange(callback: (detail: FlowViewChangeEventDetail) => void): void;
 };
 
 // TODO consider removing this
@@ -74,3 +76,11 @@ export type FlowViewChangeEventDetail = Partial<{
 	load: FlowViewGraph;
 	move: Pick<FlowViewGraphNode, 'x' | 'y'> & { nodeIds: string[] }
 }>
+
+export type FlowViewChangeEvent = CustomEvent<FlowViewChangeEventDetail> & { target: HTMLFlowViewElement }
+
+declare global {
+	interface GlobalEventHandlersEventMap {
+		'fv:change': FlowViewChangeEvent
+	}
+}

@@ -26,7 +26,6 @@ export type HTMLFlowViewElement = HTMLElement & {
 	nodeTextToType: (text: string) => string | undefined;
 };
 
-// TODO consider removing this
 export type FlowViewNode = {
 	text: string;
 	id: string;

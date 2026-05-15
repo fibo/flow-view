@@ -10,6 +10,7 @@ import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinSty
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNodes} FlowViewGraphNodes
  * @typedef {import('./flow-view.d.ts').FlowViewGraphNode} FlowViewGraphNode
  * @typedef {import('./flow-view.d.ts').FlowViewGraph} FlowViewGraph
+ * @typedef {import('./flow-view.d.ts').FlowViewNode} FlowViewNode
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./flow-view.d.ts').FlowViewPinPath} FlowViewPinPath
  *

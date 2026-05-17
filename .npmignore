@@ -1,6 +1,8 @@
-index.html
+.editorconfig
+.github/
 404.html
-tsconfig.json
 assets/
 examples/
+index.html
 server.js
+tsconfig.json

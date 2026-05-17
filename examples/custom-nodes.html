@@ -2,22 +2,44 @@
 	<style>
 		article#custom-nodes .container {
 			max-width: 100%;
-			height: 300px;
+			height: 400px;
 		}
 	</style>
 
 	<h2>Custom nodes</h2>
 
-	<p>Flow View supports custom nodes via Web Components.</p>
+	<p>
+	Flow View supports <b>custom nodes</b> via <em>Web Components</em> and <em>adoptedStyleSheets</em>.
+	</p>
 
 	<p>
 	This view is created by the <a href="https://github.com/fibo/flow-view/blob/main/examples/custom-nodes.js">custom-nodes.js</a> example script.
 	</p>
 
+	<div class="container"></div>
+
 	<p>
-	You can click the nodes below and edit them, they accept any valid <em>JSON</em>. Also if you double click on the canvas and insert a JSON, it will create an editable node.
+	FlowView do not provide a dataflow engine, this example is using the <em>FlowView's brother project</em> <a href="https://fibo.github.io/dflow/">dflow</a>. Please keep in mind that this is just an example to showcase custom nodes, there are very few nodes implemented.
 	</p>
 
-	<div class="container"></div>
+	<p>
+	If you double click on the canvas and insert a JSON text, it will create an editable node.
+	</p>
+
+	<p>
+	Click on a JSON node to edit it. Once the data is changed the graph gets executed and updated.
+	</p>
+
+	<p>
+	A special case happens when you insert <code>true</code> or <code>false</code>. You get a <em>toggle</em> node.
+	</p>
+
+	<p>
+	Another special case is the <em>output</em> node. You can create by typing an empty string. So double click to open the selector, then press <kbd>enter</kbd>.
+	</p>
+
+	<p>
+	Other avialable nodes are the <em>if</em> and the <em>+</em> nodes. The <em>+</em> node also supports strings: if you add strings as inputs it will concatenate them.
+	</p>
 </article>
 

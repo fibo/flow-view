@@ -31,10 +31,7 @@ export type FlowViewNode = {
 	id: string;
 };
 
-export type FlowViewNodeBodyCreator = (
-	node: FlowViewNode,
-	view: HTMLFlowViewElement
-) => HTMLElement;
+export type FlowViewNodeBodyCreator = (node: FlowViewNode, view: HTMLFlowViewElement) => HTMLElement;
 
 export type FlowViewPinPath = [nodeId: string, pinIndex: number];
 
@@ -73,7 +70,13 @@ export type FlowViewChangeEventDetail = Partial<{
 	create: FlowViewGraph;
 	delete: FlowViewGraph;
 	load: FlowViewGraph;
-	move: Pick<FlowViewGraphNode, 'x' | 'y'> & { nodeIds: string[] }
+	move: {
+		x: number;
+		y: number;
+		nodeIds: string[];
+	}
+	/** Keys are node ids, value is updated node text. */
+	updateText: Record<string, string>
 }>
 
 export type FlowViewChangeEvent = CustomEvent<FlowViewChangeEventDetail> & { target: HTMLFlowViewElement }

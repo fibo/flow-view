@@ -1,6 +1,6 @@
 import { Container, createHtml, ctrlOrMeta, stop, prevent, vector } from './common.js';
 import { Link, SemiLink } from './link.js';
-import { Node, Input, Output, defaultNodeBodyCreator } from './node.js';
+import { Node, Input, Output } from './node.js';
 import { Prompt } from './prompt.js';
 import { cssClass, cssTheme, cssPin, flowViewStyle, linkStyle, nodeStyle, pinStyle, promptStyle, selectorGroupStyle, generateStyle } from './style.js';
 
@@ -520,14 +520,15 @@ export class FlowView extends HTMLElement {
 	#newNode({ x, y, text }, id = this.#generateId()) {
 		const nodeType = this.nodeTextToType(text);
 		const signature = nodeType ? this.nodeTypeSignature.get(nodeType) : {};
-		const bodyCreator = this.nodeTextToBody(text) ?? defaultNodeBodyCreator;
-		const node = new Node(id, text, { x, y }, signature ?? {}, {
+		const node = new Node(this, { id, text }, { x, y }, signature ?? {}, {
 			select: () => {
 				this.#append(node.container.element);
 				this.#pointedOutNode = node;
+			},
+			updateText: (text) => {
+				this.#emitChange({ updateText: { [id]: text }});
 			}
 		});
-		node.container.element.append(node.inputsDiv, bodyCreator(node, this), node.outputsDiv);
 		this.#append(node.container.element);
 		node.container.dimensions = node.container.element.getBoundingClientRect();
 		node.updatePinsOffset();

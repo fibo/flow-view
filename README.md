@@ -48,7 +48,8 @@ Try this in your HTML page
   flowView.load({
     nodes: {
       id1: { text: 'Hello World', x: 10, y: 10 }
-    }
+    },
+    links: {}
   });
 </script>
 ```

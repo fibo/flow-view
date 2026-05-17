@@ -9,9 +9,11 @@
     "noUnusedParameters": true,
     "paths": {
       "flow-view": ["./src/flow-view.js"],
+      "dflow": ["./assets/dflow.js"],
     },
     "strict": true,
     "target": "es2022",
   },
   "include": ["src", "examples"],
+  "exclude": ["./assets/dflow.js"]
 }

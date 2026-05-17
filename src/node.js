@@ -7,11 +7,14 @@ import { cssClass, cssNode, cssPin } from './style.js';
  * @typedef {import('./flow-view.d.ts').FlowViewNodeSignature} FlowViewNodeSignature
  * @typedef {import('./flow-view.d.ts').FlowViewPinMetadata} FlowViewPinMetadata
  *
+ * @typedef {import('./flow-view.d.ts').HTMLFlowViewElement} HTMLFlowViewElement
+ *
  * @typedef {import('./internals.d.ts').Pin} Pin
  * @typedef {import('./internals.d.ts').Vector} Vector
  *
  * @typedef {{
- *   select: () => void
+ *   select: () => void,
+ *   updateText: (text: string) => void
  * }} NodeAction
  */
 
@@ -21,8 +24,7 @@ const { borderWidth } = cssNode
 const { xy, add } = vector;
 
 /** @type {FlowViewNodeBodyCreator} */
-export const defaultNodeBodyCreator = (node) =>
-	div(cssClass.nodeContent, [node.text]);
+const defaultNodeBodyCreator = (node) => div(cssClass.nodeContent, [node.text]);
 
 /** @implements {Pin} */
 export class Input {
@@ -80,43 +82,49 @@ const eventTypes = ['dblclick', 'pointerdown'];
 /** @implements {FlowViewNode} */
 export class Node {
 	container = new Container(cssClass.node);
-	inputsDiv = div('pins');
-	outputsDiv = div('pins');
 
-	#isSelected = false;
-	/** @type {NodeAction} */
-	#action;
 	/** @type {Input[]} */
 	inputs = [];
 	/** @type {Output[]} */
 	outputs = [];
 
+	#isSelected = false;
+	#text = '';
+	/** @type {NodeAction} */
+	#action;
+
 	/**
-	 * @param {string} id
-	 * @param {string} text
+	 * @param {HTMLFlowViewElement} view
+	 * @param {FlowViewNode} node
 	 * @param {Vector} position
 	 * @param {Partial<FlowViewNodeSignature>} signature
 	 * @param {NodeAction} action
 	 */
-	constructor(id, text, position, { inputs = [], outputs  = []}, action) {
+	constructor(view, { id, text }, position, { inputs = [], outputs  = []}, action) {
 		this.id = id;
-		this.text = text;
+		this.#text = text;
 		this.position = position;
 		this.#action = action;
+
+		const inputsDiv = div('pins');
+		const outputsDiv = div('pins');
 
 		for (let index = 0; index < inputs.length; index++) {
 			const input = new Input(this, index, inputs[index]);
 			this.inputs.push(input);
-			this.inputsDiv.append(input.container.element);
+			inputsDiv.append(input.container.element);
 		}
 
 		for (let index = 0; index < outputs.length; index++) {
 			const output = new Output(this, index, outputs[index]);
 			this.outputs.push(output);
-			this.outputsDiv.append(output.container.element);
+			outputsDiv.append(output.container.element);
 		}
 
 		eventTypes.forEach((eventType) => this.container.element.addEventListener(eventType, this));
+
+		const bodyCreator = view.nodeTextToBody(text) ?? defaultNodeBodyCreator;
+		this.container.element.append(inputsDiv, bodyCreator(this, view), outputsDiv);
 	}
 
 	dispose() {
@@ -130,7 +138,7 @@ export class Node {
 		if (event.type === 'pointerdown') this.#action.select();
 	}
 
-	toJSON() { return { text: this.text, ...this.position } }
+	toJSON() { return { text: this.#text, ...this.position } }
 
 	updatePinsOffset() {
 		const bounds = this.container.element.getBoundingClientRect();
@@ -153,5 +161,12 @@ export class Node {
 			for (const output of this.outputs)
 				output.container.highlight = false;
 		}
+	}
+
+	get text() { return this.#text }
+
+	set text(value) {
+		this.#text = value;
+		this.#action.updateText(value);
 	}
 }

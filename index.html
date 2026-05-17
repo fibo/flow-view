@@ -12,9 +12,10 @@
 
 		<link rel="stylesheet" href="./assets/style.css" />
 
-		<script type="importmap">
-			{ "imports": { "flow-view": "./src/flow-view.js" } }
-		</script>
+		<script type="importmap">{ "imports": {
+			"flow-view": "./src/flow-view.js",
+			"dflow": "./assets/dflow.js"
+		}}</script>
 	</head>
 
 	<body>
@@ -30,6 +31,10 @@
 			<nav class="navigation">
 				<h3>Examples</h3>
 				<ul>
+					<li>
+						<a href="./examples/custom-nodes.html" data-script="./examples/custom-nodes.js">Custom nodes</a>
+					</li>
+
 					<li>
 						<a href="./examples/user-interface.html" data-script="./examples/user-interface.js">User interface</a>
 					</li>

@@ -93,12 +93,12 @@ export class Container {
 	}
 
 	/** @param {Rectangle} target */
-	intersects(target) {
+	contains(target) {
 		return (
-			target.position.x < this.position.x + this.dimensions.width &&
-			target.position.x + target.dimensions.width > this.position.x &&
-			target.position.y < this.position.y + this.dimensions.height &&
-			target.position.y + target.dimensions.height > this.position.y
+			target.position.x >= this.position.x &&
+			target.position.y >= this.position.y &&
+			target.position.x + target.dimensions.width <= this.position.x + this.dimensions.width &&
+			target.position.y + target.dimensions.height <= this.position.y + this.dimensions.height
 		)
 	}
 }

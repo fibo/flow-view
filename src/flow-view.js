@@ -315,7 +315,7 @@ export class FlowView extends HTMLElement {
 					this.#selector.dimensions = { width: Math.abs(start.x - pointer.x), height: Math.abs(start.y - pointer.y) };
 					this.#selector.setElementDimensions();
 					for (const node of this.#nodes.values())
-						if (this.#selector.intersects(node.container))
+						if (this.#selector.contains(node.container))
 							this.#selectNode(node);
 						else
 							this.#deselectNode(node);

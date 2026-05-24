@@ -48,6 +48,7 @@ a:focus {
 ul {
 	margin-top: 1em;
 	margin-bottom: 2.5em;
+	padding: 0 0 0 1.5em;
 }
 
 pre {
@@ -70,7 +71,7 @@ pre {
 .layout {
 	display: grid;
 	grid-template-areas: 'header' 'navigation' 'content' 'footer';
-	gap: 0.5em;
+	gap: 1em;
 }
 
 @media (min-width: 800px) {
@@ -162,7 +163,7 @@ main.content {
 
 footer {
 	grid-area: footer;
-	margin-block: 2em;
+	margin-block: 1em;
 }
 
 @keyframes fade-in {

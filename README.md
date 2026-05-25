@@ -56,7 +56,7 @@ Try this in your HTML page
 
 > [!WARNING]
 > Be aware that there is no minified bundle, so you probably do not want to use the CDN in production.
-> Your bundler (e.g. esbuild, Vite, rollup, etc.) will take care of minification and transpiling according to your target browsers.
+> Your bundler (e.g. esbuild, Vite, rollup, etc.) will handle minification and transpilation for your target browsers.
 
 ## Usage
 
